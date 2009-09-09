@@ -1,0 +1,1022 @@
+.\"
+.\" Troll-FTPd is Copyright 1995-2000 Trolltech AS, and Copyright 2001-2002 Arnt Gulbrandsen.
+.\" Pure-FTPd is (C)opyleft 2001-2009 by Frank DENIS <j at pureftpd dot org> and the Pure-FTPd team.
+.\"
+.\" Use, modification and distribution is allowed without limitation, warranty, or liability of any kind.
+.\"
+.TH "pure-ftpd" "8" "1.0.22" "Pure-FTPd Team" "Pure-FTPd"
+.SH "NAME"
+pure\-ftpd \- simple File Transfer Protocol server
+
+.SH "SYNOPSIS"
+.B pure\-ftpd [\-0] [\-1] [\-4] [\-6] [\-a gid] [\-A] [\-b] [\-B] [\-c clients] [\-C cnx/ip] [\-d [\-d]] [\-D] [\-e] [\-E] [\-f facility] [\-F fortunes file] [\-g pidfile] [\-G] [\-H] [\-i] [\-I] [\-j] [\-k percentage] [\-K] [\-l authentication[:config file]] [\-L max files:max depth] [\-m maxload] [\-M] [\-n maxfiles:maxsize] [\-N] [\-o] [\-O format:log file] [\-p first:last] [\-P ip address or host name] [\-q upload:download ratio] [\-Q upload:download ratio] [\-r] [\-R] [\-s] [\-S [address,][port]] [\-t upload bandwidth:download bandwidth] [\-T upload bandwidth:download bandwidth] [\-u uid] [\-U umask files:umask dirs] [\-v bonjour name] [\-V ip address] [\-w] [\-W] [\-x] [\-X] [\-y max user sessions:max anon sessions] [\-Y tls behavior] [\-z] [\-Z]
+
+.br
+Alternative style :
+.br
+\-0 \-\-notruncate
+.br
+\-1 \-\-logpid
+.br
+\-4 \-\-ipv4only
+.br
+\-6 \-\-ipv6only
+.br
+\-a \-\-trustedgid
+.br
+\-A \-\-chrooteveryone
+.br
+\-b \-\-brokenclientscompatibility
+.br
+\-B \-\-daemonize
+.br
+\-c \-\-maxclientsnumber
+.br
+\-C \-\-maxclientsperip
+.br
+\-d \-\-verboselog
+.br
+\-D \-\-displaydotfiles
+.br
+\-e \-\-anonymousonly
+.br
+\-E \-\-noanonymous
+.br
+\-f \-\-syslogfacility
+.br
+\-F \-\-fortunesfile
+.br
+\-g \-\-pidfile
+.br
+\-G \-\-norename
+.br
+\-h \-\-help
+.br
+\-H \-\-dontresolve
+.br
+\-i \-\-anonymouscantupload
+.br
+\-I \-\-maxidletime
+.br
+\-j \-\-createhomedir
+.br
+\-k \-\-maxdiskusagepct
+.br
+\-K \-\-keepallfiles
+.br
+\-l \-\-login
+.br
+\-L \-\-limitrecursion
+.br
+\-m \-\-maxload
+.br
+\-M \-\-anonymouscancreatedirs
+.br
+\-n \-\-quota
+.br
+\-N \-\-natmode
+.br
+\-o \-\-uploadscript
+.br
+\-O \-\-altlog
+.br
+\-p \-\-passiveportrange
+.br
+\-P \-\-forcepassiveip
+.br
+\-q \-\-anonymousratio
+.br
+\-Q \-\-userratio
+.br
+\-r \-\-autorename
+.br
+\-R \-\-nochmod
+.br
+\-s \-\-antiwarez
+.br
+\-S \-\-bind
+.br
+\-t \-\-anonymousbandwidth
+.br
+\-T \-\-userbandwidth
+.br
+\-u \-\-minuid
+.br
+\-U \-\-umask
+.br
+\-v \-\-bonjour
+.br
+\-V \-\-trustedip
+.br
+\-w \-\-allowuserfxp
+.br
+\-W \-\-allowanonymousfxp
+.br
+\-x \-\-prohibitdotfileswrite
+.br
+\-X \-\-prohibitdotfilesread
+.br
+\-y \-\-peruserlimits
+.br
+\-Y \-\-tls
+.br
+\-z \-\-allowdotfiles
+.br
+\-Z \-\-customerproof
+
+.SH "DESCRIPTION"
+.B Pure\-FTPd
+is a small, simple server for the old and hairy File Transfer
+Protocol, designed to use less resources than older servers, be
+smaller and very secure, and to never execute any external program.
+.PP
+It support most\-used features and commands of FTP (including many modern
+extensions), and leaves out everything which is deprecated, meaningless,
+insecure, or correlates with trouble.
+.PP
+IPv6 is fully supported.
+
+.SH "OPTIONS"
+.TP
+.B \-0
+When a file is uploaded and there is already a previous version of the
+file with the same name, the old file will neither get removed nor truncated.
+Upload will take place in a temporary file and once the upload is complete,
+the switch to the new version will be atomic. This option should not be used
+together with virtual quotas.
+.TP
+.B \-1
+Add the PID to the syslog output. Ignored if 
+.B -f
+.B none
+is set.
+.TP
+.B \-4
+Listen only to IPv4 connections.
+.TP
+.B \-6
+Listen only to IPv6 connections.
+.TP
+.B \-a gid
+Regular users will be chrooted to their home directories, unless
+they belong to the specified gid. Note that root is always trusted,
+and that chroot() occurs only for anonymous ftp without this option.
+.TP
+.B \-A
+Chroot() everyone, but root.
+.TP
+.B \-b
+Be broken. Turns on some compatibility hacks for shoddy clients, and for broken Netfilter gateways.
+.TP
+.B \-B
+Start the standalone server in background (daemonize).
+.TP
+.B \-c clients
+Allow a maximum of
+.I clients
+to be connected.
+.I clients
+must be at least 1, and if you combine it with
+.B \-p
+it will be forced down to half the number of ports specified by
+.B \-p.
+If more than
+.I clients
+are connected, new clients are rejected at once, even clients wishing
+to upload, or to log in as normal users. Therefore, it is advisable
+to use
+.B \-m
+as primary overload protection. The default value is 50.
+.TP
+.B \-C max connection per ip
+Limit the number of simultanous connections
+coming from the same IP address. This is yet another very effective way to
+prevent stupid denial of services and bandwidth starvation by a single user.
+It works only when the server is launched in standalone mode (if you use a
+super\-server, it is supposed to do that). If the server is launched with
+.B \-C 2
+, it doesn't mean that the total number of connection is limited to 2.
+But the same client, coming from the same machine (or at least the same IP),
+can't have more than two simultaneous connections. This features needs some
+memory to track IP addresses, but it's recommended to use it.
+.TP
+.B \-d
+turns on debug logging. Every command is logged, except that the argument
+to PASS is changed to "<password>". If you repeat
+.B \-d
+, responses too are logged.
+.TP
+.B \-e
+Only allow anonymous users to log in.
+.TP
+.B \-E
+Only allow authenticated login. Anonymous users are prohibited.
+.TP
+.B \-f facility
+makes ftpd use
+.I facility
+for all
+.BR syslog (3)
+messages.
+.I facility
+defaults to
+.BR ftp .
+The facility names are normally listed in
+.IR /usr/include/sys/syslog.h .
+Note that if
+.B \-f
+is not the first option on the command line, a couple of messages may
+be logged to local2 before the
+.B \-f
+option is parsed.
+Use
+.B \-f none
+to disable logging.
+.TP
+.B \-F fortunes file
+Display a funny random message in the initial login banner. The
+random cookies are extracted from a text file, in the standard
+.B fortune
+format. If you installed the
+.B fortune
+package, you should have a directory
+(usually
+.B /usr/share/fortune
+) with binary files (
+.B xxxx.dat
+) and text files
+(without the
+.B .dat
+extension).
+.TP
+.B \-g pidfile
+In standalone mode, write the pid to that file in instead of
+/var/run/pure-ftpd.pid .
+.TP
+.B \-G
+When this option is enabled, people can no more change the name of already
+uploaded files, even if they own those files or their directory.
+.TP
+.B \-H
+Don't resolve host names ("192.0.34.166" will be logged instead of
+"www.example.com"). It can significantly speed up connections and reduce
+bandwidth usage on busy servers. Use it especially on public FTP sites.
+.TP
+.B \-i
+Disallow upload for anonymous users, whatever directory permissions
+are. This option is especially useful for virtual hosting, to avoid your
+users create warez sites in their account.
+.TP
+.B \-I timeout
+Change the maximum idle time. The timeout is in minutes, and defaults to 15.
+.TP
+.B \-j
+If the home directory of an user doesn't exist, automatically
+create it. The newly created home directory belongs to the user, and
+permissions are set according to the current directory mask. To avoid local
+attacks, the parent directory should never belong to an untrusted user.
+.TP
+.B \-k percentage
+Disallow upload if the partition is more than
+.B percentage
+full. Example:
+\-k 95 will ensure that your disk will never get filled more than 95% by FTP
+users.
+.TP
+.B \-K
+Allow users to resume and upload files, but NOT to delete them. Directories
+can be removed, but only if they are empty.
+.TP
+.B \-l authentication:file
+Enable a new authentication method. It can be one of :
+.I -l unix
+For standard (/etc/passwd) authentication.
+.I -l pam
+For PAM authentication.
+.I -l ldap:LDAP config file
+For LDAP directories.
+.I -l mysql:MySQL config file
+For MySQL databases.
+.I -l pgsql:Postgres config file
+For Postgres databases.
+.I -l puredb:PureDB database file
+For PureDB databases.
+.I -l extauth:path to pure-authd socket
+For external authentication handlers.
+.br
+Different authentication methods can be mixed together. For instance if you
+run the server with
+.I -lpuredb:/etc/pwd.pdb -lmysql:/etc/my.cf -lunix
+Accounts will first be authenticated from a PureDB database. If it fails, a
+MySQL server will be asked. If the account is still not found is the
+database, standard unix accounts will be scanned. Authentication methods are
+tried in the order you give the -l options.
+.br
+See the
+.I README.LDAP
+and
+.I README.MySQL
+files for info about the built\-in LDAP and SQL directory support.
+.TP
+.B \-L max files:max depth
+Avoid denial\-of\-service attacks by limiting the number of displayed files
+in a 'ls' and the maximum depth of a recursive 'ls'. Defaults are 2000:5
+(2000 files displayed for a single 'ls' and walk through 5 subdirectories
+max).
+.TP
+.B \-m load
+Do not allow anonymous users to download files if the load is above
+.I load
+when the user connects. Uploads and file listings are still allowed,
+as are downloads by real users. The user is not told about this until
+he/she tries to download a file.
+.TP
+.B \-M
+Allow anonymous users to create directories.
+.TP
+.B \-n maxfiles:maxsize
+Enable
+.B virtual quotas
+When virtual quotas are enabled, .ftpquota files are created, and the
+number of files for an user is restricted to 'maxfiles'. The max total size
+of his directory is also restricted to 'maxsize' Megabytes. Members of the
+trusted group aren't subject to quotas.
+.TP
+.B \-N
+NAT mode. Force
+.B active
+mode. If your FTP server is behind a NAT box
+that doesn't support applicative FTP proxying, or if you use port
+redirection without a transparent FTP proxy, use this. Well... the previous
+sentence isn't very clear. Okay: if your network looks like this:
+.br
+FTP\-\-NAT.gateway/router\-\-Internet
+.br
+and if you want people coming from the internet to have access to your FTP
+server, please try without this option first. If Netscape clients can
+connect without any problem, your NAT gateway rulez. If Netscape doesn't
+display directory listings, your NAT gateway sucks. Use
+\fB\-N\fR
+as a workaround.
+.TP
+.B \-o
+Enable
+.IR pure\-uploadscript .
+.TP
+.B \-O format:log file
+Record all file transfers into a specific log
+file, in an alternative format. Currently, three formats are supported : CLF,
+Stats, W3C and xferlog.
+.br
+If you add
+.br
+\fB\-O clf:/var/log/pureftpd.log\fR
+.br
+to your starting options,
+Pure-FTPd will log transfers in
+\fB/var/log/pureftpd.log\fR
+in a format similar to
+the Apache web server in default configuration.
+.br
+If you add
+.br
+\fB\-O stats:/var/log/pureftpd.log\fR
+.br
+to your starting options,
+Pure-FTPd will create accurate log files designed for traffic analys
+software like ftpStats.
+.br
+If you add
+.br
+\fB\-O w3c:/var/log/pureftpd.log\fR
+.br
+to your starting options,
+Pure-FTPd will create W3C\-conformant log files.
+.br
+For security purposes, the path must be absolute
+(eg.
+\fB/var/log/pureftpd.log\fR, not \fB ../log/pureftpd.log\fR).
+.TP
+.B \-p first:last
+Use only ports in the range \fIfirst\fR to \fIlast\fR
+inclusive for passive\-mode downloads. This means that clients will
+not try to open connections to TCP ports outside the range \fIfirst \- last\fR,
+which makes pure\-ftpd more compatible with packet filters. Note that
+the maximum number of clients (specified with \fB\-c\fR)
+is forced down to \fI(last + 1 \- first)/2\fR
+if it is greater, as the default is. (The syntax for the port range
+is, conveniently, the same as that of
+.BR iptables).
+.TP
+.B \-P ip address or host name
+Force the specified IP address in reply to a
+.B PASV/EPSV/SPSV
+command. If the server is behind a masquerading (NAT) box that doesn't
+properly handle stateful FTP masquerading, put the ip address of that box
+here. If you have a dynamic IP address, you can use a symbolic host name
+(probably the one of your gateway), that will be resolved every time a new
+client will connect.
+.TP
+.B \-q upload:download
+Enable an upload/download ratio for anonymous users (ex:
+.I \-q 1:5
+means that 1 Mb of goodies have to be uploaded to leech 5 Mb).
+.TP
+.B \-Q upload:download
+Enable ratios for anonymous and non\-anonymous users. If the
+.I \-a
+option is also used, users from the trusted group have no ratio.
+.TP
+.B \-r
+Never overwrite existing files. Uploading a file whoose name
+already exists cause an automatic rename. Files are called xyz.1, xyz.2,
+xyz.3, etc.
+.TP
+.B \-R
+Disallow users (even non-anonymous ones) usage of the CHMOD
+command. On hosting services, it may prevent newbies from doing mistakes,
+like setting bad permissions on their home directory. Only root can use
+CHMOD when this switch is enabled.
+.TP
+.B \-s
+Don't allow anonymous users to retrieve files owned by "ftp"
+(generally, files uploaded by other anonymous users).
+.TP
+.B \-S [{ip address|hostname}] [,{port|service name}]
+This option is
+only effective when the server is launched as a standalone server.
+Connections are accepted on the specified IP and port. IPv4 and IPv6 are
+supported. Numeric and fully\-qualified host names are accepted. A service
+name (see /etc/services) can be used instead of a numeric port number.
+.TP
+.B \-t bandwidth
+or
+.B \-t upload bandwidth:download bandwidth
+Enable process priority lowering and bandwidth throttling for anonymous
+users. Delay should be in kilobytes/seconds.
+.TP
+.B \-T bandwidth
+or
+.B \-T upload bandwidth:download bandwidth
+Enable process priority lowering and bandwidth throttling for *ALL*
+users.
+Pure\-FTPd should have been explicitely compiled with throttling support
+to have these flags work.
+It is possible to have different bandwidth limits for uploads and for
+downloads. '\-t' and '\-T' can indeed be followed by two numbers delimited by
+a column (':'). The first number is the upload bandwidth and the next one
+applies only to downloads. One of them can be left blank which means infinity.
+A single number without any column means that the same limit applies to upload
+and download.
+.TP
+.B \-u uid
+Do not allow uids below \fIuid\fR
+to log in (typically, low\-numbered \fIuid\fRs
+are used for administrative accounts).
+.B "\-u 100"
+is sufficient to deny access to all administrative accounts on many
+linux boxes, where 99 is the last administrative account. Anonymous
+FTP is allowed even if the uid of the ftp user is smaller than
+.IR uid .
+.B "\-u 1"
+denies access only to root accounts. The default is to allow FTP
+access to all accounts.
+.TP
+.B \-U umask files:umask dirs
+Change the mask for creation of new files and directories. The default are 133 (files are
+readable -but not writable- by other users) and 022 (same thing for directory, with the execute bit on).
+If new files should only be readable by the user, use 177:077. If you want uploaded files to be executable,
+use 022:022 (files will be readable by other people) or 077:077 (files will only be
+readable by their owner).
+.TP
+.B \-v bonjour name
+Set the Bonjour name of the service (only available on MacOS X when Bonjour support is compiled in).
+.TP
+.B \-V ip address
+Allow non-anonymous FTP access only on this specific
+local IP address. All other IP addresses are only anonymous. With that
+option, you can have routed IPs for public access, and a local IP (like
+10.x.x.x) for administration. You can also have a routable trusted IP
+protected by firewall rules, and only that IP can be used to login as a
+non-anonymous user.
+.TP
+.B \-w
+Enable support for the FXP protocol, for non\-anonymous users only.
+.TP
+.B \-W
+Enable the FXP protocol for everyone.
+\fIFXP IS AN UNSECURE PROTOCOL. NEVER ENABLE IT ON UNTRUSTED NETWORKS.\fR
+.TP
+.B \-x
+In normal operation mode, authenticated users can read/write files
+beginning with a dot ('.'). Anonymous users can't, for security reasons
+(like changing banners or a forgotten .rhosts). When '\-x' is used,
+authenticated users can download dot\-files, but not overwrite/create them,
+even if they own them. That way, you can prevent hosted users from messing
+.qmail files.
+.TP
+.B \-X
+This flag is identical to the previous one (writing dot\-files is
+prohibited), but in addition, users can't even *read* files and directories
+beginning with a dot (like "cd .ssh").
+.TP
+.B \-y per user max sessions:max anonymous sessions
+This switch enables per-user concurrency limits. Two values are separated by a
+column. The first one is the max number of concurrent sessions for a single
+login. The second one is the maximum number of anonoymous sessions.
+.TP
+.B \-Y tls behavior
+\fB\-Y 0\fR
+(default) disables SSL/TLS security mechanisms.
+.br
+\fB\-Y 1\fR
+Accept both normal sessions and SSL/TLS ones.
+.br
+\fB\-Y 2\fR
+refuses connections that aren't using SSL/TLS security mechanisms, including
+anonymous ones.
+.br
+\fB\-Y 3\fR
+refuses connections that aren't using SSL/TLS security mechanisms, and refuse
+cleartext data channels as well.
+.br
+The server must have been compiled with SSL/TLS support and a valid certificate
+must be in place to accept encrypted sessions.
+.TP
+.B \-z
+Allow anonymous users to read files and directories starting with a dot ('.').
+.TP
+.B \-Z
+Add safe guards against common customer mistakes (like chmod 0 on their own files) .
+
+
+.SH "AUTHENTICATION"
+Some of the complexities of older servers are left out.
+.PP
+This version of pure\-ftpd can use PAM for authentication. If you wan't it to
+consult any files like /etc/shells or /etc/ftpd/ftpusers consult pam
+docs. LDAP directories and SQL databases are also supported.
+.PP
+Anonymous users are authenticated in any of three ways:
+.PP
+1. The user logs in as "ftp" or "anonymous" and there is an
+account called "ftp" with an existing home directory. This server
+does not ask anonymous users for an email address or other password.
+.PP
+2. The user connects to an IP address which resolves to the name of a
+directory in
+.I /etc/pure\-ftpd
+(or a symlink in that directory to a real directory), and there is an
+account called "ftp" (which does not need to have a valid home
+directory). See
+.B Virtual Servers
+below.
+.PP
+.B Ftpd
+does a
+.BR chroot (2)
+to the relevant base directory when an anonymous user logs in.
+.PP
+Note that
+.B ftpd
+allows remote users to log in as root if the password is known and \-u
+not used.
+
+.SH "UNUSUAL FEATURES"
+.B Ftpd
+never switches uid and euid, it uses
+.BR setfsuid (2)
+instead. The main reason is that uid switching has been exploited in
+several breakins, but the sheer ugliness of uid switching counts too.
+.B Ftpd
+only calls
+.BR setfsuid (2)
+once, at login.
+.PP
+If a user's home directory is \fB/path/to/home/./\fR, FTP sessions under that UID will be chroot()ed. In addition, if a users's home directory is \fB/path/to/home/./directory\fR the session will be chroot()ed to /path/to/home and the FTP session will start in 'directory'.
+.PP
+As noted above, this
+.B pure\-ftpd
+omits several features that are required by the RFC or might be
+considered useful at first. Here is a list of the most important
+omissions.
+.PP
+On\-the\-fly tar is not supported, for several reasons. I feel that
+users who want to get many files should use a special FTP client such
+as "mirror," which also supports incremental fetch. I don't want to
+either add several hundred lines of code to create tar files or
+execute an external tar. Finally, on\-the\-fly tar distorts log files.
+.PP
+On\-the\-fly compression is left out too. Most files on an FTP site are
+compressed already, and if a file isn't, there presumably is a reason
+why. (As for decompression: Don't FTP users waste bandwidth enough
+without help from on\-the\-fly decompression?)
+
+.SH "DIRECTORY ALIASES"
+Shortcuts for the "cd" command can be set up if the server has been compiled
+with the \-\-with\-diraliases feature.
+.PP
+To enable directory aliases, create a file called
+.I /etc/pureftpd\-dir\-aliases
+and alternate lines of alias names and associated directories.
+
+.SH "ANONYMOUS FTP"
+This server leaves out some of the commands and features that have
+been used to subvert anonymous FTP servers in the past, but still you
+have to be a little bit careful in order to support anonymous FTP
+without risk to the rest of your files.
+.PP
+Make
+.I ~ftp
+and all files and directories below this directory owned by some user
+other than "ftp," and only the
+.I .../incoming
+directory/directories writable by "ftp." It is probably best if all
+directories are writable only by a special group such as "ftpadmin"
+and "ftp" is not a member of this group.
+.PP
+If you do not trust the local users, put
+.I ~ftp
+on a separate partition, so local users can't hard\-link unapproved
+files into the anonymous FTP area.
+.PP
+Use of the
+.B \-s
+option is strongly suggested. (Simply add "\-s" to the end of the
+.B ftpd
+line in
+.I /etc/inetd.conf
+to enable it.)
+.PP
+Most other FTP servers require that a number of files such as
+.I ~ftp/bin/ls
+exist. This server does not require that any files or directories
+within
+.I ~/ftp
+whatsoever exist, and I recommend that all such unnecessary files are
+removed (for no real reason).
+.PP
+It may be worth considering to run the anonymous FTP service as a
+virtual server, to get automatic logins and to firewall off the FTP
+address/port to which real users can log in.
+.PP
+If your server is a public FTP site, you may want to allow only 'ftp' and 'anonymous' users to log in. Use the
+.B \-e
+option for this. Real accounts will be ignored and you will get a secure, anonymous\-only FTP server.
+
+.SH "MAGIC FILES"
+The files
+.I <ftproot>/.banner
+and
+.I .message
+are magical.
+.P
+If there is a file called
+.I .banner
+in the root directory of the anonymous FTP area, or in the root
+directory of a virtual host, and it is shorter than 1024 bytes, it is
+printed upon login. (If the client does not log in explicitly, and an
+implicit login is triggered by a CWD or CDUP command, the banner is
+not printed. This is regrettable but hard to avoid.)
+.P
+If there is a file called
+.I .message
+in any directory and it is shorter than 1024 bytes, that file is
+printed whenever a user enters that directory using CWD or CDUP.
+
+.SH "VIRTUAL SERVERS"
+You can run several different anonymous FTP servers on one host, by
+giving the host several IP addresses with different DNS names.
+.PP
+Here are the steps needed to create an extra server using an IP alias
+on linux 2.4.x, called "ftp.example.com" on address 10.11.12.13. on
+the IP alias eth0.
+.PP
+1. Create an "ftp" account if you do not have one. It it best if
+the account does not have a valid home directory and shell. I prefer
+to make
+.I /dev/null
+the ftp account's home directory and shell.
+.B Ftpd
+uses this account to set the anonymous users' uid.
+.PP
+2. Create a directory as described in
+.B Anonymous FTP
+and make a symlink called
+.I /etc/pure\-ftpd/10.11.12.13
+which points to this directory.
+.PP
+3. Make sure your kernel has support for IP aliases.
+.PP
+4. Make sure that the following commands are run at boot:
+.PP
+.in +2
+/sbin/ifconfig eth0:1 10.11.12.13
+.PP
+That should be all. If you have problems, here are some things to
+try.
+.PP
+First, symlink
+.I /etc/pure\-ftpd/127.0.0.1
+to some directory and say "ftp localhost". If that doesn't log you
+in, the problem is with
+.B ftpd.
+.PP
+If not, "ping \-v 10.11.12.13" and/or "ping \-v ftp.example.com" from the
+same host. If this does not work, the problem is with the IP alias.
+.PP
+Next, try "ping \-v 10.11.12.13" from a host on the local ethernet, and
+afterwards "/sbin/arp \-a". If 10.11.12.13 is listed among the ARP
+entries with the correct hardware address, the problem is probably
+with the IP alias. If 10.11.12.13 is listed, but has hardware address
+0:0:0:0:0:0, then proxy\-ARP isn't working.
+.PP
+If none of that helps, I'm stumped. Good luck.
+.PP
+.B Warning:
+If you setup a virtual hosts, normal users will not be able to login via
+this name, so
+.B don't
+create link/directory in
+.I /etc/pure\-ftpd
+for your regular hostname.
+
+.SH "FILES"
+.I /etc/passwd
+is used via libc (and PAM is this case), to get the uid and home
+directory of normal users, the uid and home directory of "ftp" for
+normal anonymous ftp, and just the uid of "ftp" for virtual ftp hosts.
+.PP
+.I /etc/shadow
+is used like
+.I /etc/passwd
+if shadow support is enabled.
+.PP
+.I /etc/group
+is used via libc, to get the group membership of normal users.
+.PP
+.I /proc/net/tcp
+is used to count existing FTP connections, if the
+.B \-c
+or
+.B \-p
+options are used
+.PP
+.I /etc/pure\-ftpd/<ip address>
+is the base directory for the <ip address> virtual ftp server, or a
+symbolic link to its base directory.
+.B Ftpd
+does a
+.BR chroot (2)
+into this directory when a user logs in to <ip address>, thus symlinks
+outside this directory will not work.
+.PP
+.I ~ftp
+is the base directory for "normal" anonymous FTP.
+.B Ftpd
+does a
+.BR chroot (2)
+into this directory when an anonymous user logs in, thus symlinks
+outside this directory will not work.
+
+.SH "LS"
+The behaviour of LIST and NLST is a tricky issue. Few servers send
+RFC\-compliant responses to LIST, and some clients depend on
+non\-compliant responses.
+.PP
+This server uses
+.BR glob (3)
+to do filename globbing.
+.PP
+The response to NLST is by default similar to that of
+.BR ls (1),
+and
+that to LIST is by default similar to that of
+.B "ls \-l"
+or
+.B "ls \-lg"
+on most Unix systems, except that the "total" count is meaningless.
+Only regular files, directories and symlinks are shown. Only important
+.B ls
+options are supported:
+.TP
+.B \-1
+Undoes
+.BR \-l " and " \-C .
+.TP
+.B \-a
+lists even files/directories whose names begin with ".".
+.TP
+.B \-C
+lists files in as many colums as will fit on the screen. Undoes
+.BR \-1 " and " \-l .
+.TP
+.B \-d
+lists argument directories' names rather their contents.
+.TP
+.B \-D
+List files beginning with a dot ('.') even when the client doesn't
+append the
+.B \-a
+option to the
+.B list
+command.
+.TP
+.B \-F
+appends '*' to executable regular files, '@' to symlinks and '/' to
+directories.
+.TP
+.B \-l
+shows various details about the file, including file group. See
+.BR ls (1)
+for details. Undoes
+.BR \-1 " and " \-C .
+.TP
+.B \-r
+reverses the sorting order (modifies
+.BR \-S " and " \-t " and the default alphabetical ordering)."
+.TP
+.B \-R
+recursively descends into subdirectories of the argument directories.
+.TP
+.B \-S
+Sorts by file size instead of by name. Undoes
+.BR \-t .
+.TP
+.B \-t
+Sorts by file modification time instead of by name. Undoes
+.BR \-S .
+
+.SH "PROTOCOL"
+Here are the FTP commands supported by this server.
+.br
+.B ABOR
+.B NOOP
+.B ALLO
+.B USER
+.B PASS
+.B QUIT
+.B SYST
+.B PORT
+.B EPRT
+.B PASV
+.B EPSV
+.B SPSV
+.B PWD
+.B XPWD
+.B CWD
+.B XCWD
+.B CDUP
+.B XCUP
+.B HELP
+.B RETR
+.B REST
+.B DELE
+.B STOR
+.B APPE
+.B STOU
+.B MKD
+.B XMKD
+.B RMD
+.B XRMD
+.B LIST
+.B NLST
+.B TYPE
+.B MODE
+.B STRU
+.B XDBG
+.B MDTM
+.B SIZE
+.B RNFR
+.B RNTO
+.B STAT
+.B MLST
+.B MLSD
+.B FEAT
+.B ESTA
+.B ESTP
+.B AUTH TLS
+.B PBSZ
+.B PROT
+.B OPTS UTF8
+.B OPTS MLST
+.B SITE IDLE
+.B SITE CHMOD
+.B SITE HELP
+.B SITE TIME
+.B SITE UTIME
+
+.SH "BUGS"
+Please report bugs to the mailing\-list (see below).
+Pure\-FTPd looks very stable and is used on production servers. However it comes with no warranty and it can have nasty bugs or security flaws.
+
+.SH "HOME PAGE"
+http://www.pureftpd.org/
+.SH "NEW VERSIONS"
+See the mailing\-list on \fBhttp://www.pureftpd.org/ml/\fR.
+
+.SH "AUTHOR AND LICENSE"
+Troll\-FTPd was written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995\-2002
+Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
+22806380.
+.PP
+Pure\-FTPd is (C)opyleft 2001\-2009 by Frank DENIS <j at pureftpd dot org> and
+the Pure\-FTPd team.
+.PP
+This software is covered by the BSD license.
+.PP
+Contributors:
+.br
+ Arnt Gulbrandsen,
+ Troll Tech AS,
+ Janos Farkas,
+ August Fullford,
+ Ximenes Zalteca,
+ Patrick Michael Kane,
+ Arkadiusz Miskiewicz,
+ Michael K. Johnson,
+ Kelley Lingerfelt,
+ Sebastian Andersson,
+ Andreas Westin,
+ Jason Lunz,
+ Mathias Gumz,
+ Claudiu Costin,
+ Ping,
+ Paul Lasarev,
+ Jean\-Mathieux Schaffhauser,
+ Emmanuel Hocdet,
+ Sami Koskinen,
+ Sami Farin,
+ Luis Llorente Campo,
+ Peter Pentchev,
+ Darren Casey,
+ The Regents of the University of California,
+ Theo de Raadt (OpenBSD),
+ Matthias Andree,
+ Isak Lyberth,
+ Steve Reid,
+ RSA Data Security Inc,
+ Trilucid,
+ Dmtry Lebkov,
+ Johan Huisman,
+ Thorsten Kukuk,
+ Jan van Veen,
+ Roger Constantin Demetrescu,
+ Stefano F.,
+ Robert Varga,
+ Freeman,
+ James Metcalf,
+ Im Eunjea,
+ Philip Gladstone,
+ Kenneth Stailey,
+ Brad Smith,
+ Ulrik Sartipy, 
+ Cindy Marasco,
+ Nicolas Doye,
+ Thomas Briggs,
+ Stanton Gallegos,
+ Florin Andrei,
+ Chan Wilson,
+ Bjoern Metzdorf,
+ Ben Gertzfield,
+ Akhilesch Mritunjai,
+ Dawid Szymanski,
+ Kurt Inge Smadal,
+ Alex Dupre,
+ Gabriele Vinci,
+ Andrey Ulanov,
+ Fygul Hether,
+ Jeffrey Lim,
+ Ying-Chieh Liao,
+ Johannes Erdfelt,
+ Martin Sarfy,
+ Clive Goodhead,
+ Aristoteles Pagaltzis,
+ Stefan Hornburg,
+ Mehmet Cokcevik,
+ Brynjar Eide,
+ Torgnt Wernersson,
+ Banhalmi Csaba,
+ Volodin D,
+ Oriol Magrané,
+ Jui-Nan Lin,
+ Patrick Gosling,
+ Marc Balmer,
+ Rajat Upadhyaya / Novell,
+ Christian Cier-Zniewski.
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2228",
+.BR "RFC 2389" " and"
+.BR "RFC 2428" .

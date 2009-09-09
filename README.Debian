@@ -1,0 +1,14 @@
+
+  Thanks to Stefan Hornburg <racke at linuxia dot de>, there are now official
+and maintained packages for Pure-FTPd in Debian unstable, available from your
+preferred repository.
+
+  Currently available packages are :
+  
+ - pure-ftpd
+ - pure-ftpd-common
+ - pure-ftpd-ldap
+ - pure-ftpd-mysql
+ 
+  Have fun with "aptitude" and please report any bug in order to improve these
+packages.

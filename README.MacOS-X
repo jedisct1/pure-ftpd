@@ -1,0 +1,29 @@
+
+
+   ------------------------ MACOS X SPECIFIC NOTES ------------------------
+
+
+  To get Pure-FTPd authenticate against system users on MacOS X (at least
+since version 10.3) you need to use PAM.
+       
+$ ./configure --with-pam <your other favorite options like --with-everything>
+$ make install-strip
+
+  Create a /etc/pam.d/pure-ftpd file:
+ 
+# pure-ftpd: auth account password session
+auth       sufficient     pam_securityserver.so
+auth       required       pam_deny.so
+account    required       pam_permit.so
+password   required       pam_deny.so
+session    required       pam_permit.so
+
+  Start the FTP server:
+
+$ /usr/local/sbin/pure-ftpd -lpam -B
+ 
+
+  To take advantage of Bonjour, please add --with-bonjour to ./configure
+switches and give the server a Bonjour service name with the -v (--bonjour=)
+switch.
+

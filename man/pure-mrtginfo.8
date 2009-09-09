@@ -1,0 +1,81 @@
+.\" 
+.\" Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995-1999
+.\" Troll Tech AS, Waldemar Thranes gate 98B, N-0175 Oslo, Norway, fax +47
+.\" 22806380.
+.\" Pure-FTPd (C)opyleft 2001-2009 by the Pure-FTPd team.
+.\" 
+.\" Use, modification and distribution is allowed without limitation,
+.\" warranty, or liability of any kind.
+.\" 
+.\" 
+.TH "pure-mrtginfo" "8" "1.0.0" "Pure-FTPd Team" "Pure-FTPd"
+.SH "NAME"
+pure-mrtginfo \- provide an MRTG\-graphable user count for ftpd
+
+.SH "SYNOPSIS"
+\fBpure-mrtginfo [server port]\fR
+
+.SH "DESCRIPTION"
+.B Pure-Mrtginfo
+counts the number of clients currently connected to
+.BR ftpd (8)
+and output the format in a format graphable by MRTG.
+
+.SH "OPTIONS"
+\fBserver port\fR : defaults to 21.
+
+.SH "FILES"
+.TP 
+.I /proc/net/tcp
+is used to count the connectiont to port 21.
+.TP 
+.I /proc/sys/kernel/hostname
+is used to get the fully qualified hostname.
+.TP 
+.I /proc/uptime
+is used to get the uptime.
+
+.SH "MRTG"
+MRTG is a really nice package for graphing router traffic.  Mrtg can
+also graph other information is available via SNMP or by running a
+program such as
+.BR pure-mrtginfo .
+The author of this program uses it to graph CPU load, /var usage etc.,
+and naturally the number of users connected to his FTP servers.  See
+.nf 
+http://ee\-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html
+.fi 
+for more information about MRTG.
+
+.SH "BUGS"
+This program only works on GNU/Linux systems yet.
+
+.SH "HOME PAGE"
+http://www.pureftpd.org/
+
+.SH "AUTHOR AND LICENSE"
+Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995\-2002
+Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
+22806380.
+.PP 
+Pure\-FTPd (C)opyleft 2001\-2009 by Frank DENIS <j at pureftpd dot org> and
+the Pure\-FTPd team.
+.PP 
+Use, modification and distribution is allowed without limitation,
+warranty, or liability of any kind.
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2228",
+.BR "RFC 2389" " and"
+.BR "RFC 2428" .

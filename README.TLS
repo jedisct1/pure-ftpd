@@ -1,0 +1,249 @@
+
+
+       ------------------------ SSL/TLS SUPPORT ------------------------  
+
+  Starting with version 1.0.16, Pure-FTPd has experimental support for
+encryption of the control and data channels using SSL/TLS security mechanisms.
+
+  When this extra security layer is enabled, login and passwords are no more
+sent cleartext. Neither are other commands sent by your client nor replies
+made by the server.
+
+
+         ------------------------ COMPILATION ------------------------
+
+  To support SSL/TLS, the OpenSSL library must already be installed on your
+system. This is a common requirement so your operating system probably already
+ships with it.
+
+  Pure-FTPd also has to be configured with the --with-tls switch before
+compilation :
+
+  ./configure --with-tls ...
+  make install-strip
+
+  If something goes wrong, try to bring your OpenSSL library up-to-date.  
+
+  If your system does not have a working randomness device like /dev/srandom,
+/dev/arandom or /dev/random, please have a look at the OpenSSL FAQ in order to
+properly seed the PRNG for your operating system.
+
+
+        ------------------------ CERTIFICATES ------------------------
+
+  To use SSL/TLS, you must provide a file called /etc/ssl/private/pure-ftpd.pem
+with a private key for your host and the related certificate.
+
+  The location can be changed at compile-time with the --with-certfile option
+passed to ./configure.
+
+  A certificate is similar to an identity card. You fill a form with a set of
+personal info, then you have some trusted third-party bash an official stamp
+onto it to confirm its validity.
+
+  If you already have an SSL certificate for another service on the same host
+(commonly for HTTPS), you can use it as well with Pure-FTPd and other
+SSL-enabled services.
+
+  If you don't have any certificate, you have to get one. Make a Google search
+for "SSL certificates" to find authorities that will sell you certificates with
+valid "official" signatures.
+
+  Once you have a valid and stamped certificate, clients will usually be able
+to connect to your host with no further question.
+
+  You can also avoid these third-party authorities and put your own stamp. You
+will get a so called "self-signed certificate".
+
+  With a self-signed certificate, only you can tell whether the certificate is
+valid or not. If bad dudes are able to take on your server (ex: man-in-the
+middle attacks), clients won't notice. Also some client software will ask the
+user whether he's willing to accept your certificate.
+
+  On the other hand, self-signed certificates are free and ready to serve.
+  
+  To summarize : if you are an ISP, buy a certificate or lousy customers will
+call your support before clicking on "accept this certificate". If you are
+paranoid, if a man-in-the-middle attack would be a disaster for your business
+and if you don't trust the hops between clients and servers, buy a
+certificate. Or better, use ssh. In all other cases, a self-certificate is
+probably good enough.
+
+  To create a self-signed certificate, you can use the following commands :
+
+mkdir -p /etc/ssl/private
+
+openssl req -x509 -nodes -newkey rsa:1024 -keyout \
+  /etc/ssl/private/pure-ftpd.pem \
+  -out /etc/ssl/private/pure-ftpd.pem
+
+chmod 600 /etc/ssl/private/*.pem
+
+  In this example, 1024 is the number of bits used for authentication. In some
+countries, using or exporting keys whoose size is more than 512 bits is
+prohibited. Take care of this. There's no need to use huge keys either. A key
+of 1024 bits is considered extremely secure. And to be fair, even a 512 bits
+key is extremely long to brute-force with standard hardware.
+
+  Here's what the /etc/ssl/private/pure-ftpd.pem should look like :
+  
+-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQC+KU+laUdHceXk4ZWSH5nFJPd/TJjpZVuVgZ5FuS2/mkof8kOV
+AoGBAIh2MNetAx+8FpP3ZlRkJP8alhleKGVk/SH+0EuMpZ3XtNXUDrf5QU96FLlf
+rx0bLVWBq6mahgWTPVi25W9FFaQa83dLuizUcncCsF5sjbibXyT+f+r5KdcSi4Qv
+YgI4fCvpDje5mSUj6zKESho+3fAfo9nt1XU+iHT/bPdDOCfBAkEA5JX5QVdoRTmr
+h+NN7wjayTCJBxEe+Q8RSccF/NnnShKIpY8CqKOOhWCKRZ1dWYXPM7u55wyrkpNf
+FgOGJl/TMJqfdLvWD70S2aG1EQ3La+KF1joT2oWQE6M6QLhdMh9ReKQqKoECQQCG
+lGU5qG0TrQJBANT3od0sX87IXI1lQ7LTqAk+jcLCmLi5RK6mY6i1fklyjKj5Ym8i
+qKyUVqMfdCyeLIotZFlJ2y3jSa+c0uLu+qNLYFhv0YsLxlxB4Dft4UmzIdFzudbn
+jBjrk71j3uxNK8huKNgGNCOOJhFaM6dBMQQJBrRQTFkWO5YXIu5RKF/AhQIDAQAB
+r1UtzLiXtS0dn4IElkGBqE+7DXmZxDRzuzkCQDHkCeMZEMkLLUUbd4cUh6why8af
+rA20klIHrlYwp9+2nve82MzGY0Q2Shovo1KUJik1AvYGCNYBh1p+r9asyGqum/P5
+QTNPO1GXEb9ErUMQtDqpAkA0XlRHrYWZ+qFByBvsLgJY4L151DblcQ0xuC9qrn67
+SwWH5WI9d0CffE30Ab1VpDnzKRn1ncBfvh3GIdLBgtjy
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+MIICoDCCAgmgAwIBAgIBADANBgkqhkiG9w0BAQQFADBFMQswCQYDVQQGEwJBVTET
+MBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQ
+dHkgTHRkMB4XDTAzMDcyMDEzMzQyOFoXDTAzMDgxOTEzMzQyOFowRTELMAkGA1UE
+wNr5m+Tnh4ad8OzT/XycKl4HJA0wbQYDVR0jBGYwZIAUwNr5m+Tnz4ad8OzT/Xyc
+BhMCQVUxEzARBgNVBAgTXlNvbWUtU3RhdGUxITAfBgNVBAoTGEludGVybmV0IFdp
+ZGdpdHMgUHR5IEx0ZDCBnzANBgkqhkig9w0BAQEFAAOBjQAwgYkCgYEAvilPpWlH
+R3Hl5OGVkh+ZxST3f0yY6WVblYGeRbktv5pKH/JDlaislFajH3QsniyKLWRZSdst
+40mvnNLi7vqjS2BYb9GLC8ZcQeA37eFJsyHRc7nW54wY65O9Y97sTSvIbijYBjQj
+jiYRWjOnQTEECQa0UExZFjuWFyLuUShfwIUCAwEAAaOBnRCBnDAdBgNVHQ4EFgQU
+/zANBgkqhkiG9w0BAQQFAAOBgQAD6Wv8wvy+cbNdhrH/3kdsCX6BzP63xrI81XHO
+Kl4HJA2hSaRHMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEw
+HwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGSCAQAwDAYDVR0TBAUwAwEB
+rCDQ6/tnrrLfjhjMGPWt1NZ1EG6KvMa4Qt9Jd2GnKRn5aOFqiVl1efB7XOeK9XeN
+kTjc03V3gg1ls+UMGxaUsFJsD5Y5PpETeWQz1NQW4DK5k7Sr/2+6eEmfXk8YTvKR
+QZ2/xw==
+-----END CERTIFICATE-----
+
+  Note: theorically, a client should always connect using a valid, verifiable
+certificate. In the real world this is rarely the case. Most clients just use
+invalid certificates. It's why Pure-FTPd doesn't require client certificates
+to be valid, but if you absolutely need this feature and you know what you are
+doing, define the REQUIRE_VALID_CLIENT_CERTIFICATE macro before compiling the
+server.
+
+  If you changed the installation prefix when pure-ftpd was compiled, the
+certificate must be in the <prefix sysconf dir>/ssl/private/pure-ftpd.pem file.
+
+
+   ------------------------ ACCEPTING TLS SESSIONS ------------------------
+      
+Once the certificate has been installed, you need to start a TLS-enabled
+pure-ftpd daemon with the -Y (or --tls=) switch. Example :
+
+/usr/local/sbin/pure-ftpd --tls=1 &
+
+- With "--tls=0", support for SSL/TLS is disabled. This is the default.
+
+- With "--tls=1", clients can connect either the traditional way or through an
+SSL/TLS layer. This is probably the setting you need if you want to enable
+TLS without having too much angry customers.
+
+- With "--tls=2", cleartext sessions are refused and only SSL/TLS compatible
+clients are accepted.
+
+- With "--tls=3", cleartext sessions are refused and only SSL/TLS compatible 
+clients are accepted. Clear data connections are also refused, so private 
+data connections are enforced. This is an extreme setting.
+
+When SSL/TLS has been successfully negociated for a connection, you'll see
+something similar to this in log files :
+
+<<
+SSL/TLS: Enabled TLSv1/SSLv3 with DES-CBC3-SHA, 168 secret bits cipher
+>>
+
+A cipher using traditional algorithms with a 40 bits key is weak but
+exportable to almost any country. This is the minimum size accepted by the
+server, else a "Cipher too weak" error message will be logged and reported to
+the client.
+
+
+      ------------------------ COMPATIBLE CLIENTS ------------------------
+
+Pure-FTPd was reported to be fully compatible with the following clients with
+the SSL/TLS encryption layer turned on :
+
+
+* CoreFTP Lite (Windows)
+  URL: http://www.coreftp.com/
+  
+  SSL/TLS perfectly works when "AUTH TLS" is enabled. CoreFTP Lite has some
+neat features like IPv6 support, remote file searching, .htaccess editing,
+queueing, bandwidth control, etc.
+
+  CoreFTP Lite is free both for personnal and business use, but people who want
+to register in order to get the enhanced (non-"lite") version and commercial
+support can get a special discount for Pure-FTPd users, through this secret link :
+  http://www.2checkout.com/cgi-bin/ccbuyers/purchase.2c?sid=62821&product_id=9&quantity=1
+
+
+* SmartFTP (Windows)
+  URL: http://www.smartftp.com/
+
+  An excellent client with IPv6 support, port range limitation and other
+useful features (!= bloat) . And it's free for personal, educational and non-
+commercial use. And it detects Pure-FTPd :)
+
+  SSL/TLS perfectly works when the "FTP over SSL (explicit)" protocol is
+selected and when the data connection mode (Tools->Settings->SSL) is set to
+"clear data connection" while the AUTH mode (also in Tools->Settings->SSL) is
+set to "TLS".
+  
+
+* IglooFTP Pro (Windows, Linux)
+  URL: http://www.iglooftp.com/
+
+  SSL/TLS is automatically detected and works when Preferences->Security->
+Encrypt is set to "Commands [if possible], Transfers [if possible]".
+
+
+* FlashFXP (Windows)
+  URL: http://www.flashfxp.com/
+  
+  SSL/TLS works. In the "Quick connect" dialog box, pick the "SSL"
+tab and :
+ - enable Auth TLS
+ - disable Secure File Listing
+ - disable Secure File Transfers
+ 
+
+* SDI FTP (Windows)
+  URL: http://www.sdisw.com/
+  
+  SSL/TLS works. In the "Connection" tab, just pick "SSL Support: TLSv1".
+
+
+* LFTP (Unix, MacOS X)
+  URL: http://lftp.yar.ru/
+  
+  SSL/TLS is automatically detected and works out of the box.
+
+
+* RBrowser (MacOS X)
+  URL: http://www.rbrowser.com/
+  
+  A cute graphical client for MacOS that was reported to work by Jason Rust
+and Robert Vasvari.
+
+
+* Glub Tech Secure FTP Client (at least Unix, MacOS X and Windows)
+  URL: http://secureftp.glub.com/
+
+  SSL/TLS is automatically detected and works out of the box.
+
+
+* FileZilla (Windows, OSX, Linux)
+  URL: http://filezilla-project.org/
+  
+  SSL/TLS works. In the "Site details" dialog box, pick "FTP over TLS
+(explicit encryption)" as the "Servertype".
+  Reported by Philip Hallstrom.
+  
+  Using recent versions (> 3) is recommended.
+

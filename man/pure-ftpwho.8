@@ -1,0 +1,88 @@
+.TH "pure-ftpwho" "8" "1.0.18" "Pure-FTPd team" "Pure-FTPd"
+.SH "NAME"
+.LP 
+pure\-ftpwho \- Report current FTP sessions
+.SH "SYNTAX"
+.LP 
+pure\-ftpwho [\fI\-c\fP] [\fI\-h\fP] [\fI\-H\fP] [\fI\-n\fP] [\fI\-p\fP] [\fI\-s\fP] [\fI\-v\fP] [\fI\-w\fP] [\fI\-W\fP] [\fI\-x\fP]
+.SH "DESCRIPTION"
+.LP 
+pure\-ftpwho shows current Pure\-FTPd client sessions.
+Only the system administrator may run this.
+Output can be text (default), HTML, XML data and parser-optimized.
+The server has to be compiled with
+.B \-\-with\-ftpwho
+to support this command.
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-c\fR
+the program is called via a web server (CGI interface) . Output is a
+full HTML page with the initial content\-type header. This option is
+automatically enabled if an environment variable called GATEWAY_INTERFACE is
+found. This is the default if you can the program from a CGI\-enabled web
+server (Apache, Roxen, Caudium, WN, ...) .
+.TP 
+\fB\-h\fR
+Output help information and exit.
+.TP 
+\fB\-H\fR
+Don't resolve host names, and only show IP addresses (faster).
+.TP 
+\fB\-n\fR
+A synonym for \-H.
+.TP 
+\fB\-p\fR
+Output Apple / GNUStep plist data.
+.TP 
+\fB\-s\fR
+Output only one line per client, with only numeric data, delimited by a | character.
+It's not very human-readable, but it's designed for easy parsing by shell scripts (cut/sed) .
+'|' characters in user names or file names are quoted (\\|) .
+.TP 
+\fB\-v\fR
+Output an ASCII table (just like the default mode), with more info.
+The verbose output includes the local IP, the local port, the total size of
+transfered files and the current number of transfered bytes.
+.TP 
+\fB\-w\fR
+Output a complete HTML page (web mode).
+.TP 
+\fB\-W\fR
+Output an HTML page with no header and no footer. This is an embedded
+mode, suitable for inline calls from CGI, SSI or PHP scripts.
+.TP 
+\fB\-x\fR
+Output well\-formed XML data for post\-processing.
+
+.SH "FILES"
+.LP 
+\fB/var/run/pure-ftpd/\fP
+Scoreboard directory. Should always owned by root and on a lockable
+filesystem.
+
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBGATEWAY_INTERFACE\fP
+If found, automatically run in CGI mode and output HTML data.
+
+.SH "AUTHORS"
+.LP 
+Frank DENIS <j at pureftpd dot org>
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2389",
+.BR "RFC 2228" " and"
+.BR "RFC 2428" .

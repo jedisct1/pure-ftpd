@@ -1,0 +1,240 @@
+
+If you never heard about LDAP before, *DON'T* enable LDAP support in
+Pure-FTPd. LDAP is useless if you don't have to manage many shared accounts.
+But well... if you want to learn about LDAP anyway, here's a good starting
+point: http://www.openldap.org/
+
+
+       ------------------------ LDAP SUPPORT ------------------------
+
+
+Since release 0.95, Pure-FTPd has a built-in support for LDAP directories.
+When LDAP is enabled, all account info is fetched from a central LDAP
+directory.
+
+To compile the server with LDAP support, you first have to build and install
+OpenLDAP. OpenLDAP is freely available from http://www.openldap.org/ and
+binary packages are included in many major distributions. But if you choose
+a binary form, don't forget to also install the development packages if they
+are available separately.
+
+Then, configure Pure-FTPd with --with-ldap and your favorite extra gadgets:
+
+
+    ./configure --with-ldap --with-cookie --with-throttling --with-ratios
+
+
+If your LDAP libraries are installed in a special path, you can specify it
+like this:
+
+
+    ./configure --with-ldap=/usr/local/openldap
+
+
+In this example, headers (ldap.h and lber.h files) will be searched in
+/usr/local/openldap/include, while related libraries will be searched in
+/usr/local/openldap/lib .
+
+Then, install the server as usual:
+
+
+                                 make install
+
+
+  ------------------------ LDAP CONFIGURATION FILE ------------------------
+  
+  
+Before running the server, you have to create a configuration file. Why a
+configuration file instead of simple command-line options? you may ask.
+Because for security reasons, you may want to hide how to connect to your
+LDAP server. And as command-line options can be discovered by local users
+(with 'ps auxwww' for instance), it's more secure to use a configuration
+file for sensitive data. Keep the file only readable by root (chmod 600) .
+
+Here's a sample configuration file:
+
+
+LDAPServer ldap.c9x.org
+LDAPPort   389
+LDAPBaseDN cn=Users,dc=c9x,dc=org
+LDAPBindDN cn=Manager,dc=c9x,dc=org
+LDAPBindPW r00tPaSsw0rD
+LDAPDefaultUID 500
+LDAPDefaultGID 100
+
+
+Well... the keywords should be self-explanatory, but here we go for some
+details anyway:
+
+- LDAPServer is the LDAP server name (hey!) . It defaults to 'localhost'.
+
+- LDAPPort is the connecton port. It defaults to 389, the standard port.
+
+- LDAPBaseDN is the search starting point for users accounts. Your tree must
+have posixAccount objects under that node.
+
+- LDAPBindDN is the DN we should bind the server for simple authentication.
+If you don't need authentication (ie. anonymous users can browse that part
+of the LDAP directory), just remove that line.
+
+- LDAPBindPW is the plaintext password to bind the previous DN. The
+configuration file should be only readable by root if you are using
+LDAPBindDN/LDAPBindPW.
+
+- LDAPDefaultUID and LDAPDefaultGID are default values for objects without
+any entry for them.
+
+- LDAPFilter is the filter to use in order to find the object to authenticate
+against. The special sequence \L is replaced with the login of the user. The
+default filter is (&(objectClass=posixAccount)(uid=\L)) .
+
+- LDAPHomeDir is the attribute to get the home directory ('homeDirectory' by
+default) .
+
+- LDAPVersion is the protocol version to use. Version 3 is recommended and
+needed with OpenLDAP servers. It is the default.
+
+- LDAPUseTLS can be True or False. True means that the server should use TLS
+to connect to the LDAP server.
+
+In fact, the only mandatory keyword is LDAPBaseDN. Other keywords are
+optional and defaults are ok for local testing.
+
+Save the configuration file anywhere. Let's say /etc/pureftpd-ldap.conf .
+
+Then, you have to run the pure-ftpd command with '-l ldap:' (it's an 'ell'
+not a 'one') followed by the path of that configuration file. Here's an
+example with tcpserver:
+
+
+tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd -l ldap:/etc/pureftpd-ldap.conf &
+
+You can mix different authentication methods. For instance, if you want to
+use system (/etc/passwd) accounts when an account is not found in a LDAP
+directory, use -l ldap:/etc/pureftpd-ldap.conf -l unix
+
+
+      ------------------------ THE LDAP SCHEMA ------------------------
+
+
+Pure-FTPd uses the standard 'posixAccount' class to locate accounts. With
+OpenLDAP, that class is defined in the 'nis' schema.
+
+FTP login names should match 'uid' attributes of 'posixAccount' instances.
+When an user logs in as 'joe', the following filter is used to locate Joe's
+account:
+
+
+                   (&(objectClass=posixAccount)(uid=joe))
+
+
+Here's a sample entry in LDIF format:
+
+
+dn: cn=Joe,dc=rtchat,dc=com
+objectClass: posixAccount
+cn: Joe
+uid: joe
+uidNumber: 500
+gidNumber: 100
+homeDirectory: /home/joe
+userPassword: {crypt}wl6AOU6KgWUz6
+
+
+'userPassword' is the hashed password, with the system 'crypt' function,
+MD5, SHA, SMD5 or SSHA digests. Modern LDAP clients should handle all,
+anyway (or get GQ from http://biot.com/gq/) .
+
+SSHA is believed to be the most secure one-way hashing method, but it's also
+the slowest and it can be time-consuming if you're accepting a lot of
+users.
+
+Please note that a login ('uid' field) can only contains common characters:
+A...Z, a...z, 0...9, -, ., _, space and ' . For security purposes, other
+characters are forbidden.
+
+If you don't want to use posixAccount objects, you can edit src/log_ldap.h
+to customize attribute names.
+
+  ----------- EXTENDED LDAP SCHEMA (QUOTAS, THROTTLING, RATIOS) ----------
+
+
+To enable quotas, download/upload rate throttling and/or download/upload
+ratios, an extended LDAP schema is needed.  This modified schema also allows
+you to completely enable and disable users' FTP access by simply changing
+the "FTPStatus" field in their LDAP entry.
+
+Simply copy the included pureftpd.schema file to your OpenLDAP schema
+directory (/usr/local/etc/openldap/schema in this example) and add the
+appropriate line to your slapd.conf, like so:
+
+
+include         /usr/local/etc/openldap/pureftpd.schema
+
+
+This schema defines a new objectClass, PureFTPdUser, which contains the
+*OPTIONAL* status, quota, throttling and ratio fields as in the example
+below:
+
+
+dn: uid=Ichiro,dc=gmo,dc=jp
+objectClass: PureFTPdUser
+objectClass: posixAccount
+cn: Ichiro
+uid: Ichiro
+uidNumber: 888
+gidNumber: 888
+homeDirectory: /home/ichiro
+userPassword: {crypt}$1$w58NLo5z$NHhr6GzSPw0qxaxs3PAaK/
+FTPStatus: enabled
+FTPQuotaFiles: 50
+FTPQuotaMBytes: 10
+FTPDownloadBandwidth: 50
+FTPUploadBandwidth: 50
+FTPDownloadRatio: 5
+FTPUploadRatio: 1
+
+The example is mostly self-explanatory. FTPQuotaMBytes is the quota size in
+megabytes. FTPDownloadBandwidth and FTPUploadBandwidth are in KB/sec.
+
+FTPStatus should be either "enabled" or "disabled". If the FTPStatus field
+exists and is set to anything except "enabled", the user will not be
+permitted to log in. If the FTPStatus field does not exist, the user *WILL*
+be allowed to log in as normal, to allow LDAP users without the PureFTPdUser
+objectClass.
+
+There are also optional FTPuid and FTPgid attributes. If present, they will
+override uidNumber and gidNumber values, so that you can have different
+uid/gid mapping for FTP and for other services.
+
+Please note that all of the FTP* LDAP fields are optional for the
+PureFTPdUser objectClass. You can have a user with just FTPQuotaFiles and
+FTPQuotaMBytes set, for example, if you only wish to enforce a quota, but
+not throttle the user's bandwidth or enforce ratios.
+
+Of course, you must make sure to enable the features you wish to use at
+compile time (--with-quotas, --with-throttling, --with-ratios) .
+
+
+      ------------------------ ANONYMOUS USERS ------------------------
+
+
+If you want to accept anonymous users on your FTP server, you don't need to
+have any 'ftp' user in the LDAP directory. But you need to have a system
+'ftp' account on the FTP server.
+
+
+        ------------------------ ROOT USERS ------------------------
+
+
+If an LDAP user entry has a root (0) uidNumber and/or gidNumber, Pure-FTPd
+will refuse to log him in.
+
+Without this preventive restriction, if your LDAP server ever gets
+compromised, the attacker could also easily compromise the FTP server.
+
+
+
+
+          -Frank DENIS <j at pureftpd dot org>.
+          -Ben Gertzfield <che at debian dot org>.

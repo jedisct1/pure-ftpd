@@ -1,0 +1,41 @@
+Unlike many daemons, Pure-FTPd doesn't read any configuration file (but for
+LDAP and SQL). Instead, it uses command-line options. For instance, the '-H'
+flag is designed to speed up highly loaded servers, by avoiding DNS lookups.
+To enable this, just add it to the server name:
+
+/usr/local/sbin/pure-ftpd -H
+
+Alternative long options are also supported. Here's an equivalent of the
+previous command:
+
+/usr/local/sbin/pure-ftpd --dontresolve
+
+But you can use traditional configuration files over command-line
+options. Adding a parser for configuration files in the server is a bad
+idea. It slows down everything and needs resources for nothing.
+
+If you want to use a configuration file with Pure-FTPd, you can, through
+a wrapper. That wrapper will parse a file and convert it to command-line
+options. Then, the server will be started with these options.
+
+Please have a look at the 'configuration-files' directory. Copy the sample
+configuration file called 'pure-ftpd.conf' to a suitable location, say /etc:
+
+cd configuration-files
+cp pure-ftpd.conf /etc
+
+Edit /etc/pure-ftpd.conf according to your needs.
+
+Then, to start the server, just run the following command:
+
+chmod 755 pure-config.pl
+./pure-config.pl /etc/pure-ftpd.conf
+
+This is a simple Perl script that will run /usr/local/sbin/pure-ftpd with
+the right options, according to the configuration file.
+
+And because there's a Python vs. Perl friendly war since ages, we also
+provide a Python version of this program ('pure-config.py').
+
+Should any of these config tools contain a wrong path or fail otherwise,
+please file a bug report.

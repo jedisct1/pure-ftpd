@@ -1,0 +1,912 @@
+
+                         FREQUENTLY ASKED QUESTIONS
+                         
+             --------------------------------------------------
+
+
+* Users can delete root-owned files?
+
+-> I have a directory owned by 'john', but I've put some files owned by
+'root' (or another user) in it. However, I noticed that John can delete
+these files!
+
+Yes, this is the standard Unix behavior: the owner of a directory can do
+whatever he likes to do in his directory, regardless of who owns the file in
+it. If you want to have immutable files, check for such a feature in your
+operating system.
+
+For instance, on Linux and ext2/ext3 filesystems, "chattr +i <file>" does
+the trick. On BSD systems, try "chflags schg <file>" .
+
+
+
+* Directories shared by multiple users.
+
+-> I have a "public" directory. All users can download and upload files
+from/to this directory. Permissions are 777 on it. But user 'john' can
+delete files owned by user 'joe'. How to prevent this?
+
+Put the sticky bit on that directory: chmod 1777 public. That way, the
+directory remains public (read/write), but people can only delete files they
+own.
+
+
+
+* Restricting directory visibility.
+
+-> I want that people only see their home directory and their own files. I
+don't want them to look at my systems files.
+
+This feature is called "chroot". You can enable this by running pure-ftpd
+with the "-A" switch to do this with ALL your users (but root) .
+
+You can alternatively use "-a <gid>" to have a "trusted group". Everyone
+will be caged, EXCEPT members of that group.
+
+Don't use -a <gid> and -A together.
+
+Another way is to selectively choose what users you want to chroot. This can
+be done with the /./ trick (see the README file about this) or with virtual
+users.
+
+
+
+* Shared directories and chroot.
+
+-> I have a directory, say /var/incoming, that I want to be shared by every
+user. But I want my users to be chrooted. So /var/incoming should be visible
+in 'joe' and 'john' accounts, but those are chrooted. So, how to have the
+content of /var/incoming visible in these accounts?
+
+Making a symbolic link won't work, because when you are chrooted, it means
+that everything outside a base directory (your user's home directory) won't
+be reachable, even though a symbolic link.
+
+But all modern operating systems can mount local directories to several
+locations. To have an exact duplicate of your /var/incoming directory
+available in /home/john/incoming and /home/joe/incoming, use one of these
+commands:
+
+* Linux   : mount --bind /var/incoming /home/john/incoming
+            mount --bind /var/incoming /home/joe/incoming
+
+* Solaris : mount -F lofs /var/incoming /home/john/incoming
+            mount -F lofs /var/incoming /home/joe/incoming
+
+* FreeBSD : mount_null /var/incoming /home/john/incoming
+            mount_null /var/incoming /home/joe/incoming
+
+Another alternative is to compile Pure-FTPd with --with-virtualchroot as a
+./configure option. With virtual chroot, symbolic links pointing outside a
+chroot jail *are* followed.
+
+Binary packages are compiled with this feature turned on.
+
+
+* Tar and/or gzip on the fly
+
+-> Is it possible to use a command like "get directory.tar" as with Wu-FTPd
+? (Sven Goldt)
+
+Unfortunately, no. Server-side gzip/tar creation is not a present nor a
+planned feature. It has been responsible of severe security flaws in Wu-ftpd
+and BSD ftpd, it can take a lot of server resource (denial-of-service) and
+it's a pain to set up (chrooted environment => need to add /etc /lib /bin
+directories, /dev on some platforms, etc) .
+
+
+
+* How to restrict access to dot files ?
+
+-> Is there an option to prevent people from accessing "." files/dirs (such
+as .bash_history, .profile, .ssh ...) EVEN if they are owned by the user ?
+(William Kern)
+
+Yes. '-x' (--prohibitdotfileswrite) denies write/delete/chmod/rename of
+dot-files, even if they are owned by the user. They can be listed, though,
+because security through obscurity is dumb and software shouldn't lie to
+you. But users can't change the content of these files.
+
+Alternatively, you can use '-X' (--prohibitdotfilesread) to also prevent
+users from READING these files and going into directories that begin with
+"." .
+
+
+
+* Log files
+
+-> Where does logging info go ? How to redirect it to a specific file ? How
+to suppress logging ?
+
+Log messages are sent to the syslog daemon. The syslog daemon is often
+called syslogd or syslog-ng. He's in charge of dispatching logging events
+from various programs to log files, according to a "facility" (category) and
+a "priority" (urgency: debug, info, warning, error, critical...) .
+
+Pure-FTPd logging messages are send with the "ftp" facility by default (or
+"local2" on some older systems without the "ftp" facility) . Unless you told
+the syslogd to redirect messages with the "ftp" facility to a specific file,
+the messages will be merged into /var/adm/messages, /var/log/messages,
+/var/adm/syslog or /var/log/syslog.
+
+Check /etc/syslogd.conf. You should have a line like:
+
+*.*;mail.none;news.none -/var/log/messages
+
+just add ftp.none:
+
+*.*;ftp.none;mail.none.news.none -/var/log/messages
+
+And if you want FTP info go in a specific file, just add:
+
+ftp.* /var/log/ftp
+
+and all FTP messages will go in /var/log/ftp . And only there.
+
+The facility can be changed if you add the -f <facility> option to pure-ftpd
+(or --facility=<facility>) .
+To completely disable logging, use -f none (or --facility=none) . If you
+don't read your log files, it's recommended: it will improve performance
+and reduce disk I/O.
+
+
+
+* How to prevent your partitions to be filled
+
+-> Is it possible to forbid new uploads when the disk is almost full ?
+(Cyberic)
+
+Use the "-k" (--maxdiskusagepct) flag. If you add -k 95 , no new upload can
+occur if your partition if more than 95% full.
+
+
+
+* Firewalling
+
+-> My FTP server is behind a firewall. What ports should I open?
+
+First, you have to open port 21 TO the FTP server. You also have to allow
+connections FROM (not to) ports <= 20 (of the FTP server) to everywhere.
+That's enough to handle the "active" mode. But that's not enough to handle all
+types of clients. Most clients will use another mode to transmit data called
+'passive' mode. It's a bit more secure than 'active' mode, but you need to
+open more ports on your firewall to have it work.
+
+So, open some ports TO the FTP server. These ports should be > 1023. It's
+recommended to use at least twice the max number of clients you are
+expecting. So, if you accept 200 concurrent sessions, opening ports 50000 to
+50400 is ok.
+
+Then, run pure-ftpd with the '-p' switch followed by the range configured in
+your firewall. Example: /usr/local/sbin/pure-ftpd -p 50000:50400 &
+
+Unlike some popular belief, the MORE opened ports you have for passive FTP,
+the MORE your FTP server will be secure, because the LESS you are vulnerable
+to data hijacking.
+
+If your firewall also does network translation (NAT), you have to enable
+port forwarding for all passive ports.
+
+On the client side, if a client if behind a firewall, that firewall must
+understand the FTP protocol. On Linux firewalls (iptables), just load
+the ip_conntrack_ftp and ip_nat_ftp modules. On OpenBSD, ISOS and
+FreeBSD 5 firewalls (PF), redirect all traffic to port 21, to ftp-proxy.
+
+
+
+* Unable to log in (unix authentication)
+
+-> I'm using simple Unix authentication. No PAM, no puredb, no MySQL, no
+LDAP. Anonymous FTP works, but I can't log in as any other user. It keeps
+saying "authentication failed".
+
+To log in, the shell assigned to your users must be listed in the
+/etc/shells file. The exact path should be there, even for fake shells like
+/etc or /bin/true.
+
+Also double check that you have a carriage return after the last line in
+/etc/shells.
+
+
+
+* Network filesystems.
+
+-> I have a strange problem on Linux or FreeBSD. Uploading a file works
+fine, but downloading a file only create 0-byte files. On the server, these
+files are on NFS/Novell shares/Appletalk shares/Coda/Intermezzo/SMB volumes.
+
+By default, pure-ftpd uses zero-copy networking in order to increase
+throughput and reduce the CPU load. But zero-copy doesn't work with all
+filesystems, especially network filesystems.
+
+You have to disable zero-copy if you want to serve files from a network FS
+or from a TMPFS virtual disk.
+
+To disable zero-copy, recompile pure-ftpd with ./configure --without-sendfile
+
+
+
+* Solaris and chroot.
+
+-> When I ftp to my Solaris server, I get this as an answer to 'ls':
+"425 Can't create the data socket: Bad file number."
+
+On Solaris, to get chroot to work with pure-ftpd you need a dev directory
+in your new rootdir with these:
+
+crw-rw-rw-   1 root     other     11, 42 Dec 10 15:02 tcp
+crw-rw-rw-   1 root     other    105,  1 Dec 10 15:02 ticotsord
+crw-rw-rw-   1 root     other     11, 41 Dec 10 15:03 udp
+crw-rw-rw-   1 root     other     13, 12 Dec 10 15:03 zero
+
+(Reported by Kenneth Stailey)
+
+
+
+* Upgrading.
+
+-> Can anyone explain how to update Pureftpd (from source), without having
+to change all my settings etc. (Simon H)
+
+1) get the source code and unpack it. 
+2) ./configure it with your favorite options 
+3) make 
+4) rm -f /usr/local/sbin/pure-ftpd 
+5) make install-strip 
+6) if you run pure-ftpd from inetd,tcpserver,xinetd, etc: nothing left to do. You have it upgraded. 
+7) if you run it standalone, stop the server: 
+                     kill $(cat /var/run/pure-ftpd.pid)
+then launch it again: 
+                         /usr/local/sbin/pure-ftpd &
+                         
+
+
+* FTP over SSH.
+
+-> How to run Pure-FTPd over SSH? I want to encrypt all connection data
+(including passwords) .
+
+FTP-over-SSH is a nice alternative over FTP-over-SSL (impossible to securely
+firewall) and SFTP (which is slower, but only uses one port) .
+
+Customers using Windows can use FTP-over-SSH with the excellent Van Dyke's
+SecureFX client (http://www.vandyke.com) . It doesn't require any special
+knowledge: just tell your customer to check "FTP-over-SSH2" in the
+"Protocol" listbox when creating an account for your FTP server.
+
+On the server side, here's how to manage FTP-over-SSH accounts:
+
+1) Add /usr/bin/false to your /etc/shells file (on some systems, it's
+/bin/false) .
+
+2) To create a FTP-over-SSH account, create a system account with /dev/null
+as a home directory and /usr/bin/false as a shell. You don't need a
+dedicated uid: the same uid can be reused for every FTP-over-SSH account.
+
+3) Create a virtual user account for that user (either with PureDB, SQL or
+LDAP) . Give that virtual user a real home directory and only allow
+connections coming from 127.0.0.1 (all FTP-over-SSH sessions will come from
+localhost, due to SSH tunneling) .
+
+People with no home directory (/dev/null) and no valid shell
+(/usr/bin/false) won't be able to get a shell nor to run any command on your
+server. But they will be granted FTP-over-SSH sessions.
+
+Here are examples (Linux/OpenBSD/ISOS commands, translate them if necessary) .
+
+1) Creating a regular FTP account:
+
+pure-pw useradd customer1 -m -d /home/customer1 -u ftpuser
+
+2) Creating a FTP-over-SSH account (non-encrypted sessions are denied):
+
+useradd -u ftpuser -g ftpgroup -d /dev/null -s /usr/bin/false customer2
+pure-pw useradd customer2 -m -d /home/customer2 -u ftpuser -r 127.0.0.1/32
+
+3) Creating an account who can use regular (unencrypted) FTP from the
+internal network (192.168.1.x), but who must use FTP-over-SSH when coming
+from an external network (internet):
+
+useradd -u ftpuser -g ftpgroup -d /dev/null -s /usr/bin/false customer3
+pure-pw useradd customer3 -m -d /home/customer3 -u ftpuser \
+        -r 127.0.0.1/32,192.168.1.0/24
+
+
+
+* Virtual users: /etc/pureftpd.pdb .
+
+-> I made changes to /etc/pureftpd.passwd but the server doesn't understand
+them: I can't access any account I just created.
+
+The server never reads /etc/pureftpd.passwd directly. Instead, it reads
+/etc/pureftpd.pdb (or whatever file name you gave after -lpuredb:...) .
+
+This file is a copy of /etc/pureftpd.passwd, but in a binary format,
+optimized for fast lookups.
+
+After having made a manual change to /etc/pureftpd.passwd, you must rebuild
+/etc/pureftpd.pdb with the following commands:
+
+pure-pw mkdb
+
+If you add/delete/modify user accounts with pure-pw useradd/usermod/userdel/
+passwd, don't forget the '-m' option to automatically rebuild
+/etc/pureftpd.pdb and not only update /etc/pureftpd.passwd .
+
+
+
+* Giving access to dot-files.
+
+-> I don't want my users to read files beginning with a dot. Except one file
+I'd like to give 'John' read (and maybe write) access to.
+
+Create a symbolic link in John's account, pointing to the dot-file. Example:
+
+ln -s .bashrc bashrc
+
+John will be able to access ".bashrc" through the symbolic link, "bashrc".
+
+
+
+* Initial banner.
+
+-> How do I display a customized message before the login prompt?
+
+Compile with --with-cookie and run the server with -F <file name> . In that
+file, put a nice customized banner message.
+
+
+
+* Internet Explorer.
+
+-> Internet Explorer doesn't show any login box.
+
+IE does a very strange trick to detect whether an FTP server does accept
+anonymous connections or not. Basically, it connects to the server and logs
+in as 'anonymous'. But if you say 'no' at this point, it drops the
+connections with an error. You have to say 'ok, anonymous users are
+allowed' and then, when a dummy password ('IE@') is sent, you say 'ah
+ehm... finally... no... anonymous users aren't allowed' . Silly. To play
+that game, you must run pure-ftpd with the -E (non-anonymous server) and -b
+(compatibility with broken clients) flags. Then, the magic popup will show
+up. But please note that IE (and browsers at large) are usually bad FTP
+clients.
+
+-> Internet Explorer doesn't want to log in. (Matthew Enger)
+
+Check that the max number of connections (either per user or per IP) is at
+least 2. IE needs two connections to connect to an FTP server.
+
+
+
+* Passwords and pure-pw scripting.
+
+-> I would like to create virtual users with a shell-script.  if i us
+pure-pw useradd ..... it always asks for the new password. is there any
+command-line option which tells pure-pw the password (like useradd ftp-user
+ftp-password -m) ? (at1ce) .
+
+Giving cleartext (and badly one-way hashed) passwords through command-line
+switches is a bad idea. Because users could issue a simple 'ps' command and
+discover these passwords.
+
+One way to enter a password (not from the keyboard) is to put the password
+twice in a temporary file, then redirect that file to stdin. Example:
+
+pure-pw useradd john -d /tmp/john -u ftpuser -m < ~/tmp/passfile
+
+And in ~/tmp/passfile, have something like:
+
+john's password
+john's password
+
+If you really need to avoid a temporary file and if nobody but you can log
+on the machine, you can always do this:
+
+(echo blahblah; echo blahblah) | pure-pw useradd john -d /tmp/john -u ftpuser
+
+
+
+* Altlog and pure-uploadscript don't work.
+
+-> pure-uploadscript doesn't run anything. Alternative logging methods (CLF,
+stats, W3C...) create a logfile, but it always stays empty.
+
+Maybe your operating system has a buggy realpath() implementation. Some
+old Solaris and Linux versions are known to have such a bug.
+Try to recompile pure-ftpd, but run ./configure with the --with-brokenrealpath
+switch first.
+
+
+
+* The server starts, but doesn't listen to any port?
+
+-> The server is properly running, I see it in the process list, but any try
+to connect to the configured port (or port 21 by default) fails. The socket
+isn't even open.
+
+Check two things :
+
+- If you are running a BSD system and you want to listen to IPv4 addresses,
+check that the "-4" switch ("IPV4Only" in config file) is enabled.
+
+- If you upload script are enabled ("-o", or "CallUploadScript"), make sure
+that the pure-uploadscript is started. Or the FTP server will actually wait
+until pure-uploadscript is actually ready to process new uploads. If you don't
+need the uploadscript facility, remove "-o".
+
+
+
+* Double slash.
+
+-> Why do I see double slashes in log files? For instance, the path of a
+downloaded file looks like /home/john//pictures/zok.jpg .
+
+'//' is a symbol for the limit of the chroot jail. In that example, it means
+that John is caged in /home/john/ .
+
+
+
+* Windows port.
+
+-> Does Pure-FTPd run on Windows?
+
+Yes, there's a port available from http://www.pureftpd.org/windows/ .
+But the server is developped on Unix and the Win32 version should be
+considered experimental and unsupported.
+
+
+
+* ftpwho as a non-root user.
+
+-> How do I give access to the 'pure-ftpwho' command to non-root users?
+
+The 'pure-ftpwho' command is restricted to root by default, because users
+probably shouldn't be given the ability to spy what other users are doing on
+the same host. However, it's safe to put the setuid bit on that command, in
+order to have it work as any user:
+
+                   chmod 4711 /usr/local/sbin/pure-ftpwho
+
+
+
+* Changing bandwidth throttling on-the-fly.
+
+-> Is it possible to change the bandwidth allocated to an user during a
+transfer, so that the change takes place immediately?
+
+Unfortunately, no. Or at least not at pure-ftpd level. Doing so would need
+to re-read user's parameters all the time and it would be horribly slow.
+Other mechanisms would work, like signals to interrupt transfers, re-read
+parameters, then resume. But it would introduce a lot of complexity to the
+code.
+
+If you're using a modern operating system like OpenBSD, ISOS or Linux,
+your kernel already includes a fair TCP/IP traffic shaper. And because it
+works at kernel-level, you can easily change the bandwidth allowed to IPs or
+services on-the-fly. Have a look at pf.conf(5) OpenBSD, ISOS and FreeBSD 5,
+and at tc (or read the Linux networking HOWTO) on Linux.
+Also see the 'Global bandwidth limitation' section later in this document.
+
+
+
+* KERBEROS_V4 rejected as an authentication type.
+
+-> It works and I can log in, but I recieve these strange error messages at
+log in, even in a non-chrooted environment: 
+
+220 FTP server ready. 
+502 Security extensions not implemented 
+502 Security extensions not implemented 
+KERBEROS_V4 rejected as an authentication type 
+
+Why and what do they mean?
+
+This is a Linux-specific instllation issue. It means that your command-line
+FTP client isn't a normal one, but a Kerberos FTP client. You probably
+installed RPMs for Kerberos, although you don't use it.  These messages are
+harmless as Kerberos clients will fallback to normal FTP (after these
+errors), but you just have to deinstall Kerberos on your client host to have
+'ftp' work without these messages.
+
+
+
+* Wrong group ownership.
+
+-> I have an user called 'john' whoose group is 'johngroup'. When John
+uploads a file, that one belongs to 'john', but to another group like
+'wheel' (whoose John isn't a member of). What's wrong?
+
+This is a BSD standard behavior (verified on OpenBSD, ISOS, DragonflyBSD and
+FreeBSD): when a new file is created, the group is inherited from the parent
+directory. On other systems (like GNU/Linux), files are owned by the primary
+group of the user, unless the directory has the setgid bit set.
+
+If you want new files uploaded in John's directory to belong to group
+'johngroup', have that directory (and probably also subdirectories) belong
+to 'johngroup':
+
+chgrp -R johngroup /home/john
+
+
+
+* Compilation with MySQL.
+
+-> I can't compile with MySQL. ./configure says that MySQL libraries aren't
+properly installed.
+
+The libmysqlclient.so file should be in a path known by your dynamic linker.
+For instance, on a GNU/Linux system, add the path to libmysqlclient.so file
+(only the path, not the file itself) to /etc/ld.so.conf . Then, run
+'ldconfig' .
+
+
+
+* "Sorry, I can't trust you".
+
+-> When an user tries to log in, he gets "Sorry, I can't trust you". But his
+login/password pair is right. What wrong?
+
+That message can means two things:
+
+- The user has a shell that isn't listed in /etc/shells. You must add it,
+even if it's a fake shell like /bin/false . Also make sure that you have a
+carriage return after the last entry in /etc/shells.
+
+- You are using the -u <uid> option to deny access to users whoose uid is
+below <uid> . But the user you are trying to log in as, has an uid in the
+forbidden range.
+
+
+
+* Customer-friendly configuration.
+
+-> What switches do you recommend to start the server, for an hosting service?
+
+Here's a good start:
+
+--chrooteveryone \
+--maxclientsperip=5 \
+--displaydotfiles \
+--noanonymous \
+--minuid=100 \
+--umask=022:022 \
+--limitrecursion=10000:3 \
+--customerproof
+
+
+
+* Anonymous FTP with virtual users.
+
+-> I successfully created a virtual user called 'ftp' or 'anonymous', but
+anonymous FTP doesn't work.
+
+Pure-FTPd never fetch any info from the virtual users backends (puredb,
+MySQL, LDAP, etc) for anonymous sessions. There are three reasons not to do
+so: - Speed: do we need to query a database just to get the anonymous
+user's home directory? We don't need to retrieve any password for anonymous
+sessions.
+     - Consistency: with the virtual hosting mechanism.
+
+To run an anonymous FTP server you must have a *system* account called
+'ftp'. Don't give it any valid shell, just a home directory. That home
+directory is the anonymous area.
+
+
+
+* A basic setup.
+
+-> I'm trying to set up a ftp server just for me and my family so we can get
+and upload files when on the road. How can I make two users, say Jane and
+Joe, who share the directory /home/ftp and /home/ftp/incoming. In /home/ftp
+they only have read privs. and in /home/ftp/incoming they have read and
+write privs.
+
+Add a group for all FTP users (not mandatory, but more secure):
+
+groupadd ftpgroup
+
+Add an uid for all FTP users (idem, not mandatory, but better):
+
+useradd -g ftpgroup -d /dev/null -s /etc ftpuser
+
+Now, let's create /home/ftp and /home/ftp/incoming:
+
+mkdir -p /home/ftp/incoming
+chown -R root:ftpgroup /home/ftp/incoming
+chmod -R 755 /home/ftp
+chmod -R 1775 /home/ftp/incoming
+
+Let's add Jane:
+
+pure-pw useradd jane -m -u ftpuser -d /home/ftp
+
+Let's add Joe:
+
+pure-pw useradd joe -m -u ftpuser -d /home/ftp
+
+Let's start the FTP server:
+
+/usr/local/sbin/pure-ftpd -lpuredb:/etc/pureftpd.pdb -H -B
+
+Everything should be ok now.
+
+For more info about how to create new users, change passwords, etc.:
+http://www.pureftpd.org/README.Virtual-Users
+
+
+
+
+* Slow pure-ftpwho or slow login.
+
+-> Sometimes, pure-ftpwho is slow to show the result. And sometimes, when an
+user logs in, the session stucks a bit before he can get a directory listing.
+
+This is probably caused by a slow DNS resolver. In order to display full
+host names, pure-ftpd has indeed to make DNS queries that can be slow if you
+link is slow, or if the client link is slow.
+
+You can speed up pure-ftpwho and pure-ftpd with the -H switch. Names won't
+be resolved, you will see IP addresses instead.
+
+
+
+* Chrooted users can follow symlinks outside the chroot jail?
+
+-> People can create symbolic links to '/' and escape their home directory!
+
+There are two chroot implementations in pure-ftpd:
+
+  - The traditional one, based upon your kernel chroot() system call. This
+is the default. With that one, symbolic links can only point inside the
+chroot jail, or they won't be followed.
+
+  - The 'virtual chroot' implementation. With that feature, users *can*
+follow all symbolic links, even when they don't point inside the jail. This
+is very handy to set up directories shared by multiple users. Binary
+packages are compiled with virtual chroot by default.
+
+To enable the virtual chroot feature when you are compiling the server, use
+the --with-virtualchroot with ./configure . If you want a restricted chroot,
+don't include --with-virtualchroot.
+
+Please note that the FTP server will never let people create new symbolic
+links. Symbolic links have to be already there to be followed. Or if your
+users can create symbolic links through Perl or PHP scripts, your hosting
+platform is really badly configured. People can install any web file
+browser, they don't need FTP to look at your system files. Recompile PHP
+without POSIX functions and run all Perl scripts chrooted.
+
+
+
+* How to start Pure-FTPd in background.
+
+-> I start 'pure-ftpd' from an X terminal and the server properly
+answers. However, as soon as I close the terminal, the server stops.
+
+This is a shell dependent issue. Your shell is configured to close all
+background jobs when leaving. You can change your shell options
+(probably with a 'set' directive) or detach background jobs with the
+'disown' keyword. Alternatively, you can just start pure-ftpd with the
+-B switch in order to have it detach at startup time:
+
+/usr/local/sbin/pure-ftpd -B
+
+
+
+* Windows command-line FTP client and 'ls'.
+
+-> With the command-line Windows FTP client, 'ls -la' doesn't return
+any file.
+
+The 'ls' command of an FTP client has nothing to do with the 'ls' command
+started from an Unix shell.
+
+With the command-line Windows client, typing 'ls' really sends the FTP
+command 'NLST'. So when you type 'ls -la', it doesn't mean 'verbosely
+list all files'. According to RFCs, it means 'list the file called -la' .
+So you get what you asked for. If no file is called '-la', you get nothing.
+
+If you want to play with regular expressions and switches, you should
+type 'dir' (which is translated to 'LIST') instead. 'dir -la' is ok.
+
+This is a bit illogical and that brain damage is specific to
+Microsoft's command-line FTP client.
+
+If you really want 'ls' to parse options, you can start pure-ftpd with
+the -b (broken) switch.
+
+
+
+* Global bandwidth limitation.
+
+-> How do I limit the *total* bandwidth for FTP?
+
+Pure-FTPd can limit bandwidth usage of every session. But limiting the total
+bandwidth is intentionally not implemented, because most operating systems
+already have very efficient algorithms to handle bandwidth throttling.
+
+Here's an example with Linux.
+
+1) Have a look at /proc/sys/net/ipv4/ip_local_port_range. You will see two
+numbers: this is the interval of local ports your Linux kernel will use for
+regular outgoing connections. The FTP ports you have to reserve for passive
+FTP must *not* be in this range. So if:
+"cat /proc/sys/net/ipv4/ip_local_port_range" returns "32768-61000", you can
+reserve ports 10000 to 20000 for your FTP server, but not 30000 to 40000.
+(alternatively, you can change the local port range) .
+
+2) Change the first lines and save the following script:
+
+  ---------------------------- Cut here ----------------------------
+  
+#! /bin/sh
+# Simple bandwidth limiter - <j at pureftpd.org>
+
+# Change this to your link bandwidth
+# (for cable modem, DSL links, etc. put the maximal bandwidth you can
+# get, not the speed of a local Ethernet link)
+REAL_BW='10Mbit'
+
+# Change this to the bandwidth you want to allocate to FTP.
+# We're talking about megabits, not megabytes, so 80Kbit is
+# 10 Kilobytes/s
+FTP_BW='80Kbit'
+
+# Change this to your physical network device (or 'ppp0')
+NIC='eth0'
+
+# Change this to the ports you assigned for passive FTP
+FTP_PORT_LOW="10000"
+FTP_PORT_HIGH="20000"
+
+tc qdisc add dev "$NIC" root handle 1: cbq \
+bandwidth "$REAL_BW" avpkt 1000
+
+tc class add dev "$NIC" parent 1: classid 1:1 cbq bandwidth "$REAL_BW" \
+rate "$REAL_BW" maxburst 5 avpkt 1000
+
+tc class add dev "$NIC" parent 1:1 classid 1:10 cbq \
+bandwidth "$REAL_BW" rate "$FTP_BW" maxburst 5 avpkt 1000 bounded
+
+tc qdisc add dev "$NIC" parent 1:10 sfq quantum 1514b
+
+tc filter add dev "$NIC" parent 1: protocol ip handle 1 fw flowid 1:10
+
+iptables -t mangle -A OUTPUT -p tcp --sport 20:21 -j MARK --set-mark 1
+
+iptables -t mangle -A OUTPUT -p tcp \
+--sport "$FTP_PORT_LOW":"$FTP_PORT_HIGH" -j MARK --set-mark 1
+
+  ---------------------------- Cut here ----------------------------
+  
+3) Make sure that you have the 'tc' command installed. If your Linux distro
+doesn't ship 'ip' and 'tc' commands, it really sucks and you must install a
+package called 'iproute2' to get them.
+
+4) Start Pure-FTPd with the passive port range you assigned:
+
+/usr/local/sbin/pure-ftpd -p 10000:20000 -HBA
+
+5) Run the script you created in step 2. It it doesn't work, check that QOS
+support was compiled in your Linux kernel.
+
+6) Enjoy :)
+
+Also have a look at :
+http://www.docum.org
+http://www.shorewall.net/traffic_shaping.htm and
+http://talk.trekweb.com/~jasonb/articles/linux_tc_minihowto.shtml
+
+
+* Linux, NTFS and Pure-FTPd.
+
+-> On Linux, I can't transfer files from an NTFS partition.
+
+Keep in mind that the NTFS filesystem is still an experimental beast in
+Linux. Some basic operations are not implemented yet. Fortunately, a big
+effort is being made and Linux 2.5 has a new NTFS implementation that fully
+works with Pure-FTPd (try ./configure --without-sendfile, though) . And it
+is more reliable and really faster than the old one. And even more
+fortunately, the new NTFS implementation has been backported to recent 2.4.x
+kernels. Have a look at http://linux-ntfs.sf.net/ .
+
+
+
+* Slowdowns and lags.
+
+-> Some users complains that transfering large files doesn't work. Transfers
+are starting as expected, with a decent rate. But then, the speed dramatically
+decreases, there are some serious lags and they often must disconnect (or the
+client force them to do it, after a timeout) . The server is behind a firewall
+that filters incoming ICMP, but let FTP ports in.
+
+Don't, don't, don't filter ICMP. At least not blindly without understanding
+what you are filtering. ICMP is part of the TCP/IP specifications. Filtering
+it can have nasty side effects with no real win. If you even filter ICMP types
+3 and 4, your firewall is definitely broken and this is probably why you have
+such troubles with transfers of large files.
+
+Please read these documents about ICMP filtering :
+http://www.phildev.net/mss/index.html
+http://alive.znep.com/~marcs/mtu/
+http://www.freelabs.com/~whitis/isp_mistakes.html
+
+Also some hardware routers don't properly handle window scaling. Try
+to turn it off, for instance on Linux:
+sysctl -w net.ipv4.tcp_window_scaling=0
+sysctl -w net.ipv4.tcp_bic=0
+
+
+
+* Firewalls and SSL/TLS.
+
+-> My client is behind a stateful firewall doing applicative filtering (like
+IPTables with ip_conntrack_ftp or ip_nat_ftp) . Connections to an SSL/TLS
+enabled server does't work. Authentication works, but I'm unable to download
+files nor list directories.
+
+First, try to force your client to use the passive mode. In active mode, the
+server has to connect to the client (or the NAT gateway) on a dynamic port
+that is negociated on the connection socket. But when SSL/TLS is used, that
+connection socket is encrypted, therefore no man-in-the middle can see what
+ports will be used to transfer data, including the firewall. There are some
+proposals to work around this problem, but neither popular clients nor common
+firewalls are aware of these tricks. Therefore, use the passive mode or switch
+to SSH.
+
+
+
+* TLS and error 00000000.
+
+-> My TLS-enabled client doesn't work. It outputs something like :
+"SSL connect: error:00000000:lib(0):func(0):reason(0)". What does it mean?
+
+This error is not very explicit. You get it from some Unix clients like LFTP.
+It actually means that there is a firewall or a NAT box between a TLS-enabled
+server and a TLS-enabled client, but that firewall is unable to handle
+encrypted FTP sessions. Unfortunately, there's no simple workaround against
+this. Try to switch your client to active mode and use 1:1 NAT, but SSL/TLS,
+firewalls and FTP don't mix very well.
+
+
+
+* Slow TLS operations.
+
+-> When clients connect with TLS encryption, listing directories and
+downloading files are slow operations. Nothing happens after a command is
+sent, things only start moving after a 5 secondes delay.
+
+Check the host name of your certificate. It should be a fully-qualified host
+name and if possible, it shouldn't be a CNAME entry.
+
+Also check your DNS cache servers.
+
+
+
+* Files getting renamed automatically
+(submitted by C. Jon Larsen)
+
+-> Sometimes when files get uploaded they are getting renamed to something
+like "pureftpd.3f3300d2.33.0001". What is causing this ?
+
+The ftp client that is being used to upload the files is using the STOU (Store
+Unique) FTP command instead of the STOR FTP command. If you check the ftp
+logfile you should see something like this in the logs:
+
+(user@a.b.c.d) [DEBUG] Command [stou] [file_name_from_the_client.ext]
+/var/ftp/ftpcustomer/pureftpd.3f3300d2.33.0001 uploaded (218168 bytes,
+127.79KB/sec)
+
+The STOU command tells the ftp client to begin the transmission of the file to
+the remote site; the remote filename picked by the ftp server will be unique
+within in the current directory that the ftp client is using. The response
+from the server will include the filename.
+
+The ftp client has an option like "create unique files" or "upload file with a
+temporary name" enabled. You should have the ftp user uncheck this option.
+
+Trying to disable the STOU command on the server side is not a good idea or
+solution as some ftp clients will use STOU to upload a file with the
+temporary, unique name, and then rename the file once the upload is complete.
+This helps prevent failed uploads from leaving partial files around.

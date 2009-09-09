@@ -1,0 +1,259 @@
+
+If you never heard about MySQL before, *DON'T* enable MySQL support in
+Pure-FTPd. MySQL is useless if you don't have to manage many shared
+accounts. But well... if you want to learn about MySQL anyway, here's a good
+starting point: http://www.mysql.com/ .
+
+
+       ------------------------ MYSQL SUPPORT ------------------------
+
+
+Since release 0.99.1, Pure-FTPd has a built-in support for MySQL databases.
+When MySQL is enabled, all account info is fetched from a central MySQL
+database.
+
+To compile the server with MySQL support, you first have to build and
+install the MySQL client libraries. MySQL is freely available from
+http://www.mysql.com/ and binary packages are included in many major
+distributions. But if you choose a binary form, don't forget to also install
+the development packages if they are available separately.
+
+Then, configure Pure-FTPd with --with-mysql and your favorite extra gadgets:
+
+
+    ./configure --with-mysql --with-cookie --with-throttling --with-ratios
+
+
+If your MySQL libraries are installed in a special path, you can specify it
+like this:
+
+
+    ./configure --with-mysql=/opt/mysql
+
+
+In this example, headers (like mysql.h) will be searched in
+/opt/mysql/include and /opt/mysql/include/mysql, while related libraries
+will be searched in /opt/mysql/lib and /opt/mysql/lib/mysql .
+
+Then, install the server as usual:
+
+
+                                 make install
+
+
+ ------------------------ MYSQL CONFIGURATION FILE ------------------------
+           
+
+Before running the server, you have to create a configuration file. Why a
+configuration file instead of simple command-line options? you may ask.
+Because for security reasons, you may want to hide how to connect to your
+MySQL server. And as command-line options can be discovered by local users
+(with 'ps auxwww' for instance), it's more secure to use a configuration
+file for sensitive data. Keep it readable only by root (chmod 600) .
+
+Here's a sample configuration file:
+
+#MYSQLServer     localhost
+#MYSQLPort       3306
+MYSQLSocket     /tmp/mysql.sock
+MYSQLUser       root
+MYSQLPassword   rootpw
+MYSQLDatabase   pureftpd
+MYSQLCrypt      cleartext
+MYSQLGetPW      SELECT Password FROM users WHERE User="\L"
+MYSQLGetUID     SELECT Uid FROM users WHERE User="\L"
+MYSQLGetGID     SELECT Gid FROM users WHERE User="\L"
+MYSQLGetDir     SELECT Dir FROM users WHERE User="\L"
+
+Have a look at the sample pureftpd-mysql.conf configuration file for
+explanations of every keyword.
+
+Save the configuration file anywhere. Let's say /etc/pureftpd-mysql.conf .
+
+Then, you have to run the pure-ftpd command with '-l mysql:' (it's an 'ell'
+not a 'one') followed by the path of that configuration file. Here's an
+example with tcpserver:
+
+
+tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd -l mysql:/etc/pureftpd-mysql.conf &
+
+
+You can mix different authentication methods. For instance, if you want to
+use system (/etc/passwd) accounts when an account is not found in a MySQL
+database, use -l mysql:/etc/pureftpd-mysql.conf -l unix
+
+
+     ------------------------ TABLES STRUCTURES ------------------------
+     
+     
+Pure-FTPd is very flexible and users can be stored in any way in SQL tables.
+You just have to have fields with the following info:
+
+- The user's login.
+
+- The user's password, in plaintext, MD5, crypt()ed or MySQL's password()
+format. Pure-FTPd also accepts the "any" value for the MySQLCrypt field.
+With "any", all hashing functions (not plaintext) are tried.
+
+* RECOMMENDATION: On Solaris systems and on very old C libraries, use MySQL
+MD5 hashing. On all other systems, better use crypt(), which adds a salt.
+Avoid password() whoose hash function is rather weak, not portable, and it is
+supposed to be only used for internal accounts of MySQL servers. password() is
+no more supported by Pure-FTPd with MySQL 4.1.0 and later.
+
+- The system uid to map the user to. This can be a numeric id or an user
+name, looked up at run-time.
+
+- The system gid (numeric or not) .
+
+- The home directory.
+
+Here's a dump of a simple table to handle this:
+
+CREATE TABLE users (
+  User VARCHAR(16) BINARY NOT NULL,
+  Password VARCHAR(64) BINARY NOT NULL,
+  Uid INT(11) NOT NULL default '-1',
+  Gid INT(11) NOT NULL default '-1',
+  Dir VARCHAR(128) BINARY NOT NULL,
+  PRIMARY KEY  (User)
+);
+
+Uid and Gid can be char() instead of int() if you want to use names instead
+of values.
+
+Then, in the pureftpd-mysql.conf configuration file, you have to provide SQL
+templates to fetch the needed info.
+
+Let's take the previous example:
+
+MYSQLGetPW      SELECT Password FROM users WHERE User="\L"
+MYSQLGetUID     SELECT Uid FROM users WHERE User="\L"
+MYSQLGetGID     SELECT Gid FROM users WHERE User="\L"
+MYSQLGetDir     SELECT Dir FROM users WHERE User="\L"
+
+For each query:
+
+\L is replaced by the login of an user trying to authenticate.
+\I is replaced by the IP address the client connected to.
+\P is replaced by the port number the client connected to.
+\R is replaced by the remote IP address the client connected from.
+\D is replaced by the remote IPv4 address, as a long decimal number.
+
+You can mix all of these to store info in various tables. For instance, with
+\I, you can have a different table for every domain, so that joe@domain1
+won't be the same account than joe@domain2 . And with \R, you can restrict
+one account to one specific address.
+
+With MySQL 4.1 and later, multiple statements can be used using a semicolumn
+(";") as a delimiter.
+
+Please note that a login can only contains common characters: A...Z, a...z,
+0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
+are forbidden.
+
+You can also remove uid and gid fields in your tables and use default
+values instead (thus saving useless lookups) . Two directives are
+useful to serve that purpose: MYSQLDefaultUID and MYSQLDefaultGID.
+
+Obvious example:
+
+MYSQLDefaultUID 1000
+MYSQLDefaultGID 1000
+
+Using these directives overrides MYSQLGetUID and MYSQLGetGID.
+
+
+     ------------------------ PER-USER SETTINGS ------------------------
+
+
+Individual settings can be set for every user, using optional queries.
+
+- MySQLGetQTAFS is the maximal number of files an user can store in his home
+directory.
+
+Example:
+MySQLGetQTAFS  SELECT QuotaFiles FROM users WHERE User="\L"
+
+- MySQLGetQTASZ is the maximal disk usage, in Megabytes.
+
+Example:
+MySQLGetQTASZ  SELECT QuotaSize FROM users WHERE User="\L"
+
+- MySQLGetRatioUL and MySQLGetRatioDL are optional ratios.
+
+Example:
+MySQLGetRatioUL SELECT ULRatio FROM users WHERE User="\L"
+MySQLGetRatioDL SELECT DLRatio FROM users WHERE User="\L"
+
+- MySQLGetBandwidthUL and MySQLGetBandwidthDL are optional upload and
+download bandwidth restrictions. Returned values should be in KB/s.
+
+Example:
+MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L"
+MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L"
+
+- MySQLForceTildeExpansion is yet another optional feature, to enable "~"
+expansion in paths. 0 disables it (default), 1 enables it. Only enable this
+if real (system) users and virtual (MySQL) users match. In all other cases,
+don't enable it blindly.
+
+
+       ------------------------ TRANSACTIONS ------------------------
+
+
+If you upgraded your tables to transaction-enabled tables, you can configure
+Pure-FTPd to take advantage of transactions. That way, you can be sure that
+all info parsed by the server is complete even if you're updating it at the
+same time.
+
+To enable transactions, add this line:
+
+MySQLTransactions On
+
+Don't enable transactions on tables that still are in ISAM or MyISAM
+formats. Transactions are only working with newer backends (Gemini, InnoDB,
+BerkeleyDB...) and in recent MySQL versions.
+
+
+     ------------------------ STORED PROCEDURES ------------------------
+
+
+Mike Goins says:
+
+To get pure-ftp to use a MySQL 5 stored procedure, use statements like:
+
+MYSQLGetDir   CALL get_path_from_name("\L")
+instead of
+MYSQLGetDir   SELECT user_dir FROM user WHERE user_name="\L"
+
+Note that this requires the type of Stored Procedure that returns a result set
+in a single call as opposed to the two call method:
+CALL sp('value', @a); SELECT @a
+
+
+      ------------------------ ANONYMOUS USERS ------------------------
+
+
+If you want to accept anonymous users on your FTP server, you don't need to
+have any 'ftp' user in the MySQL directory. But you need to have a system
+'ftp' account on the FTP server.
+
+
+        ------------------------ ROOT USERS ------------------------
+
+
+If a MySQL user entry has a root (0) uid and/or gid, Pure-FTPd will refuse
+to log him in.
+
+Without this preventive restriction, if your MySQL server ever gets
+compromised, the attacker could also easily compromise the FTP server.
+
+Security barriers are also implemented to avoid bad implications if wrong
+data types (eg. binary blobs instead of plain text) are fetched with SQL
+queries.
+
+
+
+
+          -Frank DENIS <j at pureftpd dot org>.

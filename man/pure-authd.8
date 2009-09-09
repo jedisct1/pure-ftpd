@@ -1,0 +1,146 @@
+.TH "pure-authd" "8" "1.0.22" "Pure-FTPd team" "Pure-FTPd"
+.SH "NAME"
+.LP 
+pure\-authd \- External authentication agent for Pure\-FTPd.
+.SH "SYNTAX"
+.LP 
+pure\-authd [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-u\fP uid] [\fI\-g\fP gid] [\fI\-B\fP] <\fI\-s\fP /path/to/socket> \fI\-r\fP /program/to/run
+
+.SH "DESCRIPTION"
+.LP 
+pure\-authd is a daemon that forks an authentication program, waits for an authentication reply, and feed them to an application server.
+.TP 
+pure\-authd listens to a local Unix socket. A new connection to that socket should feed pure\-authd the following structure :
+
+account:xxx
+
+password:xxx
+
+localhost:xxx
+
+localport:xxx
+
+peer:xxx
+
+end
+.TP 
+(replace xxx with appropriate values) . localhost, localport and peer are numeric IP addresses and ports. peer is the IP address of the remote client.
+.TP 
+These arguments are passed to the authentication program, as environment variables :
+
+AUTHD_ACCOUNT
+
+AUTHD_PASSWORD
+
+AUTHD_LOCAL_IP
+
+AUTHD_LOCAL_PORT
+
+AUTHD_REMOTE_IP
+
+AUTHD_ENCRYPTED
+.TP 
+The authentication program should take appropriate actions to fetch account info according to these arguments, and reply to the standard output a structure like the following one :
+
+auth_ok:1
+
+uid:42
+
+gid:21
+
+dir:/home/j
+
+end
+
+.TP 
+\fBauth_ok:\fRxxx
+If xxx is 0, the user was not found (the next authentication method passed to pure\-ftpd will be tried) . If xxx is \-1, the user was found, but there was a fatal authentication error : user is root, password is wrong, account has expired, etc (next authentication methods will not be tried) . If xxx is 1, the user was found and successfully authenticated.
+.TP 
+\fBuid:\fRxxx
+The system uid to be assigned to that user. Must be > 0.
+.TP 
+\fBgid:\fRxxx
+The primary system gid. Must be > 0.
+.TP 
+\fBdir:\fRxxx
+The absolute path to the home directory. Can contain /./ for a chroot jail.
+.TP 
+\fBslow_tilde_expansion:\fRxxx \fI(optional, default is 1)\fR
+When the command 'cd ~user' is issued, it's handy to go to that user's home directory, as expected in a shell environment. But fetching account info can be an expensive operation for non\-system accounts. If xxx is 0, 'cd ~user' will expand to the system user home directory. If xxx is 1, 'cd ~user' won't expand. You should use 1 in most cases with external authentication, when your FTP users don't match system users. You can also set xxx to 1 if you're using slow nss_* system authentication modules.
+.TP 
+\fBthrottling_bandwidth_ul:\fRxxx \fI(optional)\fR
+The allocated bandwidth for uploads, in bytes per second.
+.TP 
+\fBthrottling_bandwidth_dl:\fRxxx \fI(optional)\fR
+The allocated bandwidth for downloads, in bytes per second.
+.TP 
+\fBuser_quota_size:\fRxxx \fI(optional)\fR
+The maximal total size for this account, in bytes.
+.TP 
+\fBuser_quota_files:\fRxxx \fI(optional)\fR
+The maximal number of files for this account.
+.TP 
+\fBratio_upload:\fRxxx \fI(optional)\fR
+.TP 
+\fBradio_download:\fRxxx \fI(optional)\fR
+The user must match a ratio_upload:ratio_download ratio.
+.TP 
+\fIOnly one authentication program is forked at a time. It must return quickly.\fR
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-u\fR <\fIuid\fP>
+Have the daemon run with that uid.
+.TP 
+\fB\-g\fR <\fIgid\fP>
+Have the daemon run with that gid.
+.TP 
+\fB\-B\fR
+Fork in background (daemonization).
+.TP 
+\fB\-s\fR <\fI/path/to/socket\fP>
+Set the full path to the local Unix socket.
+.TP 
+\fB\-R\fR <\fI/path/to/program\fP>
+Set the full path to the authentication program.
+.TP 
+\fB\-h\fR
+Output help information and exit.
+.SH "EXAMPLES"
+.LP 
+To run this program the standard way type:
+.LP 
+pure\-authd \-s /var/run/ftpd.sock \-r /usr/bin/my\-auth\-program &
+.LP 
+pure\-ftpd \-lextauth:/var/run/ftpd.sock &
+.TP 
+/usr/bin/my\-auth\-program can be as simple as :
+#! /bin/sh
+
+echo 'auth_ok:1'
+
+echo 'uid:42'
+
+echo 'gid:21'
+
+echo 'dir:/home/j'
+
+echo 'end'
+.SH "AUTHORS"
+.LP 
+Frank DENIS <j at pureftpd dot org>
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959",
+.BR "RFC 2389",
+.BR "RFC 2228" " and"
+.BR "RFC 2428".

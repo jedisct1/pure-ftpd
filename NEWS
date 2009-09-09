@@ -1,0 +1,818 @@
+
+* Version 1.0.23:
+[todo]
+
+* Version 1.0.22:
+ - the LDAP authentication backend now supports TLS encryption.
+ - TLS encryption is supported on data channels.
+ - downloads require way less CPU time on platforms with slow mmap() calls.
+ - MySQL 5+ stored procedures can now be used in the authentication process. 
+ - time zones issues should be fixed for good.
+ - on-demand directories can now be created with any set of permissions.
+ - password scrambling of MySQL 5+ is now supported.
+ - a catalan translation has been contributed.
+ - spurious disconnections due to some clients keepalive tricks have
+been fixed.
+ - custom authentication handlers are now informed about the encryption
+status of the session.
+ - standard-conformance and compatibility with several clients have improved.
+ - large files are now supported by default.
+ - enhanced support for Solaris.
+ - a bunch of bug fixes, optimizations and compatibility with newer
+libraries and operating system versions.
+ - "ftp" and "anonymous" user names can have passwords if the -E switch (no
+anonymous logins) is specified.
+ - in compatibility mode, non-dangling symbolic links are now displayed as
+if they were regular files/directories.
+ - --with-everything now includes privsep.
+ 
+* Version 1.0.21:
+ - pure-pw has a new option (-F) to specify the location of the puredb
+database.
+ - --with-rendezvous is now --with-bonjour.
+ - User names can now be up to 127 characters long by default.
+ - Compilation with PAM support has been fixed on MacOS X.
+ - The MySQL PASSWORD() function can now be used with MySQL >= 4.1.
+ - Logging has now the correct timezone.
+ - Experimental support for RFC2640 (UTF-8), based upon code contributed by
+Jui-Nan Lin.
+ - The LDAP schema has been changed: FTPStatus should be a boolean.
+ - The pid file can now be set for pure-authd and pure-uploadscript.
+Contributed by Old Sparky.
+ - Support for large files is now enabled by default, with no slowdown on
+Linux.
+ - SITE UTIME and OPTS MLST have been implemented.
+ - Huge performance improvement while transfering a lot of small files.
+ - Better handling of aborted transfers.
+ - MySQL queries can now include multiple statements (MysQL 4.1 and later)
+and call MySQL 5 stored procedures. Thanks to Mike Goins.
+ - MySQL connection errors are now logged.
+
+* Version 1.0.20:
+ - On MacOS X Panther and Tiger, clients were sometimes rejected when they has
+no reverse DNS entry and DNS resolution was enabled. This has been fixed.
+Thanks to Yann Thomas Gerard <inside@parasiterecords.com> .
+ - The command-line parser was broken on FreeBSD and Solaris in version
+1.0.19. This has also been fixed.
+   People running other operating systems don't need to upgrade.
+
+* Version 1.0.19:
+ - A workaround for pure-ftpwho not working on OpenBSD has been added.
+ - Real disk space is no more shown.
+ - A possible denial of service when too many users were connected should be
+fixed. Reported by Agri <agri@desnol.ru>, thanks!
+
+* Version 1.0.18:
+ - A new, nice-looking PDF version of the documentation is now available from
+http://www.pureftpd.org/readme.pdf . Contributed by Torgny Wernersson.
+ - The beast now compiles and links against MySQL 4.1.x, but passwords must
+not be hashed with MySQL-specific hashing function.
+ - Buglets were fixed in the documentation.
+ - Two new translations were added : hungarian and catalan. Contributed by
+Bánhalmi Csaba and Contributed by Oriol Magrané.
+ - The server now uses distinct IPv4 and IPv6 to listen to both protocols on
+all operating systems. A new switch, -6, forces the server to only listen to
+IPv6.
+ - W3C and CLF alternative log formats are now more standard conformant.
+ - Pure-FTPd can now produce WU-FTPd (xferlog) compatible log files.
+ - Support for Rendezvous was added on MacOS X.
+ - Support for Apple / GNUStep plist data output was added to pure-ftpwho.
+ - UTF-8 characters are now supported in file names. A new switch,
+--without-unicode, can be used to filter out non-latin characters.
+
+* Version 1.0.17a:
+ - An old standing issue has been fixed : ungracefully aborted transfers
+caused the session to exit without removing ftpwho entry and atomic files.
+This fix also speeds up ftpwho and peruserlimit.
+
+* Version 1.0.17:
+ - The SSL certificate file can now be changed through a new configuration
+switch, --with-certfile. It doesn't depend on sysconfdir any more and it
+defaults to the original location : /etc/ssl/private/pure-ftpd.pem .
+ - Shadowed NIS accounts and MacOS X Panther system accounts are now processed
+by the pure-pwconvert tool.
+ - The server doesn't reject users any more on Linux when capabilities are
+used.
+ - The documentation has been improved (man pages, README, FAQ, typos).
+ - Optimizations have been made.
+ - SO_REUSEPORT is now used on FreeBSD to always bind the ftp-data port.
+ - SSL-related error messages are now more explicit.
+ - The SITE TIME command has been implemented.
+ - The sample PAM configuration file has been rewritten.
+ - A logfile parser has been added to the contribs.
+ - MacOS X Panther specific instructions have been added.
+ - Upload is now atomic. A file is uploaded with a temporary name and it gets
+its final name only once the upload has been completed. If a file already
+exists with the same name, the content can be preserved until the new content
+has been fully transfered (using the new --notruncate run-time switch). Web
+servers will no more serve partially transfered files during uploads.
+  The new handling of uploads also limits the races in virtual quota handling.
+
+* Version 1.0.16c:
+ - The PAM backend and the CGI mode were accidentally broken in version
+1.0.16b. This version fixes both issues.
+ - The Norwegian translation has been updated.
+
+* Version 1.0.16b:
+ - The server now properly compiles with SSL/TLS on RedHat 9 systems.
+ - pure-ftpwho now outputs nice-looking XHTML 1.1 conformant code, an XSS
+issue has been fixed and the local host name is now properly displayed in
+verbose mode.
+ - The path to SSL certificates now follows the --sysconfdir prefix.
+ - Minor optimizations have been made.
+ - IPv4 and IPv6 addresses will now listen for connections even
+without the -4 switch on NetBSD and FreeBSD.
+
+* Version 1.0.16a:
+ - pure-uploadscript was broken in 1.0.16 due to a typo and sometimes it
+wouldn't work on some systems.
+
+* Version 1.0.16:
+ - Authentication is now working on Solaris with shadow/NIS. Based
+upon a patch by Axel Apitz <a_apitz@pixelpark.com>.
+ - Bugs in starting scripts were fixed.
+ - A big cleanup in man pages was performed by Claudiu Costin.
+ - Support for SSL/TLS was implemented. This is the end of cleartext
+passwords sent through the network.
+ - Pure-FTPd is now working on MacOS X Panther.
+ - The software can also be linked against MySQL 4.1.x.
+
+* Version 1.0.15:
+ - A turkish translation has been added. Thanks to Mehmet Cokcevik
+<dns@netline.com.tr> .
+ - Various functional and portability fixes have been made to the
+handling of upload scripts, to the pure-pw command and to the
+automatic creation of home directories.
+ - Accounts in a puredb database can now be quickly listed ("pure-pw
+list").
+ - The anonymous FTP directory can now be overriden on the Windows
+port (using a WIN32_ANON_DIR environment variable).
+ - The default banner has been stripped down to look more
+professionnal (ie. boring).
+ - Transfer speed on BSD systems has been improved.
+ - The license of the whole package has changed from GPL to a simplified
+BSD license.
+
+* Version 1.0.14:
+ - Privilege separation has been introduced. When this feature is
+enabled, each client session spawns two processes communicating over a
+private channel : a restricted trusted part and the main part that
+definitely revokes all privileges after authentication and chroot().
+Add --with-privsep to ./configure in order to enable that feature.
+ - Automatic detection of Virtuozzo was added.
+ - Forced passive IP addresses (-P) can now work with gateways whoose
+addresses are dynamic (DSL and cable modem users), using symbolic host
+names.
+
+* Version 1.0.13a:
+ - The previous release broken compilation with PostgreSQL and it
+didn't work any more with very old versions of the Perl interpreter.
+Both issues were fixed. No other change has been made - If 1.0.13
+works for you, there's absolutely no need to upgrade.
+
+* Version 1.0.13:
+ - Traditional and simplified chinese translations are not messed any
+more (Thanks to Ying-Chieh Liao) .
+ - The documentation has been improved.
+ - OpenLDAP 2.1.x is now supported.
+ - New LDAP directives were added to provide more flexibility
+(LDAPFilter, LDAPHomeDir and LDAPVersion, see README.LDAP) .
+ - On-demand directories are now also created when path contains extra
+slashes.
+ - pure-uploadscript will no more immediately give up when the server
+hasn't been started before.
+ - Files whoose names contains non-printable characters are not listed
+any more.
+ - A new switch (--with-boring) has been introduced to produce more
+professional-looking messages.
+ - Zero-copy transfers of large files have been fixed on Solaris,
+thanks to Emmanuel Hocdet.
+ - Larger banner messages can now be displayed.
+ - Owner-readability is now only enforced for files when quotas are
+enabled (Claudiu) .
+ - A new Czech translation has been added. Contributed by Martin Sarfy
+<xsarfy@informatics.muni.cz>
+ - Default UID and GID can now be used for SQL-based authentication,
+contributed by Clive Goodhead, adapted to PostgreSQL as well.
+ - A Vpopmail authentication module has been added
+(contrib/pure-vpopauth.pl) .
+ - "make -f Makefile.gui" should work again on most today's Linux
+distributions.
+ - The Win32 port was slightly improved. The server is now compiled as
+non-root (but binds port 21) and ASCII transfers are not mangled any
+more.
+ - The RPM initialization script (redhat.init, installed as
+/etc/init.d/pure-ftpd) now calls pure-config.pl . It means that
+/etc/sysconfig/pure-ftpd is deprecated and you must use
+/etc/pure-ftpd.conf instead.
+
+* Version 1.0.12:
+ - New workarounds and conformance fixes were added to improve client
+compatibility.
+ - Zero-copy downloads are now enabled on HPUX and Solaris.
+ - Russian and Chinese (simplified + traditional) translations were
+added.
+ - LDAP_FTPUID and LDAP_FTPGID are now really fetched from the
+directory.
+ - The Windows ports has been stabilized.
+ - A protection against common bruteforce scanners for hidden directories
+has been added.
+ - The FTP data connection assurance draft (ESTA/ESTP) has been implemented.
+ - Per-user (including anonymous) concurrency limits are now available.
+
+* Version 1.0.11:
+ - New translation: norwegian. Contributed by Kurt Inge Smådal /
+EasyISP.org <kurt@easyisp.org> .
+ - The server now compiles and runs on OpenBSD/Sparc and HPUX.
+ - Minor fixes and cleanups were made.
+ - The good'ol poweredby.jpg logo has been replaced by pure-ftpd.png, the
+new official logo contributed by Gabriele Vinci <gabriele@pronto.it> .
+ 
+* Version 1.0.10:
+ - Pure-FTPd can now compiles out of the box on OpenBSD with PostgreSQL.
+ - Overall minor speedups were comitted.
+ - File names with multiple successive dots in their names are now accepted
+in a virtual chroot jail.
+ - A "customerproof" option has been added, in order to turn on workarounds
+against common customer mistakes (-Z / --customerproof) .
+ - Spec file has been improved.
+ - PureDB has been upgraded to version 2.1 .
+
+* Version 1.0.9:
+ - The server can now run 100% as a non-root user with all features turned on,
+including chroot, virtual domains and virtual users.
+ - ACLs for virtual users (puredb) can now resolve dynamic host names, not
+only static IP addresses.
+ - The LDAP backend now supports an extended schema with quota, ratios,
+bandwidth management and FTP-specific uid/gid attributes.
+ - MD5 hashed passwords are now implemented in the PostgreSQL backend.
+ - External authentication modules are now properly working on non-Linux
+systems and they can compile without ratio/quotas/throttling.
+ - Korean, Spanish and Slovak translations were updated.
+ - System random devices can now be probed at run-time.
+ - PAM examples are now more generic.
+
+* Version 1.0.8:
+ - /./ in path to home directory is now accepted for anonymous users.
+ - Virtual chroot can now play nicely with the non-root mode: users are
+restricted to the directory pure-ftpd was started in.
+ - The package was ported to AtheOS and Windows.
+ - pure-quotacheck can now run as any user. (suggested by Philip Mak
+<pmak@aaanime.net>) .
+ - MD5 passwords can now be used in SQL authentication. -Contributed by Nicolas
+Doye.
+ - W3C logfiles can now be generated (-O w3c:/path/to/log/file) . -
+contributed by Thomas Briggs <tom@sane.com> .
+ - New switch: -G (--norename) to disallow rename.
+ - Pure-FTPd works again on MacOS X.
+ - An external authentication handler (-lextauth:/path/to/socket) was added,
+so that any custom authentication scheme can easily be added without
+recompiling anything. See the README.Authentication-Modules file for more
+info.
+ - Long-standing bugs were fixed, compatibility with SecureFX was improved,
+compilation with SSL-enabled OpenLDAP is now properly working, bashisms were
+removed, source code was cleaned up, FAQ has grown, etc.
+
+* Version 1.0.7:
+ - Use OpenBSD security features when applicable. Thanks to Brad Smith
+<brad@openbsd.org>
+ - Virtual hosts and virtual chroot can now play together.
+ - Directory aliases ("cd" shortcuts and "SITE ALIAS" command) were
+implemented. (by Kenneth Stailey <kstailey@yahoo.com) .
+ - Bug fixes in virtual chroot and -k .
+
+* Version 1.0.6:
+ - New "virtual chroot" feature: chrooted users can now follow any symbolic
+link, even when it is pointing to a file located outside the user home's
+directory. You must configure with --with-virtualchroot to enable that
+feature.
+ - Users can now be stored in a PostgreSQL database. Contributed by Cindy
+Marasco <cindy@getaclue.org> .
+ - More compilation fixes for old Solaris versions.
+ - A workaround for an FTP Explorer bug has been fixed. -Thanks to Shiroiwa
+Noboru for reporting this.
+ - pure-pw useradd now works on some buggy GlibC versions.
+ - New translation: Swedish. Contributed by Ulrik Sartipy <ulrik@raj-raj.net>
+ - Access to dot-files is now allowed even with virtual quotas. Thanks to
+Benoit Massard.
+
+* Version 1.0.5:
+ - Rename and delete operations are now syslogged.
+ - Multiple IP/mask filtering rules can now be used for a single account with
+virtual users (puredb) .
+ - Pure-FTPd now compiles and runs on systems without snprintf(), especially
+Solaris < 2.6 . (contributed by Kenneth Stailey) .
+ - Documentation and translations were updated.
+ - Minor bugs were fixed.
+
+* Version 1.0.4:
+ - .message files are now handled on Irix systems - Michael Glad
+<glad@daimi.au.dk> .
+ - Passive mode can now be handled through SMC Barricade routers, that
+deliberately block it. Contributed by Gareth Blades <info2@gbnetwork.co.uk>
+ - A preliminary FAQ was added.
+ - The package now compiles and runs on Corel Netwinder devices (Gareth
+Woolridge) .
+
+* Version 1.0.3:
+ - A workaround for a bug in Macromedia Homesite was added. Thanks to
+Stephan Wentz <wentz@gmx.de> for his help on that issue.
+ - ASCII downloads have been optimized.
+
+* Version 1.0.2:
+ - Non-atomic renaming of files is now supported when virtual quotas are
+enabled.
+ - New compile-time option to support system (not virtual) quotas.
+ - pure-ftpwho displays bandwidth usage and download progression again.
+Thanks to Erik Larsson for reporting this.
+ - On-demand creation of home directories can now create all parent
+directories.
+ - New UPLOAD_VUSER environment variable, to fetch virtual user names
+through pure-uploadscript.
+ - PureDB version 2.0 was merged in. Lookups are 2x to 10x faster than with
+version 1.0, due to a new binary search code, contributed by Philip Gladstone
+<philip@okena.com>
+ - New MaxDiskUsage configuration file in Perl/Python config file parsers.
+Contributed by Laurent Culioli <laurent@mandrakesoft.com>
+
+
+                            ***** IMPORTANT *****
+
+If you are using PureDB files with versions < 1.0.2, you must rebuild the
+database (pure-pw mkdb) after upgrading to 1.0.2 or later.
+
+                            ***** IMPORTANT *****
+
+* Version 1.0.1:
+ - Bandwidth throttling is now fixed on Linux platforms when sendfile() is
+enabled.
+ - Quotas fixes.
+ - ASCII upload fixes. Thanks a million to Terry Davis <td@birddog.com> for
+his help.
+ - New funny french messages pack.
+
+* Version 1.0.0:
+ - Support Base64-encoded MD5/SHA and salted MD5 (SMD5) and SHA (SSHA) 
+LDAP passwords.
+ - Fixed throttling with virtual users.
+ - Members of the trusted group can delete files even when -K is enabled.
+ - New translations: Slovak (contributed by Robert Varga) and Korean
+(contributed by Im Eunjea) .
+ - Portability enhancements. Pure-FTPd now compiles and runs on SGI Irix.
+Thanks to Florin Andrei.
+ - Fixed compilation on Sparc 64-bit architectures with Sun Forte C
+compiler. Contributed by Xavier Beaudouin <kiwi@oav.net>
+ - Code cleanups. -Matthias.
+ - pure-pw can build puredb databases, regardless of server compilation
+options. Suggested by Arkadiusz.
+ - New --with-confdir switch for ./configure .
+ - Allow files beginning/ending with spaces. Thanks to Andreas Piening
+<Andreas.Piening@ePost.de> for helping to solve that issue.
+
+* Version 0.99.9:
+ - All known bugs in pure-ftpwho were fixed.
+ - Robustness improvements.
+ - Directory listings speedups.
+ - New '-m' option to pure-pw that automatically calls pure-pw mkdb after
+a change to an account. Suggested by Olivier Deckmyn.
+ - New optional PURE_PASSWDFILE and PURE_DBFILE environment variables for
+pure-pw. Suggested by Olivier Deckmyn.
+ - "pure-pw mkdb" without any further argument can now rebuild the database
+with default files.
+ - New Italian translation, contributed by Stefano F. <fs@sp.unipi.it> .
+ - New Brazilian Portuguese translation, contributed by Roger Constantin
+Demetrescu <roger.demetrescu@gmail.com>
+ - New poweredby.jpg web button, contributed by Freeman <freeman@ozac.org>
+ - New -g (--pidfile=) option to specify the location of the PID file.
+Suggested by Jason Lunz.
+
+* Version 0.99.4:
+ - Better support for LFS. Contributed by Thorsten Kukuk <kukuk@suse.de> .
+ - Pure-PW bug fixes.
+
+* Version 0.99.3:
+ - Old versions of MySQL (<= 3.22.x) are now supported. Thanks to Marc
+Jauvin <marc@register4less.com> .
+ - Individual quotas can be stored in MySQL databases. Contributed by Marc
+Jauvin.
+ - Support for MySQL's password() hash function. Contributed by Robin
+Ericsson (lobbin) .
+ - New "any" option for the MySQLCrypt field, to match any hashing function.
+ - Use MySQL transactions with InnoDB, BerkeleyDB and Gemini tables.
+ - Ratios and bandwidth can now be stored in MySQL databases.
+ - New SQL digraph: \D (remote IP address as a long decimal number).
+Suggested by Bernie.
+ - Individual IP filtering and time restrictions can be enabled for virtual
+users.
+ - New uploads are now removed if the quota has already been exceeded.
+ - Pure-FTPd now compiles and works on very old Linux distributions and
+Darwin (MacOS X) .
+
+* Version 0.99.2a:
+ - When quotas were enabled, but no quota was specified, uploads were
+always truncated to 0 bytes. It has been fixed.
+
+* Version 0.99.2
+ - Dutch translation, provided by Johan Huisman
+<sietze.jan.huisman@12move.nl> and Jan van Veen <jveen@triple-p.nl>
+ - Fix --createhome option, reported by Lan Yufeng.
+ - New --without-iplogging compile-time switch to never log any IP address,
+for servers that need to protect privacy. Suggested by Jeff Moe.
+ - Added a workaround for buggy IP stacks.
+ - RPM can now be build with PAM support.
+ - A new safe-guard protects users against executing confusing chmod commands
+on their home directories (and root on /, too) .
+ - Support for virtual quotas (new option: --quotas / -n , new command:
+pure-quotacheck) . Please read the "virtual quotas" section in README.
+ - New port: Playstation 2 Linux, thanks to Tomonori Kamitaki
+<tomo@t-square.jp>
+ - The memory footprint for uploads has been slightly reduced, especially
+when bandwidth throttling is enabled. Thanks to Daniel Tschan.
+ - Virtual users (FTP-only local user list, independant of /etc/passwd) were
+implemented. Every user can have different bandwidth, quota and ratio.
+
+* Version 0.99.1b
+ - Access to remote MySQL databases has been fixed.
+ - New program: "pure-statsdecode" to convert timestamps into human-
+readable dates in "stats" logfiles.
+ - IP addresses of remote clients can now be used in SQL queries with a new
+'\R' digraph.
+ - A default uid and gid can now be specified for LDAP objects.
+ - The shell is not checked any more with MySQL and LDAP authentication
+schemes.
+ - New switch: --createhomedir (-j) to automatically create missing home
+directories. Suggested by Christian Janssen <c.janssen@de.kddi.com> .
+
+* Version 0.99.1a
+ - New alternative logging format: "stats", designed for the ftpStats
+application.
+ - Cosmetic fix with ratios.
+ - New -K / --keepallfiles directive.
+ - Workaround for broken clients that don't properly end up their command
+lines.
+
+* Version 0.99.1
+ - Accounts can now be stored in a MySQL database.
+ - Uploadscript work together with Apache-like log files.
+ - Support for asynchronous (pipelined) FTP.
+ - Process names are now properly changed on Linux.
+ - Always report download progression and individual bandwidth usage in
+pure-ftpwho.
+ - Fix support of old Solaris versions.
+ - Bandwidth throttling is now working with > 2Gb files.
+ - Assorted optimizations, bug fixes and cleanups.
+
+* Version 0.99b
+ - Big fixes and improvements to LDAP authentication: Solaris compilation
+fixes and support MD5 and SHA1 digests.
+ - Fixed Apache-like log files for Webalizer.
+ - Downloaded/uploaded files are now logged with LOG_NOTICE priority.
+ - Support for network filesystems.
+ - Display real user name instead of uid even for chrooted users.
+ - Don't crash after authentication failures when the server is launched in
+non-root mode.
+ - RPM improvements.
+
+* Version 0.99a
+ - Always display the local IP and port with pure-ftpwho -v.
+ - Fixed CLF logfiles. Thanks to Paul Hansen for reporting this.
+
+* Version 0.99
+ - New README.Debian file.
+ - Danish translation, contributed by Isak Lyberth.
+ - Fixed throttling and performance improvements on FreeBSD. Reported by
+Rafa Michaelski.
+ - Show setuid/setgid/sticky bits in ls -l.
+ - New -R/--nochmod option to disallow SITE CHMOD usage.
+
+* Version 0.99pre2
+ - "ftp" can be used as a fake shell, no need to add it to /etc/shells.
+ - Improvements to the RPM package.
+ - More accurate throttling.
+ - New "-1" (--logpid) option to add PID info to syslog output. Contributed
+by Matthias Andree.
+ - Changed the trusted gid behavior when the /./ trick is used: members of
+the trusted group *are* chrooted, but they have no ratio and dot-files are
+allowed - Suggested by Leszek Reimus.
+ - New --with-paranoidmsg compile-time option to favor paranoia over
+sysadmin-friendly messages.
+ - New --with-everything compile-time option to build a full-featured server.
+ - Backward compatibility with old IP stacks (old GlibC, Solaris < 8, ...)
+ - --help now displays the server version (only for root) .
+ - Memory optimizations.
+ - New --altlog option to created log files in alternative formats.
+Apache-like files can be produced so that any web statistic software can be
+used to analyze Pure-FTPd activity.
+ - Workaround for an AbsoluteFTP bug (reported by Daniel Elsaesser)
+regarding CWD error codes.
+
+* Version 0.99pre1
+ - Have MSIE open an authentication dialog when anonymous users are
+forbidden (-E) in compatibility mode (-b) .
+ - Don't choke CuteFTP when the NAT mode (-N) is enabled. Reported by David
+Vincelli.
+ - Have metacharacters work on OpenBSD.
+ - Fixed typos in documentation.
+
+* Version 0.98.7
+ - Fixed a bug with ASCII upload: with some clients, the last carriage
+return wasn't written.
+ - Allow the retrieval of regular files pointed by symbolic links.
+ - Fixed arithmetic errors in pure-ftpwho.
+ - CHMOD and DELE workarounds for broken clients.
+ - Optimizations.
+ - Don't hangup when a new transfer is asked but no semaphores are available.
+ - Try to handle very low bandwidth throttling (reported by Sergey Mihailov
+<nxg@nod4mail.pvrr.ru>) .
+
+* Version 0.98.6
+ - Fixed a nasty bug introduced in 0.98.5: overwriting a file didn't
+truncate the previous content (Reported by Chris Mentjox).
+
+* Version 0.98.5
+ - Recognize ADAT command to please Kerberized Fetch 5 clients (Macintosh) -
+Thanks to Darren Casey for reporting this.
+ - Fix syslog output on broken implementations without locking (reported by
+Sami Koskinen).
+ - Don't auto-login to please some broken clients who are sending strange
+commands before being authenticated.
+ - New 'contrib' directory with users-contributed work.
+ - Fix support for > 2Gb files on Linux.
+ - Fix PAM support on Solaris.
+ - Don't wait after a download when throttling is enabled.
+ - Implement --maxdiskusagepct and --maxload options on non-Linux systems.
+ - Accept non-anonymous users in virtual hosts (suggested by Chris Mentjox
+<chris@widexs.nl>.
+ - Parse all clients in pure-ftpwho, even when we reached the limit
+(reported by Brandon Covert).
+ - Performance improvements under high load: rewritten command parser.
+ - Don't remove partially uploaded files for non-anonymous users.
+ - The script run after an upload can now get extra info about the newly
+uploaded file in environment variables: UPLOAD_SIZE, UPLOAD_PERMS,
+UPLOAD_UID, UPLOAD_GID, UPLOAD_USER and UPLOAD_GROUP.
+ - New option (-r) to automatically rename uploaded files instead of
+overwriting them.
+ - New option (-i) to disallow upload to anonymous users, whatever directory
+permissions are (suggested by Chris Mentjox).
+ - New option (-V <ip>) to restrict non-anonymous access to a specific IP
+address.
+ - New configuration flag: --with-virtualhosts to enable /etc/pure-ftpd/
+support.
+
+* Version 0.98.4
+ - The nasty bug of the -C option was finally fixed: no more syslog output
+in client sockets (Thanks to Paul Hansen for tracking this down).
+
+* Version 0.98.3
+ - Reliability fixes.
+ - Security fix for non-Linux and non-BSD systems.
+ - Fix listing of symbolic links to directories (Reported by Martin
+Hadenfalk) .
+
+* Version 0.98.2a
+ - Accept "." in LDAP user names.
+ - Fix --sysloghack typo for Debian users.
+
+* Version 0.98.2
+ - Enhanced portability: the server is now working on LinuxPPC, Solaris 8, 
+Tru64 and possibly other modern operating systems. Thanks a lot to Erik
+(Cirvam, <erik@sublevo.com>) for his very nice help on the Solaris port.
+ - Backward-compatibility with old OpenLDAP releases (1.x), thanks to
+M.Robbins.
+ - Bandwidth is properly reported after a resumed transfer.
+ - Transfers can now be gracefully aborted by clients. 
+ - Improved performance: lower system load during transfers (especially
+under Linux and FreeBSD) and various optimizations.
+ - Improved performance (2): new code for directory listings, way much
+efficient than the previous one, with reduced memory footprint and disk I/O.
+
+* Version 0.98.1
+ - Files and directories can now have separated umask. It fixes the 'mkdir'
+permissions problem introduced in 0.98.
+ - Improved display of user group list.
+
+* Version 0.98
+ - Support for long options on BSD.
+ - Actually include the polish translation.
+ - Spanish translation (Luis Llorente Campo). 
+ - Renamed mrtginfo to pure-mrtginfo.
+ - The default umask is now 133. By explicitely setting the mask to 022,
+uploaded files can become executable.
+ - Logging can be disabled (-f none) .
+ - Upload and download bandwidth can now be throttled separately.
+ - Pure-ftpwho is now reporting transfer progress, file sizes and individual
+bandwidth usage. There's also a new target (-s, 'shell mode') for easy
+parsing with cut/sed .
+ - A new daemon (pure-uploadscript) can now automatically run a program or
+script after a successful upload.
+
+* Version 0.97.7
+ - Fixed Xinetd documentation (Olivier Tharan).
+ - Added 'welcome.msg' compatibility (Togusa).
+ - Change process names on BSD systems.
+ - Minor bug fixes or optimizations.
+ - Completed the romanian translation (Claudiu) .
+ - Added polish translation (Arkadiusz) . 
+ - Safe defaults for -c.
+ - New 'pure-ftpwho' command to display current active connections, with
+text, HTML, CGI and XML outputs.
+
+* Version 0.97.6
+ - Allow anonymous users to read dot-files if '-z' is specified.
+ - New option: '-N' for servers behind broken NAT/masquerading gateways.
+ - Fixed a possible security flaw in file listings.
+ - Display '.banner' files for all users, not just anonymous ones (suggested
+by Shea Martin) .
+ - Fixed -U option (reported by Shea Martin) .
+ - Updated documentation/man pages.
+ - Happy Easter to everyone:)
+
+* Version 0.97.5
+ - Optimizations and portability improvements.
+ - Bug fixes: a wrong file size was logged for uploads, no space after the
+result of SIZE (fixes a problem with LeechFTP), keep all connections even
+under high load and improved configuration file parsers.
+ - New option: '-4', to only accept IPv4 connections (needed for OpenBSD).
+
+* Version 0.97.4
+ - Fixed a nasty bug with group initialization introduced in 0.97.3 .
+Reported by Brian <silent@heracles.cuties.org> .
+
+* Version 0.97.3
+ - Pure-FTPd now works on Linux and FreeBSD.
+ - German, romanian and french translations.
+ - Size of downloaded files is always logged.
+ - Enhanced support of the FTP protocol and modern extensions: multi-lines
+responses for HELP/FEAT, STAT command and new format for directory listings
+through MLST and MLSD (autodetected by NcFTP) .
+ - Minor cosmetic changes and more compilation flexibility.
+ - The server can now run as a non-privileged user.
+ - New '-k' flag to disallow upload if mode than X % of the partition is full.
+ - /var/run/pure-ftpd.pid is created in standalone mode.
+ - Support for alternative long GNU options, with built-in help.
+ - Minor bugfixes.
+
+* Version 0.97.2
+ - Fixed a big bad typo in 0.97.1 that prevented passive transfers from
+working.
+ - EPSV ALL support.
+ - The standalone server daemonizes if '-B' is given. Contributed by Jason
+Lunz.
+ - Added the size of downloaded/uploaded files in log messages.
+ - Minor optimizations.
+
+* Version 0.97.1
+ - More security paranoia for passive connections handling.
+ - Fixed a bug with .message and .banner files containing nothing but white
+spaces (thanks to Emmanuel Hocdet <man@t-online.fr> for reporting this) .
+ - More compatibility in (-b)roken mode: disable HELP and ask a dummy
+password to anonymous clients.
+
+* Version 0.97-final
+ - Accept non-ascii (accents) file names. (Reported by Louis Rouxel
+<louis@splio.com>)
+ - Dynamic process title change.
+ - Stabilized the standalone code.
+ - New '-E' option to disallow anon login even if ~ftp exists (Suggested by
+Daniel Elsaesser) .
+ - New '-C' option to limit the number of simultanous connections from the
+same client IP address.
+
+* Version 0.97pre5
+ - Pure-FTPd has now a fast and IPv6 capable standalone mode,
+so that a super-server is no more required.
+ - New '-U' option to change the umask.
+ - New '-x' and '-X' option to prevent users from reading/writing
+dot-files, even if they own them to protect files like .ssh, .qmail,
+and .history .(Thanks to William Kern for the suggestion) .
+ - Bandwidth throttling is now specified in exact KB/s.
+
+* Version 0.97pre4
+ - Added '-D' option to force 'ls' display dot-files even when a
+client doesn't send the '-a' option (ls -la) .
+ - Keep the previous permissions when overwriting a file.
+ - New '-I' option to change the maximum idle time.
+
+* Version 0.97pre3 / 0.96.2
+ - Fixed HELP and SITE commands.
+ - Faster globbing and more eye-candy built-in "ls" format.
+ - Support for shadow passwords expiration dates.
+ - Support for large files (> 2 gigabytes) .
+ - FXP now works with IPv6 as well.
+ - Standard 'fortune' files are now used as login cookies.
+ - Easier to parse and more verbose log messages.
+
+* Version 0.97pre2
+ - Memory allocation bug fixed in glibc-glob.
+ - Macroized ls.c messages for translation. 
+
+* Version 0.97pre1
+ - Check for and convert 4-in-6 addresses.
+ - Count IPv6 connections.
+ - Code cleanups, optimizations and more paranoia.
+ - Ready for translated messages.
+ - LDAP support fixed.
+ - Configurable fortune cookies (new '-F <file>' option).
+
+* Version 0.96.1
+ - Definitive fix against possible globbing denial of service.
+ - Changed the ASCII restart message to something more friendly.
+
+* Version 0.96
+ - More 'ls' fixes against denial of service.
+ - Better support for broken NAT gateways.
+
+* Version 0.96pre1
+ - Added '-P' flag (explicitely set an IP address in reply to a PASV
+command), '-A' flag (to chroot() everyone) and  '-H' flag (to avoid DNS
+resolution), '-U' flag (to limit the maximum depth of a recursive 'ls' and
+the maximum number of displayed files) and '-M' flag (allow anonymous users
+to create directories).
+ - Added FEAT command.
+ - Allow anonymous users to create directories if they have write access to
+the parent directory.
+ - Rewritten handling of virtual hosts.
+ - Full IPv6 support. 
+
+* Version 0.95.2
+ - Changed the build-in 'ls' format to have Internet Explorer properly parse
+symbolic links.
+ - Implemented STOU, ALLO and APPE commands.
+ - Added '-e' flag to only allow anonymous connections.
+ - Drop CAP_SYS_CHROOT to enhance security.
+
+* Version 0.95.1
+ - Fixed wrong user count for the '-c' option.
+ - Fixed chroot() when capabilities drop is enabled.
+ - Always force 8 bits transfers if we didn't set the compatibility
+ mode (-b) .
+
+* Version 0.95
+ - Fixed GUI for old versions of Dialog (Slackware).
+ - Handle SPSV, XCWD and XCUP commands.
+ - Improved documentation.
+ - Better PAM sample.
+ - Minor bug fixes and more security paranoia.
+ - Included a patch to improve Netfilter's FTP connection tracking.
+ - Upload/download quotas for w4r3z d00d2.
+ - Native support for LDAP directories.
+
+* Version 0.95-pre{1,2,3,4}
+
+ - Raised the upload buffer size: uploads should be a bit faster now.
+ - Bandwidth throttling (see flags '-t' and '-T') to avoid anonymous users
+fill up the whole bandwidth.
+ - Incremental delay after authentication failures to limit brute-force
+password scanning.
+ - Removed a DNS double-check that caused connection problems with hosts
+that had broken DNS entries.
+ - Installation GUI (dialog).
+ - Implemented SITE HELP.
+ - Version number is now displayed in the first banner.
+ - Insecure users (non-chrooted, non-root and anonymous) can't upload dot
+files any more.
+ - Added paranoid timeouts.
+
+* Version 0.94
+
+ - Linux capabilities fixes.
+ - SITE CHMOD support.
+
+* Version 0.93
+
+ - Support for the FXP protocol.
+
+* Version 0.92
+
+ - Added a workaround for broken clients like LeechFTP.
+ - Syslog identity changed to "pure-ftpd".
+ - Idle clients sending nothing but NOOP are now disconnected.
+
+* Version 0.91
+
+ - Possible better network throughput (TCP_CORK usage).
+ - The number of active sessions wasn't properly computed if the server port
+wasn't the default FTP port - fixed. We can now have several Pure-FTPd
+instances on different ports of the same computer.
+ - Deprecated '-x' flag in favor of '-a'.
+ - Updated man pages, documented http-style handling.
+ - Moved to Sourceforge.
+
+* Version 0.90: initial release.
+
+ - IPv6 support.
+ - PAM authentication.
+ - ASCII transfers.
+ - Preliminary large files support (needs a sendfile() wrapper).
+ - Capabilities drop.
+ - Switchable user names.
+ - Switchable humor.
+ - Cookies.
+ - Chroot()ed home directories.
+ - Various security enhancements.
+ - Fixed HTTP-style handling.
+ - Rewritten documentation.
+ - Autoconf.
+ - Code clean up and compilation fixes.
+ - No more need for mkusers - symbolic names are now dynamically cached.
+ 

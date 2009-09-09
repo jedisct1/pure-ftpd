@@ -1,0 +1,85 @@
+.TH "pure-pw" "8" "1.0.22" "Pure-FTPd team" "Pure-FTPd"
+.SH "NAME"
+.LP 
+pure\-pw \- Manage virtual users files for Pure\-FTPd
+.SH "SYNTAX"
+.LP 
+pure\-pw useradd login [\-f passwd_file] [\-F puredb_file] \-u uid [\-g gid]
+                \-D/\-d home_directory [\-c gecos]
+                [\-t download_bandwidth] [\-T upload_bandwidth]
+                [\-n max number_of_files] [\-N max_Mbytes]
+                [\-q upload_ratio] [\-Q download_ratio]
+                [\-r <allow client host>/<mask>[,<ip>/<mask>]...] [\-R <deny client host>/<mask>[,<ip>/<mask>]...]
+                [\-i <allow local host>/<mask>[,<ip>/<mask>]...] [\-I <deny local host>/<mask>[,<ip>/<mask>]...]
+                [\-y <max number of concurrent sessions>]
+                [\-z <hhmm>\-<hhmm>] [\-m]
+.br 
+pure\-pw usermod login [\-f passwd_file] [\-F puredb_file] [\-u uid] [\-g gid]
+                \-D/\-d home_directory \-[c gecos]
+                [\-t download_bandwidth] [\-T upload_bandwidth]
+                [\-n max_number_of_files] [\-N max_Mbytes]
+                [\-q upload_ratio] [\-Q download_ratio]
+                [\-r <allow client host>/<mask>[,<ip>/<mask>]...] [\-R <deny client host>/<mask>[,<ip>/<mask>]...]
+                [\-i <allow local host>/<mask>[,<ip>/<mask>]...] [\-I <deny local host>/<mask>[,<ip>/<mask>]...]
+                [\-y <max number of concurrent sessions>]
+                [\-z <hhmm>\-<hhmm>] [\-m]
+.br 
+pure\-pw userdel login [\-f passwd_file] [\-F puredb_file] [\-m]
+.br 
+pure\-pw passwd  login [\-f passwd_file] [\-F puredb_file] [\-m]
+.br 
+pure\-pw show    login [\-f passwd_file] [\-m]
+.br 
+pure\-pw mkdb    [<puredb_database_file> [\-f passwd_file]] [\-F puredb_file] 
+.br 
+pure\-pw list    [\-f passwd_file]
+.SH "DESCRIPTION"
+.LP 
+Virtual users is a simple mechanism to store a list of users, with their
+password, name, uid, directory, etc. It's just like /etc/passwd. But it's
+not /etc/passwd. It's a different file, only for FTP.
+.br 
+It means that you can easily create FTP\-only accounts without messing your
+system accounts.
+.br 
+Additionnaly, virtual users files can store individual quotas, ratios,
+bandwidth, etc. System accounts can't do this.
+.br 
+Thousands of virtual users can share the same system user, as long as they
+all are chrooted, and they have their own home directory.
+.SH "FILES"
+.LP 
+\fI/etc/pureftpd.passwd\fP
+.br
+\fI/etc/pureftpd.pdb\fP 
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+\fIPURE_PASSWDFILE\fP
+If this variable is defined, this is the default value for the text password
+file. Without this variable, /etc/pureftpd.passwd is assumed.
+.br
+\fIPURE_DBFILE\fP 
+If this variable is defined, this is the default value for the PureDB password
+file. Without this variable, /etc/pureftpd.pdb is assumed.
+.SH "EXAMPLES"
+.LP 
+Please read http://www.pureftpd.org/README.Virtual\-Users
+.SH "AUTHORS"
+.LP 
+Frank DENIS <j at pureftpd dot org>
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2228",
+.BR "RFC 2389" " and"
+.BR "RFC 2428" .

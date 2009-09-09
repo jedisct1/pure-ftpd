@@ -1,0 +1,38 @@
+.TH "pure-pwconvert" "8" "1.0.0" "Pure-FTPd team" "Pure-FTPd"
+.SH "NAME"
+.LP 
+pure\-pwconvert \- Generate a virtual users file from system accounts
+.SH "SYNTAX"
+.LP 
+pure\-pwconvert
+.SH "DESCRIPTION"
+.LP 
+This program scans system accounts (\fB/etc/passwd\fR) and outputs a FTP virtual users list, suitable to the \fBpure\-pw\fR command.
+.SH "FILES"
+.LP
+\fI/etc/passwd\fP
+.br
+\fI/etc/shadow\fP
+.br
+\fI/etc/master.passwd\fP
+.br
+
+.SH "AUTHORS"
+.LP
+Frank Denis <j at pureftpd dot org>
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2228",
+.BR "RFC 2389" " and"
+.BR "RFC 2428" .

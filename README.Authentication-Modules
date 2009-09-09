@@ -1,0 +1,149 @@
+
+
+  ------------------------ AUTHENTICATION MODULES ------------------------
+
+
+Since release 1.0.8, anyone can add new custom authentication methods to
+Pure-FTPd without recompiling anything, using "authentication modules".
+
+To enable it, you must ./configure with --with-extauth, or
+--with-everything. Linux binary packages have it enabled by default.
+
+Here's how they are working:
+
+1) A client connects to the FTP server and issues a login/password pair.
+
+2) The FTP server connects to a local separate daemon, called 'pure-authd'.
+Data transmitted to that daemon is: user's login, user's password, the IP
+address that user connected to, the local port that user connected to and
+the user's remote IP address.
+
+3) pure-authd spawns an authentication program. It can be anything,
+including a shell script. The program is given the collected info (login,
+password, IP addresses, etc) as environment variables.
+
+4) The authentication program replies (to the standard output) with the
+user's home directory, quota, ratio, bandwidth and if authentication was
+successful or not.
+
+5) pure-authd relays this info to pure-ftpd.
+
+This method is a bit slower than built-in authentication methods. But it's
+very flexible as anyone can easily write his own authentication programs.
+And they can run non-root, chrooted, with limited capabilities, etc.
+
+Communication between pure-ftpd and pure-authd is done through a local Unix
+socket. It's recommended to put that socket in a directory where non-trusted
+users have no write access to.
+
+Authentication programs can read the following environment variables to get
+info about the user trying to authenticate:
+
+AUTHD_ACCOUNT
+AUTHD_PASSWORD
+AUTHD_LOCAL_IP
+AUTHD_LOCAL_PORT
+AUTHD_REMOTE_IP
+AUTHD_ENCRYPTED
+
+They are self-explanatory. Previous global environment variables aren't
+cleared when the script is called. The content of these variables is
+_not_ quoted. If you are using shell scripts to process them, don't
+forget the quotes.
+
+The program must respond on the standard output with lines like:
+
+auth_ok:1
+uid:42
+gid:21
+dir:/home/j
+end
+
+Note the final 'end' keyword. It's mandatory.
+
+Here's the list of recognized tokens ('xxx' has of course to be filled):
+
+* auth_ok:xxx
+
+If xxx is 0, the user was not found (the next authentication method passed
+to pure\-ftpd will be tried) . If xxx is \-1, the user was found, but there
+was a fatal authentication error: user is root, password is wrong, account
+has expired, etc (next authentication methods will not be tried) . If xxx is
+1, the user was found and successfully authenticated.
+ 
+* uid:xxx
+
+The system uid to be assigned to that user. Must be > 0.
+ 
+* gid:xxx
+
+The primary system gid. Must be > 0.
+ 
+* dir:xxx
+
+The absolute path to the home directory. Can contain /./ for a chroot jail.
+ 
+*slow_tilde_expansion:xxx (optional, default is 1)
+
+When the command 'cd ~user' is issued, it's handy to go to that user's home
+directory, as expected in a shell environment. But fetching account info can
+be an expensive operation for non-system accounts. If xxx is 0, 'cd ~user'
+will expand to the system user home directory. If xxx is 1, 'cd ~user' won't
+expand. You should use 1 in most cases with external authentication, when
+your FTP users don't match system users. You can also set xxx to 1 if you're
+using slow nss_* system authentication modules.
+ 
+* throttling_bandwidth_ul:xxx (optional)
+
+The allocated bandwidth for uploads, in bytes per second.
+ 
+* throttling_bandwidth_dl:xxx (optional)
+
+The allocated bandwidth for downloads, in bytes per second.
+ 
+*user_quota_size:xxx (optional)
+
+The maximal total size for this account, in bytes.
+ 
+* user_quota_files:xxx (optional)
+
+The maximal number of files for this account.
+ 
+* ratio_upload:xxx and radio_download:xxx (optional)
+
+The user must match a ratio_upload:ratio_download ratio.
+
+* per_user_max:xxx (optional)
+
+The maximal authorized number of concurrent sessions.
+
+
+          ------------------------ EXAMPLE ------------------------
+          
+          
+Here's a very basic example. Our sample authentication program will only
+accept user 'john' with any password and return a fixed home directory and
+uid/gid.
+
+#! /bin/sh
+
+if test "$AUTHD_ACCOUNT" = "john"; then
+  echo 'auth_ok:1'
+  echo 'uid:69'
+  echo 'gid:42'
+  echo 'dir:/tmp'
+else
+  echo 'auth_ok:0'
+fi
+echo 'end'
+
+Let's say we save this file as /usr/bin/ftp-auth-handler
+
+Now, we have to run pure-authd and pure-ftpd, to connect them through a
+local socket and to tell pure-ftpd to use our external authentication module:
+
+pure-authd -s /var/run/ftpd.sock -r /usr/bin/ftp-auth-handler &
+pure-ftpd  -lextauth:/var/run/ftpd.sock &
+
+That's all. Now, we can only log in as 'john', as all FTP authentication is
+done by the shell script.

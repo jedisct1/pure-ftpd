@@ -1,0 +1,48 @@
+Troll-FTPd is a nice FTP server coded by Arnt Gulbrandsen <agulbra at troll.no>
+from Troll Tech. Despite his lack of popularity, it has always been a very
+good project, coded with the following requirements in mind :
+
+- No useless bloat,
+- No external command calls (source of most security flaws)
+- RFC standards conformance,
+- Easy to set up,
+- User friendly,
+- Secure.
+
+The official repository for this piece of software is
+ftp://ftp.troll.no/freebies/ftpd/ .
+
+People who tried Troll-FTPd usually kept it and used it in production
+servers for years without any problem. Alternatively, WU-FTPd, ProFTPd,
+BeroFTPd and many others have had serious security and reliability issues,
+and system administrators had to always watch for patches and new releases
+to ensure a good nights sleep.
+
+Troll-FTPd was often considered for inclusion in secure distributions, but
+the project was't actively maintained. Release 1.25 is dated 03/1999 and has
+been made with help from Janos Farkas, cmj at localnet.com, August Fullford and
+Ximenes Zalteca. Troll-FTPd 1.26 was released two years after, just to fix
+minor bugs. Arnt said that there won't be any other release unless he ever
+moves to IPv6.
+
+This is why I started to collect various unofficial patches over the internet,
+merged them (and it wasn't painless), added my own ones, cleaned up the code,
+audited it, repackaged it, rewrote the documentation... and the Pure-FTPd
+project was born.
+
+The first released version of Pure-FTPd was labeled 0.90 because I wanted
+some margin before 1.00, just to add missing features that prevent people
+from moving from other FTP servers. Also the documentation was in need for
+a full update before version 1.00 . It was based on Troll-FTPd 1.25, and
+changes from 1.26 were backported.
+
+Troll-FTPd 1.26 and earlier are vulnerable to a local root exploit
+(Troll-FTPd 1.27 was released later to fix it) . Pure-FTPd is not vulnerable
+to this, and it has never been. The fix was already applied to the first
+version of Pure-FTPd before the flaw was discovered and fixed in Troll-FTPd.
+
+Thanks to Arnt for his excellent job. The Pure-FTPd project would never have
+been started without it.
+
+
+                       -Frank DENIS "Jedi/Sector One" <j at pureftpd dot org>

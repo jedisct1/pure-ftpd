@@ -1,0 +1,103 @@
+.TH "pure-uploadscript" "8" "1.0.2" "Pure-FTPd team" "Pure-FTPd"
+.SH "NAME"
+.LP 
+pure\-uploadscript \- Automatically run an external program after a successful upload
+.SH "SYNTAX"
+.LP 
+pure\-uploadscript [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-B\fP] [\fI\-g\fP <\fIgid\fP>] [\fI\-h\fP] \fI\-r\fP <\fIprogram to run\fP> [\fI\-u\fP <\fIuid\fP>]
+.SH "DESCRIPTION"
+.LP 
+If Pure\-FTPd is compiled with \fB\-\-with\-uploadscript\fR (default in binary distributions), and if the \fB\-o\fR (or \fB\-\-uploadscript\fR) is passed to the server, a named pipe called \fB/var/run/pure\-ftpd.upload.pipe\fR is created. You will also notice an important file called \fB/var/run/pure\-ftpd.upload.lock\fR, used for locking.
+.br
+After a successful upload, the file name is written to the pipe.
+.br
+\fBpure\-uploadscript\fR reads this pipe to automatically run any program or script to process the newly uploaded file.
+.SH "OPTIONS"
+.LP 
+.TP
+\fB\-B\fR
+Daemonize the process and fork it in background.
+.TP
+\fB\-g\fR <\fIgid\fP>
+Switch the group ID to <\fIgid\fP>.
+.TP
+\fB\-h\fR or \fB\-\-help\fR
+Display available options.
+.TP
+\fB\-r\fR <\fIprogram to run\fP>
+Tell what program/script to run. It has to be \fIan absolute filename\fR, the \fBPATH\fR environment variable is ignored.
+The first argument of that program will be the \fIunquoted\fR name of the newly uploaded file.
+Environment variables aren't cleared. So don't put sensitive data in them before calling pure\-uploadscript if you switch uid.
+.TP
+\fB\-u\fR <\fIuid\fP>
+Switch the user ID to <\fIuid\fP>.
+.SH "ENVIRONMENT"
+.LP
+When the upload script is run, the name of the newly uploaded file is the
+first argument passed to the script (referenced as $1 by most shells) . Some
+environment variables are also filled by useful info about the file.
+\fB\UPLOAD_SIZE\fR
+The size of the file, in bytes.
+\fB\UPLOAD_PERMS\fR
+The permissions, as an octal integer.
+\fB\UPLOAD_UID\fR
+The numerical UID of the owner.
+\fB\UPLOAD_GID\fR
+The numerical GID of the owner.
+\fB\UPLOAD_USER\fR
+The login of the owner.
+\fB\UPLOAD_GROUP\fR
+The group name the files belongs to.
+\fB\UPLOAD_VUSER\fR
+The full user name, or the virtual user name (127 chars max) .
+.SH "FILES"
+.LP 
+\fI/var/run/pure\-ftpd.upload.pipe\fP 
+\fI/var/run/pure\-ftpd.upload.lock\fP 
+\fI/var/run/pure\-uploadscript.pid\fP 
+.SH "SECURITY"
+.LP 
+\fBpure\-ftpd\fR and \fBpure\-uploadscript\fR are trying to limit security implications of such a feature.
+.TP 
+\- The pipe can only be created and opened by root. It must have perms 600, with uid 0, or it will be ignored.
+.TP 
+\- The argument passed to an external program/script is always an exact absolute path name. It doesn't get fooled by \fBchroot()\fRed environments, and by absolute or relative paths added to the STOR command.
+.TP 
+\- UID and GID are set just after parsing command\-line options, and \fBpure\-uploadscript\fR never gets back supervisor privileges.
+.TP 
+\- Descriptors to the pipe are never passed to external programs/scripts. So when UID switched, the target user can't mess the pipe.
+.TP 
+\- Only regular files are processed, control characters are rejected, and a header+footer avoid partial file names.
+.TP 
+\- Two external programs/scripts can't run at the same time. Uploads are always processed sequentially, in chronological order. This is to avoid denial\-of\-services by issuing a lot of simultaneous STOR commands in order to launch a fork bomb on the server. For this reason, your programs shouldn't take a long time to complete (but they can run themselves in background) .
+.TP 
+.SH "EXAMPLES"
+.LP 
+A sample script could be :
+.LP 
+#! /bin/sh
+.br 
+echo "$1 uploaded" | /usr/bin/mutt \-s "New upload : $1" \\
+ftpadmin@dom.ai.n
+.LP 
+Never forget to quote (\fB"variable"\fR) all variables in all your shell scripts to avoid security flaws.
+
+.SH "AUTHORS"
+.LP 
+Frank DENIS <j at pureftpd dot org>
+
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"
+
+.BR "RFC 959" ,
+.BR "RFC 2228",
+.BR "RFC 2389" " and"
+.BR "RFC 2428" .

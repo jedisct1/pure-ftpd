@@ -1,0 +1,16 @@
+#%PAM-1.0
+
+# Sample PAM configuration file for Pure-FTPd.
+# Install it in /etc/pam.d/pure-ftpd or add to /etc/pam.conf
+
+auth       required     pam_listfile.so item=user sense=deny file=/etc/ftpusers onerr=succeed
+auth       required     pam_stack.so service=system-auth
+auth       required     pam_shells.so
+auth       required     pam_nologin.so
+
+account    required     pam_stack.so service=system-auth
+
+password   required     pam_stack.so service=system-auth
+
+session    required     pam_stack.so service=system-auth
+

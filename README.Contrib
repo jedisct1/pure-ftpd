@@ -1,0 +1,55 @@
+
+  The "contrib" directory is yours.
+
+  If you developped something for Pure-FTPd (web pages for the pure-ftpwho
+CGI output, PHP stuff, log file analyzer, pure-uploadscript postprocessors,
+graphical front-ends, init scripts for your favorite distro, ...), maybe if
+it is useful for you, it can also be useful to other people.
+
+  So feel free to contribute. You can send whatever you want to be included
+in the "contrib" directory to <j at pureftpd.org> or to the mailing list.
+
+  Thank you,
+
+
+                  -Frank.
+
+
+-----------------------------------------------------------------------------
+
+  Warning: contributed packages haven't received any code audit. Please
+report bugs directly to authors.
+
+-----------------------------------------------------------------------------
+
+Current content of the "contrib" directory:
+
+* xml_python_processors.txt (author: Jason Lunz):
+
+  Two scripts to postprocess pure-ftpwho XML output. One returns a list of
+dicts with the ftpwho data, each dict representing a connected client's
+attribute. If you want to develop something related to ftpwho in Python,
+this is a very good base.
+
+  The other script creates a web page similar to "pure-ftpwho -w", but
+better: you can choose which columns you want in which order and sort
+the rows on multiple fields. You can also see bandwidth totals per
+account.
+
+* redhat.init (author: Bernhard Weisshuhn):
+
+  A sample Red Hat init script.
+
+* suse.init (author: Marc Thoben):
+
+  A sample SuSE init script.
+
+* pure-vpopauth.pl (author: Dan Caescu):
+
+  An external authentication module for pure-ftpd using vpasswd
+vpopmail password files.
+  Run it the standard way with pure-authd.
+
+* pure-stat.pl (author: Julien Andrieux):
+
+  This script parses Apache-like log files and generates nice text summaries.

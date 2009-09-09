@@ -1,0 +1,329 @@
+Credits for Troll-FTPd are going to the following dudes.
+
+* Original Troll-FTPd authors :
+
+    Arnt Gulbrandsen <agulbra <at> troll.no>
+    Troll Tech AS    <http://www.troll.no/>
+    
+* Original Troll-FTPd contributors :
+
+    Janos Farkas
+    <cmj <at> localnet.com>
+    August Fullford
+    Ximenes Zalteca
+    Patrick Michael Kane <modus <at> asimov.net>
+
+
+Credits for Pure-FTPd are going to the following ones.
+
+* Michal Moskal <malekith <at> pld-linux.org>
+* Arkadiusz Miskiewicz <misiek <at> pld-linux.org> :
+
+    IPv6 support.
+    Polish translation.
+    
+* Michael K. Johnson <johnsonm <at> redhat.com>
+* Kelley Lingerfelt <redhat <at> cococo.net> :
+  
+    PAM support.
+    
+* Sebastian Andersson <bofh <at> diegeekdie.com> :
+
+    ASCII transfers.
+    sendfile() usage.
+    Capability drop.
+
+* Andreas Westin <andwes-8 <at> student.luth.se> :
+
+    FXP support.
+    ftpwho design and reference implementation.
+
+* The OpenBSD team (http://www.openbsd.org/)
+  The NetBSD team (http://www.netbsd.org/)
+  The Regents of the University of California :
+
+    Most of the glob() function, getopt_long() and realpath() replacements.
+
+* The sh-utils team (ftp://alpha.gnu.org/gnu/fetish/)
+
+    getloadavg.c derivative.
+
+* Jason Lunz <j <at> falooley.org> :
+
+    Daemonization (-B).
+    Get rid of -D in favor of <config.h> (thanks to Arkadiusz, too).
+    Fix XML output.
+    Official ninja warrior.
+    First Debian package maintainer.  
+    
+* Mathias Gumz <gumz <at> cs.uni-magdeburg.de>
+
+    German translation.
+
+* Claudiu Costin <claudiuc <at> kde.org>
+
+    Romanian translation.
+    KcmPureftpd author.
+
+* Ping <ping <at> root42.net>
+
+    French translation.
+    
+* Paul Lasarev <paul <at> itk.ru>
+
+    Initial Debian packages.
+    
+* Jean-Mathieux Schaffhauser <jeanmatthieu <at> free.fr>
+
+    Web page logo.
+    GTK configuration interface.
+    Rendez-vous support on MacOS X.
+    Plist output in pure-ftpwho.
+
+* Emmanuel Hocdet <man <at> t-online.fr>
+
+    Nice bug fixes (config file parsers, replycmd) and suggestions.
+
+* Peter Pentchev <roam <at> orbitel.bg>
+
+    Integration to the FreeBSD port collection and FreeBSD improvements.
+    build.sh improvements.
+    
+* Luis Llorente Campo <luisllorente <at> luisllorente.com>
+
+    Spanish translation.
+
+* Sami Koskinen <tossu <at> cc.hut.fi>
+
+    Open a session when using PAM.
+
+* Matthias Andree <matthias.andree <at> stud.uni-dortmund.de>
+
+    -1 option.
+    A lot of code cleanups and robustness fixes.
+    Documentation cleanups.
+    Solaris < 8 portI
+    Fixed Solaris large file support.
+
+* Trilucid (http://www.trilucid.com/)
+
+    Web design of pureftpd.org .
+
+* Isak Lyberth <lyberth <at> users.sf.net>
+
+    Danish translation.
+
+* Bernhard Weisshuhn <bernie <at> weisshuhn.de>
+
+    Spec file fixes.
+    Fixes to the german translation.
+
+* Steve Reid <steve <at> edmweb.com>
+
+    Original SHA1 implementation.
+
+* RSA Data Security, Inc. (http://www.rsa.com/)
+
+    Original MD5 implementation.
+
+* Dmitry Lebkov
+
+    MD5/SHA1 LDAP authentication.
+
+* Sami Farin <safari <at> iki.fi>
+
+    A lot of code cleanups.
+
+* Johan Huisman <sietze.jan.huisman <at> 12move.nl>
+* Jan van Veen <jveen <at> triple-p.nl>
+
+    Dutch translation.
+
+* Thorsten Kukuk <kukuk <at> suse.de>
+
+    LFS fixes.
+    RPM fixes.
+
+* Stefano F. <fs <at> sp.unipi.it> :
+* Alex Dupre <sysadmin <at> alexdupre.com> :
+
+    Italian translation.
+
+* Roger Constantin Demetrescu <roger.demetrescu <at> gmail.com>
+
+    Brazilian Portugese translation.
+
+* Freeman <freeman <at> ozac.org> :
+
+    "Powered by Pure-FTPd" web button.
+
+* Robert Varga <nite <at> hq.alert.sk> :
+
+    Slovak translation.
+
+* James Metcalf <james <at> asset-ict.com> :
+
+    Complete review of the english doc.
+
+* Im Eunjea <eunjea <at> kldp.org> :
+
+    Korean translation.
+
+* Philip Gladstone <philip <at> okena.com> :
+
+    PureDB speedups.
+
+* Kenneth Stailey <kstailey <at> yahoo.com> :
+
+    Support for load average checks on Solaris.
+    Directory aliases.
+    HPUX support.
+    sendfile() support on HPUX and Solaris.
+
+* Brad Smith <brad <at> openbsd.org> :
+
+    Maintainer of the OpenBSD port.
+
+* Cindy Marasco <cindy <at> getaclue.org> :
+
+    PostgreSQL support.
+
+* Ulrik Sartipy <ulrik <at> raj-raj.net> :
+
+    Swedish translation.
+
+* Nicolas Doye :
+
+    Support for MD5 hashed passwords in MySQL.
+
+* Thomas Briggs <tom <at> sane.com> :
+
+    Implementation of the W3C logfile format.
+    Helped with Tru64 portability.
+
+* Stanton Gallegos
+
+    MacOS X maintainer (see http://fink.sourceforge.net/) .
+
+* Florin Andrei <florin <at> sgi.com> 
+  Chan Wilson <cwilson <at> sgi.com>
+  
+    Implemented load average check on Irix systems.
+
+* Bjoern Metzdorf <bm <at> turtle-entertainment.de>
+
+    Merged MD5/any hash functions for passwords in the PgSQL backend.
+
+* Ben Gertzfield <che <at> debian.org>
+
+    Implemented the extended LDAP schema to support quotas, throttling and
+ratios.
+
+* Akhilesch Mritunjai <mritun <at> me.iitb.ac.in>
+
+    Maintainer of the QNX port.
+
+* Dawid Szymanski <dawszy <at> arhea.net>
+
+    Maintainer of the NetBSD port.
+
+* Kurt Inge Smådal / EasyISP.org <kurt <at> easyisp.org>
+* Brynjar Eide <post <at> mislykket.no>
+
+    Norwegian translation.    
+
+* Gabriele Vinci <gabriele <at> pronto.it>
+
+    Official logo artwork.
+
+* Andrey Ulanov <drey <at> rt.mipt.ru>
+
+    Russian translation.
+
+* Fygul Hether <fzchou <at> mail.nhu.edu.tw>
+
+    Traditional and simplified Chinese translations.
+
+* Jeffrey Lim <jf_____ <at> fastmail.fm>
+
+    A lot of excellent documentation improvements.
+
+* Ying-Chieh Liao <ijliao <at> csie.nctu.edu.tw>
+
+    FreeBSD fixes for pure-mrtginfo.
+
+* Johannes Erdfelt <johannes <at> erdfelt.com>
+
+    Fix error when deleting files with an absolute directory when quotas are
+enabled.
+    RPM spec file improvements.
+
+* Martin Sarfy <xsarfy <at> informatics.muni.cz>
+
+    Czech translation.
+
+* Clive Goodhead <clive <at> swnet.net>
+
+    Implement MYSQLDefaultGID and MYSQLDefaultUID.
+
+* Aristoteles Pagaltzis <pagaltzis <at> gmx.de>
+
+    pure-config.pl rewrite.
+
+* Stefan Hornburg <racke <at> linuxia.de>
+
+    Debian maintainer.
+
+* Mehmet Cokcevik <dns <at> netline.com.tr>
+
+    Turkish translation.
+
+* Torgny Wernersson <torgny <at> ewp.nu>
+
+    Maintainer of the PDF documentation - http://www.pureftpd.org/readme.pdf
+
+* Bánhalmi Csaba <banhalmi <at> enternet.hu>
+
+    Hungarian translation.
+
+* Oriol Magrané <omagrane <at> mediapro.es>
+
+    Catalan translation.
+
+* Volodin D <dv-ml-1 <at> dv.net.ru>
+
+    URL encoding for CLF and W3C log files.
+
+* Jui-Nan Lin
+
+    RFC2640 Support.
+
+* Old Sparty
+
+    --pidfile= option for pure-authd and pure-uploadscript.
+
+* Patrick Gosling
+
+    Fix for file uploads
+
+* Marc Balmer <marc <at> msys.ch>
+
+    TLS support for LDAP.
+
+* Rajat Upadhyaya / Novell
+* Christian Cier-Zniewski <c.cier <at> gmx.de>
+
+    Support for TLS encryption on the data channel.
+
+* Frank DENIS aka Jedi/Sector One <j <at> pureftpd.org> :
+
+    Pure-FTPd project initiator and maintainer.
+    Almost everything else :)
+    
+    
+
+Original license :
+
+Copyright 1995-2000 Trolltech AS. Copyright 2001-2002 Arnt Gulbrandsen.
+Use, modification and distribution is allowed without limitation,
+warranty, or liability of any kind.

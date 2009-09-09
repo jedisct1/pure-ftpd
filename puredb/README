@@ -1,0 +1,315 @@
+
+
+
+                              .:. PUREDB 2 .:.
+
+
+
+           ------------------------ BLURB ------------------------
+
+
+PureDB is a portable and tiny set of libraries for creating and reading
+constant databases. It manages data files that contains text or binary
+key/data pairs of arbitrary sizes. Lookups are very fast (normally only one
+disk access to match a hash value), overhead is low (a database is 1028
+bytes plus only 16 extra bytes per record), multiple concurrent read access
+are supported, and databases can be up to 4 Gb long, and they are portable
+accross architectures. 
+
+
+        ------------------------ COMPILATION ------------------------
+        
+
+Compiling PureDB is a simple matter of:
+
+./configure
+make install
+
+Static libraries, shared libraries and links are installed in
+/usr/local/lib/libpuredb_read* and /usr/local/lib/libpuredb_write* .
+
+Header files are installed as /usr/local/include/puredb_read.h and
+/usr/local/include/puredb_write.h .
+
+The library that creates databases is different from the library that reads
+them, because these different tasks are usually handled by separate
+applications. However, you can safely link both libraries together.
+
+
+           ------------------------ USAGE ------------------------
+
+
+To compile a program with puredb, you have to include the following headers:
+
+#include <puredb_read.h>
+
+and/or
+
+#include <puredb_write.h>
+
+If your application only reads PureDB databases, just include the first
+header. If it only writes databases, just include the second one. It it does
+both, include both.
+
+The same thing goes for linker options: you have to link against
+libpuredb_read and/or libpuredb_write:
+
+cc -o myapp1 myapp1.c -lpuredb_read
+cc -o myapp2 myapp2.c -lpuredb_write
+cc -o myapp3 myapp3.c -lpuredb_read -lpuredb_write
+
+
+------------------------ API FOR CREATING DATABASES ------------------------
+
+
+Creating a new database is usually a 4-step operation:
+
+1) Create the database files and initialize the internal structures with
+puredbw_open() .
+
+2) Feed key/data pairs with puredbw_add() or puredbw_add_s() .
+
+3) Complete and close the database files with puredbw_close() .
+
+4) Free the internal structures with puredbw_free() .
+
+Here are the functions:
+
+
+int puredbw_open(PureDBW * const dbw,
+                 const char * const file_index,
+                 const char * const file_data,
+                 const char * const file_final);
+
+This function takes a point to an already allocated PureDBW structure, and
+three file names. file_index and file_data are temporary files, needed to
+create the database. They will be automatically deleted, and the final
+database will atomically be stored in file_final.
+
+Return value: 0 if everything is ok, a negative value if something went wrong.
+
+
+
+int puredbw_add(PureDBW * const dbw,
+                const char * const key, const size_t key_len,
+                const char * const content, const size_t content_len);
+
+This function stores a new key/data pair in the database. key is a pointer
+to the key, that is key_len long. Same thing for content and content_len.
+These buffers can handle binary data, and can have any size up to 4 Gb.
+
+Return value: 0 if everything is ok, a negative value if something went wrong.
+
+
+
+int puredbw_add_s(PureDBW * const dbw,
+                  const char * const key, const char * const content);
+
+This function is a shortcut to puredbw_add(), designed to store 0-terminated
+strings. It's equivalent to call puredbw_add() with strlen(key) and
+strlen(content) as parameters 3 and 5.
+
+Return value: 0 if everything is ok, a negative value if something went wrong.
+
+
+
+int puredbw_close(PureDBW * const dbw);
+
+This function performs a quick sort of the hashed values, writes them to the
+disk, merges index and data files, rename the result to the final file name
+and delete the old files. You must call this after having inserted all
+values in the database. 
+
+Return value: 0 if everything is ok, a negative value if something went wrong.
+
+
+
+void puredbw_free(PureDBW * const dbw);
+
+This function frees all memory chunks allocated by puredbw_open(),
+puredbw_add() and puredbw_add_s() . You must call this either after a
+puredbw_close(), or after something went wrong if you decide to abort.
+
+
+Here's an example, that creates a new database, and inserts three key/data
+pairs into it.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <puredb_write.h>
+
+int main(void)
+{
+    PureDBW dbw;
+    
+    if (puredbw_open(&dbw, "puredb.index", "puredb.data", "puredb.pdb") != 0) {
+        perror("Can't create the database");
+        goto end;
+    }
+    if (puredbw_add_s(&dbw, "key", "content") != 0 ||
+        puredbw_add_s(&dbw, "key2", "content2") != 0 ||
+        puredbw_add_s(&dbw, "key42", "content42") != 0) {
+        perror("Error while inserting key/data pairs");
+        goto end;
+    }
+    if (puredbw_close(&dbw) != 0) {
+        perror("Error while closing the database");
+    }
+    
+    end:
+    puredbw_free(&dbw);
+    
+    return 0;
+}
+
+
+ ------------------------ API FOR READING DATABASES ------------------------
+
+
+Reading the content of a database is usually a 5-step operation:
+
+1) Open the database files and initialize the internal structures with
+puredb_open() .
+
+2) Perform a lookup for a key with puredb_find() or puredb_find_s() .
+
+3) If the key is found, read the associated data with puredb_read() .
+
+[process the data]
+
+4) Free the data with puredb_read_free() .
+
+[repeat steps 2, 3 and 4 to read more key/data pairs]
+
+5) Close the database and free the internal structures with puredb_close() .
+
+Here are the functions:
+
+
+int puredb_open(PureDB * const db, const char *dbfile);
+
+This function opens an existing database, stored in a file named dbfile, and
+initializes a preallocated PureDB structure.
+
+Return value: 0 if everything is ok, a negative value if something went wrong.
+
+
+
+int puredb_find(PureDB * const db, const char * const tofind,
+                const size_t tofind_len, off_t * const retpos, 
+                size_t * const retlen);
+
+This function looks the database for a key matching tofind, whoose length is
+tofind_len. After a successful match, retpos contains the offset to the
+first byte of the matching data, and retlen is the length of the data.
+
+Return value: 0 if the key was found.
+             -1 if the key was not found.
+             -2 if the database is corrupted.
+             -3 if a system error occured.
+
+
+
+int puredb_find_s(PureDB * const db, const char * const tofind,
+                  off_t * const retpos, size_t * const retlen);
+
+This function is a shortcut to puredb_find() for text keys, which computes
+strlen(tofind) as a key length.
+
+Return value: 0 if the key was found.
+             -1 if the key was not found.
+             -2 if the database is corrupted.
+             -3 if a system error occured.
+
+
+
+void *puredb_read(PureDB * const db, const off_t offset, const size_t len);
+
+This function reads len bytes in the database file, starting at offset. A
+large enough buffer is allocated, filled and returned. It is guaranteed to
+be terminated by an extra \0, so it's safe to process C-strings returned by
+that function.
+
+Return value: the address of a buffer with the data, or NULL if something
+went wrong (no memory, corrupted file, no permission, etc) .
+
+
+
+void puredb_read_free(void *data);
+
+Frees a buffer allocated by puredb_read() .
+
+
+
+int puredb_getfd(PureDB * const db);
+
+Returns the file descriptor opened for the database, just in case you want
+to read the data by yourself. It can be interesting if the data is too large
+to be stored in memory.
+
+Return value: a file descriptor. or -1 if none was allocated (error).
+
+
+
+off_t puredb_getsize(PureDB * const db);
+
+This function returns the size of the file handling the database, in bytes.
+
+Return value: the size of the file.
+
+
+
+int puredb_close(PureDB * const db);
+
+This function closes the database and frees all related internal structures.
+Don't forget to call this even if something went wrong, and you decide to
+abort.
+
+
+Here's an example, that reads a previously created database.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <puredb_read.h>
+
+int main(void)
+{
+    PureDB db;
+    off_t retpos;
+    size_t retlen;
+    char *data;
+    
+    if (puredb_open(&db, "puredb.pdb") != 0) {
+        perror("Can't open the database");
+        goto end;
+    }
+    if (puredb_find_s(&db, "key42", &retpos, &retlen) != 0) {
+        fprintf(stderr, "The key wasn't found\n");
+        goto end;
+    }
+    if ((data = puredb_read(&db, retpos, retlen)) != NULL) {
+        printf("The maching data is: [%s]\n", data);
+        puredb_read_free(data);
+    }
+    end:
+    if (puredb_close(&db) != 0) {
+        perror("The database couldn't be properly closed");
+    }
+    
+    return 0;
+}
+
+
+If you have question, suggestions or patches, feel free to get in touch with
+me. Newbies and silly ideas are welcome.
+
+
+Thank you, 
+
+                     -Frank DENIS "Jedi/Sector One" <j at pureftpd dot org> .
+                                 
+
+
+

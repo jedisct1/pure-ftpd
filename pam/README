@@ -1,0 +1,8 @@
+'pure-ftpd' is a sample PAM configuration file, to be copied in your
+'/etc/pam.d/' directory, or if you don't have one, at the end of your
+/etc/pam.conf file.
+
+'ftpusers' is a list of users that aren't allowed to log in. Copy that file to
+'/etc/ftpusers'.
+
+To enable PAM, don't forget to configure with --with-pam.

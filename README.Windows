@@ -1,0 +1,103 @@
+
+
+ ------------------------ WINDOWS PORT OF PURE-FTPD ------------------------
+ 
+ 
+  Before all: Pure-FTPd was designed on Unix and for Unix. The Windows port
+has been done because some people are forced to work on Win32 by their
+pointy hairy boss. For these people, Apache is a nice alternative to IIS.
+But when it comes to FTP servers, most of them are designed for warez
+trading rather than being secure. And closed-source doesn't help.
+
+  So a Windows port of Pure-FTPd makes sense. As long as Cygwin32 is able to
+compile and run this piece of software without any change to the source
+code, Win32 binaries will be provided. But don't expect any Windows-specific
+change or optimization. Also, a great part of the server security relies on
+Cygwin's libraries emulation functions. So Pure-FTPd on Win32 should be
+considered experimental and unsupported. And some features may just not work.
+
+  On the good side, initial testing showed that the server was immune to
+common attacks other Windows FTP daemons were vulnerable to (directory
+traversals, device opening, etc) .
+
+
+       ------------------------ INSTALLATION ------------------------
+       
+       
+  Copy the executable files (*.EXE) in a suitable directory. Also copy
+CYGWIN1.DLL in that directory.
+
+  Create a C:\CYGWIN directory (you can leave it empty, but the directory
+should be there) .
+
+
+    ------------------------ RUNNING THE SERVER ------------------------
+    
+    
+  PURE-FTPD.EXE works like Unix's /usr/local/sbin/pure-ftpd program and all
+command-line switches apply as well.
+
+  A noticeable difference, though, is that users can't be stored in
+/etc/passwd (or equivalent files) . All users have the same UID/GID. So
+better chroot everyone.
+
+  Users must be in a puredb database. PURE-PW.EXE can be used to create
+virtual users. It you use it in the default configuration, you have to
+create C:\CYGWIN\etc and C:\etc .
+
+  Ray Jachrist says that Pure-FTPd can run as a service using Firedaemon:
+http://www.firedaemon.com/ .
+
+       ------------------------ SERVER FILES ------------------------
+
+
+  All files managed by Pure-FTPd have their path relative to C:\CYGWIN .
+  
+  It means that starting the server with:
+  
+                    pure-ftpd -lpuredb:/etc/pureftpd.pdb
+                    
+  Will read:
+  
+                         C:\CYGWIN\etc\pureftpd.pdb
+                         
+  It also applies to log files and users directories.                         
+
+
+       ------------------------ ANONYMOUS FTP ------------------------
+       
+       
+  Files for anonymous FTP must be stored in a directory called:
+  
+                                C:\CYGWIN\FTP
+
+  (of course you can use the -e switch to disable anonymous FTP) .
+
+  Alternatively, you can have a WIN32_ANON_DIR environment variable to
+define the directory for public files.
+
+  Virtual hosting is supported as well. Files must be in:
+  
+                          C:\CYGWIN\PURE-FTPD\<ip>\
+
+  If you don't want anonymous users to upload files, use the -i switch.
+
+
+  ------------------------ COMPILATION ENVIRONMENT ------------------------
+  
+
+  The Win32 version of Pure-FTPd has been configured with the following
+command-line, using the Cygnus Win32 environment:
+
+env CFLAGS="-O2 -march=pentium -pipe" LDFLAGS="-static -s" \
+    ./configure --with-everything --with-brokenrealpath \
+                --without-shadow  --with-nonroot --with-tls \
+                --with-probe-random-dev --without-ascii
+                
+  All these switches (except --with-everything and --with-tls) are highly
+recommended to compile Pure-FTPd on Windows.                
+
+  Needed packages are: base, gcc (+ dependencies), make and the crypt
+library. All of these can be installed with the standard Cygwin32
+installer (http://www.cygwin.com/) .
+
