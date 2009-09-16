@@ -209,7 +209,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
         return -1;
     }    
     {
-        register const char *crypted;
+        const char *crypted;
         
         if ((crypted = (const char *) crypt(pwd, line)) == NULL ||
             strcmp(line, crypted) != 0) {

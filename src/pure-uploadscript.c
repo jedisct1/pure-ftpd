@@ -417,7 +417,7 @@ static int run(const char * const who, const char * const file,
 
 int safe_write(const int fd, const void *buf_, size_t count)
 {
-    register const char *buf = (const char *) buf_;
+    const char *buf = (const char *) buf_;
     ssize_t written;
         
     while (count > (size_t) 0) {

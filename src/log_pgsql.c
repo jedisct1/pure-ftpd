@@ -193,8 +193,8 @@ static size_t pw_pgsql_escape_conninfo_(char * const to,
                                         const char * const from,
                                         const size_t length)
 {
-    register const char *source = from;
-    register char *target = to;
+    const char *source = from;
+    char *target = to;
     size_t remaining = length;
     
     while (remaining > (size_t) 0U) {
@@ -502,7 +502,7 @@ void pw_pgsql_check(AuthResult * const result,
         crypto_plain++;
     }
     if (crypto_crypt != 0) {
-        register const char *crypted;
+        const char *crypted;
         
         if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
             strcmp(crypted, spwd) == 0) {
@@ -510,7 +510,7 @@ void pw_pgsql_check(AuthResult * const result,
         }
     }
     if (crypto_md5 != 0) {
-        register const char *crypted;
+        const char *crypted;
         
         if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {

@@ -43,7 +43,7 @@ void pw_ldap_parse(const char * const file)
         }
     }
     {
-        register char *t;
+        char *t;
         
         if (strchr(ldap_filter, '%') != NULL) {
             goto illegal_config;

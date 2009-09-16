@@ -152,8 +152,8 @@ int sfgets(void)
 #else
 static char *revealextraspc(char * const s_)
 {
-    register unsigned char *s = (unsigned char *) s_;
-    register unsigned char *sn;
+    unsigned char *s = (unsigned char *) s_;
+    unsigned char *sn;
     
     if (s == NULL) {
         return s_;
@@ -737,7 +737,7 @@ void parser(void)
                     if (sitearg == NULL || *sitearg == 0) {
                         print_aliases();
                     } else {
-                        register const char *alias;
+                        const char *alias;
                         
                         if ((alias = lookup_alias(sitearg)) != NULL) {
                             addreply(214, MSG_ALIASES_ALIAS, sitearg, alias);

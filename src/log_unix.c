@@ -69,7 +69,7 @@ void pw_unix_check(AuthResult * const result,
         cpwd = pw.pw_passwd;
     }
     {
-        register const char *crypted;
+        const char *crypted;
         
         if (cpwd == NULL ||
             (crypted = (const char *) crypt(password, cpwd)) == NULL ||

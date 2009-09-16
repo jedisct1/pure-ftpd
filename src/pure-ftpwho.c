@@ -566,10 +566,10 @@ static void plist_output_footer(void)
 
 static const char *shell_escaped(const char * const s_)
 {
-    register const unsigned char *s = (const unsigned char *) s_;        
+    const unsigned char *s = (const unsigned char *) s_;        
     static char buf[MAXPATHLEN + 32U];
     const char * const bufend = &buf[sizeof buf - (size_t) 1U];
-    register char *bufpnt = buf;    
+    char *bufpnt = buf;    
     
     while (*s != 0U) {
         if (ISCTRLCODE(*s)) {

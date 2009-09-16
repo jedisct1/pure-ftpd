@@ -25,7 +25,7 @@ static char *hexify(char * const result, const unsigned char *digest,
                     const size_t size_result, size_t size_digest)
 {
     static const char * const hexchars = "0123456789abcdef";
-    register char *result_pnt = result;
+    char *result_pnt = result;
 
     /* 
      * Unless developpers are drunk, the following tests are just
@@ -60,9 +60,9 @@ static char *base64ify(char * const result, const unsigned char *digest,
         return NULL;
     }
     while (size_digest > (size_t) 2U) {
-        register const unsigned char t0 = (unsigned char) *digest++;
-        register const unsigned char t1 = (unsigned char) *digest++;
-        register const unsigned char t2 = (unsigned char) *digest++;
+        const unsigned char t0 = (unsigned char) *digest++;
+        const unsigned char t1 = (unsigned char) *digest++;
+        const unsigned char t2 = (unsigned char) *digest++;
         
         *result_pnt++ = b64chars[(t0 >> 2) & 63];
         *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
@@ -71,14 +71,14 @@ static char *base64ify(char * const result, const unsigned char *digest,
         size_digest -= (size_t) 3U;
     }    
     if (size_digest > (size_t) 0U) {
-        register const unsigned char t0 = (unsigned char) digest[0];
+        const unsigned char t0 = (unsigned char) digest[0];
 
         *result_pnt++ = b64chars[(t0 >> 2) & 63];
         if (size_digest == 1U) {
             *result_pnt++ = b64chars[((t0 << 4) & 48)];
             *result_pnt++ = '=';
         } else {
-            register const unsigned char t1 = (unsigned char) digest[1];
+            const unsigned char t1 = (unsigned char) digest[1];
             
             *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
             *result_pnt++ = b64chars[((t1 << 2) & 60)];            
@@ -119,9 +119,9 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
         }
     }
     while (size_encoded > (size_t) 3U) {
-        register const unsigned char t1 = rev64chars[encoded[1]];
-        register const unsigned char t2 = rev64chars[encoded[2]];
-        register const unsigned char t3 = rev64chars[encoded[3]];        
+        const unsigned char t1 = rev64chars[encoded[1]];
+        const unsigned char t2 = rev64chars[encoded[2]];
+        const unsigned char t3 = rev64chars[encoded[3]];        
         /* 
          * I'm very proud : bit shifts and masks were done without writing
          * down anything on a piece of paper, and the first try worked :)

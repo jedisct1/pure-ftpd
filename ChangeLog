@@ -8,6 +8,7 @@ to be.
 Pelander.
  - Add SUP top AUXILIARY to LDAP schema, suggested by Zhang Huangbin.
  - Don't ignore dot files even if -D is not supplied with the MLSD command.
+ - Deinline code
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

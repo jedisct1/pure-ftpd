@@ -142,8 +142,8 @@ int puredbw_add_s(PureDBW * const dbw,
 
 static int hash1_cmp_hook(const void * const a, const void * const b)
 {
-    register puredb_u32_t ha = ((const Hash1 *) a)->hash;
-    register puredb_u32_t hb = ((const Hash1 *) b)->hash;
+    puredb_u32_t ha = ((const Hash1 *) a)->hash;
+    puredb_u32_t hb = ((const Hash1 *) b)->hash;
 
     if (ha < hb) {
         return -1;
@@ -162,9 +162,9 @@ static int hash1_cmp_hook(const void * const a, const void * const b)
 
 static int writekeys(PureDBW * const dbw)
 {
-    register int hash_cnt = (int)
+    int hash_cnt = (int)
         (sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]);
-    register const Hash0 *hash0 = dbw->hash_table0;
+    const Hash0 *hash0 = dbw->hash_table0;
 
     puredb_u32_t offset = (puredb_u32_t)
         ((1U + sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]) *
@@ -200,8 +200,8 @@ static int writekeys(PureDBW * const dbw)
     hash_cnt = (int) (sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]);
     hash0 = dbw->hash_table0;
     do {
-        register Hash1 *hash1 = hash0->hash1_list;
-        register size_t list_size = hash0->hash1_list_size;
+        Hash1 *hash1 = hash0->hash1_list;
+        size_t list_size = hash0->hash1_list_size;
 
         if (hash1 == NULL) {
             const puredb_u32_t null_ = 
@@ -246,7 +246,7 @@ static int writekeys(PureDBW * const dbw)
 
 static int freestructs(PureDBW * const dbw)
 {
-    register Hash0 *hash0 = dbw->hash_table0;
+    Hash0 *hash0 = dbw->hash_table0;
     int hash0_cnt = (int) (sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]);
 
     do {

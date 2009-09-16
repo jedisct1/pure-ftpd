@@ -74,7 +74,7 @@ char *fakegetcwd(char *dir, size_t size)
         return NULL;
     }
     {
-        register char *sp = curdirchr + s - 1U;
+        char *sp = curdirchr + s - 1U;
         
         while (sp != curdirchr && *sp == '/') {
             *sp = 0;

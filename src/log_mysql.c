@@ -426,7 +426,7 @@ void pw_mysql_check(AuthResult * const result,
         crypto_plain++;
     }
     if (crypto_crypt != 0) {
-        register const char *crypted;
+        const char *crypted;
 
         if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
             strcmp(crypted, spwd) == 0) {
@@ -459,7 +459,7 @@ void pw_mysql_check(AuthResult * const result,
         }
     }
     if (crypto_md5 != 0) {
-        register const char *crypted;
+        const char *crypted;
 
         if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {

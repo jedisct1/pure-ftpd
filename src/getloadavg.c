@@ -723,10 +723,10 @@ int getloadavg(double loadavg[], int nelem)
     struct proc_summary proc_sum_data;
     struct stat_descr proc_info;
     double load;
-    register unsigned int i, j;
+    unsigned int i, j;
 
     if (cpus == 0) {
-        register unsigned int c, i;
+        unsigned int c, i;
         struct cpu_config conf;
         struct stat_descr desc;
         

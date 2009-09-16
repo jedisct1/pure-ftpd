@@ -241,7 +241,7 @@ void pw_extauth_check(AuthResult * const result,
     line[readen] = 0;    
     linepnt = line;
     while ((crpoint = strchr(linepnt, '\n')) != NULL) {
-        register const ExtauthCallBack *scanned;
+        const ExtauthCallBack *scanned;
         size_t keyword_len;
 
         *crpoint = 0;

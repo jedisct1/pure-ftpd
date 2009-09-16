@@ -66,7 +66,7 @@ void usleep2(const unsigned long microsec)
 int safe_write(const int fd, const void *buf_, size_t count)
 {
     ssize_t written;    
-    register const char *buf = (const char *) buf_;
+    const char *buf = (const char *) buf_;
     
     while (count > (size_t) 0U) {
         for (;;) {
@@ -90,7 +90,7 @@ int safe_write(const int fd, const void *buf_, size_t count)
 int secure_safe_write(const void *buf_, size_t count)
 {
     ssize_t written;
-    register const char *buf = (const char *) buf_;
+    const char *buf = (const char *) buf_;
     size_t ssw_status = count;
     
     while (count > (size_t) 0U) {
@@ -112,7 +112,7 @@ int secure_safe_write(const void *buf_, size_t count)
 }
 #endif
 
-static void overlapcpy(register char *d, register const char *s)
+static void overlapcpy(char *d, const char *s)
 {
     while (*s != 0) {
         *d++ = *s++;
@@ -239,10 +239,10 @@ void simplify(char *subdir)
     a[1] = 0;    
 }
 
-int checkprintable(register const char *s)
+int checkprintable(const char *s)
 {
-    register int ret = 0;    
-    register unsigned char c;
+    int ret = 0;    
+    unsigned char c;
     
     while ((c = (unsigned char) *s) != 0U) {
         if (ISCTRLCODE(c)) {
@@ -688,8 +688,8 @@ void addreply_noformat(const int code, const char * const line)
 
 void addreply(const int code, const char * const line, ...)
 {
-    register char *a;
-    register char *b;
+    char *a;
+    char *b;
     va_list ap;
     int last;
     char buf[MAX_SERVER_REPLY_LEN];
@@ -723,8 +723,8 @@ void addreply(const int code, const char * const line, ...)
 
 void doreply(void)
 {
-    register struct reply *scannedentry;
-    register struct reply *nextentry;
+    struct reply *scannedentry;
+    struct reply *nextentry;
     
     if ((scannedentry = firstreply) == NULL) {
         return;
@@ -768,7 +768,7 @@ void doreply(void)
 
 static int checknamesanity(const char *name, int dot_ok)
 {
-    register const char *namepnt;
+    const char *namepnt;
     
 #ifdef PARANOID_FILE_NAMES
     const char *validchars =
@@ -1636,7 +1636,7 @@ void dopass(char *password)
     authresult = pw_check(account, password, &ctrlconn, &peer);
     {
         /* Clear password from memory, paranoia */        
-        register volatile char *password_ = (volatile char *) password;
+        volatile char *password_ = (volatile char *) password;
         
         while (*password_ != 0) {
             *password_++ = 0;
@@ -2062,7 +2062,7 @@ void docwd(const char *dir)
 static void iptropize(const struct sockaddr_storage *ss)
 {
     size_t t = sizeof *ss;
-    register const unsigned char *s = (const unsigned char *) ss;
+    const unsigned char *s = (const unsigned char *) ss;
     
     iptropy = getpid();
     do {
@@ -2077,7 +2077,7 @@ static void pw_zrand_probe(void)
     static const char * const devices[] = {
         "/dev/arandom", "/dev/urandom", "/dev/random", NULL
     };
-    register const char * const *device = devices;
+    const char * const *device = devices;
     
     do {
         if (access(*device, F_OK | R_OK) == 0) {
@@ -2774,7 +2774,7 @@ void dodele(char *name)
 static ssize_t doasciiwrite(int fd, const char * const buf, size_t size)
 {
     char *asciibuf;
-    register char *asciibufpnt;
+    char *asciibufpnt;
     size_t z = (size_t) 0U;
     int writeret;
     
@@ -3810,7 +3810,7 @@ void dostor(char *name, const int append, const int autorename)
     if (maxdiskusagepct > 0.0) {
         char *alloca_namedir;
         size_t name_len;
-        register char *z;
+        char *z;
         
 #ifdef CHECK_SYMLINKS_DISK_SPACE
         if (STATFS(name, &statfsbuf) == 0) {

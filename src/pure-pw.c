@@ -217,7 +217,7 @@ static void pw_zrand_probe(void)
     static const char * const devices[] = {
         "/dev/arandom", "/dev/urandom", "/dev/random", NULL
     };
-    register const char * const *device = devices;
+    const char * const *device = devices;
     
     do {
         if (access(*device, F_OK | R_OK) == 0) {
@@ -265,7 +265,7 @@ static char *best_crypt(const char * const pwd)
 {
     static const char crcars[64] =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
-    register const char *crypted;
+    const char *crypted;
     
     if ((crypted = (const char *)      /* Blowfish */
          crypt("test", "$2a$07$1234567890123456789012")) != NULL &&        

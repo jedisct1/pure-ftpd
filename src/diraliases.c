@@ -68,7 +68,7 @@ int init_aliases(void)
         continue;
         }
         {
-            register char * const z = alias + strlen(alias) - 1U;
+            char * const z = alias + strlen(alias) - 1U;
             
             if (*z != '\n') {
                 goto bad;
@@ -80,7 +80,7 @@ int init_aliases(void)
                 goto bad;
             }
             {
-                register char * const z = dir + strlen(dir) - 1U;
+                char * const z = dir + strlen(dir) - 1U;
             
                 if (*z == '\n') {
                      *z = 0;
@@ -120,7 +120,7 @@ int init_aliases(void)
 
 char *lookup_alias(const char *alias)
 {
-    register const DirAlias *curr = head;
+    const DirAlias *curr = head;
 
     if (aliases_up == 0) {
     return NULL;
@@ -137,7 +137,7 @@ char *lookup_alias(const char *alias)
 
 void print_aliases(void)
 {
-    register const DirAlias *curr = head;
+    const DirAlias *curr = head;
 
     if (aliases_up == 0) {
     addreply_noformat(502, MSG_CONF_ERR);
