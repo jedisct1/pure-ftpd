@@ -2826,7 +2826,6 @@ static void displayrate(const char *word, off_t size,
     ended = get_usec_time();
     
     t = ended - started;
-    addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
     if (t > 0.0 && size > (off_t) 0) {
         speed = size / t;
     } else {
@@ -3200,7 +3199,6 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
                 doreply();
             } else {
                 addreply_noformat(426, MSG_ABORTED);
-                doreply();
                 return 1;
             }
         }
@@ -3226,6 +3224,7 @@ int mmap_send(DLHandler * const dlhandler)
     for (;;) {
         ret = _mmap_remap(dlhandler);
         if (ret < 0) {
+            error(425, "mmap()");            
             return -1;
         }
         if (ret == 1) {
@@ -3263,6 +3262,7 @@ void doretr(char *name)
     int f;
     struct stat st;
     double started;
+    int ret;
 
     if (!candownload) {
         addreply(550, MSG_LOAD_TOO_HIGH, load);
@@ -3371,17 +3371,23 @@ void doretr(char *name)
     started = get_usec_time();
 
     /* download really starts here */
-    
+
     if (mmap_init(&dlhandler, 0, xferfd, name, f, restartat,
                   type == 1, throttling_bandwidth_dl) == 0) {
-        mmap_send(&dlhandler);
+        ret = mmap_send(&dlhandler);
         mmap_exit(&dlhandler);        
-    }    
+    } else {
+        error(426, "mmap_init()");
+        ret = -1;
+    }
     
     /* download really ends here */    
     
     (void) close(f);
     closedata();
+    if (ret == 0) {
+        addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+    }
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
     
     end:
@@ -4080,8 +4086,9 @@ void dostor(char *name, const int append, const int autorename)
                 error(553, MSG_RENAME_FAILURE);
             } else {
                 atomic_file = NULL;
-            }
+            }        
         }
+        addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);        
         displayrate(MSG_UPLOADED, filesize - restartat, started, name, 1);
     }
     
@@ -4443,7 +4450,7 @@ static void set_signals_client(void)
     sigset_t sigs;
     struct sigaction sa;
 
-    sigemptyset(&sigs);
+    sigfillset(&sigs);
     sigemptyset(&sa.sa_mask);
     
     sa.sa_flags = SA_RESTART;
@@ -4453,7 +4460,7 @@ static void set_signals_client(void)
 #endif
 #if defined(WITH_TLS) && defined(SIGIO)
     sa.sa_handler = sigurg;
-    sigaddset(&sigs, SIGIO);    
+    sigdelset(&sigs, SIGIO);    
     (void) sigaction(SIGIO, &sa, NULL);
 #endif
     
@@ -4461,29 +4468,29 @@ static void set_signals_client(void)
     (void) sigaction(SIGPIPE, &sa, NULL);
     
     sa.sa_handler = SIG_DFL;
-    sigaddset(&sigs, SIGCHLD);
+    sigdelset(&sigs, SIGCHLD);
     (void) sigaction(SIGCHLD, &sa, NULL);    
 #ifdef SIGFPE
     (void) sigaction(SIGFPE, &sa, NULL);
-    sigaddset(&sigs, SIGFPE);
+    sigdelset(&sigs, SIGFPE);
 #endif
     sa.sa_flags = 0;
     
     sa.sa_handler = sigalarm;
-    sigaddset(&sigs, SIGALRM);
+    sigdelset(&sigs, SIGALRM);
     (void) sigaction(SIGALRM, &sa, NULL);
     
     sa.sa_handler = sigterm_client;
-    sigaddset(&sigs, SIGTERM);
+    sigdelset(&sigs, SIGTERM);
     (void) sigaction(SIGTERM, &sa, NULL);
-    sigaddset(&sigs, SIGHUP);
+    sigdelset(&sigs, SIGHUP);
     (void) sigaction(SIGHUP, &sa, NULL);
-    sigaddset(&sigs, SIGQUIT);
+    sigdelset(&sigs, SIGQUIT);
     (void) sigaction(SIGQUIT, &sa, NULL);
-    sigaddset(&sigs, SIGINT);
+    sigdelset(&sigs, SIGINT);
     (void) sigaction(SIGINT, &sa, NULL);
 #ifdef SIGXCPU
-    sigaddset(&sigs, SIGXCPU);
+    sigdelset(&sigs, SIGXCPU);
     (void) sigaction(SIGXCPU, &sa, NULL);
 #endif
     (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
@@ -4495,12 +4502,12 @@ static void set_signals(void)
     sigset_t sigs;    
     struct sigaction sa;
 
-    sigemptyset(&sigs);
+    sigfillset(&sigs);
     sigemptyset(&sa.sa_mask);
 
     sa.sa_flags = SA_RESTART;
     sa.sa_handler = sigchild;
-    sigaddset(&sigs, SIGCHLD);
+    sigdelset(&sigs, SIGCHLD);
     (void) sigaction(SIGCHLD, &sa, NULL);
 
     sa.sa_handler = SIG_IGN;
@@ -4510,19 +4517,19 @@ static void set_signals(void)
     
     sa.sa_flags = 0;
     sa.sa_handler = sigterm;
-    sigaddset(&sigs, SIGTERM);
+    sigdelset(&sigs, SIGTERM);
     (void) sigaction(SIGTERM, &sa, NULL);
-    sigaddset(&sigs, SIGHUP);
+    sigdelset(&sigs, SIGHUP);
     (void) sigaction(SIGHUP, &sa, NULL);
-    sigaddset(&sigs, SIGQUIT);
+    sigdelset(&sigs, SIGQUIT);
     (void) sigaction(SIGQUIT, &sa, NULL);
-    sigaddset(&sigs, SIGINT);
+    sigdelset(&sigs, SIGINT);
     (void) sigaction(SIGINT, &sa, NULL);
 # ifdef SIGXCPU
-    sigaddset(&sigs, SIGXCPU);
+    sigdelset(&sigs, SIGXCPU);
     (void) sigaction(SIGXCPU, &sa, NULL);
 # endif
-//    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
+    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
 #endif
 }
 
