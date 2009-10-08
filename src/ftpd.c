@@ -108,6 +108,43 @@ int secure_safe_write(const void *buf_, size_t count)
 }
 #endif
 
+ssize_t safe_nonblock_write(const int fd, const void *buf_, size_t count,
+                            void * const tls_fd)
+{
+    ssize_t written;
+    const char *buf = (const char *) buf_;
+    struct pollfd pfd;
+    
+    while (count > (size_t) 0U) {
+        for (;;) {
+            if (tls_fd == NULL) {
+                written = write(fd, buf, count);
+            } else {
+                written = SSL_write(tls_fd, buf, count);
+            }
+            if (written > (ssize_t) 0) {
+                break;
+            }
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                pfd.fd = fd;
+                pfd.events = POLLOUT | POLLERR | POLLHUP;
+                pfd.revents = 0;
+                if (poll(&pfd, 1U, -1) <= 0 ||
+                    (pfd.revents & (POLLERR | POLLHUP)) != 0 ||
+                    (pfd.revents & POLLOUT) == 0) {
+                    errno = EPIPE;                    
+                    return -1;
+                }                    
+            } else if (errno != EINTR) {
+                return -1;
+            }
+        }
+        buf += written;
+        count -= written;
+    }
+    return 0;
+}
+
 static void overlapcpy(char *d, const char *s)
 {
     while (*s != 0) {
@@ -2766,47 +2803,6 @@ void dodele(char *name)
     addreply(550, MSG_DELE_FAILED ": %s", name, strerror(errno));
 }
 
-#ifndef WITHOUT_ASCII
-static ssize_t doasciiwrite(int fd, const char * const buf, size_t size)
-{
-    char *asciibuf;
-    char *asciibufpnt;
-    size_t z = (size_t) 0U;
-    int writeret;
-    
-    if (size <= (size_t) 0U) {         /* stupid paranoia #1 */
-        return (ssize_t) 0;
-    }
-    if (size > ASCII_CHUNKSIZE ||      /* stupid paranoia #2 */
-        (asciibuf = ALLOCA((size_t) (ASCII_CHUNKSIZE * 2U))) == NULL) {
-        return (ssize_t) -1;
-    }
-    asciibufpnt = asciibuf;
-    do {
-        if (buf[z] == '\n') {
-            *asciibufpnt++ = '\r';
-        }
-        *asciibufpnt++ = buf[z];
-        z++;
-    } while (z < size);
-
-#ifdef WITH_TLS
-    if (enforce_tls_auth && data_protection_level == CPL_PRIVATE) {
-        writeret = secure_safe_write(asciibuf,
-                                     (size_t) (asciibufpnt - asciibuf));
-    } else
-#endif
-    {
-        writeret = safe_write(fd, asciibuf, (size_t) (asciibufpnt - asciibuf));
-    }
-    ALLOCA_FREE(asciibuf);
-    if (writeret < 0) {
-        return (ssize_t) -1;
-    }
-    return size;
-}
-#endif
-
 static double get_usec_time(void)
 {
     struct timeval tv;
@@ -2935,289 +2931,338 @@ static void displayopenfailure(const char * const name)
     error(550, buffer);
 }
 
-#ifndef SENDFILE_NONE
-int sendfile_send(int f, struct stat st, double *started)
+int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
+                       const double ts_start, double *required_sleep)
 {
-    off_t left;
-    off_t o;
-# ifdef THROTTLING
-    double ended;
-    off_t transmitted = 0;
-# endif
-
-    o = restartat;
-    while (o < st.st_size) {
-# ifdef FTPWHO
-    /* There is no locking here, and it is intentional */
-        if (shm_data_cur != NULL) {
-            shm_data_cur->download_current_size = o;
-        }
-# endif
-        left = st.st_size - o;
-# ifdef FTPWHO
-        if (left > (off_t) dl_chunk_size) {
-            left = (off_t) dl_chunk_size;
-        }
-# elif defined(THROTTLING)
-        if (throttling_bandwidth_dl > 0UL &&
-            left > (off_t) dl_chunk_size) {
-            left = (off_t) dl_chunk_size;
-        }
-# endif
-        while (left > (off_t) 0) {
-# ifdef SENDFILE_LINUX
-            ssize_t w;
-
-            do {
-                w = sendfile(xferfd, f, &o, (size_t) left);
-            } while (w < 0 && errno == EINTR);
-            if (w == 0) {
-                w--;
-            }
-# elif defined(SENDFILE_FREEBSD)
-            off_t w;
-
-            if (sendfile(f, xferfd, o, (size_t) left, NULL, &w, 0) < 0) {
-                if ((errno != EAGAIN && errno != EINTR) || w < (off_t) 0) {
-                    w = (off_t) -1;
-                } else {
-                    o += w;
-                }
-            } else {
-                o += w;
-            }
-# elif defined(SENDFILE_HPUX)
-            sbsize_t w;
-
-            if ((w = sendfile(xferfd, f, o, (bsize_t) left,NULL, 0)) < 0) {
-                if ((errno != EAGAIN && errno != EINTR) || w < (off_t) 0) {
-                    w = (off_t) -1;
-                } else {
-                    o += w;
-                }
-            } else {
-                o += w;
-            }
-# elif defined(SENDFILEV_SOLARIS)
-            ssize_t w;
-            struct sendfilevec vec[1];
-
-            vec[0].sfv_fd   = f;
-            vec[0].sfv_flag = 0;
-            vec[0].sfv_off  = o;
-            vec[0].sfv_len  = (size_t) left;
-            if (sendfilev(xferfd, vec, 1, &w) < 0) {
-                if ((errno != EAGAIN && errno != EINTR) || w < (off_t) 0) {
-                    w = (off_t) -1;
-                } else {
-                    o += w;
-                }
-            } else {
-                o += w;
-            }
-# endif
-            if (w < 0) {
-                if (errno == EAGAIN || errno == EINTR) {
-                    /* wait idletime seconds for progsress */
-                    fd_set rs;
-                    fd_set ws;
-                    struct timeval tv;
-
-                    FD_ZERO(&rs);
-                    FD_ZERO(&ws);
-                    FD_SET(0, &rs);
-                    safe_fd_set(xferfd, &ws);
-                    tv.tv_sec = idletime;
-                    tv.tv_usec = 0;
-                    if (xferfd == -1 ||
-                        select(xferfd + 1, &rs, &ws, NULL, &tv) <= 0 ||
-                        FD_ISSET(0, &rs)) {
-                        /* we assume it is ABRT since nothing else is legal */
-                        (void) close(f);
-                        closedata();
-                        addreply_noformat(426, MSG_ABORTED);
-                        return -1;
-                    } else if (!(safe_fd_isset(xferfd, &ws))) {
-                    /* client presumably gone away */
-                        closedata();
-                        die(421, LOG_INFO, MSG_TIMEOUT_DATA,
-                            (unsigned long) idletime);
-                    }
-                w = 0;
-                } else {
-                    (void) close(f);
-                    if (xferfd != -1) {
-                        closedata();
-                        addreply_noformat(450, MSG_DATA_WRITE_FAILED);
-                        logfile(LOG_INFO, MSG_ABORTED);
-                    }
-                    return -1;
-                }
-            }
-
-            if (w < 0) {        /* Maybe the file has shrunk? */
-                if (fstat(f, &st) < 0) {
-                    o = st.st_size;
-                }
-                left = (off_t) 0;
-            } else if (w != 0) {
-                downloaded += (unsigned long long) w;
-                left -= w;
-# ifdef THROTTLING
-                if (o < st.st_size && throttling_bandwidth_dl > 0UL) {
-                    long double delay;
-                    ended = get_usec_time();
-                    transmitted += w;
-                    delay = (transmitted /
-                            (long double) throttling_bandwidth_dl) -
-                            (long double) (ended - *started);
-                    if (delay > (long double) MAX_THROTTLING_DELAY) {
-                        *started = ended;
-                        transmitted = (off_t) 0;
-                        delay = (long double) MAX_THROTTLING_DELAY;
-                    }
-                    if (delay > 0.0L) {
-                        usleep2((unsigned long) (delay * 1000000.0L));
-                    }
-                }
-# endif
-            }
-        }
+    double ts_now;
+    double elapsed;
+    off_t would_be_downloaded;
+    double wanted_ts;
+    off_t previous_chunk_size;
+    
+    if (dlhandler->bandwidth <= 0UL) {
+        *required_sleep = 0.0;
+        return 0;
     }
-
+    dlhandler->total_downloaded += downloaded;
+    if ((ts_now = get_usec_time()) <= 0.0) {
+        ts_now = ts_start;
+    }
+    if (ts_start > ts_now) {
+        ts_now = ts_start;
+    }            
+    elapsed = ts_now - ts_start;
+    would_be_downloaded = dlhandler->total_downloaded + dlhandler->chunk_size;
+    if (dlhandler->bandwidth > 0.0) {
+        wanted_ts = would_be_downloaded / dlhandler->bandwidth;
+    } else {
+        wanted_ts = elapsed;
+    }
+    *required_sleep = wanted_ts - elapsed;
+    previous_chunk_size = dlhandler->chunk_size;
+    if (dlhandler->total_downloaded > dlhandler->chunk_size) {
+        if (*required_sleep < dlhandler->min_sleep) {
+            dlhandler->chunk_size =
+                dlhandler->max_chunk_size / 2 + dlhandler->chunk_size / 2;
+        } else if (*required_sleep > dlhandler->max_sleep) {
+            dlhandler->chunk_size =
+                dlhandler->min_chunk_size / 2 + dlhandler->chunk_size / 2;
+        } else {
+            dlhandler->chunk_size = dlhandler->default_chunk_size;
+        }
+        if (previous_chunk_size != dlhandler->default_chunk_size) {
+            would_be_downloaded =
+                dlhandler->total_downloaded + dlhandler->chunk_size;
+            if (dlhandler->bandwidth > 0.0) {
+                wanted_ts = would_be_downloaded / dlhandler->bandwidth;
+            } else {
+                wanted_ts = elapsed;
+            }
+            *required_sleep = wanted_ts - elapsed;
+        }
+    }    
     return 0;
 }
-#endif  /*  End !defined(SENDFILE_NONE) */
 
-
-int mmap_send(int f, struct stat st, double *started)
+int dlhandler_init(DLHandler * const dlhandler, 
+                   const int clientfd,
+                   const int xferfd,
+                   const char * const name,
+                   const int f, const off_t restartat, const int ascii_mode,
+                   const unsigned long bandwidth)
 {
-    off_t s;
-    off_t skip;
-    off_t o;
-    char *p, *buf;
-    off_t left;
-# ifdef THROTTLING
-    double ended;
-    off_t transmitted = 0;
-# endif
+    struct stat st;
+    struct pollfd *pfd;
 
-    o = restartat & ~(page_size - 1);
-    skip = restartat - o;
-    while (o < st.st_size) {
-# ifdef FTPWHO
-        if (shm_data_cur != NULL) {
-            shm_data_cur->download_current_size = o;
+    if (fstat(f, &st) < 0 || (S_ISLNK(st.st_mode) && stat(name, &st) < 0)) {
+        error(451, MSG_STAT_FAILURE);
+        return -1;
+    }
+    if (!S_ISREG(st.st_mode)) {
+        addreply_noformat(550, MSG_NOT_REGULAR_FILE);
+        return -1;
+    }
+    if (restartat > (off_t) 0 && restartat >= st.st_size) {
+        addreply(451, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+                 (long long) restartat, (long long) st.st_size);
+        return -1;
+    }
+    if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
+        error(451, "fcntl(F_SETFL, O_NONBLOCK)");
+        return -1;
+    }
+    dlhandler->clientfd = clientfd;    
+    dlhandler->xferfd = xferfd;
+    dlhandler->f = f;
+    dlhandler->file_size = st.st_size;
+    dlhandler->ascii_mode = ascii_mode;
+    dlhandler->cur_pos = restartat;
+    dlhandler->total_downloaded = (off_t) 0;
+    dlhandler->min_sleep = 0.1;
+    dlhandler->max_sleep = 5.0;
+    dlhandler->bandwidth = bandwidth;
+    pfd = &dlhandler->pfds_f_in;
+    pfd->fd = clientfd;
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+    pfd->revents = 0;
+    
+    return 0;
+}
+
+int mmap_init(DLHandler * const dlhandler, 
+              const int clientfd,
+              const int xferfd,
+              const char * const name, const int f,
+              const off_t restartat, const int ascii_mode,
+              const unsigned long bandwidth)
+{
+    if (dlhandler_init(dlhandler, clientfd, xferfd, name, f,
+                       restartat, ascii_mode, bandwidth) != 0) {
+        return -1;
+    }
+    dlhandler->min_chunk_size = 8 * 1024UL;
+    if (ascii_mode > 0) {
+        dlhandler->default_chunk_size = dlhandler->max_chunk_size = 32768;
+    } else {
+        dlhandler->max_chunk_size = 512 * 1024UL;
+        if (bandwidth <= 0UL) {
+            dlhandler->default_chunk_size = dlhandler->max_chunk_size;
+        } else {
+            dlhandler->default_chunk_size = 49152;
         }
-# endif
-        left = st.st_size - o;
-        if (left > (off_t) dl_chunk_size) {
-            left = (off_t) dl_chunk_size;
+    }
+    dlhandler->chunk_size = dlhandler->default_chunk_size;
+    dlhandler->mmap_size = 64 * 1024UL;
+    dlhandler->mmap_gap = 0;
+    dlhandler->cur_pos = restartat;
+    dlhandler->mmap_pos = (off_t) 0;
+    dlhandler->map = (void *) MAP_FAILED;
+    dlhandler->map_data = (void *) MAP_FAILED;
+    
+    return 0;
+}
+
+int _mmap_remap(DLHandler * const dlhandler)
+{
+    size_t min_mmap_size;
+    size_t max_mmap_size;
+    
+    if (dlhandler->map != MAP_FAILED) {
+        if (dlhandler->cur_pos >= dlhandler->mmap_pos &&
+            dlhandler->cur_pos + dlhandler->chunk_size <=
+            dlhandler->mmap_pos + (off_t) dlhandler->mmap_size) {
+            if (dlhandler->cur_pos < dlhandler->mmap_pos ||
+                dlhandler->cur_pos - dlhandler->mmap_pos +
+                dlhandler->mmap_gap > (off_t) dlhandler->mmap_size) {
+                return -1;
+            }
+            dlhandler->map_data =
+                dlhandler->map + dlhandler->cur_pos - dlhandler->mmap_pos +
+                dlhandler->mmap_gap;
+            return 0;
         }
-        buf = mmap(0, left, PROT_READ, MAP_FILE | MAP_SHARED, f, o);
-        if (buf == (char *) MAP_FAILED) {
-            closedata();
-            (void) close(f);
+        if (munmap(dlhandler->map, dlhandler->mmap_size) != 0) {
             error(451, MSG_MMAP_FAILED);
             return -1;
         }
-        p = buf;
-        o += left;
-        s = left;
-        while (left > skip) {
-            ssize_t w;
-
-# ifdef WITH_TLS
-            if (enforce_tls_auth && data_protection_level == CPL_PRIVATE) {
-                w = secure_safe_write(p + skip, (size_t) (left - skip));
-            } else
-# endif
-            {
-                while ((w = write(xferfd, p + skip, (size_t) (left - skip))) <
-                       (ssize_t) 0 && errno == EINTR);
-            }
-            if (w < (ssize_t) 0) {
-                if (errno == EAGAIN && xferfd != -1) {
-                /* wait idletime seconds for progress */
-                    fd_set rs;
-                    fd_set ws;
-                    struct timeval tv;
-
-                    FD_ZERO(&rs);
-                    FD_ZERO(&ws);
-                    FD_SET(0, &rs);
-                    safe_fd_set(xferfd, &ws);
-                    tv.tv_sec = idletime;
-                    tv.tv_usec = 0;
-                    if (xferfd == -1 ||
-                        select(xferfd + 1, &rs, &ws, NULL, &tv) <= 0 ||
-                        FD_ISSET(0, &rs)) {
-                        /* we assume it is ABRT since nothing else is legal */
-                        (void) munmap(buf, s);
-                        (void) close(f);
-                        closedata();
-                        addreply_noformat(426, MSG_ABORTED);
-                        return -1;
-                    } else if (!(safe_fd_isset(xferfd, &ws))) {
-                        /* client presumably gone away */
-                        die(421, LOG_INFO, MSG_TIMEOUT_DATA ,
-                            (unsigned long) idletime);
-                    }
-                    w = (ssize_t) 0;
-                } else {
-                        (void) close(f);
-                        if (xferfd != -1) {
-                            closedata();
-                            addreply_noformat(450, MSG_DATA_WRITE_FAILED);
-                            logfile(LOG_INFO, MSG_ABORTED);
-                        }
-                        return -1;
-                }
-            }
-            downloaded += (unsigned long long) w;
-            left -= w;
-            p += w;
-# ifdef THROTTLING
-            if (throttling_bandwidth_dl > 0UL) {
-                long double delay;
-
-                ended = get_usec_time();
-                transmitted += w;
-                delay = (transmitted /
-                         (long double) throttling_bandwidth_dl) -
-                         (long double) (ended - *started);
-                if (delay > (long double) MAX_THROTTLING_DELAY) {
-                    *started = ended;
-                    transmitted = (off_t) 0;
-                    delay = (long double) MAX_THROTTLING_DELAY;
-                }
-                if (delay > 0.0L) {
-                    usleep2((unsigned long) (delay * 1000000.0L));
-                }
-            }
-# endif
-        }
-        skip = (off_t) 0;
-        (void) munmap(buf, s);
     }
+    if (dlhandler->file_size - dlhandler->cur_pos < dlhandler->chunk_size) {
+        dlhandler->chunk_size = dlhandler->file_size - dlhandler->cur_pos;
+    }
+    if (dlhandler->chunk_size <= 0) {
+        return 1;
+    }
+    dlhandler->mmap_gap = dlhandler->cur_pos -
+        (dlhandler->cur_pos & ~((off_t) page_size - 1U));
+    dlhandler->mmap_pos = dlhandler->cur_pos - dlhandler->mmap_gap;    
+    min_mmap_size = dlhandler->chunk_size + (size_t) dlhandler->mmap_gap;
+    if (dlhandler->mmap_size < min_mmap_size) {
+        dlhandler->mmap_size = min_mmap_size;
+    }
+    dlhandler->mmap_size = (dlhandler->mmap_size + page_size - 1U) &
+        ~(page_size - 1U);
+    if (dlhandler->mmap_size < page_size) {
+        dlhandler->mmap_size = page_size;
+    }
+    max_mmap_size = dlhandler->file_size - dlhandler->mmap_pos;
+    if (dlhandler->mmap_size > max_mmap_size) {
+        dlhandler->mmap_size = max_mmap_size;
+    }    
+    dlhandler->map = mmap(NULL, dlhandler->mmap_size,
+                          PROT_READ, MAP_FILE | MAP_SHARED,
+                          dlhandler->f, dlhandler->mmap_pos);
+    if (dlhandler->map == (void *) MAP_FAILED) {
+        error(451, MSG_MMAP_FAILED);
+        return -1;
+    }
+#ifdef MADV_SEQUENTIAL
+# ifdef MADV_WILLNEED
+    madvise(dlhandler->map, dlhandler->mmap_size, MADV_WILLNEED | MADV_SEQUENTIAL);
+# else
+    madvise(dlhandler->map, dlhandler->mmap_size, MADV_SEQUENTIAL);
+# endif
+#elif defined(MADV_WILLNEED)
+    madvise(dlhandler->map, dlhandler->mmap_size, MADV_WILLNEED);
+#endif
+    dlhandler->map_data = dlhandler->map + dlhandler->mmap_gap;
+    
+    return 0;
+}
 
+int dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
+            const size_t size_, off_t * const downloaded)
+{
+    size_t size = size_;
+    const unsigned char *buf = buf_;
+    unsigned char *asciibuf = NULL;
+    int ret = 0;
+    
+    if (size_ <= (size_t) 0U) {
+        *downloaded = 0;
+        return -1;
+    }    
+    if (dlhandler->ascii_mode > 0) {
+        unsigned char *asciibufpnt;
+        size_t z = (size_t) 0U;
+        
+        if (size > (size_t) dlhandler->chunk_size ||
+            (asciibuf = ALLOCA((size_t) dlhandler->chunk_size * 2U)) == NULL) {
+            return -1;
+        }
+        asciibufpnt = asciibuf;
+        do {
+            if (buf_[z] == (unsigned char) '\n') {
+                *asciibufpnt++ = (unsigned char) '\r';
+            }
+            *asciibufpnt++ = buf_[z];
+            z++;
+        } while (z < size);
+        buf = asciibuf;
+        size = (size_t) (asciibufpnt - asciibuf);
+    }
+    ret = safe_nonblock_write(dlhandler->xferfd, buf, size, NULL);
+    if (asciibuf != NULL) {
+        ALLOCA_FREE(asciibuf);
+    }
+    if (ret < 0) {
+        *downloaded = 0;
+    } else {
+        *downloaded = size;
+    }
+    return ret;
+}
+
+int dlhandler_handle_commands(DLHandler * const dlhandler,
+                              const double required_sleep)
+{
+    int pollret;
+    const short revents = dlhandler->pfds_f_in.revents;
+    char buf[100];
+    ssize_t readen;
+    
+    pollret = poll
+        (&dlhandler->pfds_f_in, 1U,
+         required_sleep <= 0.0 ? 0 : (int) (required_sleep * 1000.0));
+    
+    if (pollret <= 0) {
+        return pollret;
+    }
+    if ((revents & (POLLIN | POLLPRI)) != 0) {
+        readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+        if (readen <= 0) {
+            return 0;
+        }
+        buf[readen] = 0;
+        if (strchr(buf, '\n') != NULL) {
+            if (strncasecmp(buf, "ABOR", sizeof "ABOR" - 1U) != 0 &&
+                strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
+                addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+                doreply();
+            } else {
+                addreply_noformat(426, MSG_ABORTED);
+                doreply();
+                return 1;
+            }
+        }
+    } else if ((revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+        addreply_noformat(451, MSG_DATA_READ_FAILED);
+        return 1;
+    }
+    return 0;
+}
+
+int mmap_send(DLHandler * const dlhandler)
+{
+    int ret;
+    double ts_start = 0.0;
+    double required_sleep;
+    off_t downloaded;
+    
+    if (dlhandler->bandwidth > 0UL && (ts_start = get_usec_time()) <= 0.0) {
+        error(451, "gettimeofday()");
+        return -1;
+    }
+    required_sleep = 0.0;
+    for (;;) {
+        ret = _mmap_remap(dlhandler);
+        if (ret < 0) {
+            return -1;
+        }
+        if (ret == 1) {
+            break;
+        }
+        dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
+                &downloaded);
+        dlhandler->cur_pos += dlhandler->chunk_size;
+        required_sleep = 0.0;
+        if (dlhandler->bandwidth > 0UL) {
+            dlhandler_throttle(dlhandler, downloaded, ts_start,
+                               &required_sleep);
+        }
+        ret = dlhandler_handle_commands(dlhandler, required_sleep);
+        if (ret != 0) {
+            return ret;
+        }
+    }    
+    return 0;
+}
+
+int mmap_exit(DLHandler * const dlhandler)
+{
+    if (dlhandler->map != (void *) MAP_FAILED) {
+        munmap(dlhandler->map, dlhandler->mmap_size);        
+        dlhandler->map = (void *) MAP_FAILED;
+        dlhandler->mmap_size = (size_t) 0U;
+    }
     return 0;
 }
 
 void doretr(char *name)
 {
+    DLHandler dlhandler;
     int f;
-    off_t s;
-    off_t skip;
-    off_t o;
     struct stat st;
-    char *p, *buf;
-    off_t left;
     double started;
-#ifdef THROTTLING
-    double ended;
-    off_t transmitted = 0;
-#endif
 
     if (!candownload) {
         addreply(550, MSG_LOAD_TOO_HIGH, load);
@@ -3322,138 +3367,22 @@ void doretr(char *name)
         ftpwho_unlock();
     }
 #endif
-    alarm(MAX_SESSION_XFER_IDLE);
+    
     started = get_usec_time();
 
-#ifndef WITHOUT_ASCII
-    if (type == 2)
-#endif
-    {            /* Binary */
-        CORK_ON(xferfd);
-#ifndef SENDFILE_NONE
-# if defined(WITH_TLS)
-        if (data_protection_level == CPL_NONE ||
-            data_protection_level == CPL_CLEAR)
-# endif /* End WITH_TLS */
-        {
-            if (sendfile_send(f, st, &started) < 0) {
-                goto end;
-            }
-        }
-# if defined(WITH_TLS)
-        else
-# endif /* End WITH_TLS */
-        
-#endif  /*      End !defined(SENDFILE_NONE)     */
-
-#if defined(SENDFILE_NONE) || defined(WITH_TLS)
-        {
-            if (mmap_send(f, st, &started) < 0) {
-                goto end;
-            }
-        }
-#endif  /*      SENDFILE_NONE || WITH_TLS       */
-    }
-#ifndef WITHOUT_ASCII
-    else {                    /* ASCII */
-        o = restartat & ~(page_size - 1);
-        skip = restartat - o;
-        CORK_ON(xferfd);
-        while (o < st.st_size) {
-# ifdef FTPWHO
-            if (shm_data_cur != NULL) {
-                shm_data_cur->download_current_size = o;
-            }
-# endif
-            left = st.st_size - o;
-            if (left > (off_t) dl_chunk_size) {
-                left = (off_t) dl_chunk_size;
-            }
-            if (left > (off_t) ASCII_CHUNKSIZE) {
-                left = ASCII_CHUNKSIZE;
-            }
-            buf = mmap(0, left, PROT_READ, MAP_FILE | MAP_SHARED, f, o);
-            if (buf == (char *) MAP_FAILED) {
-                closedata();
-                (void) close(f);
-                error(451, MSG_MMAP_FAILED);
-                goto end;
-            }
-            p = buf;
-            o += left;
-            s = left;
-            while ((off_t) left > skip) {
-                ssize_t w;
-                w = doasciiwrite(xferfd, (const char *) p + skip,
-                                 (size_t) (left - skip));
-                if (w < (ssize_t) 0) {
-                    if (xferfd != -1 && (errno == EAGAIN || errno == EINTR)) {
-                        /* wait idletime seconds for progress */
-                        fd_set rs;
-                        fd_set ws;
-                        struct timeval tv;
-
-                        FD_ZERO(&rs);
-                        FD_ZERO(&ws);
-                        FD_SET(0, &rs);
-                        safe_fd_set(xferfd, &ws);
-                        tv.tv_sec = idletime;
-                        tv.tv_usec = 0;
-                        if (xferfd == -1 ||
-                            select(xferfd + 1, &rs, &ws, NULL, &tv) <= 0 ||
-                            FD_ISSET(0, &rs)) {
-                            /* we assume it is ABRT since nothing else is legal */
-                            (void) munmap(buf, s);
-                            closedata();
-                            (void) close(f);
-                            addreply_noformat(426, MSG_ABORTED);
-                            goto end;
-                        } else if (!(safe_fd_isset(xferfd, &ws))) {
-                            /* client presumably gone away */
-                            die(421, LOG_INFO, MSG_TIMEOUT_DATA ,
-                                   (unsigned long) idletime);
-                        }
-                        w = (ssize_t) 0;
-                    } else {
-                        (void) close(f);
-                        if (xferfd != -1) {
-                            closedata();
-                            addreply_noformat(450, MSG_DATA_WRITE_FAILED);
-                            logfile(LOG_INFO, MSG_ABORTED);
-                        }
-                        goto end;
-                    }
-                }
-                downloaded += (unsigned long long) w;
-                left -= w;
-                p += w;
-# ifdef THROTTLING
-                if (o < st.st_size && throttling_bandwidth_dl > 0UL) {
-                    long double delay;
-
-                    ended = get_usec_time();
-                    transmitted += w;
-                    delay = (transmitted / (long double) throttling_bandwidth_dl)
-                        - (long double) (ended - started);
-                    if (delay > (long double) MAX_THROTTLING_DELAY) {
-                        started = ended;
-                        transmitted = (off_t) 0;
-                        delay = (long double) MAX_THROTTLING_DELAY;
-                    }
-                    if (delay > 0.0L) {
-                        usleep2((unsigned long) (delay * 1000000.0L));
-                    }
-                }
-# endif
-            }
-            skip = (off_t) 0;
-            (void) munmap(buf, s);
-        }
-    }
-#endif
+    /* download really starts here */
+    
+    if (mmap_init(&dlhandler, 0, xferfd, name, f, restartat,
+                  type == 1, throttling_bandwidth_dl) == 0) {
+        mmap_send(&dlhandler);
+        mmap_exit(&dlhandler);        
+    }    
+    
+    /* download really ends here */    
+    
     (void) close(f);
     closedata();
-    displayrate(MSG_DOWNLOADED, st.st_size - restartat, started, name, 0);
+    displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
     
     end:
     restartat = (off_t) 0;
@@ -4593,7 +4522,7 @@ static void set_signals(void)
     sigaddset(&sigs, SIGXCPU);
     (void) sigaction(SIGXCPU, &sa, NULL);
 # endif
-    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
+//    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
 #endif
 }
 

@@ -290,6 +290,30 @@ typedef struct Authentications_ {
 
 static Authentications *first_authentications, *last_authentications;
 
+typedef struct DLHandler_ {
+    int clientfd;
+    int xferfd;
+    int f;
+    off_t file_size;
+    size_t min_mmap_size;
+    size_t mmap_size;
+    off_t mmap_gap;    
+    off_t cur_pos;
+    off_t chunk_size;    
+    off_t min_chunk_size;
+    off_t default_chunk_size;
+    off_t max_chunk_size;
+    off_t mmap_pos;
+    off_t total_downloaded;
+    unsigned char *map;
+    unsigned char *map_data;    
+    int ascii_mode;
+    double min_sleep;
+    double max_sleep;
+    unsigned long bandwidth;
+    struct pollfd pfds_f_in;
+} DLHandler;
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined (__CYGWIN__)
 static struct passwd *fakegetpwnam(const char * const name);
 # define getpwnam(A) fakegetpwnam(A)

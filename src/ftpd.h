@@ -67,6 +67,7 @@
 # include <sys/ioctl.h>
 #endif
 #include <sys/socket.h>
+#include <poll.h>
 #ifdef HAVE_NETINET_IN_SYSTM_H
 # include <netinet/in_systm.h>
 #endif
