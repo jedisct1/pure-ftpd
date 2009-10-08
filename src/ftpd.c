@@ -132,7 +132,7 @@ ssize_t safe_nonblock_write(const int fd, const void *buf_, size_t count,
                 if (poll(&pfd, 1U, -1) <= 0 ||
                     (pfd.revents & (POLLERR | POLLHUP)) != 0 ||
                     (pfd.revents & POLLOUT) == 0) {
-                    errno = EPIPE;                    
+                    errno = EPIPE;
                     return -1;
                 }                    
             } else if (errno != EINTR) {
@@ -274,7 +274,7 @@ void simplify(char *subdir)
 
 int checkprintable(const char *s)
 {
-    int ret = 0;    
+    int ret = 0;
     unsigned char c;
     
     while ((c = (unsigned char) *s) != 0U) {
@@ -286,6 +286,17 @@ int checkprintable(const char *s)
     }
     
     return ret;    
+}
+
+char *skip_telnet_controls(const char *str)
+{
+    if (str == NULL) {
+        return NULL;
+    }
+    while (*str != 0 && (unsigned char) *str >= 240U) {
+        str++;
+    }
+    return (char *) str;
 }
 
 void die(const int err, const int priority, const char * const format, ...)
@@ -3175,34 +3186,37 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
                               const double required_sleep)
 {
     int pollret;
-    const short revents = dlhandler->pfds_f_in.revents;
     char buf[100];
+    char *bufpnt;
     ssize_t readen;
     
-    pollret = poll
-        (&dlhandler->pfds_f_in, 1U,
-         required_sleep <= 0.0 ? 0 : (int) (required_sleep * 1000.0));
-    
+    pollret = poll(&dlhandler->pfds_f_in, 1U,
+                   required_sleep <= 0.0 ?
+                   0 : (int) (required_sleep * 1000.0));
     if (pollret <= 0) {
         return pollret;
     }
-    if ((revents & (POLLIN | POLLPRI)) != 0) {
+    if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
         readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
         if (readen <= 0) {
             return 0;
         }
         buf[readen] = 0;
-        if (strchr(buf, '\n') != NULL) {
-            if (strncasecmp(buf, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-                strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
+        bufpnt = skip_telnet_controls(buf);
+        if (strchr(bufpnt, '\n') != NULL) {
+            if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
+                strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
                 addreply_noformat(500, MSG_UNKNOWN_COMMAND);
                 doreply();
             } else {
-                addreply_noformat(426, MSG_ABORTED);
+                addreply_noformat(426, "ABORT");
+                doreply();
+                addreply_noformat(226, MSG_ABORTED);
                 return 1;
             }
         }
-    } else if ((revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+    } else if ((dlhandler->pfds_f_in.revents &
+                (POLLERR | POLLHUP | POLLNVAL)) != 0) {
         addreply_noformat(451, MSG_DATA_READ_FAILED);
         return 1;
     }
@@ -3233,6 +3247,11 @@ int mmap_send(DLHandler * const dlhandler)
         dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
                 &downloaded);
         dlhandler->cur_pos += dlhandler->chunk_size;
+#ifdef FTPWHO
+        if (shm_data_cur != NULL) {
+            shm_data_cur->download_current_size = dlhandler->cur_pos;
+        }
+#endif        
         required_sleep = 0.0;
         if (dlhandler->bandwidth > 0UL) {
             dlhandler_throttle(dlhandler, downloaded, ts_start,
@@ -3385,7 +3404,7 @@ void doretr(char *name)
     
     (void) close(f);
     closedata();
-    if (ret == 0) {
+    if (ret == 0) {        
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
     }
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);

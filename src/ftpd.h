@@ -381,6 +381,7 @@ void prevent(char *arg);
 unsigned int daemons(in_port_t server_port);
 void logfile(const int facility, const char *format, ...) 
     __attribute__ ((format(printf, 2, 3)));
+char *skip_telnet_controls(const char *str);
 void die(const int err, const int priority, const char * const format, ...)
     __attribute__ ((format(printf, 3, 4)));
 void die_mem(void);
