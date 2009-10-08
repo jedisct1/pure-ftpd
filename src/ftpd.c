@@ -71,9 +71,7 @@ int safe_write(const int fd, const void *buf_, size_t count)
     while (count > (size_t) 0U) {
         for (;;) {
             if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno == EAGAIN) {
-                    sleep(1);
-                } else if (errno != EINTR) {
+                if (errno != EINTR) {
                     return -1;
                 }
                 continue;
@@ -96,9 +94,7 @@ int secure_safe_write(const void *buf_, size_t count)
     while (count > (size_t) 0U) {
         for (;;) {
             if ((written = SSL_write(tls_data_cnx, buf, count)) <= (ssize_t) 0) {
-                if (errno == EAGAIN) {
-                    sleep(1);
-                } else if (errno != EINTR) {
+                if (errno != EINTR) {
                     return -1;
                 }
                 continue;
@@ -3292,21 +3288,7 @@ void doretr(char *name)
         closedata();
         goto end;
     }
-#ifdef NON_BLOCKING_DATA_SOCKET
-    {
-        int flags;
-
-        if ((flags = fcntl(xferfd, F_GETFL, 0)) < 0) {
-        (void) close(f);
-    closedata();
-        error(451, "fcntl");
-        goto end;
-    }
-        flags |= FNDELAY;
-        fcntl(xferfd, F_SETFL, flags);
-    }
-#endif
-
+    
 #ifndef DISABLE_HUMOR
     if ((time(NULL) % 100) == 0) {
         addreply_noformat(0, MSG_WINNER);
@@ -3620,6 +3602,34 @@ void dofeat(void)
     addreply_noformat(211, "End.");
 }
 #endif
+
+static void sigurg_enable(void)
+{
+    sigset_t sigs;
+    
+    sigemptyset(&sigs);
+#ifdef SIGURG
+    sigaddset(&sigs, SIGURG);
+#endif
+#if defined(WITH_TLS) && defined(SIGIO)    
+    sigaddset(&sigs, SIGIO);
+#endif
+    sigprocmask(SIG_UNBLOCK, &sigs, NULL);
+}
+
+static void sigurg_disable(void)
+{
+    sigset_t sigs;
+    
+    sigemptyset(&sigs);
+#ifdef SIGURG
+    sigaddset(&sigs, SIGURG);
+#endif
+#if defined(WITH_TLS) && defined(SIGIO)    
+    sigaddset(&sigs, SIGIO);
+#endif
+    sigprocmask(SIG_BLOCK, &sigs, NULL);    
+}
 
 #ifndef MINIMAL
 void dostou(void)
@@ -3960,6 +3970,7 @@ void dostor(char *name, const int append, const int autorename)
         }
     }
 #endif
+    sigurg_enable();
     alarm(MAX_SESSION_XFER_IDLE);    
     started = get_usec_time();    
     do {
@@ -4146,6 +4157,7 @@ void dostor(char *name, const int append, const int autorename)
     }
     
     end:
+    sigurg_disable();
 #ifndef WITHOUT_ASCII
     free(cpy);
 #endif
@@ -4499,50 +4511,67 @@ static int check_standalone(void)
 
 static void set_signals_client(void)
 {
+    sigset_t sigs;
     struct sigaction sa;
 
+    sigemptyset(&sigs);
     sigemptyset(&sa.sa_mask);
-
+    
     sa.sa_flags = SA_RESTART;
 #ifdef SIGURG
     sa.sa_handler = sigurg;
     (void) sigaction(SIGURG, &sa, NULL);
 #endif
 #if defined(WITH_TLS) && defined(SIGIO)
-# ifndef SIGURG
     sa.sa_handler = sigurg;
-# endif
+    sigaddset(&sigs, SIGIO);    
     (void) sigaction(SIGIO, &sa, NULL);
 #endif
+    
     sa.sa_handler = SIG_IGN;
     (void) sigaction(SIGPIPE, &sa, NULL);
+    
     sa.sa_handler = SIG_DFL;
+    sigaddset(&sigs, SIGCHLD);
     (void) sigaction(SIGCHLD, &sa, NULL);    
 #ifdef SIGFPE
     (void) sigaction(SIGFPE, &sa, NULL);
+    sigaddset(&sigs, SIGFPE);
 #endif
     sa.sa_flags = 0;
+    
     sa.sa_handler = sigalarm;
+    sigaddset(&sigs, SIGALRM);
     (void) sigaction(SIGALRM, &sa, NULL);
+    
     sa.sa_handler = sigterm_client;
+    sigaddset(&sigs, SIGTERM);
     (void) sigaction(SIGTERM, &sa, NULL);
+    sigaddset(&sigs, SIGHUP);
     (void) sigaction(SIGHUP, &sa, NULL);
+    sigaddset(&sigs, SIGQUIT);
     (void) sigaction(SIGQUIT, &sa, NULL);
+    sigaddset(&sigs, SIGINT);
     (void) sigaction(SIGINT, &sa, NULL);
 #ifdef SIGXCPU
+    sigaddset(&sigs, SIGXCPU);
     (void) sigaction(SIGXCPU, &sa, NULL);
 #endif
+    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
 }
 
 static void set_signals(void)
 {
 #ifndef NO_STANDALONE
+    sigset_t sigs;    
     struct sigaction sa;
 
+    sigemptyset(&sigs);
     sigemptyset(&sa.sa_mask);
 
     sa.sa_flags = SA_RESTART;
     sa.sa_handler = sigchild;
+    sigaddset(&sigs, SIGCHLD);
     (void) sigaction(SIGCHLD, &sa, NULL);
 
     sa.sa_handler = SIG_IGN;
@@ -4552,13 +4581,19 @@ static void set_signals(void)
     
     sa.sa_flags = 0;
     sa.sa_handler = sigterm;
+    sigaddset(&sigs, SIGTERM);
     (void) sigaction(SIGTERM, &sa, NULL);
+    sigaddset(&sigs, SIGHUP);
     (void) sigaction(SIGHUP, &sa, NULL);
+    sigaddset(&sigs, SIGQUIT);
     (void) sigaction(SIGQUIT, &sa, NULL);
+    sigaddset(&sigs, SIGINT);
     (void) sigaction(SIGINT, &sa, NULL);
 # ifdef SIGXCPU
+    sigaddset(&sigs, SIGXCPU);
     (void) sigaction(SIGXCPU, &sa, NULL);
 # endif
+    (void) sigprocmask(SIG_SETMASK, &sigs, NULL);
 #endif
 }
 

@@ -423,9 +423,7 @@ int safe_write(const int fd, const void *buf_, size_t count)
     while (count > (size_t) 0) {
         for (;;) {
             if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno == EAGAIN) {
-                    sleep(1);
-                } else if (errno != EINTR) {
+                if (errno != EINTR) {
                     return -1;
                 }
                 continue;
