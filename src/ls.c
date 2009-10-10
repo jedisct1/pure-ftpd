@@ -439,9 +439,7 @@ static void outputfiles(int f, void * const tls_fd)
     unsigned int n;
     struct filename *p;
     struct filename *q;
-#ifdef WITH_RFC2640
     char *c_buf; /* buffer with charset of client */
-#endif
 
     if (!head) {
         return;
@@ -683,6 +681,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     char *names;
     PureFileInfo *s;
     PureFileInfo *r;
+    char *c_buf;
     int d;
     
     if (depth >= max_ls_depth || matches >= max_ls_files) {
@@ -724,21 +723,29 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                                  name, FI_NAME(r)), sizeof_subdir)) {
                 goto nolist;
             }
+#ifdef WITH_RFC2640
+            c_buf = charset_fs2client(alloca_subdir);
+#else
+            c_buf = alloca_subdir;
+#endif
 #ifndef MINIMAL
             if (modern_listings == 0) {
-#endif
+#endif                
 #ifdef FANCY_LS_DIRECTORY_HEADERS
                 wrstr(f, tls_fd, "\r\n>----------------[");
-                wrstr(f, tls_fd, alloca_subdir);
+                wrstr(f, tls_fd, c_buf);
                 wrstr(f, tls_fd, "]----------------<\r\n\r\n");
 #else
                 wrstr(f, tls_fd, "\r\n\r\n");
-                wrstr(f, tls_fd, alloca_subdir);
+                wrstr(f, tls_fd, c_buf);
                 wrstr(f, tls_fd, ":\r\n\r\n");                    
 #endif
 #ifndef MINIMAL
             }
 #endif
+#ifdef WITH_RFC2640            
+            free(c_buf);
+#endif            
             listdir(depth + 1U, f, tls_fd, alloca_subdir);
             nolist:
             ALLOCA_FREE(alloca_subdir);
@@ -766,6 +773,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
 {
     int c;
     void *tls_fd = NULL;
+    char *c_buf;
     
     matches = 0U;
 
@@ -909,14 +917,22 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                     }
                     if (**path) {
                         if (!justone) {
+#ifdef WITH_RFC2640                            
+                            c_buf = charset_fs2client(*path);
+#else
+                            c_buf = *path;
+#endif
 #ifdef FANCY_LS_DIRECTORY_HEADERS                            
                             wrstr(c, tls_fd, "\r\n>-----------------[");
-                            wrstr(c, tls_fd, *path);
+                            wrstr(c, tls_fd, c_buf);
                             wrstr(c, tls_fd, "]-----------------<\r\n\r\n");
 #else
                             wrstr(c, tls_fd, "\r\n\r\n");
-                            wrstr(c, tls_fd, *path);
+                            wrstr(c, tls_fd, c_buf);
                             wrstr(c, tls_fd, ":\r\n\r\n");
+#endif
+#ifdef WITH_RFC2640                            
+                            free(c_buf);
 #endif
                         }
                         if (!chdir(*path)) {

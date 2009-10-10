@@ -23,6 +23,8 @@ a userPassword attribute. This usually indicates that the LDAP bind DN
 cannot read the attributes, because it doesn't have sufficient privileges.
 Contributed by Wilco Baan Hofman.
  - Show dot files with the MLSD command. Thanks to Ned Holbrook.
+ - Perform charset conversions on directory names. Issue spotted by Xianghu
+Zhao.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

@@ -256,3 +256,6 @@ documentation error in pgsql.
 * Frederico Gendorf - reported that on-demand directory creation didn't work
 with paths containing a /./ mark.
 * Ned Holdbrook - reported that MLSD should display dot files.
+* Xianghu Zhao - spotted the fact that charset conversion was needed on
+directory names in traditional listings.
+
