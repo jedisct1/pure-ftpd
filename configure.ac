@@ -57,7 +57,7 @@ AC_CHECK_HEADERS(unistd.h string.h strings.h sys/param.h ioctl.h sys/ioctl.h)
 AC_CHECK_HEADERS(sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h sys/fsuid.h)
 AC_CHECK_HEADERS(sys/time.h sys/resource.h sys/capability.h)
 AC_CHECK_HEADERS(shadow.h getopt.h stddef.h)
-AC_CHECK_HEADERS(netinet/in_systm.h netinet/in.h sys/pstat.h)
+AC_CHECK_HEADERS(netinet/in_systm.h netinet/in.h sys/pstat.h sys/file.h)
 AC_CHECK_HEADERS(sys/mount.h, [], [],
 [#ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
@@ -1299,7 +1299,7 @@ if test "x$with_rfc2640" = "xyes" ; then
   if test "x$ac_cv_header_iconv_h" != "xyes" ; then
     AC_MSG_ERROR(iconv headers not found.)  
   fi
-  AC_CHECK_LIB(iconv, libiconv)
+  AC_CHECK_LIB(iconv, iconv)
   AC_DEFINE(WITH_RFC2640,,[Enable RFC2640 (UTF-8) support])
 fi
 

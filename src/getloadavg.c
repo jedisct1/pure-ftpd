@@ -502,9 +502,11 @@ extern int errno;
 # if defined(HAVE_FCNTL_H) || defined(_POSIX_VERSION)
 #  include <fcntl.h>
 # else
-#  include <sys/file.h>
+#  ifdef HAVE_SYS_FILE_H
+#   include <sys/file.h>
+#  endif
 # endif
-
+
 /* Avoid static vars inside a function since in HPUX they dump as pure.  */
 
 # ifdef NeXT
