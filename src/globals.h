@@ -18,9 +18,9 @@ GLOBAL0(volatile signed char logging);
 #ifdef THROTTLING
 GLOBAL0(unsigned long throttling_delay);
 GLOBAL0(unsigned long throttling_bandwidth_ul);
-GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(signed char throttling);                /* 0=don't throttle 1=throttle anon 2=all */
 #endif
+GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(signed char allowfxp);                    /* 0=no fxp 1=authenticated 2=everybody */
 GLOBAL0(signed char passive);
 GLOBAL(int datafd, -1);                    /* data connection file descriptor */
