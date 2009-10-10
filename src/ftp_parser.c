@@ -562,15 +562,8 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-# ifdef WITH_TLS
-                    if (tls_cnx != NULL) {
-                        addreply_noformat(500, MSG_UNKNOWN_COMMAND);
-                    } else
-# endif
-                    {
-                        modern_listings = 0;
-                        donlist(arg, 1, 1, 1, 1);
-                    }
+                    modern_listings = 0;
+                    donlist(arg, 1, 1, 1, 1);
                 } else {
                     addreply_noformat(211, "http://www.pureftpd.org/");
                 }

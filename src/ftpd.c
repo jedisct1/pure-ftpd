@@ -85,7 +85,7 @@ int safe_write(const int fd, const void *buf_, size_t count)
 }
 
 #ifdef WITH_TLS
-int secure_safe_write(const void *buf_, size_t count)
+int secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
 {
     ssize_t written;
     const char *buf = (const char *) buf_;
@@ -93,8 +93,8 @@ int secure_safe_write(const void *buf_, size_t count)
     
     while (count > (size_t) 0U) {
         for (;;) {
-            if ((written = SSL_write(tls_data_cnx, buf, count)) <= (ssize_t) 0) {
-                if (errno != EINTR) {
+            if ((written = SSL_write(tls_fd, buf, count)) <= (ssize_t) 0) {
+                if (SSL_get_error(tls_fd, written) != SSL_ERROR_NONE) {
                     return -1;
                 }
                 continue;

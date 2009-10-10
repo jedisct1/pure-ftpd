@@ -152,7 +152,7 @@ int tls_init_new_session(void)
         SSL_set_wfd(tls_cnx, 1) != 1) {
         tls_error(__LINE__, 0);
     }
-    SSL_set_accept_state(tls_cnx);
+    SSL_set_accept_state(tls_cnx);    
     for (;;) {
         if ((ret = SSL_accept(tls_cnx)) <= 0) {
             ret_ = SSL_get_error(tls_cnx, ret);            
@@ -201,8 +201,9 @@ int tls_init_data_session(int fd)
     }    
     if (SSL_set_fd(tls_data_cnx, fd) != 1) {
         tls_error(__LINE__, 0);
-    }    
+    }
     SSL_set_accept_state(tls_data_cnx);
+#if 0
     for (;;) {
         if ((ret = SSL_accept(tls_data_cnx)) <= 0) {
             ret_ = SSL_get_error(tls_data_cnx, ret);
@@ -214,6 +215,7 @@ int tls_init_data_session(int fd)
         }
         break;
     }
+#endif
 #if ONLY_ACCEPT_REUSED_SSL_SESSIONS
     if (SSL_session_reused(tls_data_cnx) == 0) {
         tls_error(__LINE__, 0);

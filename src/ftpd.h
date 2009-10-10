@@ -324,7 +324,7 @@ typedef enum {
 
 int safe_write(const int fd, const void *buf_, size_t count);
 #ifdef WITH_TLS
-int secure_safe_write(const void *buf_, size_t count);
+int secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
 #endif
 void *aborttransfer(int);
 void parser(void);
