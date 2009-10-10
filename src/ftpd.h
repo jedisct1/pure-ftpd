@@ -539,10 +539,25 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define CONF_TCP_SO_SNDBUF 65536
 #endif
     
-#define DEFAULT_DL_CHUNK_SIZE (1 << 28)
 #define DEFAULT_UL_CHUNK_SIZE ((CONF_TCP_SO_RCVBUF) * 2)
 #define MAX_UL_CHUNK_SIZE ((CONF_TCP_SO_RCVBUF) * 2)
 #define MAX_THROTTLING_DELAY 42           /* Maximum throttling compensation */
+
+#ifndef DL_MIN_CHUNK_SIZE
+# define DL_MIN_CHUNK_SIZE (8 * 1024)
+#endif
+#ifndef DL_DEFAULT_CHUNK_SIZE
+# define DL_DEFAULT_CHUNK_SIZE 49152UL
+#endif
+#ifndef DL_DEFAULT_CHUNK_SIZE_ASCII
+# define DL_DEFAULT_CHUNK_SIZE_ASCII 32768UL
+#endif
+#ifndef DL_MAX_CHUNK_SIZE
+# define DL_MAX_CHUNK_SIZE (512 * 1024UL)
+#endif
+#ifndef DL_MMAP_SIZE
+# define DL_MMAP_SIZE (10 * 1024 * 1024UL)
+#endif
 
 #define VHOST_PREFIX_MAX_LEN 64    
 

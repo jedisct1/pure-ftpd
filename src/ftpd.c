@@ -3062,19 +3062,20 @@ int mmap_init(DLHandler * const dlhandler,
                        tls_fd, restartat, ascii_mode, bandwidth) != 0) {
         return -1;
     }
-    dlhandler->min_chunk_size = 8 * 1024UL;
+    dlhandler->min_chunk_size = DL_MIN_CHUNK_SIZE;
     if (ascii_mode > 0) {
-        dlhandler->default_chunk_size = dlhandler->max_chunk_size = 32768;
+        dlhandler->default_chunk_size = dlhandler->max_chunk_size =
+            DL_DEFAULT_CHUNK_SIZE_ASCII;
     } else {
-        dlhandler->max_chunk_size = 512 * 1024UL;
+        dlhandler->max_chunk_size = DL_MAX_CHUNK_SIZE;
         if (bandwidth <= 0UL) {
             dlhandler->default_chunk_size = dlhandler->max_chunk_size;
         } else {
-            dlhandler->default_chunk_size = 49152;
+            dlhandler->default_chunk_size = DL_DEFAULT_CHUNK_SIZE;
         }
     }
     dlhandler->chunk_size = dlhandler->default_chunk_size;
-    dlhandler->mmap_size = 64 * 1024UL;
+    dlhandler->mmap_size = DL_MMAP_SIZE;
     dlhandler->mmap_gap = 0;
     dlhandler->cur_pos = restartat;
     dlhandler->mmap_pos = (off_t) 0;
