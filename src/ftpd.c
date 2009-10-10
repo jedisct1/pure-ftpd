@@ -4877,7 +4877,7 @@ static void doit(void)
     parser();
     
     addreply(0, MSG_LOGOUT);
-    logfile(LOG_INFO, MSG_LOGOUT);    
+    logfile(LOG_INFO, MSG_LOGOUT);
     doreply();
 #ifdef WITH_BONJOUR
     refreshManager();

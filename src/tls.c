@@ -288,9 +288,10 @@ int tls_init_data_session(const int fd, const int passive)
             ret_ = SSL_get_error(tls_data_cnx, ret);
             if (ret == -1 && (ret_ == SSL_ERROR_WANT_READ ||
                               ret_ == SSL_ERROR_WANT_WRITE)) {
-                continue;
+                continue;                
             }
-            tls_error(__LINE__, ret_);
+            logfile(LOG_INFO, MSG_LOGOUT);
+            _EXIT(EXIT_FAILURE);
         }
         break;
     }
