@@ -1299,7 +1299,8 @@ if test "x$with_rfc2640" = "xyes" ; then
   if test "x$ac_cv_header_iconv_h" != "xyes" ; then
     AC_MSG_ERROR(iconv headers not found.)  
   fi
-  AC_CHECK_LIB(iconv, iconv)
+  AC_CHECK_LIB(iconv, iconv_open)
+  AC_CHECK_LIB(iconv, libiconv_open)  
   AC_DEFINE(WITH_RFC2640,,[Enable RFC2640 (UTF-8) support])
 fi
 

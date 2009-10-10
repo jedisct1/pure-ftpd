@@ -3416,8 +3416,6 @@ void doretr(char *name)
     
     started = get_usec_time();
 
-    /* download really starts here */
-
     if (mmap_init(&dlhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
                   restartat, type == 1, throttling_bandwidth_dl) == 0) {
         ret = mmap_send(&dlhandler);
@@ -3427,13 +3425,12 @@ void doretr(char *name)
         ret = -1;
     }
     
-    /* download really ends here */    
-    
     (void) close(f);
     closedata();
     if (ret == 0) {        
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
     }
+    downloaded += dlhandler.total_downloaded;
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
     
     end:
