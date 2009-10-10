@@ -2573,7 +2573,6 @@ void opendata(void)
 #endif
     }
     xferfd = fd;
-    doreply();
 #ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
         tls_init_data_session(fd, passive);
