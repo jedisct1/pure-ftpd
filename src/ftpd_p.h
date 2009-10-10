@@ -292,6 +292,7 @@ static Authentications *first_authentications, *last_authentications;
 
 typedef struct DLHandler_ {
     int clientfd;
+    void *tls_clientfd;
     int xferfd;
     int f;
     void *tls_fd;

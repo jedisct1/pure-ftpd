@@ -2998,7 +2998,7 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
 }
 
 int dlhandler_init(DLHandler * const dlhandler, 
-                   const int clientfd,
+                   const int clientfd, void * const tls_clientfd,
                    const int xferfd,
                    const char * const name,
                    const int f, void * const tls_fd,
@@ -3026,7 +3026,8 @@ int dlhandler_init(DLHandler * const dlhandler,
         error(451, "fcntl(F_SETFL, O_NONBLOCK)");
         return -1;
     }
-    dlhandler->clientfd = clientfd;    
+    dlhandler->clientfd = clientfd;
+    dlhandler->tls_clientfd = tls_clientfd;
     dlhandler->xferfd = xferfd;
     dlhandler->f = f;
     dlhandler->tls_fd = tls_fd;    
@@ -3046,7 +3047,7 @@ int dlhandler_init(DLHandler * const dlhandler,
 }
 
 int mmap_init(DLHandler * const dlhandler, 
-              const int clientfd,
+              const int clientfd, void * const tls_clientfd,
               const int xferfd,
               const char * const name,
               const int f,
@@ -3055,8 +3056,8 @@ int mmap_init(DLHandler * const dlhandler,
               const int ascii_mode,
               const unsigned long bandwidth)
 {
-    if (dlhandler_init(dlhandler, clientfd, xferfd, name, f, tls_fd,
-                       restartat, ascii_mode, bandwidth) != 0) {
+    if (dlhandler_init(dlhandler, clientfd, tls_clientfd, xferfd, name, f,
+                       tls_fd, restartat, ascii_mode, bandwidth) != 0) {
         return -1;
     }
     dlhandler->min_chunk_size = 8 * 1024UL;
@@ -3206,7 +3207,12 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
         return pollret;
     }
     if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
-        readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+        if (dlhandler->tls_clientfd != NULL) {
+            readen = SSL_read(dlhandler->tls_clientfd, buf,
+                              sizeof buf - (size_t) 1U);
+        } else {
+            readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+        }
         if (readen <= 0) {
             return -1;
         }
@@ -3238,7 +3244,7 @@ int mmap_send(DLHandler * const dlhandler)
     double ts_start = 0.0;
     double required_sleep;
     off_t downloaded;
-    
+
     if (dlhandler->bandwidth > 0UL && (ts_start = get_usec_time()) <= 0.0) {
         error(451, "gettimeofday()");
         return -1;
@@ -3402,8 +3408,8 @@ void doretr(char *name)
 
     /* download really starts here */
 
-    if (mmap_init(&dlhandler, 0, xferfd, name, f, tls_data_cnx, restartat,
-                  type == 1, throttling_bandwidth_dl) == 0) {
+    if (mmap_init(&dlhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
+                  restartat, type == 1, throttling_bandwidth_dl) == 0) {
         ret = mmap_send(&dlhandler);
         mmap_exit(&dlhandler);        
     } else {
