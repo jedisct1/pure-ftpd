@@ -31,6 +31,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
             } else
 #endif      
             {
+                (void) tls_fd;
                 if (safe_write(f, outbuf, outcnt) != 0) {
                     return;
                 }

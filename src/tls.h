@@ -28,10 +28,6 @@ extern
 # endif
     SSL *tls_data_cnx;
 
-
-/* If we really have to, use an insecure but exportable 512-bits key */
-# define RSA_EPHEMERAL_KEY_LEN 512
-
 /* The minimal number of bits we accept for a cipher */
 # define MINIMAL_CIPHER_KEY_LEN 40
 

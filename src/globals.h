@@ -181,3 +181,8 @@ GLOBAL(iconv_t iconv_fd_fs2utf8, NULL);
 GLOBAL(iconv_t iconv_fd_client2fs, NULL);
 GLOBAL(iconv_t iconv_fd_utf82fs, NULL);
 #endif
+
+#ifndef WITH_TLS
+GLOBAL0(void * tls_cnx);
+GLOBAL0(void * tls_data_cnx);
+#endif

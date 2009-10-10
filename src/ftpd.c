@@ -120,10 +120,14 @@ ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
             if (tls_fd == NULL) {
                 written = write(fd, buf, count);
             } else {
+#ifdef WITH_TLS
                 written = SSL_write(tls_fd, buf, count);
                 if (SSL_get_error(tls_fd, written) == SSL_ERROR_WANT_WRITE) {
                     errno = EAGAIN;
                 }
+#else
+                abort();
+#endif
             }
             if (written > (ssize_t) 0) {
                 break;
@@ -174,9 +178,9 @@ static int safe_fd_isset(const int fd, const fd_set * const fds)
 
 static int init_tz(void)
 {
-    char stbuf[10];                                                             
-    struct tm *tm;                                                              
-    time_t now;                                                                 
+    char stbuf[10];
+    struct tm *tm;
+    time_t now;
     
 #ifdef HAVE_TZSET
     tzset();
@@ -3208,8 +3212,12 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     }
     if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
         if (dlhandler->tls_clientfd != NULL) {
+#ifdef WITH_TLS            
             readen = SSL_read(dlhandler->tls_clientfd, buf,
                               sizeof buf - (size_t) 1U);
+#else
+            abort();
+#endif
         } else {
             readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
         }
