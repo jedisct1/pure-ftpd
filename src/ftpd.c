@@ -3208,7 +3208,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
         readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
         if (readen <= 0) {
-            return 0;
+            return -1;
         }
         buf[readen] = 0;
         bufpnt = skip_telnet_controls(buf);
@@ -3253,8 +3253,10 @@ int mmap_send(DLHandler * const dlhandler)
         if (ret == 1) {
             break;
         }
-        dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
-                &downloaded);
+        if (dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
+                    &downloaded) != 0) {
+            return -1;
+        }
         dlhandler->cur_pos += dlhandler->chunk_size;
 #ifdef FTPWHO
         if (shm_data_cur != NULL) {
