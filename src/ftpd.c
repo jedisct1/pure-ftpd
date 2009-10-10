@@ -2474,16 +2474,15 @@ void opendata(void)
         struct timeval tv;
         
         alarm(idletime);
-
         for (;;) {
             FD_ZERO(&rs);
             FD_SET(datafd, &rs);
             tv.tv_sec = idletime;
             tv.tv_usec = 0;
-            /* I suppose it would be better to listen for ABRT too... */
+            /* I suppose it would be better to listen for ABOR too... */
             
             if (select(datafd + 1, &rs, NULL, NULL, &tv) <= 0) {
-                die(421, LOG_INFO, MSG_TIMEOUT_DATA , 
+                die(421, LOG_INFO, MSG_TIMEOUT_DATA,
                     (unsigned long) idletime);
             }
             socksize = (socklen_t) sizeof(dataconn);
@@ -2574,11 +2573,13 @@ void opendata(void)
 #endif
     }
     xferfd = fd;
+    doreply();
 #ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(xferfd);
+        tls_init_data_session(fd, passive);
     }
 #endif
+    alarm(MAX_SESSION_XFER_IDLE);    
 }
 
 #ifndef MINIMAL
@@ -3934,7 +3935,6 @@ void dostor(char *name, const int append, const int autorename)
     }
 #endif
     sigurg_enable();
-    alarm(MAX_SESSION_XFER_IDLE);    
     started = get_usec_time();    
     do {
         /* wait idletime seconds for data to be available */

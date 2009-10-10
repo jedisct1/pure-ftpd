@@ -10,7 +10,7 @@
 int tls_init_library(void);
 void tls_free_library(void);
 int tls_init_new_session(void);
-int tls_init_data_session(int fd);
+int tls_init_data_session(const int fd, const int passive);
 void tls_close_session(SSL **cnx);
 
 # ifndef IN_TLS_C

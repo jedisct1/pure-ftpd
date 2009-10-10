@@ -144,12 +144,10 @@ int tls_init_new_session(void)
     int ret;
     int ret_;
     
-    if (tls_ctx == NULL ||
-        (tls_cnx = SSL_new(tls_ctx)) == NULL) {
+    if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
-    if (SSL_set_rfd(tls_cnx, 0) != 1 ||
-        SSL_set_wfd(tls_cnx, 1) != 1) {
+    if (SSL_set_rfd(tls_cnx, 0) != 1 || SSL_set_wfd(tls_cnx, 1) != 1) {
         tls_error(__LINE__, 0);
     }
     SSL_set_accept_state(tls_cnx);    
@@ -181,7 +179,7 @@ int tls_init_new_session(void)
     return 0;
 }
 
-int tls_init_data_session(int fd)
+int tls_init_data_session(const int fd, const int passive)
 {
     SSL_CIPHER *cipher;
     int ret;
@@ -193,17 +191,18 @@ int tls_init_data_session(int fd)
     }    
     if (tls_data_cnx != NULL) {
         tls_close_session(&tls_data_cnx);
-    }    
-    if (tls_data_cnx == NULL) {
-        if ((tls_data_cnx = SSL_new(tls_ctx)) == NULL) {
-            tls_error(__LINE__, 0);
-        }
+    } else if ((tls_data_cnx = SSL_new(tls_ctx)) == NULL) {
+        tls_error(__LINE__, 0);
     }    
     if (SSL_set_fd(tls_data_cnx, fd) != 1) {
         tls_error(__LINE__, 0);
     }
-    SSL_set_accept_state(tls_data_cnx);
-#if 0
+    if (passive) {
+        SSL_set_accept_state(tls_data_cnx);
+    } else {
+        SSL_set_connect_state(tls_data_cnx);
+    }
+#if 1
     for (;;) {
         if ((ret = SSL_accept(tls_data_cnx)) <= 0) {
             ret_ = SSL_get_error(tls_data_cnx, ret);
@@ -234,7 +233,6 @@ int tls_init_data_session(int fd)
             die(534, LOG_ERR, MSG_TLS_WEAK);
         }
     }
-
     return 0;
 }
 
