@@ -294,6 +294,7 @@ typedef struct DLHandler_ {
     int clientfd;
     int xferfd;
     int f;
+    void *tls_fd;
     off_t file_size;
     size_t min_mmap_size;
     size_t mmap_size;

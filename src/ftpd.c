@@ -108,8 +108,8 @@ int secure_safe_write(const void *buf_, size_t count)
 }
 #endif
 
-ssize_t safe_nonblock_write(const int fd, const void *buf_, size_t count,
-                            void * const tls_fd)
+ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
+                            const void *buf_, size_t count)
 {
     ssize_t written;
     const char *buf = (const char *) buf_;
@@ -121,6 +121,9 @@ ssize_t safe_nonblock_write(const int fd, const void *buf_, size_t count,
                 written = write(fd, buf, count);
             } else {
                 written = SSL_write(tls_fd, buf, count);
+                if (SSL_get_error(tls_fd, written) == SSL_ERROR_WANT_WRITE) {
+                    errno = EAGAIN;
+                }
             }
             if (written > (ssize_t) 0) {
                 break;
@@ -2998,7 +3001,9 @@ int dlhandler_init(DLHandler * const dlhandler,
                    const int clientfd,
                    const int xferfd,
                    const char * const name,
-                   const int f, const off_t restartat, const int ascii_mode,
+                   const int f, void * const tls_fd,
+                   const off_t restartat,
+                   const int ascii_mode,
                    const unsigned long bandwidth)
 {
     struct stat st;
@@ -3024,6 +3029,7 @@ int dlhandler_init(DLHandler * const dlhandler,
     dlhandler->clientfd = clientfd;    
     dlhandler->xferfd = xferfd;
     dlhandler->f = f;
+    dlhandler->tls_fd = tls_fd;    
     dlhandler->file_size = st.st_size;
     dlhandler->ascii_mode = ascii_mode;
     dlhandler->cur_pos = restartat;
@@ -3042,11 +3048,14 @@ int dlhandler_init(DLHandler * const dlhandler,
 int mmap_init(DLHandler * const dlhandler, 
               const int clientfd,
               const int xferfd,
-              const char * const name, const int f,
-              const off_t restartat, const int ascii_mode,
+              const char * const name,
+              const int f,
+              void * const tls_fd,
+              const off_t restartat,
+              const int ascii_mode,
               const unsigned long bandwidth)
 {
-    if (dlhandler_init(dlhandler, clientfd, xferfd, name, f,
+    if (dlhandler_init(dlhandler, clientfd, xferfd, name, f, tls_fd,
                        restartat, ascii_mode, bandwidth) != 0) {
         return -1;
     }
@@ -3170,7 +3179,7 @@ int dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
         buf = asciibuf;
         size = (size_t) (asciibufpnt - asciibuf);
     }
-    ret = safe_nonblock_write(dlhandler->xferfd, buf, size, NULL);
+    ret = safe_nonblock_write(dlhandler->xferfd, dlhandler->tls_fd, buf, size);
     if (asciibuf != NULL) {
         ALLOCA_FREE(asciibuf);
     }
@@ -3391,7 +3400,7 @@ void doretr(char *name)
 
     /* download really starts here */
 
-    if (mmap_init(&dlhandler, 0, xferfd, name, f, restartat,
+    if (mmap_init(&dlhandler, 0, xferfd, name, f, tls_data_cnx, restartat,
                   type == 1, throttling_bandwidth_dl) == 0) {
         ret = mmap_send(&dlhandler);
         mmap_exit(&dlhandler);        
