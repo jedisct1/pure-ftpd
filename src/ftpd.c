@@ -4003,7 +4003,7 @@ void dostor(char *name, const int append, const int autorename)
         }
 #endif
 #ifdef WITH_TLS
-        if (enforce_tls_auth && data_protection_level == CPL_PRIVATE) {
+        if (data_protection_level == CPL_PRIVATE) {
             r = SSL_read(tls_data_cnx, buf, sizeof_buf);
         } else
 #endif
