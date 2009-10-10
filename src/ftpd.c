@@ -2958,7 +2958,7 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     double wanted_ts;
     off_t previous_chunk_size;
     
-    if (dlhandler->bandwidth <= 0UL) {
+    if (dlhandler->bandwidth <= 0UL || downloaded <= 0UL) {
         *required_sleep = 0.0;
         return 0;
     }
