@@ -441,6 +441,7 @@ static void outputfiles(int f, void * const tls_fd)
     struct filename *q;
     char *c_buf; /* buffer with charset of client */
 
+    (void) c_buf;
     if (!head) {
         return;
     }
