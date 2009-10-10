@@ -3076,7 +3076,7 @@ int mmap_init(DLHandler * const dlhandler,
         }
     }
     dlhandler->chunk_size = dlhandler->default_chunk_size;
-    dlhandler->mmap_size = DL_MMAP_SIZE;
+    dlhandler->mmap_size = DL_MMAP_SIZE & ~(page_size - 1U);
     dlhandler->mmap_gap = 0;
     dlhandler->cur_pos = restartat;
     dlhandler->mmap_pos = (off_t) 0;
