@@ -315,6 +315,10 @@ enabled.
 
     Support for TLS encryption on the data channel.
 
+* Wilco Baan Hofman
+
+    LDAP authentication through binding.
+
 * Frank DENIS aka Jedi/Sector One <j <at> pureftpd.org> :
 
     Pure-FTPd project initiator and maintainer.

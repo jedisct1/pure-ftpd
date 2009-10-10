@@ -224,3 +224,5 @@
 #define MSG_PROT_PRIVATE_NEEDED "Data connection cannot be opened with this PROT setting."
 #define MSG_PROT_UNKNOWN_LEVEL "Protection level %s not understood. Fallback to \"%s\""
 #define MSG_PROT_BEFORE_PBSZ "PROT must be preceded by a successful PBSZ command"
+#define MSG_WARN_LDAP_USERPASS_EMPTY "LDAP returned no userPassword attribute, check LDAP access rights."
+#define MSG_LDAP_INVALID_AUTH_METHOD "Invalid LDAPAuthMethod in the configuration file. Should be 'bind' or 'password'."

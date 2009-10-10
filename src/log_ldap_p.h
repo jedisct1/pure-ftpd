@@ -12,7 +12,7 @@
 static char *ldap_host;
 static char *port_s;
 static int port;
-static char *root;
+static char *binddn;
 static char *pwd;
 static char *base;
 static char *ldap_filter;
@@ -25,11 +25,13 @@ static char *default_gid_s;
 static gid_t default_gid;
 static char *use_tls_s;
 static int use_tls;
+static char *ldap_auth_method_s;
+static int use_ldap_bind_method;
 
 static ConfigKeywords ldap_config_keywords[] = {
     { "LDAPServer", &ldap_host },
     { "LDAPPort", &port_s },    
-    { "LDAPBindDN", &root },        
+    { "LDAPBindDN", &binddn },        
     { "LDAPBindPW", &pwd },
     { "LDAPBaseDN", &base },
     { "LDAPFilter", &ldap_filter},
@@ -38,6 +40,7 @@ static ConfigKeywords ldap_config_keywords[] = {
     { "LDAPDefaultUID", &default_uid_s },
     { "LDAPDefaultGID", &default_gid_s },
     { "LDAPUseTLS", &use_tls_s },
+    { "LDAPAuthMethod", &ldap_auth_method_s },
     { NULL, NULL }
 };
 

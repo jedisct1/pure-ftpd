@@ -84,11 +84,32 @@ void pw_ldap_parse(const char * const file)
             use_tls = 1;
         }
         free(use_tls_s);
-    }   
+        use_tls_s = NULL;
+    }
+
+    /* Default to auth method bind, but for backward compatibility, if a binddn 
+     * is supplied, default to password checking. */
+    if (binddn == NULL) {
+        use_ldap_bind_method = 1;
+    } else {
+        use_ldap_bind_method = 0;
+    }
+
+    if (ldap_auth_method_s != NULL) {
+        if (strcasecmp(ldap_auth_method_s, "bind") == 0) {
+            use_ldap_bind_method = 1;
+        } else if (strcasecmp(ldap_auth_method_s, "password") == 0) {
+            use_ldap_bind_method = 0;
+        } else {
+            die(421, LOG_ERR, MSG_LDAP_INVALID_AUTH_METHOD);
+        }
+        free(ldap_auth_method_s);
+        ldap_auth_method_s = NULL;
+    }
     if (base == NULL) {
         die(421, LOG_ERR, MSG_LDAP_MISSING_BASE);
     }
-    if (root == NULL) {
+    if (binddn == NULL) {
         pwd = NULL;
     }    
 }
@@ -100,8 +121,8 @@ void pw_ldap_exit(void)
     free((void *) port_s);
     port_s = NULL;
     port = -1;
-    free((void *) root);
-    root = NULL;
+    free((void *) binddn);
+    binddn = NULL;
     free((void *) pwd);
     pwd = NULL;
     free((void *) base);
@@ -112,9 +133,13 @@ void pw_ldap_exit(void)
     default_uid_s = NULL;
     free((void *) default_gid_s);
     default_gid_s = NULL;
+    free((void *) use_tls_s);
+    use_tls_s = NULL;
+    free((void *) ldap_auth_method_s);
+    ldap_auth_method_s = NULL;
 }
 
-static LDAP *pw_ldap_connect(void)
+static LDAP *pw_ldap_connect(const char *dn, const char *password)
 {
     LDAP *ld;
 # ifdef LDAP_OPT_PROTOCOL_VERSION    
@@ -136,7 +161,7 @@ static LDAP *pw_ldap_connect(void)
     if (use_tls > 0 && ldap_start_tls_s(ld, NULL, NULL) != LDAP_SUCCESS) {
         return NULL;
     }
-    if (ldap_bind_s(ld, root, pwd, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
+    if (ldap_bind_s(ld, dn, password, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
         return NULL;
     }
 
@@ -227,8 +252,8 @@ static int pw_ldap_validate_name(const char *name)
     return 0;
 }
 
-static struct passwd *pw_ldap_getpwnam(const char *name, 
-                       AuthResult * const result)
+static struct passwd *pw_ldap_getpwnam(const char *name,
+                                       AuthResult * const result)
 {
     static struct passwd pwret;
     LDAP *ld;
@@ -273,14 +298,14 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if (pw_ldap_validate_name(name) != 0) {
         return NULL;
     }
-    if ((ld = pw_ldap_connect()) == NULL) {
+    if ((ld = pw_ldap_connect(binddn, pwd)) == NULL) {
         return NULL;
     }
     attrs[0] = ldap_homedirectory;
     if ((res = pw_ldap_uid_search(ld, name, attrs)) == NULL) {
         goto error;
     }
-    pw_ldap_getpwnam_freefields(&pwret);    
+    pw_ldap_getpwnam_freefields(&pwret);
     pwret.pw_name = (char *) name;
     pw_enabled = pw_ldap_getvalue(ld, res, LDAP_FTPSTATUS);
     if (pw_enabled != NULL && strcasecmp(pw_enabled, "enabled") != 0 &&
@@ -345,17 +370,26 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
         }
     }
 #endif
-
-    if ((pw_passwd_ldap =
-         pw_ldap_getvalue(ld, res, LDAP_USERPASSWORD)) == NULL) {
-        goto error;
+    
+    if (use_ldap_bind_method == 0) {
+        if ((pw_passwd_ldap =
+             pw_ldap_getvalue(ld, res, LDAP_USERPASSWORD)) == NULL) {
+            
+            /* The LDAP userPassword is empty, this happens when binding to
+             LDAP without sufficient privileges. */
+            logfile(LOG_WARNING, MSG_WARN_LDAP_USERPASS_EMPTY);
+            goto error;
+        }        
+        pwret.pw_passwd = strdup(pw_passwd_ldap);
+        free(pw_passwd_ldap);
+        pw_passwd_ldap = NULL;
+    } else {
+        pwret.pw_passwd = strdup("");
     }
-    pwret.pw_passwd = strdup(pw_passwd_ldap);
     if (pwret.pw_passwd == NULL) {
+        logfile(LOG_ERR, MSG_OUT_OF_MEMORY);
         goto error;
     }
-    free((void *) pw_passwd_ldap);
-    pw_passwd_ldap = NULL;
     if ((pw_uid_s = pw_ldap_getvalue(ld, res, LDAP_FTPUID)) == NULL ||
         *pw_uid_s == 0 || 
         (pwret.pw_uid = (uid_t) strtoul(pw_uid_s, NULL, 10)) <= (uid_t) 0) {
@@ -391,9 +425,10 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
          pw_ldap_getvalue(ld, res, LDAP_LOGINSHELL)) == NULL) {
         pwret.pw_shell = strdup(DEFAULT_SHELL);
     }
+    result->backend_data = ldap_get_dn(ld, res);
 
     ldap_msgfree(res);
-    ldap_unbind(ld);    
+    ldap_unbind(ld);
     
     return &pwret;
     
@@ -441,51 +476,67 @@ void pw_ldap_check(AuthResult * const result,
     }
 
     result->auth_ok--;                  /* -1 */
-    spwd = pw->pw_passwd;
 
-    if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
-                    sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
-        spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
-
-        if (strlen(spwd) >= 32U) {
-            nocase++;
-        }
-        cpwd = crypto_hash_md5(password, nocase);
-    } else if (strncasecmp(spwd, PASSWD_LDAP_SHA_PREFIX,
-                           sizeof PASSWD_LDAP_SHA_PREFIX - 1U) == 0) {
-        spwd += (sizeof PASSWD_LDAP_SHA_PREFIX - 1U);
-        if (strlen(spwd) >= 40U) {
-            nocase++;
-        }
-        cpwd = crypto_hash_sha1(password, nocase);
-    } else if (strncasecmp(spwd, PASSWD_LDAP_SSHA_PREFIX,
-                           sizeof PASSWD_LDAP_SSHA_PREFIX - 1U) == 0) {
-        spwd += (sizeof PASSWD_LDAP_SSHA_PREFIX - 1U);
-        cpwd = crypto_hash_ssha1(password, spwd);
-    } else if (strncasecmp(spwd, PASSWD_LDAP_SMD5_PREFIX,
-                           sizeof PASSWD_LDAP_SMD5_PREFIX - 1U) == 0) {
-        spwd += (sizeof PASSWD_LDAP_SMD5_PREFIX - 1U);
-        cpwd = crypto_hash_smd5(password, spwd);
-    } else if (strncasecmp(spwd, PASSWD_LDAP_CRYPT_PREFIX,
-                           sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U) == 0) {
-        spwd += (sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U);
-        cpwd = (const char *) crypt(password, spwd);
-    } else if (*password != 0) {
-        cpwd = password;               /* Cleartext */        
-    } else {
-        return;                      /* Refuse null passwords */
-    }
-    if (cpwd == NULL) {
-        return;
-    }
-    if (nocase != 0) {        
-        if (strcasecmp(cpwd, spwd) != 0) {
+    if (use_ldap_bind_method == 1 && result->backend_data != NULL) {
+        LDAP *ld;
+        char *dn = (char *) result->backend_data;
+        
+        /* Verify password by binding to LDAP */
+        if ((ld = pw_ldap_connect(dn, password)) != NULL) {
+             ldap_unbind(ld);
+        } else {
+            free(result->backend_data);
             return;
         }
-    }    
-    if (strcmp(cpwd, spwd) != 0) {
-        return;
-    }    
+    } else {
+        if (result->backend_data != NULL) {
+            free(result->backend_data);
+        }        
+        spwd = pw->pw_passwd;
+        if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
+                        sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
+            
+            if (strlen(spwd) >= 32U) {
+                nocase++;
+            }
+            cpwd = crypto_hash_md5(password, nocase);
+        } else if (strncasecmp(spwd, PASSWD_LDAP_SHA_PREFIX,
+                               sizeof PASSWD_LDAP_SHA_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_SHA_PREFIX - 1U);
+            if (strlen(spwd) >= 40U) {
+                nocase++;
+            }
+            cpwd = crypto_hash_sha1(password, nocase);
+        } else if (strncasecmp(spwd, PASSWD_LDAP_SSHA_PREFIX,
+                               sizeof PASSWD_LDAP_SSHA_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_SSHA_PREFIX - 1U);
+            cpwd = crypto_hash_ssha1(password, spwd);
+        } else if (strncasecmp(spwd, PASSWD_LDAP_SMD5_PREFIX,
+                               sizeof PASSWD_LDAP_SMD5_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_SMD5_PREFIX - 1U);
+            cpwd = crypto_hash_smd5(password, spwd);
+        } else if (strncasecmp(spwd, PASSWD_LDAP_CRYPT_PREFIX,
+                               sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U);
+            cpwd = (const char *) crypt(password, spwd);
+        } else if (*password != 0) {
+            cpwd = password;               /* Cleartext */        
+        } else {
+            return;                      /* Refuse null passwords */
+        }
+        if (cpwd == NULL) {
+            return;
+        }
+        if (nocase != 0) {        
+            if (strcasecmp(cpwd, spwd) != 0) {
+                return;
+            }
+        }    
+        if (strcmp(cpwd, spwd) != 0) {
+            return;
+        }
+    }
     result->uid = pw->pw_uid;
     result->gid = pw->pw_gid;
     if (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0) {
@@ -495,7 +546,7 @@ void pw_ldap_check(AuthResult * const result,
         return;
     }
     result->slow_tilde_expansion = 1;
-    result->auth_ok = -result->auth_ok;       /* 1 */
+    result->auth_ok = 1;            /* User found, authentication ok */
 }
 #else
 extern signed char v6ready;

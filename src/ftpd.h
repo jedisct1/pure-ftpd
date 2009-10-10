@@ -273,6 +273,7 @@ typedef struct AuthResult_ {
     gid_t gid;
     const char *dir;
     int slow_tilde_expansion;
+    void *backend_data;
 #ifdef THROTTLING
     unsigned long throttling_bandwidth_ul;
     unsigned long throttling_bandwidth_dl;

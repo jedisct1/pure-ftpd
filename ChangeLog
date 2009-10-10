@@ -9,6 +9,19 @@ Pelander.
  - Add SUP top AUXILIARY to LDAP schema, suggested by Zhang Huangbin.
  - Don't ignore dot files even if -D is not supplied with the MLSD command.
  - Deinline code
+ - Download code rewritten, with correct support for ABOR
+ - Throttling more reliable
+ - STAT is now working over TLS
+ - DH keys for ephemeral key exchange are now handled
+ - Fix libiconv checking
+ - The column was missing in the PassivePortRange comment (thanks to Igor
+Alexadrov)
+ - LDAP authentication through binding is now possible in addition to
+passwords. This allows for the FTP server to run with an unprivileged LDAP
+account. It also adds a warning if auth method password is used and doesn't find
+a userPassword attribute. This usually indicates that the LDAP bind DN
+cannot read the attributes, because it doesn't have sufficient privileges.
+Contributed by Wilco Baan Hofman.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.
