@@ -1886,7 +1886,9 @@ void dopass(char *password)
 #ifndef NON_ROOT_FTP
 # ifndef HAVE_SYS_FSUID_H
         disablesignals();
-        seteuid((uid_t) 0);
+        if (seteuid((uid_t) 0) != 0) {
+            _EXIT(EXIT_FAILURE);
+        }
 # endif
 #endif
         if (chdir(wd) || chroot(wd)) {    /* should never fail */
