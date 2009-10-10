@@ -691,12 +691,12 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     if ((dir = sreaddir(&names)) == NULL) {
         addreply(226, MSG_CANT_READ_FILE, name);
         return;
-    }        
+    }
     s = dir;
     while (s->name_offset != (size_t) -1) {
         if (FI_NAME(s)[0] != '.') {
             d = listfile(s, NULL);
-        } else if (opt_a) {
+        } else if (opt_a || modern_listings != 0) {
             d = listfile(s, NULL);
             if (FI_NAME(s)[1] == 0 ||
                 (FI_NAME(s)[1] == '.' && FI_NAME(s)[2] == 0)) {

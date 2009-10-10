@@ -255,3 +255,4 @@ documentation error in pgsql.
 * Koczka Ferenc - suggested AUTHD_ENCRYPTED.
 * Frederico Gendorf - reported that on-demand directory creation didn't work
 with paths containing a /./ mark.
+* Ned Holdbrook - reported that MLSD should display dot files.
