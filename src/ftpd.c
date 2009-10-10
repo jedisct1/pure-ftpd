@@ -2156,8 +2156,10 @@ unsigned int zrand(void)
 #endif
         ) {
         nax:
-#ifdef HAVE_RANDOM
-        return (unsigned int) (random() ^ iptropy);        
+#ifdef HAVE_ARC4RANDOM
+        return (unsigned int) (arc4random() ^ iptropy);
+#elif defined HAVE_RANDOM
+        return (unsigned int) (random() ^ iptropy);
 #else
         return (unsigned int) (rand() ^ iptropy);
 #endif

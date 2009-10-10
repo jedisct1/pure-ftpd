@@ -246,8 +246,10 @@ static unsigned int pw_zrand(void)
 #endif        
         ) {
         nax:
-#ifdef HAVE_RANDOM
-        return (unsigned int) random();        
+#ifdef HAVE_ARC4RANDOM
+        return (unsigned int) arc4random();
+#elif defined HAVE_RANDOM
+        return (unsigned int) random();
 #else
         return (unsigned int) rand();
 #endif
