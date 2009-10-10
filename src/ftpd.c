@@ -1501,10 +1501,6 @@ static AuthResult pw_check(const char *account, const char *password,
                 if (result.throttling_dl_changed != 0 &&
                     result.throttling_bandwidth_dl > 0UL) {
                     throttling_bandwidth_dl = result.throttling_bandwidth_dl;
-                    dl_chunk_size = throttling_bandwidth_dl & ~(page_size - 1);
-                    if (dl_chunk_size < page_size) {
-                        dl_chunk_size = page_size;
-                    }
                 }
                 throttling_delay = 1000000 /
                     (throttling_bandwidth_dl | throttling_bandwidth_ul);
@@ -5216,8 +5212,6 @@ int main(int argc, char *argv[])
 #else
     page_size = (size_t) 4096U;
 #endif
-    map_size = (size_t) DEFAULT_DL_CHUNK_SIZE & ~(page_size - 1);
-    dl_chunk_size = map_size;
     ul_chunk_size = DEFAULT_UL_CHUNK_SIZE;
 
 #ifdef HAVE_SETLOCALE
@@ -5358,10 +5352,6 @@ int main(int argc, char *argv[])
                 if ((throttling_bandwidth_dl =
                      strtoul(tr_bw_dl, NULL, 0) * 1024UL) == 0UL) {
                     goto bad_bw;
-                }
-                dl_chunk_size = throttling_bandwidth_dl & ~(page_size - 1);
-                if (dl_chunk_size < page_size) {
-                    dl_chunk_size = page_size;
                 }
             }
             if (tr_bw_ul != NULL) {
