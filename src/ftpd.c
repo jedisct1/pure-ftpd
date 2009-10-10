@@ -2962,7 +2962,6 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
         *required_sleep = 0.0;
         return 0;
     }
-    dlhandler->total_downloaded += downloaded;
     if ((ts_now = get_usec_time()) <= 0.0) {
         ts_now = ts_start;
     }
@@ -3279,6 +3278,7 @@ int mmap_send(DLHandler * const dlhandler)
             shm_data_cur->download_current_size = dlhandler->cur_pos;
         }
 #endif        
+        dlhandler->total_downloaded += downloaded;
         required_sleep = 0.0;
         if (dlhandler->bandwidth > 0UL) {
             dlhandler_throttle(dlhandler, downloaded, ts_start,
