@@ -696,7 +696,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     while (s->name_offset != (size_t) -1) {
         if (FI_NAME(s)[0] != '.') {
             d = listfile(s, NULL);
-        } else if (opt_a || modern_listings != 0) {
+        } else if (opt_a) {
             d = listfile(s, NULL);
             if (FI_NAME(s)[1] == 0 ||
                 (FI_NAME(s)[1] == '.' && FI_NAME(s)[2] == 0)) {
