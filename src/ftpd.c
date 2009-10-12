@@ -3204,7 +3204,8 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     char buf[100];
     char *bufpnt;
     ssize_t readen;
-    
+
+    repoll:
     pollret = poll(&dlhandler->pfds_f_in, 1U,
                    required_sleep <= 0.0 ?
                    0 : (int) (required_sleep * 1000.0));
@@ -3238,6 +3239,9 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
                 addreply_noformat(226, MSG_ABORTED);
                 return 1;
             }
+        }
+        if (required_sleep > 0.0) {
+            goto repoll;
         }
     } else if ((dlhandler->pfds_f_in.revents &
                 (POLLERR | POLLHUP | POLLNVAL)) != 0) {
@@ -3844,7 +3848,6 @@ void dostor(char *name, const int append, const int autorename)
     if (checknamesanity(name, dot_write_ok) != 0 ||
         (atomic_file = get_atomic_file(name)) == NULL) {
         addreply(553, MSG_SANITY_FILE_FAILURE, name);
-        /* implicit : atomic_file = NULL */
         goto end;
     }
     if (restartat > (off_t) 0 || (autorename == 0 && no_truncate == 0)) {
