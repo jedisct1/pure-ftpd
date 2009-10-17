@@ -3667,8 +3667,7 @@ void delete_atomic_file(void)
 {
     const char *atomic_file;
 
-    if ((atomic_file = get_atomic_file(NULL)) == NULL ||
-        *atomic_file == 0) {
+    if ((atomic_file = get_atomic_file(NULL)) == NULL || *atomic_file == 0) {
         return;
     }
     (void) unlink(atomic_file);
@@ -4081,8 +4080,9 @@ static int ul_check_free_space(const char *name)
 
 void dostor(char *name, const int append, const int autorename)
 {
-    ULHandler ulhandler;    
+    ULHandler ulhandler;
     int f;
+    char *ul_name = NULL;
     const char *atomic_file = NULL;
     off_t filesize = (off_t) 0U;
     struct stat st;
@@ -4107,19 +4107,28 @@ void dostor(char *name, const int append, const int autorename)
         addreply_noformat(553, MSG_NO_DISK_SPACE);
         goto end;
     }
-    if (checknamesanity(name, dot_write_ok) != 0 ||
-        (atomic_file = get_atomic_file(name)) == NULL) {
+    if (checknamesanity(name, dot_write_ok) != 0) {
         addreply(553, MSG_SANITY_FILE_FAILURE, name);
         goto end;
-    }
-    if (restartat > (off_t) 0 || (autorename == 0 && no_truncate == 0)) {
-        if (rename(name, atomic_file) != 0 && errno != ENOENT) {
-            error(553, MSG_RENAME_FAILURE);
-            atomic_file = NULL;
+    }    
+    if (restartat > (off_t) 0 || no_truncate != 0) {
+        if ((atomic_file = get_atomic_file(name)) == NULL) {
+            addreply(553, MSG_SANITY_FILE_FAILURE, name);
             goto end;
         }
     }
-    if ((f = open(atomic_file, O_CREAT | O_WRONLY,
+    if (restartat > (off_t) 0 &&
+        rename(name, atomic_file) != 0 && errno != ENOENT) {
+        error(553, MSG_RENAME_FAILURE);
+        atomic_file = NULL;
+        goto end;
+    }
+    if (atomic_file != NULL) {
+        ul_name = atomic_file;
+    } else {
+        ul_name = name;
+    }
+    if ((f = open(ul_name, O_CREAT | O_WRONLY | O_NOFOLLOW,
                   (mode_t) 0777 & ~u_mask)) == -1) {
         error(553, MSG_OPEN_FAILURE2);
         goto end;
