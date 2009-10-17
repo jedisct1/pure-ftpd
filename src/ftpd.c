@@ -1463,10 +1463,6 @@ static AuthResult pw_check(const char *account, const char *password,
                 if (result.throttling_ul_changed != 0 &&
                     result.throttling_bandwidth_ul > 0UL) {
                     throttling_bandwidth_ul = result.throttling_bandwidth_ul;
-                    ul_chunk_size = throttling_bandwidth_ul;
-                    if (ul_chunk_size > MAX_UL_CHUNK_SIZE) {
-                        ul_chunk_size = MAX_UL_CHUNK_SIZE;
-                    }
                 }
                 if (result.throttling_dl_changed != 0 &&
                     result.throttling_bandwidth_dl > 0UL) {
@@ -3792,15 +3788,16 @@ int ul_init(ULHandler * const ulhandler,
     pfd->fd = clientfd;
     pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
     pfd->revents = 0;
-    ulhandler->min_chunk_size = 8 * 1024UL;
+    ulhandler->min_chunk_size = UL_MIN_CHUNK_SIZE;
     if (ascii_mode > 0) {
-        ulhandler->default_chunk_size = ulhandler->max_chunk_size = 32768;
+        ulhandler->default_chunk_size = ulhandler->max_chunk_size =
+            UL_DEFAULT_CHUNK_SIZE_ASCII;
     } else {
-        ulhandler->max_chunk_size = 512 * 1024UL;
+        ulhandler->max_chunk_size = UL_MAX_CHUNK_SIZE;
         if (bandwidth <= 0UL) {
             ulhandler->default_chunk_size = ulhandler->max_chunk_size;
         } else {
-            ulhandler->default_chunk_size = 49152;
+            ulhandler->default_chunk_size = UL_DEFAULT_CHUNK_SIZE;
         }
     }
     ulhandler->chunk_size = ulhandler->default_chunk_size;
@@ -4022,8 +4019,6 @@ void dostor(char *name, const int append, const int autorename)
     int f;
     char *p;
     const char *atomic_file = NULL;
-    char *buf;    
-    const size_t sizeof_buf = ul_chunk_size;
     ssize_t r;
     off_t filesize = (off_t) 0U;
     STATFS_STRUCT statfsbuf;
@@ -4036,9 +4031,6 @@ void dostor(char *name, const int append, const int autorename)
 #endif
     int ret;
     
-    if ((buf = ALLOCA(sizeof_buf)) == NULL) {
-        die_mem();
-    }
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
         goto end;
@@ -5332,7 +5324,6 @@ int main(int argc, char *argv[])
 #else
     page_size = (size_t) 4096U;
 #endif
-    ul_chunk_size = DEFAULT_UL_CHUNK_SIZE;
 
 #ifdef HAVE_SETLOCALE
 # ifdef LC_MESSAGES
@@ -5478,10 +5469,6 @@ int main(int argc, char *argv[])
                 if ((throttling_bandwidth_ul =
                      strtoul(tr_bw_ul, NULL, 0) * 1024UL) == 0UL) {
                     goto bad_bw;
-                }
-                ul_chunk_size = throttling_bandwidth_ul;
-                if (ul_chunk_size > MAX_UL_CHUNK_SIZE) {
-                    ul_chunk_size = MAX_UL_CHUNK_SIZE;
                 }
             }
             throttling_delay = 1000000 /

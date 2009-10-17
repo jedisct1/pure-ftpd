@@ -129,7 +129,6 @@ GLOBAL0(signed char disallow_rename);
 GLOBAL0(signed char no_truncate);
 
 GLOBAL0(size_t page_size);
-GLOBAL0(size_t ul_chunk_size);
 GLOBAL0(int log_pid); /* 0 or LOG_PID if PID is to be logged */
 
 #ifdef WITH_ALTLOG
