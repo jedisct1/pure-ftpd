@@ -3997,7 +3997,7 @@ int ul_send(ULHandler * const ulhandler)
             }
         }
         if ((ulhandler->pfds[PFD_DATA].revents & (POLLERR | POLLNVAL)) != 0 ||
-            ((ulhandler->pfds[PFD_DATA].revents & POLLERR) != 0 &&
+            ((ulhandler->pfds[PFD_DATA].revents & POLLHUP) != 0 &&
              (ulhandler->pfds[PFD_DATA].revents & POLLIN) == 0)) {
             return -1;
         }
