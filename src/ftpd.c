@@ -4260,7 +4260,7 @@ void dostor(char *name, const int append, const int autorename)
 #else
     (void) close(f);
 #endif
-    uploaded += (unsigned long long) (filesize - restartat);
+    uploaded += (unsigned long long) ulhandler.total_uploaded;
 #ifdef QUOTAS
     if (quota_exceeded == 0)
 #endif
