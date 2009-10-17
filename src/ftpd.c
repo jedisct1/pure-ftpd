@@ -3859,16 +3859,27 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
 int ulhandler_handle_commands(ULHandler * const ulhandler)
 {
     char buf[100];
+    char *bufpnt;    
     ssize_t readen;
     
-    readen = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+    if (ulhandler->tls_clientfd != NULL) {
+#ifdef WITH_TLS            
+        readen = SSL_read(ulhandler->tls_clientfd, buf,
+                          sizeof buf - (size_t) 1U);
+#else
+        abort();
+#endif
+    } else {
+        readen = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+    }
     if (readen <= 0) {
         return -1;
     }
     buf[readen] = 0;
+    bufpnt = skip_telnet_controls(buf);    
     if (strchr(buf, '\n') != NULL) {
         if (strncasecmp(buf, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-                    strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
+            strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
             addreply_noformat(500, MSG_UNKNOWN_COMMAND);
             doreply();
         } else {
