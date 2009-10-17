@@ -3279,7 +3279,7 @@ void doretr(char *name)
     DLHandler dlhandler;
     int f;
     struct stat st;
-    double started;
+    double started = 0.0;
     int ret;
 
     if (!candownload) {
@@ -4029,13 +4029,11 @@ void dostor(char *name, const int append, const int autorename)
 {
     ULHandler ulhandler;    
     int f;
-    char *p;
     const char *atomic_file = NULL;
-    ssize_t r;
     off_t filesize = (off_t) 0U;
     STATFS_STRUCT statfsbuf;
     struct stat st;
-    double started;
+    double started = 0.0;
     int unlinkret = -1;
 #ifdef QUOTAS
     signed char overwrite = 0;
@@ -4203,6 +4201,8 @@ void dostor(char *name, const int append, const int autorename)
     
     /* Here starts the real upload code */
 
+    started = get_usec_time();    
+    
     if (ul_init(&ulhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
                 restartat, type == 1, throttling_bandwidth_ul) == 0) {
         ret = ul_send(&ulhandler);
@@ -4260,11 +4260,10 @@ void dostor(char *name, const int append, const int autorename)
             }        
         }
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);        
-        displayrate(MSG_UPLOADED, filesize - restartat, started, name, 1);
+        displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
     }
     
     end:
-    ALLOCA_FREE(buf);
     restartat = (off_t) 0;
     if (atomic_file != NULL) {
         if (rename(atomic_file, name) != 0) {
