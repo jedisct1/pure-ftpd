@@ -3973,15 +3973,6 @@ int ul_send(ULHandler * const ulhandler)
             addreply_noformat(421, MSG_TIMEOUT);
             return -1;
         }
-        if ((ulhandler->pfds[PFD_DATA].revents &
-             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
-            return 0;
-        }
-        if ((ulhandler->pfds[PFD_COMMANDS].revents &
-             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
-            addreply_noformat(221, MSG_LOGOUT);
-            return -1;
-        }
         if ((ulhandler->pfds[PFD_DATA].revents & (POLLIN | POLLPRI)) != 0) {
             ret = ul_handle_data(ulhandler, &uploaded, ts_start);
             switch (ret) {
@@ -4003,6 +3994,15 @@ int ul_send(ULHandler * const ulhandler)
             if (ret != 0) {
                 return ret;
             }
+        }
+        if ((ulhandler->pfds[PFD_DATA].revents &
+             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+            return 0;
+        }
+        if ((ulhandler->pfds[PFD_COMMANDS].revents &
+             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+            addreply_noformat(221, MSG_LOGOUT);
+            return -1;
         }
     }    
     return 0;
