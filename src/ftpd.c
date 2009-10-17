@@ -3762,6 +3762,10 @@ int ul_init(ULHandler * const ulhandler,
 {
     struct pollfd *pfd;
 
+    if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
+        error(451, "fcntl(F_SETFL, O_NONBLOCK)");
+        return -1;
+    }
     ulhandler->buf = NULL;
     ulhandler->sizeof_buf = (size_t) 0UL;
     ulhandler->clientfd = clientfd;
@@ -3911,18 +3915,18 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         readen = read(ulhandler->xferfd, ulhandler->buf,
                       ulhandler->chunk_size);
     }
+    if (readen == (ssize_t) 0) {
+        return 2;
+    }
     if (readen < (ssize_t) 0) {
         addreply_noformat(451, MSG_DATA_READ_FAILED);
         return -1;
-    }
+    }    
     if (ul_dowrite(ulhandler, ulhandler->buf, readen, uploaded) != 0) {
         addreply_noformat(452, MSG_WRITE_FAILED);
         return -1;
     }
     ulhandler->cur_pos += *uploaded;    
-    if (readen == (ssize_t) 0) {
-        return 2;
-    }
     if (ulhandler->bandwidth > 0UL) {
         ulhandler_throttle(ulhandler, *uploaded, ts_start, &required_sleep);
         if (required_sleep > 0.0) {
@@ -3992,9 +3996,10 @@ int ul_send(ULHandler * const ulhandler)
                 return ret;
             }
         }
-        if ((ulhandler->pfds[PFD_DATA].revents &
-             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
-            return 0;
+        if ((ulhandler->pfds[PFD_DATA].revents & (POLLERR | POLLNVAL)) != 0 ||
+            ((ulhandler->pfds[PFD_DATA].revents & POLLERR) != 0 &&
+             (ulhandler->pfds[PFD_DATA].revents & POLLIN) == 0)) {
+            return -1;
         }
         if ((ulhandler->pfds[PFD_COMMANDS].revents &
              (POLLERR | POLLHUP | POLLNVAL)) != 0) {
