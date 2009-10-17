@@ -2552,7 +2552,7 @@ void opendata(void)
         tls_init_data_session(fd, passive);
     }
 #endif
-    alarm(MAX_SESSION_XFER_IDLE);    
+    alarm(MAX_SESSION_XFER_IDLE);
 }
 
 #ifndef MINIMAL
@@ -3779,7 +3779,7 @@ int ul_init(ULHandler * const ulhandler,
     ulhandler->min_sleep = 0.1;
     ulhandler->max_sleep = 5.0;
     ulhandler->bandwidth = bandwidth;
-    ulhandler->idletime = 10; /* XXX */
+    ulhandler->idletime = idletime;
     pfd = &ulhandler->pfds[PFD_DATA];    
     pfd->fd = xferfd;
     pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
@@ -4122,6 +4122,8 @@ void dostor(char *name, const int append, const int autorename)
         addreply_noformat(553, MSG_NOT_REGULAR_FILE);
         goto end;
     }
+    alarm(MAX_SESSION_XFER_IDLE);
+    
     /* Anonymous users *CAN* overwrite 0-bytes files - This is the right behavior */
     if (st.st_size > (off_t) 0) {
 #ifndef ANON_CAN_RESUME
