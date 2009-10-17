@@ -3034,7 +3034,7 @@ int dlhandler_init(DLHandler * const dlhandler,
     dlhandler->tls_clientfd = tls_clientfd;
     dlhandler->xferfd = xferfd;
     dlhandler->f = f;
-    dlhandler->tls_fd = tls_fd;    
+    dlhandler->tls_fd = tls_fd;
     dlhandler->file_size = st.st_size;
     dlhandler->ascii_mode = ascii_mode;
     dlhandler->cur_pos = restartat;
@@ -3154,8 +3154,8 @@ int _mmap_remap(DLHandler * const dlhandler)
     return 0;
 }
 
-int dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
-            const size_t size_, off_t * const downloaded)
+int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
+               const size_t size_, off_t * const downloaded)
 {
     size_t size = size_;
     const unsigned char *buf = buf_;
@@ -3272,8 +3272,8 @@ int mmap_send(DLHandler * const dlhandler)
         if (ret == 1) {
             break;
         }
-        if (dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
-                    &downloaded) != 0) {
+        if (dl_dowrite(dlhandler, dlhandler->map_data, dlhandler->chunk_size,
+                       &downloaded) != 0) {
             return -1;
         }
         dlhandler->cur_pos += dlhandler->chunk_size;
