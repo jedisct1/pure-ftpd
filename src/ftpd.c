@@ -337,37 +337,6 @@ void die_mem(void)
     die(421, LOG_ERR, MSG_OUT_OF_MEMORY);
 }
 
-static RETSIGTYPE sigurg(int sig)
-{
-    int olderrno;
-    int readen;
-    unsigned char fodder;
-
-    (void) sig;
-    if (xferfd == -1) {
-        return;
-    }
-    olderrno = errno;
-    closedata();
-#ifndef HAVE_SYS_FSUID_H
-    disablesignals();
-#endif
-    addreply_noformat(426, MSG_ABORTED);
-    doreply();
-    do {
-        if ((readen = read(0, &fodder, (size_t) 1U)) < (ssize_t) 0 && 
-            errno == EINTR) {
-            continue;
-        }
-    } while (readen > (ssize_t) 0 && fodder != '\n');
-    addreply_noformat(226, MSG_ABORTED);
-    doreply();
-#ifndef HAVE_SYS_FSUID_H
-    enablesignals();
-#endif
-    errno = olderrno;
-}
-
 static RETSIGTYPE sigalarm(int sig)
 {
     (void) sig;
@@ -3585,34 +3554,6 @@ void dofeat(void)
 }
 #endif
 
-static void sigurg_enable(void)
-{
-    sigset_t sigs;
-    
-    sigemptyset(&sigs);
-#ifdef SIGURG
-    sigaddset(&sigs, SIGURG);
-#endif
-#if defined(WITH_TLS) && defined(SIGIO)    
-    sigaddset(&sigs, SIGIO);
-#endif
-    sigprocmask(SIG_UNBLOCK, &sigs, NULL);
-}
-
-static void sigurg_disable(void)
-{
-    sigset_t sigs;
-    
-    sigemptyset(&sigs);
-#ifdef SIGURG
-    sigaddset(&sigs, SIGURG);
-#endif
-#if defined(WITH_TLS) && defined(SIGIO)    
-    sigaddset(&sigs, SIGIO);
-#endif
-    sigprocmask(SIG_BLOCK, &sigs, NULL);    
-}
-
 #ifndef MINIMAL
 void dostou(void)
 {
@@ -3951,7 +3892,6 @@ void dostor(char *name, const int append, const int autorename)
         }
     }
 #endif
-    sigurg_enable();
     started = get_usec_time();    
     do {
         /* wait idletime seconds for data to be available */
@@ -4138,7 +4078,6 @@ void dostor(char *name, const int append, const int autorename)
     }
     
     end:
-    sigurg_disable();
 #ifndef WITHOUT_ASCII
     free(cpy);
 #endif
@@ -4499,18 +4438,13 @@ static void set_signals_client(void)
     sigemptyset(&sa.sa_mask);
     
     sa.sa_flags = SA_RESTART;
-#ifdef SIGURG
-    sa.sa_handler = sigurg;
-    (void) sigaction(SIGURG, &sa, NULL);
-#endif
-#if defined(WITH_TLS) && defined(SIGIO)
-    sa.sa_handler = sigurg;
-    sigdelset(&sigs, SIGIO);    
-    (void) sigaction(SIGIO, &sa, NULL);
-#endif
     
     sa.sa_handler = SIG_IGN;
     (void) sigaction(SIGPIPE, &sa, NULL);
+    (void) sigaction(SIGURG, &sa, NULL);
+#ifdef SIGIO
+    (void) sigaction(SIGIO, &sa, NULL);
+#endif
     
     sa.sa_handler = SIG_DFL;
     sigdelset(&sigs, SIGCHLD);
@@ -4559,6 +4493,9 @@ static void set_signals(void)
     (void) sigaction(SIGPIPE, &sa, NULL);
     (void) sigaction(SIGALRM, &sa, NULL);
     (void) sigaction(SIGURG, &sa, NULL);
+#ifdef SIGIO
+    (void) sigaction(SIGIO, &sa, NULL);
+#endif    
     
     sa.sa_flags = 0;
     sa.sa_handler = sigterm;
