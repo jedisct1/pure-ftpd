@@ -3702,8 +3702,312 @@ static int dostor_quota_update_close_f(const int overwrite,
 }
 #endif
 
+int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
+                       const double ts_start, double *required_sleep)
+{
+    double ts_now;
+    double elapsed;
+    off_t would_be_uploaded;
+    double wanted_ts;
+    off_t previous_chunk_size;
+    
+    if (ulhandler->bandwidth <= 0UL) {
+        *required_sleep = 0.0;
+        return 0;
+    }
+    ulhandler->total_uploaded += uploaded;
+    if ((ts_now = get_usec_time()) <= 0.0) {
+        ts_now = ts_start;
+    }
+    if (ts_start > ts_now) {
+        ts_now = ts_start;
+    }            
+    elapsed = ts_now - ts_start;
+    would_be_uploaded = ulhandler->total_uploaded + ulhandler->chunk_size;
+    if (ulhandler->bandwidth > 0.0) {
+        wanted_ts = would_be_uploaded / ulhandler->bandwidth;
+    } else {
+        wanted_ts = elapsed;
+    }
+    *required_sleep = wanted_ts - elapsed;
+    previous_chunk_size = ulhandler->chunk_size;
+    if (ulhandler->total_uploaded > ulhandler->chunk_size) {
+        if (*required_sleep < ulhandler->min_sleep) {
+            ulhandler->chunk_size =
+                ulhandler->max_chunk_size / 2 + ulhandler->chunk_size / 2;
+        } else if (*required_sleep > ulhandler->max_sleep) {
+            ulhandler->chunk_size =
+                ulhandler->min_chunk_size / 2 + ulhandler->chunk_size / 2;
+        } else {
+            ulhandler->chunk_size = ulhandler->default_chunk_size;
+        }
+        if (previous_chunk_size != ulhandler->default_chunk_size) {
+            would_be_uploaded =
+                ulhandler->total_uploaded + ulhandler->chunk_size;
+            if (ulhandler->bandwidth > 0.0) {
+                wanted_ts = would_be_uploaded / ulhandler->bandwidth;
+            } else {
+                wanted_ts = elapsed;
+            }
+            *required_sleep = wanted_ts - elapsed;
+        }
+    }    
+    return 0;
+}
+
+int ul_init(ULHandler * const ulhandler, 
+            const int clientfd, void * const tls_clientfd,
+            const int xferfd,
+            const char * const name,
+            const int f, void * const tls_fd,
+            const off_t restartat,
+            const int ascii_mode,
+            const unsigned long bandwidth)
+{
+    struct pollfd *pfd;
+
+    ulhandler->buf = NULL;
+    ulhandler->sizeof_buf = (size_t) 0UL;
+    ulhandler->clientfd = clientfd;
+    ulhandler->tls_clientfd = tls_clientfd;    
+    ulhandler->xferfd = xferfd;
+    ulhandler->f = f;
+    ulhandler->tls_fd = tls_fd;
+    ulhandler->ascii_mode = ascii_mode;
+    ulhandler->cur_pos = restartat;
+    ulhandler->total_uploaded = (off_t) 0;
+    ulhandler->min_sleep = 0.1;
+    ulhandler->max_sleep = 5.0;
+    ulhandler->bandwidth = bandwidth;
+    ulhandler->idletime = 10; /* XXX */
+    pfd = &ulhandler->pfds[PFD_DATA];    
+    pfd->fd = xferfd;
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+    pfd->revents = 0;    
+    pfd = &ulhandler->pfds[PFD_COMMANDS];
+    pfd->fd = clientfd;
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+    pfd->revents = 0;
+    pfd = &ulhandler->pfds_command;
+    pfd->fd = clientfd;
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+    pfd->revents = 0;
+    ulhandler->min_chunk_size = 8 * 1024UL;
+    if (ascii_mode > 0) {
+        ulhandler->default_chunk_size = ulhandler->max_chunk_size = 32768;
+    } else {
+        ulhandler->max_chunk_size = 512 * 1024UL;
+        if (bandwidth <= 0UL) {
+            ulhandler->default_chunk_size = ulhandler->max_chunk_size;
+        } else {
+            ulhandler->default_chunk_size = 49152;
+        }
+    }
+    ulhandler->chunk_size = ulhandler->default_chunk_size;
+    ulhandler->cur_pos = restartat;
+    ulhandler->sizeof_buf = ulhandler->max_chunk_size;
+    if ((ulhandler->buf = malloc(ulhandler->sizeof_buf)) == NULL) {
+        ulhandler->buf = NULL;
+        ulhandler->sizeof_buf = (size_t) 0U;
+        return -1;
+    }    
+    return 0;
+}
+
+int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
+               const size_t size_, off_t * const uploaded)
+{
+    size_t size = size_;
+    const unsigned char *buf = buf_;
+    unsigned char *unasciibuf = NULL;
+    int ret = 0;
+    
+    if (size_ <= (size_t) 0U) {
+        *uploaded = 0;
+        return -1;
+    }    
+    if (ulhandler->ascii_mode > 0) {
+        unsigned char *unasciibufpnt;
+        size_t z = (size_t) 0U;
+        
+        if (size > (size_t) ulhandler->chunk_size ||
+            (unasciibuf = ALLOCA((size_t) ulhandler->chunk_size)) == NULL) {
+            return -1;
+        }
+        unasciibufpnt = unasciibuf;
+        do {
+            if (buf_[z] != (unsigned char) '\r') {
+                *unasciibufpnt++ = buf_[z];
+            }
+            z++;
+        } while (z < size);
+        buf = unasciibuf;
+        size = (size_t) (unasciibufpnt - unasciibuf);
+    }
+    ret = safe_nonblock_write(ulhandler->f, NULL, buf, size);
+    if (unasciibuf != NULL) {
+        ALLOCA_FREE(unasciibuf);
+    }
+    if (ret < 0) {
+        *uploaded = 0;
+    } else {
+        *uploaded = size;
+    }
+    return ret;
+}
+
+int ulhandler_handle_commands(ULHandler * const ulhandler)
+{
+    char buf[100];
+    ssize_t readen;
+    
+    readen = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+    if (readen <= 0) {
+        return -1;
+    }
+    buf[readen] = 0;
+    if (strchr(buf, '\n') != NULL) {
+        if (strncasecmp(buf, "ABOR", sizeof "ABOR" - 1U) != 0 &&
+                    strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
+            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+            doreply();
+        } else {
+            addreply_noformat(426, MSG_ABORTED);
+            doreply();
+            return 1;
+        }        
+    }
+    return 0;
+}
+
+int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
+                   const double ts_start)
+{
+    ssize_t readen;
+    double required_sleep = 0.0;
+    int pollret;
+    int ret;
+    
+    if (ulhandler->chunk_size > (off_t) ulhandler->sizeof_buf) {
+        ulhandler->chunk_size = ulhandler->max_chunk_size =
+            ulhandler->sizeof_buf;
+    }
+    if (ulhandler->tls_fd != NULL) {
+#ifdef WITH_TLS            
+        readen = SSL_read(ulhandler->tls_clientfd, ulhandler->buf,
+                          ulhandler->chunk_size);
+#else
+        abort();
+#endif
+    } else {
+        readen = read(ulhandler->xferfd, ulhandler->buf,
+                      ulhandler->chunk_size);
+    }
+    if (readen == (ssize_t) 0) {
+        return 2;
+    }
+    if (readen < (ssize_t) 0) {
+        addreply_noformat(451, MSG_DATA_READ_FAILED);
+        return -1;
+    }
+    if (ul_dowrite(ulhandler, ulhandler->buf, readen, uploaded) != 0) {
+        addreply_noformat(452, MSG_WRITE_FAILED);
+        return -1;
+    }
+    ulhandler->cur_pos += *uploaded;
+    if (ulhandler->bandwidth > 0UL) {
+        ulhandler_throttle(ulhandler, *uploaded, ts_start, &required_sleep);
+        if (required_sleep > 0.0) {
+            repoll:
+            pollret = poll(&ulhandler->pfds_command, 1, required_sleep * 1000.0);
+            if ((ulhandler->pfds_command.revents & (POLLIN | POLLPRI)) != 0) {
+                ret = ulhandler_handle_commands(ulhandler);
+                if (ret != 0) {
+                    return ret;
+                }
+                goto repoll;
+            }
+        }
+    }
+    return 0;
+}
+
+int ul_send(ULHandler * const ulhandler)
+{
+    ssize_t readen;
+    double ts_start = 0.0;
+    off_t uploaded = (off_t) 0;
+    int pollret;
+    int timeout;
+    int ret;
+    
+    if (ulhandler->bandwidth > 0UL && (ts_start = get_usec_time()) <= 0.0) {
+        error(451, "gettimeofday()");
+        return -1;
+    }
+    for (;;) {
+        if (ulhandler->idletime >= INT_MAX / 1000) {
+            timeout = INT_MAX;
+        } else {
+            timeout = (int) ulhandler->idletime * 1000;
+        }
+        pollret = poll(ulhandler->pfds,
+                       sizeof ulhandler->pfds / sizeof ulhandler->pfds[0],
+                       timeout);
+        if (pollret < 0) {
+            addreply_noformat(451, MSG_DATA_READ_FAILED);
+            return -1;            
+        }
+        if (pollret == 0) {
+            addreply_noformat(421, MSG_TIMEOUT);
+            return -1;
+        }
+        if ((ulhandler->pfds[PFD_DATA].revents &
+             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+            return 0;
+        }
+        if ((ulhandler->pfds[PFD_COMMANDS].revents &
+             (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+            addreply_noformat(221, MSG_LOGOUT);
+            return -1;
+        }
+        if ((ulhandler->pfds[PFD_DATA].revents & (POLLIN | POLLPRI)) != 0) {
+            ret = ul_handle_data(ulhandler, &uploaded, ts_start);
+            switch (ret) {
+            case 1:
+                return 1;
+            case 2:
+                return 0;
+            case 0:
+                break;
+            default:
+                if (ret > 2) {
+                    abort();
+                }
+                return ret;
+            }
+        }
+        if ((ulhandler->pfds[PFD_COMMANDS].revents & (POLLIN | POLLPRI)) != 0) {
+            ret = ulhandler_handle_commands(ulhandler);
+            if (ret != 0) {
+                return ret;
+            }
+        }
+    }    
+    return 0;
+}
+
+int ul_exit(ULHandler * const ulhandler)
+{
+    free(ulhandler->buf);
+    ulhandler->buf = NULL;
+    
+    return 0;
+}
+
 void dostor(char *name, const int append, const int autorename)
 {
+    ULHandler ulhandler;    
     int f;
     char *p;
     const char *atomic_file = NULL;
@@ -3714,18 +4018,12 @@ void dostor(char *name, const int append, const int autorename)
     STATFS_STRUCT statfsbuf;
     struct stat st;
     double started;
-#ifdef THROTTLING
-    double ended;
-    off_t transmitted = 0;
-#endif
     int unlinkret = -1;
 #ifdef QUOTAS
     signed char overwrite = 0;
     int quota_exceeded;
 #endif
-#ifndef WITHOUT_ASCII
-    char *cpy = NULL;
-#endif
+    int ret;
     
     if ((buf = ALLOCA(sizeof_buf)) == NULL) {
         die_mem();
@@ -3885,152 +4183,23 @@ void dostor(char *name, const int append, const int autorename)
         ftpwho_unlock();
     }
 #endif
-#ifndef WITHOUT_ASCII
-    if (type == 1) {
-        if ((cpy = malloc(sizeof_buf)) == NULL) {
-            goto errasc;
-        }
+    
+    /* Here starts the real upload code */
+
+    if (ul_init(&ulhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
+                restartat, type == 1, throttling_bandwidth_ul) == 0) {
+        ret = ul_send(&ulhandler);
+        ul_exit(&ulhandler);
+    } else {
+        error(426, "ul_init()");
+        ret = -1;
     }
-#endif
-    started = get_usec_time();    
-    do {
-        /* wait idletime seconds for data to be available */
-        fd_set rs;
-        struct timeval tv;
-        
-        FD_ZERO(&rs);
-        FD_SET(0, &rs);
-        safe_fd_set(xferfd, &rs);
-        tv.tv_sec = idletime;
-        tv.tv_usec = 0;        
-        if (xferfd == -1 ||
-            select(xferfd + 1, &rs, NULL, NULL, &tv) <= 0) {
-            databroken:
-            (void) close(f);
-            closedata();
-            if (atomic_file != NULL) {
-                unlinkret = unlink(atomic_file);
-                atomic_file = NULL;                
-            }
-            addreply_noformat(0, MSG_ABRT_ONLY);
-            addreply_noformat(426, MSG_ABORTED);
-            addreply(0, "%s %s", name,
-                     unlinkret ? MSG_UPLOAD_PARTIAL : MSG_REMOVED);
-            goto end;
-        }
-        if (FD_ISSET(0, &rs)) {
-            char mwbuf[LINE_MAX];
-            ssize_t readen;
-            
-            do {
-                readen = read(0, mwbuf, sizeof mwbuf - (size_t) 1U);
-            } while (readen == -1 && errno == EINTR);
-            if (readen == -1) {
-                goto databroken;
-            }
-            mwbuf[readen] = 0;
-            if (strncasecmp(mwbuf, "ABORT",
-                            sizeof "ABORT" - (size_t) 1U) == 0 ||
-                strncasecmp(mwbuf, "QUIT",
-                            sizeof "QUIT" - (size_t) 1U) == 0) {
-                goto databroken;
-            }
-            if (readen > (ssize_t) 0 && mwbuf[readen - 1] == '\n') {
-                addreply_noformat(202, ".");
-                doreply();
-            }
-        }
-#ifdef QUOTAS
-        if ((unsigned long long) filesize > user_quota_size) {
-            goto quota_exceeded;
-        }
-#endif
-#ifdef WITH_TLS
-        if (data_protection_level == CPL_PRIVATE) {
-            r = SSL_read(tls_data_cnx, buf, sizeof_buf);
-        } else
-#endif
-        {
-            r = read(xferfd, buf, sizeof_buf);
-        }
-        if (r > (ssize_t) 0) {
-            p = buf;
-            
-#ifdef THROTTLING
-            if (throttling_bandwidth_ul > 0UL) {
-                long double delay;
-                
-                ended = get_usec_time();
-                transmitted += (off_t) r;
-                delay = (transmitted / (long double) throttling_bandwidth_ul)
-                    - (long double) (ended - started);
-                if (delay > (long double) MAX_THROTTLING_DELAY) {
-                    started = ended;
-                    transmitted = (off_t) 0;
-                    delay = (long double) MAX_THROTTLING_DELAY;
-                }
-                if (delay > 0.0L) {
-                    usleep2((unsigned long) (delay * 1000000.0L));
-                }
-            }
-#endif
-            {
-                int w;
-                
-#ifndef WITHOUT_ASCII
-                if (type == 1) {       /* Fuckin ASCII conversion */
-                    size_t asciibytes = (size_t)  0U;
-                    size_t i = (size_t) 0U;
-                    char *cpypnt = cpy;
-                    
-                    while ((ssize_t) i < r) {
-                        if (p[i] != '\r') {
-                            *cpypnt++ = p[i];
-                            asciibytes++;
-                        }
-                        i++;
-                    }
-                    if ((w = safe_write(f, cpy, asciibytes)) == 0) {
-                        filesize += (off_t) asciibytes;                 
-                    }
-                } else
-#endif
-                {
-                    if ((w = safe_write(f, p, (size_t) r)) == 0) {
-                        filesize += (off_t) r;
-                    }
-                }
-                if (w < 0) {
-                    errasc:
-#ifdef QUOTAS
-                    dostor_quota_update_close_f(overwrite, filesize,
-                                                restartat, atomic_file, 
-                                                name, f);
-#else                        
-                    (void) close(f);
-#endif
-                    closedata();
-                    error(450, MSG_WRITE_FAILED);
-                    if (guest != 0) {
-                        unlinkret = unlink(atomic_file);
-                        atomic_file = NULL;
-                    }
-                    addreply(0, "%s %s", name,
-                             unlinkret ? MSG_UPLOAD_PARTIAL : MSG_REMOVED);
-                    goto end;
-                } 
-#ifdef FTPWHO
-                /* Don't update download_total_size, it'd be useless */
-                if (shm_data_cur != NULL) {
-                    shm_data_cur->download_current_size = filesize;
-                }
-#endif                    
-            }
-        } else if (r < 0) {
-            error(451, MSG_DATA_READ_FAILED);
-            goto databroken;
-        }
-    } while (r > (ssize_t) 0);
+    (void) close(f);
+    closedata();
+    restartat = (off_t) 0U;    
+    
+    /* Here ends the real upload code */
+    
 #ifdef SHOW_REAL_DISK_SPACE
     if (FSTATFS(f, &statfsbuf) == 0) {
         double space;
@@ -4078,9 +4247,6 @@ void dostor(char *name, const int append, const int autorename)
     }
     
     end:
-#ifndef WITHOUT_ASCII
-    free(cpy);
-#endif
     ALLOCA_FREE(buf);
     restartat = (off_t) 0;
     if (atomic_file != NULL) {

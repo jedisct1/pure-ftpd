@@ -316,6 +316,32 @@ typedef struct DLHandler_ {
     struct pollfd pfds_f_in;
 } DLHandler;
 
+typedef struct ULHandler_ {
+    unsigned char *buf;
+    size_t sizeof_buf;
+    int clientfd;
+    void *tls_clientfd;
+    int xferfd;
+    void *tls_fd;    
+    int f;
+    off_t cur_pos;
+    off_t chunk_size;    
+    off_t min_chunk_size;
+    off_t default_chunk_size;
+    off_t max_chunk_size;
+    off_t total_uploaded;
+    int ascii_mode;
+    double min_sleep;
+    double max_sleep;
+    unsigned long bandwidth;
+    unsigned long idletime;
+    struct pollfd pfds[2];
+    struct pollfd pfds_command;    
+} ULHandler;
+
+#define PFD_DATA 0
+#define PFD_COMMANDS 1
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined (__CYGWIN__)
 static struct passwd *fakegetpwnam(const char * const name);
 # define getpwnam(A) fakegetpwnam(A)

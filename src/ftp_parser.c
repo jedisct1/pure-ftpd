@@ -772,10 +772,10 @@ void parser(void)
             }
         }
         noopidle = (time_t) -1;
-	wayout:
+        wayout:
 #ifdef WITH_RFC2640
-	free(narg);
-	narg = NULL;
+        free(narg);
+        narg = NULL;
 #endif
 #ifdef THROTTLING
         if (throttling_delay != 0UL) {
