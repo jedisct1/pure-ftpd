@@ -327,7 +327,6 @@ int safe_write(const int fd, const void *buf_, size_t count);
 #ifdef WITH_TLS
 int secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
 #endif
-void *aborttransfer(int);
 void parser(void);
 void stripctrl(char * const buf, size_t len);
 void dobanner(const int type);
@@ -337,6 +336,7 @@ void docwd(const char *dir);
 void doretr(char *name);
 void dorest(const char *name);
 void dodele(char *name);
+void doallo(off_t size);
 void dostor(char *name, const int append, const int autorename);
 void domkd(char *name);
 void dormd(char *name);
@@ -348,6 +348,7 @@ void doport2(struct sockaddr_storage a, unsigned int p);
 #ifndef MINIMAL
 void doesta(void);
 void doestp(void);
+void doallo(const off_t size);
 #endif
 void dopasv(int);
 void doopts(char *args);
@@ -364,6 +365,7 @@ void dostou(void);
 void dofeat(void);
 void domlst(const char * const file);
 void dositetime(void);
+int ul_check_free_space(const char *name);
 void mappedtov4(struct sockaddr_storage *ss);
 #ifndef HAVE_SYS_FSUID_H
 void disablesignals(void);

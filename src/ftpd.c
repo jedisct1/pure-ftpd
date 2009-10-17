@@ -1170,6 +1170,26 @@ void donoop(void)
 #endif
 }
 
+void doallo(const off_t size)
+{
+    int ret = -1;
+    
+    if (size <= 0) {
+        ret = 0;
+    } else if (ul_check_free_space(wd) == 1) {
+        ret = 0;
+    }
+    if (ret == 0) {
+#ifdef DISABLE_HUMOR
+        addreply_noformat(200, "OK");
+#else
+        addreply_noformat(200, "A L'HUILE");
+#endif
+    } else {
+        addreply_noformat(552, MSG_NO_DISK_SPACE);
+    }
+}
+
 #endif
 
 void dositetime(void)
@@ -4028,7 +4048,7 @@ int ul_exit(ULHandler * const ulhandler)
     return 0;
 }
 
-static int ul_check_free_space(const char *name)
+int ul_check_free_space(const char *name)
 {
     STATFS_STRUCT statfsbuf;
     char *z;
@@ -4248,9 +4268,6 @@ void dostor(char *name, const int append, const int autorename)
             addreply(0, MSG_SPACE_FREE_K, space / 1024.0);
         }    
     }
-#endif
-#ifdef QUOTAS    
-    quota_exceeded:
 #endif
     closedata();
 #ifdef QUOTAS

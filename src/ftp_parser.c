@@ -311,7 +311,7 @@ void parser(void)
          */
         
 #ifndef MINIMAL
-        if (!strcmp(cmd, "noop") || !strcmp(cmd, "allo")) {
+        if (!strcmp(cmd, "noop")) {
             antiidle();
             donoop();
             goto wayout;
@@ -431,12 +431,12 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "eprt")) {
                 doeprt(arg);
-        } else if (!strcmp(cmd, "esta") &&
-                   disallow_passive == 0 &&
-                   STORAGE_FAMILY(force_passive_ip) == 0) {
-            doesta();
-        } else if (!strcmp(cmd, "estp")) {
-            doestp();
+            } else if (!strcmp(cmd, "esta") &&
+                       disallow_passive == 0 &&
+                       STORAGE_FAMILY(force_passive_ip) == 0) {
+                doesta();
+            } else if (!strcmp(cmd, "estp")) {
+                doestp();
 #endif
             } else if (disallow_passive == 0 && 
                        (!strcmp(cmd, "pasv") || !strcmp(cmd, "p@sw"))) {
@@ -456,6 +456,13 @@ void parser(void)
 #ifndef MINIMAL            
             } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
                 dopasv(2);
+            } else if (!strcmp(cmd, "allo")) {
+                if (*arg == 0) {
+                    addreply_noformat(501, MSG_STAT_FAILURE);
+                } else {
+                    const off_t size = (off_t) strtoull(arg, NULL, 10);
+                    doallo(size);
+                }
 #endif
             } else if (!strcmp(cmd, "pwd") || !strcmp(cmd, "xpwd")) {
 #ifdef WITH_RFC2640
@@ -683,7 +690,7 @@ void parser(void)
                         goto chmod_wayout;
                     }
                     dochmod(sitearg2, mode);
-                  chmod_wayout:
+                    chmod_wayout:
                     (void) 0;
                 } else if (!strcasecmp(arg, "utime")) {
                     char *sitearg2;
@@ -693,37 +700,37 @@ void parser(void)
                         goto utime_wayout;
                     }		    
                     if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
-			sitearg2 == sitearg) {
+                        sitearg2 == sitearg) {
                         addreply_noformat(501, MSG_MISSING_ARG);
                         goto utime_wayout;
-		    }
-		    if (strcasecmp(sitearg2, " UTC") != 0) {
+                    }
+                    if (strcasecmp(sitearg2, " UTC") != 0) {
                         addreply_noformat(500, "UTC Only");
                         goto utime_wayout;			
-		    }
-		    *sitearg2-- = 0;
+                    }
+                    *sitearg2-- = 0;
                     if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
-			sitearg2 == sitearg) {
-			utime_no_arg:
+                        sitearg2 == sitearg) {
+                        utime_no_arg:
                         addreply_noformat(501, MSG_MISSING_ARG);
                         goto utime_wayout;
-		    }
-		    *sitearg2-- = 0;
+                    }
+                    *sitearg2-- = 0;
                     if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
-			sitearg2 == sitearg) {
-			goto utime_no_arg;
-		    }
-		    *sitearg2-- = 0;
-                    if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
-			sitearg2 == sitearg) {
+                        sitearg2 == sitearg) {
                         goto utime_no_arg;
-		    }
-		    *sitearg2++ = 0;
-		    if (*sitearg2 == 0) {
+                    }
+                    *sitearg2-- = 0;
+                    if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
+                        sitearg2 == sitearg) {
+                        goto utime_no_arg;
+                    }
+                    *sitearg2++ = 0;
+                    if (*sitearg2 == 0) {
                         goto utime_no_arg;			
-		    }
+                    }
                     doutime(sitearg, sitearg2);
-                  utime_wayout:
+                    utime_wayout:
                     (void) 0;
 # ifdef WITH_DIRALIASES		    
                 } else if (!strcasecmp(arg, "alias")) {
