@@ -3844,7 +3844,7 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
         buf = unasciibuf;
         size = (size_t) (unasciibufpnt - unasciibuf);
     }
-    ret = safe_nonblock_write(ulhandler->f, NULL, buf, size);
+    ret = safe_write(ulhandler->f, buf, size);
     if (unasciibuf != NULL) {
         ALLOCA_FREE(unasciibuf);
     }
@@ -3914,9 +3914,6 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         readen = read(ulhandler->xferfd, ulhandler->buf,
                       ulhandler->chunk_size);
     }
-    if (readen == (ssize_t) 0) {
-        return 2;
-    }
     if (readen < (ssize_t) 0) {
         addreply_noformat(451, MSG_DATA_READ_FAILED);
         return -1;
@@ -3925,7 +3922,10 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         addreply_noformat(452, MSG_WRITE_FAILED);
         return -1;
     }
-    ulhandler->cur_pos += *uploaded;
+    ulhandler->cur_pos += *uploaded;    
+    if (readen == (ssize_t) 0) {
+        return 2;
+    }
     if (ulhandler->bandwidth > 0UL) {
         ulhandler_throttle(ulhandler, *uploaded, ts_start, &required_sleep);
         if (required_sleep > 0.0) {
