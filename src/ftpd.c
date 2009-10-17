@@ -2945,11 +2945,14 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     if (dlhandler->total_downloaded > dlhandler->chunk_size) {
         if (*required_sleep < dlhandler->min_sleep) {
             dlhandler->chunk_size =
-                dlhandler->max_chunk_size / 2 + dlhandler->chunk_size / 2;
+                (dlhandler->max_chunk_size + dlhandler->chunk_size) / 2;
         } else if (*required_sleep > dlhandler->max_sleep) {
             dlhandler->chunk_size =
-                dlhandler->min_chunk_size / 2 + dlhandler->chunk_size / 2;
+                (dlhandler->min_chunk_size + dlhandler->chunk_size) / 2;
         } else {
+            dlhandler->chunk_size = dlhandler->default_chunk_size;
+        }
+        if (dlhandler->chunk_size <= 0 || dlhandler->chunk_size > INT_MAX) {
             dlhandler->chunk_size = dlhandler->default_chunk_size;
         }
         if (previous_chunk_size != dlhandler->default_chunk_size) {
@@ -2961,8 +2964,8 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
                 wanted_ts = elapsed;
             }
             *required_sleep = wanted_ts - elapsed;
-        }
-    }    
+        }        
+    }
     return 0;
 }
 
@@ -3730,13 +3733,17 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
     if (ulhandler->total_uploaded > ulhandler->chunk_size) {
         if (*required_sleep < ulhandler->min_sleep) {
             ulhandler->chunk_size =
-                ulhandler->max_chunk_size / 2 + ulhandler->chunk_size / 2;
+                (ulhandler->max_chunk_size + ulhandler->chunk_size) / 2;
         } else if (*required_sleep > ulhandler->max_sleep) {
             ulhandler->chunk_size =
-                ulhandler->min_chunk_size / 2 + ulhandler->chunk_size / 2;
+                (ulhandler->min_chunk_size + ulhandler->chunk_size) / 2;
         } else {
             ulhandler->chunk_size = ulhandler->default_chunk_size;
         }
+        if (ulhandler->chunk_size <= 0 ||
+            ulhandler->chunk_size > ulhandler->sizeof_buf) {
+            ulhandler->chunk_size = ulhandler->default_chunk_size;
+        }        
         if (previous_chunk_size != ulhandler->default_chunk_size) {
             would_be_uploaded =
                 ulhandler->total_uploaded + ulhandler->chunk_size;
