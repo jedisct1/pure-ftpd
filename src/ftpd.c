@@ -3133,7 +3133,8 @@ int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
     if (size_ <= (size_t) 0U) {
         *downloaded = 0;
         return -1;
-    }    
+    }
+#ifndef WITHOUT_ASCII
     if (dlhandler->ascii_mode > 0) {
         unsigned char *asciibufpnt;
         size_t z = (size_t) 0U;
@@ -3153,6 +3154,7 @@ int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
         buf = asciibuf;
         size = (size_t) (asciibufpnt - asciibuf);
     }
+#endif
     ret = safe_nonblock_write(dlhandler->xferfd, dlhandler->tls_fd, buf, size);
     if (asciibuf != NULL) {
         ALLOCA_FREE(asciibuf);
@@ -3741,7 +3743,7 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
             ulhandler->chunk_size = ulhandler->default_chunk_size;
         }
         if (ulhandler->chunk_size <= 0 ||
-            ulhandler->chunk_size > ulhandler->sizeof_buf) {
+            ulhandler->chunk_size > (off_t) ulhandler->sizeof_buf) {
             ulhandler->chunk_size = ulhandler->default_chunk_size;
         }        
         if (previous_chunk_size != ulhandler->default_chunk_size) {
@@ -3769,6 +3771,7 @@ int ul_init(ULHandler * const ulhandler,
 {
     struct pollfd *pfd;
 
+    (void) name;
     if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
         error(451, "fcntl(F_SETFL, O_NONBLOCK)");
         return -1;
@@ -3833,7 +3836,8 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
     if (size_ <= (size_t) 0U) {
         *uploaded = 0;
         return -1;
-    }    
+    }
+#ifndef WITHOUT_ASCII
     if (ulhandler->ascii_mode > 0) {
         unsigned char *unasciibufpnt;
         size_t z = (size_t) 0U;
@@ -3852,6 +3856,7 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
         buf = unasciibuf;
         size = (size_t) (unasciibufpnt - unasciibuf);
     }
+#endif
     ret = safe_write(ulhandler->f, buf, size);
     if (unasciibuf != NULL) {
         ALLOCA_FREE(unasciibuf);
@@ -3953,7 +3958,6 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
 
 int ul_send(ULHandler * const ulhandler)
 {
-    ssize_t readen;
     double ts_start = 0.0;
     off_t uploaded = (off_t) 0;
     int pollret;
@@ -4034,7 +4038,6 @@ void dostor(char *name, const int append, const int autorename)
     STATFS_STRUCT statfsbuf;
     struct stat st;
     double started = 0.0;
-    int unlinkret = -1;
 #ifdef QUOTAS
     signed char overwrite = 0;
     int quota_exceeded;
