@@ -3879,8 +3879,8 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
     buf[readen] = 0;
     bufpnt = skip_telnet_controls(buf);    
     if (strchr(buf, '\n') != NULL) {
-        if (strncasecmp(buf, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-            strncasecmp(buf, "QUIT", sizeof "QUIT" - 1U) != 0) {
+        if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
+            strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
             addreply_noformat(500, MSG_UNKNOWN_COMMAND);
             doreply();
         } else {
