@@ -4029,13 +4029,62 @@ int ul_exit(ULHandler * const ulhandler)
     return 0;
 }
 
+static int ul_check_free_space(const char *name)
+{
+    STATFS_STRUCT statfsbuf;
+    char *z;
+    char *alloca_namedir;
+    size_t name_len;
+    
+    if (maxdiskusagepct <= 0.0) {
+        return 1;
+    }    
+#ifdef CHECK_SYMLINKS_DISK_SPACE
+    if (STATFS(name, &statfsbuf) == 0) {
+        goto okcheckspace;
+    }
+#endif
+    name_len = strlen(name) + (size_t) 1U;
+    if (name_len < (size_t) 2U || 
+        (alloca_namedir = ALLOCA(name_len)) == NULL) {
+        return -1;
+    }
+    memcpy(alloca_namedir, name, name_len);
+    if ((z = strrchr(alloca_namedir, '/')) != NULL) {
+        if (z == alloca_namedir) {
+            *z++ = '.';
+        }
+        *z = 0;
+    } else {
+        alloca_namedir[0] = '.';
+        alloca_namedir[1] = 0;
+    }
+    if (STATFS(alloca_namedir, &statfsbuf) != 0) {
+        ALLOCA_FREE(alloca_namedir);
+        return -1;
+    }
+    ALLOCA_FREE(alloca_namedir);
+    
+#ifdef CHECK_SYMLINKS_DISK_SPACE        
+    okcheckspace:
+#endif
+    if ((double) STATFS_BLOCKS(statfsbuf) > 0.0) {
+        const double jam = (double) STATFS_BAVAIL(statfsbuf) /
+            (double) STATFS_BLOCKS(statfsbuf);
+        
+        if (jam < maxdiskusagepct) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 void dostor(char *name, const int append, const int autorename)
 {
     ULHandler ulhandler;    
     int f;
     const char *atomic_file = NULL;
     off_t filesize = (off_t) 0U;
-    STATFS_STRUCT statfsbuf;
     struct stat st;
     double started = 0.0;
 #ifdef QUOTAS
@@ -4054,52 +4103,10 @@ void dostor(char *name, const int append, const int autorename)
         goto end;
     }
 #endif
-    if (maxdiskusagepct > 0.0) {
-        char *alloca_namedir;
-        size_t name_len;
-        char *z;
-        
-#ifdef CHECK_SYMLINKS_DISK_SPACE
-        if (STATFS(name, &statfsbuf) == 0) {
-            goto okcheckspace;
-        }
-#endif
-        name_len = strlen(name) + (size_t) 1U;
-        if (name_len < (size_t) 2U || 
-            (alloca_namedir = ALLOCA(name_len)) == NULL) {
-            goto cantcheckspace;
-        }
-        memcpy(alloca_namedir, name, name_len);
-        if ((z = strrchr(alloca_namedir, '/')) != NULL) {
-            if (z == alloca_namedir) {
-                *z++ = '.';
-            }
-            *z = 0;
-        } else {
-            alloca_namedir[0] = '.';
-            alloca_namedir[1] = 0;
-        }
-        if (STATFS(alloca_namedir, &statfsbuf) != 0) {
-            ALLOCA_FREE(alloca_namedir);
-            goto cantcheckspace;
-        }
-        ALLOCA_FREE(alloca_namedir);
-        
-#ifdef CHECK_SYMLINKS_DISK_SPACE        
-        okcheckspace:
-#endif
-        if ((double) STATFS_BLOCKS(statfsbuf) > 0.0) {
-            double jam;
-            
-            jam = (double) STATFS_BAVAIL(statfsbuf) /
-                (double) STATFS_BLOCKS(statfsbuf);
-            if (jam < maxdiskusagepct) {
-                addreply_noformat(553, MSG_NO_DISK_SPACE);
-                goto end;
-            }
-        }
+    if (ul_check_free_space(name) == 0) {
+        addreply_noformat(553, MSG_NO_DISK_SPACE);
+        goto end;
     }
-    cantcheckspace:
     if (checknamesanity(name, dot_write_ok) != 0 ||
         (atomic_file = get_atomic_file(name)) == NULL) {
         addreply(553, MSG_SANITY_FILE_FAILURE, name);
