@@ -4130,7 +4130,10 @@ void dostor(char *name, const int append, const int autorename)
     if (checknamesanity(name, dot_write_ok) != 0) {
         addreply(553, MSG_SANITY_FILE_FAILURE, name);
         goto end;
-    }    
+    }
+    if (autorename != 0) {
+        no_truncate = 1;
+    }
     if (restartat > (off_t) 0 || no_truncate != 0) {
         if ((atomic_file = get_atomic_file(name)) == NULL) {
             addreply(553, MSG_SANITY_FILE_FAILURE, name);
