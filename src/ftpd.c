@@ -4291,12 +4291,12 @@ void dostor(char *name, const int append, const int autorename)
             } else {
                 atomic_file = NULL;
             }
-        } else {
+        } else if (atomic_file != NULL) {
             if (rename(atomic_file, name) != 0) {
                 error(553, MSG_RENAME_FAILURE);
-            } else {
-                atomic_file = NULL;
-            }        
+                unlink(atomic_file);
+            }
+            atomic_file = NULL;
         }
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);        
         displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
