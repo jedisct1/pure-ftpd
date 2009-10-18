@@ -3420,6 +3420,8 @@ void doretr(char *name)
     closedata();
     if (ret == 0) {        
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+    } else {
+        addreply_noformat(226, MSG_ABORTED);        
     }
     downloaded += dlhandler.total_downloaded;
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
