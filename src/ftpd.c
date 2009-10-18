@@ -4313,7 +4313,6 @@ void dostor(char *name, const int append, const int autorename)
             }
             atomic_file = NULL;
         }
-        replycode = 226;
         if (ret == 0) {
             addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
         } else {
