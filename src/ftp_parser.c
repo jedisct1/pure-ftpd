@@ -226,7 +226,6 @@ void parser(void)
 #ifdef IMPLICIT_TLS
     (void) tls_init_new_session();
     data_protection_level = CPL_PRIVATE;
-    standalone_port = strdup("990");
 #endif
     for (;;) {
         xferfd = -1;

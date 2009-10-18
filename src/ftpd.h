@@ -453,11 +453,23 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 #endif
 
 #ifndef NON_ROOT_FTP
-# define DEFAULT_FTP_PORT_S "21"
+# ifdef IMPLICIT_TLS
+#  define DEFAULT_FTP_PORT_S "990"
+# else
+#  define DEFAULT_FTP_PORT_S "21"
+# endif
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-# define DEFAULT_FTP_PORT_S "21"
+# ifdef IMPLICIT_TLS
+#  define DEFAULT_FTP_PORT_S "990"
+# else
+#  define DEFAULT_FTP_PORT_S "21"
+# endif
 #else
-# define DEFAULT_FTP_PORT_S "2121"
+# ifdef IMPLICIT_TLS
+#  define DEFAULT_FTP_PORT_S "9990"
+# else
+#  define DEFAULT_FTP_PORT_S "2121"
+# endif
 #endif
 
 /*
