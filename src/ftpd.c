@@ -3944,6 +3944,9 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         return 2;
     }
     if (readen < (ssize_t) 0) {
+        if (errno == EAGAIN || errno == EINTR) {
+            return 0;
+        }
         addreply_noformat(451, MSG_DATA_READ_FAILED);
         return -1;
     }    
