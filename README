@@ -295,6 +295,10 @@ recommended.
 over the iconv library and it requires a little more CPU time. See the -8
 and -9 switches.
 
+--with-implicittls: build a FTPS server (SSL/TLS is implicitely enabled).
+The protocol is incompatible with FTP and listens to another port by default
+(port 990, ftps). Never enable this option unless you know what you're doing.
+
 
 /-----------------------
 "--without-" switches
