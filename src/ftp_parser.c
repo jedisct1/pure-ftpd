@@ -223,6 +223,10 @@ void parser(void)
 #endif
     size_t n;
 
+#ifdef IMPLICIT_TLS
+    (void) tls_init_new_session();
+    data_protection_level = CPL_PRIVATE;    
+#endif
     for (;;) {
         xferfd = -1;
         if (state_needs_update != 0) {
