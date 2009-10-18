@@ -4133,12 +4133,12 @@ void dostor(char *name, const int append, const int autorename)
             addreply(553, MSG_SANITY_FILE_FAILURE, name);
             goto end;
         }
-    }
-    if (restartat > (off_t) 0 &&
-        rename(name, atomic_file) != 0 && errno != ENOENT) {
-        error(553, MSG_RENAME_FAILURE);
-        atomic_file = NULL;
-        goto end;
+        if (restartat > (off_t) 0 &&
+            rename(name, atomic_file) != 0 && errno != ENOENT) {
+            error(553, MSG_RENAME_FAILURE);
+            atomic_file = NULL;
+            goto end;
+        }
     }
     if (atomic_file != NULL) {
         ul_name = atomic_file;
