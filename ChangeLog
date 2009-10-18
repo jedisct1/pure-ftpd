@@ -38,6 +38,8 @@ enabled
  - Don't mess with TCP_NOPUSH, as it interferes with OpenSSL
  - New compile-time option: --with-implicittls in order to build a FTPS-only
 server
+ - ./configure --localstatedir can now be used in order to avoid storing the
+scoreboard and other dynamic files in /var/run/
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.
