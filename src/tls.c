@@ -233,7 +233,8 @@ int tls_init_new_session(void)
     }
     SSL_set_accept_state(tls_cnx);    
     for (;;) {
-        if ((ret = SSL_accept(tls_cnx)) <= 0) {
+        ret = SSL_accept(tls_cnx);        
+        if (ret <= 0) {
             ret_ = SSL_get_error(tls_cnx, ret);            
             if (ret == -1 &&
                 (ret_ == SSL_ERROR_WANT_READ ||
@@ -284,7 +285,12 @@ int tls_init_data_session(const int fd, const int passive)
         SSL_set_connect_state(tls_data_cnx);
     }
     for (;;) {
-        if ((ret = SSL_accept(tls_data_cnx)) <= 0) {
+        if (passive) {
+            ret = SSL_accept(tls_data_cnx);
+        } else {
+            ret = SSL_connect(tls_data_cnx);
+        }
+        if (ret <= 0) {
             ret_ = SSL_get_error(tls_data_cnx, ret);
             if (ret == -1 && (ret_ == SSL_ERROR_WANT_READ ||
                               ret_ == SSL_ERROR_WANT_WRITE)) {
