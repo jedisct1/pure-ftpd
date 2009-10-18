@@ -9,7 +9,6 @@ Pelander.
  - Add SUP top AUXILIARY to LDAP schema, suggested by Zhang Huangbin.
  - Don't ignore dot files even if -D is not supplied with the MLSD command.
  - Deinline code
- - Download code rewritten, with correct support for ABOR
  - Throttling more reliable
  - STAT is now working over TLS
  - DH keys for ephemeral key exchange are now handled
@@ -24,6 +23,21 @@ cannot read the attributes, because it doesn't have sufficient privileges.
 Contributed by Wilco Baan Hofman.
  - Perform charset conversions on directory names. Issue spotted by Xianghu
 Zhao.
+ - Almost a complete rewrite of the upload, download and TLS code for more
+reliability
+ - Seemlessly handle ABOR without any SIGURG
+ - Try to immediately handle any kind of disconnection
+ - Use poll() rather than select() as much as possible
+ - Distinguish aborted (even the hard way) and completed download and upload
+operations in log files
+ - Minor corrections to he French messages
+ - Don't use atomic uploads unless --notruncate or --autorename have been
+enabled
+ - Take care of removing .pureftpd-upload-* files in every possible case
+ - List up to 10000 files per directory per default instead of 2000
+ - Don't mess with TCP_NOPUSH, as it interferes with OpenSSL
+ - New compile-time option: --with-implicittls in order to build a FTPS-only
+server
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.
