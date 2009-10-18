@@ -8223,6 +8223,7 @@ if test "${with_implicittls+set}" = set; then :
 
 $as_echo "#define IMPLICIT_TLS /**/" >>confdefs.h
 
+      with_tls="yes"
   fi
 fi
 
