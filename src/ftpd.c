@@ -3972,6 +3972,10 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         if (required_sleep > 0.0) {
             repoll:
             pollret = poll(&ulhandler->pfds_command, 1, required_sleep * 1000.0);
+            if (ulhandler->pfds_command.revents &
+                (POLLERR | POLLHUP | POLLNVAL) != 0) {
+                return -1;
+            }
             if ((ulhandler->pfds_command.revents & (POLLIN | POLLPRI)) != 0) {
                 ret = ulhandler_handle_commands(ulhandler);
                 if (ret != 0) {
