@@ -3268,7 +3268,7 @@ int mmap_send(DLHandler * const dlhandler)
         if (shm_data_cur != NULL) {
             shm_data_cur->download_current_size = dlhandler->cur_pos;
         }
-#endif        
+#endif
         dlhandler->total_downloaded += downloaded;
         required_sleep = 0.0;
         if (dlhandler->bandwidth > 0UL) {
@@ -3732,7 +3732,6 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
         *required_sleep = 0.0;
         return 0;
     }
-    ulhandler->total_uploaded += uploaded;
     if ((ts_now = get_usec_time()) <= 0.0) {
         ts_now = ts_start;
     }
@@ -3960,7 +3959,14 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         addreply_noformat(452, MSG_WRITE_FAILED);
         return -1;
     }
-    ulhandler->cur_pos += *uploaded;    
+    ulhandler->cur_pos += *uploaded;
+#ifdef FTPWHO
+        if (shm_data_cur != NULL) {
+            shm_data_cur->download_current_size =
+                shm_data_cur->download_total_size = ulhandler->cur_pos;
+        }
+#endif
+    ulhandler->total_uploaded += *uploaded;
     if (ulhandler->bandwidth > 0UL) {
         ulhandler_throttle(ulhandler, *uploaded, ts_start, &required_sleep);
         if (required_sleep > 0.0) {
