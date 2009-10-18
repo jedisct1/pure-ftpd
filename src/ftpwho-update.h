@@ -6,7 +6,7 @@
 # ifdef NON_ROOT_FTP
 #  define SCOREBOARD_PATH CONFDIR "/pure-ftpd-ftpwho"
 # else
-#  define SCOREBOARD_PATH "/var/run/pure-ftpd"
+#  define SCOREBOARD_PATH STATEDIR "/run/pure-ftpd"
 # endif
 #define SCOREBOARD_PREFIX "client-"
 

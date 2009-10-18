@@ -432,7 +432,7 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifdef NON_ROOT_FTP
 #  define PID_FILE CONFDIR "/pure-ftpd.pid"
 # else
-#  define PID_FILE "/var/run/pure-ftpd.pid"
+#  define PID_FILE STATEDIR "/run/pure-ftpd.pid"
 # endif
 #endif
 
@@ -440,7 +440,7 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifdef NON_ROOT_FTP
 #  define UPLOADSCRIPT_PID_FILE CONFDIR "/pure-uploadscript.pid"
 # else
-#  define UPLOADSCRIPT_PID_FILE "/var/run/pure-uploadscript.pid"
+#  define UPLOADSCRIPT_PID_FILE STATEDIR "/run/pure-uploadscript.pid"
 # endif
 #endif
 
@@ -448,7 +448,7 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifdef NON_ROOT_FTP
 #  define AUTHD_PID_FILE CONFDIR "/pure-authd.pid"
 # else
-#  define AUTHD_PID_FILE "/var/run/pure-authd.pid"
+#  define AUTHD_PID_FILE STATEDIR "/run/pure-authd.pid"
 # endif
 #endif
 

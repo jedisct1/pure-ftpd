@@ -1340,6 +1340,20 @@ else
   fi
 fi  
 
+if test "x$localstatedir" = 'xNONE' || test "x$localstatedir" = 'x'; then
+  LOCALSTATEDIR='/var'
+else
+  if test "x$localstatedir" = 'x${prefix}/var'; then
+    if test "x$prefix" = 'xNONE' || test "x$prefix" = 'x/usr'; then
+      LOCALSTATEDIR='/var'
+    else
+      LOCALSTATEDIR="$localstatedir"
+    fi
+  else
+    LOCALSTATEDIR="$localstatedir"
+  fi
+fi  
+
 if test -r /dev/arandom; then
   AC_MSG_NOTICE([You have /dev/arandom - Great])
   AC_DEFINE(HAVE_DEV_ARANDOM,,[Define if you have /dev/arandom])
@@ -1355,8 +1369,11 @@ fi
 
 sysconfdir="$CONFDIR"
 AC_SUBST(sysconfdir)
+localstatedir="$LOCALSTATEDIR"
+AC_SUBST(localstatedir)
 
 CPPFLAGS="$CPPFLAGS -DCONFDIR=\\\"$sysconfdir\\\""
+CPPFLAGS="$CPPFLAGS -DSTATEDIR=\\\"$localstatedir\\\""
 
 AC_CONFIG_FILES(Makefile src/Makefile pam/Makefile man/Makefile
 gui/Makefile configuration-file/Makefile contrib/Makefile m4/Makefile

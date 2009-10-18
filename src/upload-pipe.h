@@ -5,7 +5,7 @@
 # ifdef NON_ROOT_FTP
 #  define UPLOAD_PIPE_FILE CONFDIR "/pure-ftpd.upload.pipe"
 # else
-#  define UPLOAD_PIPE_FILE "/var/run/pure-ftpd.upload.pipe"
+#  define UPLOAD_PIPE_FILE STATEDIR "/run/pure-ftpd.upload.pipe"
 # endif
 #endif
 
@@ -13,7 +13,7 @@
 # ifdef NON_ROOT_FTP
 #  define UPLOAD_PIPE_LOCK CONFDIR "/pure-ftpd.upload.lock"
 # else
-#  define UPLOAD_PIPE_LOCK "/var/run/pure-ftpd.upload.lock"
+#  define UPLOAD_PIPE_LOCK STATEDIR "/run/pure-ftpd.upload.lock"
 # endif
 #endif
 
