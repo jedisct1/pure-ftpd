@@ -3420,8 +3420,6 @@ void doretr(char *name)
     closedata();
     if (ret == 0) {        
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
-    } else {
-        addreply_noformat(226, MSG_ABORTED);        
     }
     downloaded += dlhandler.total_downloaded;
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
@@ -4315,8 +4313,11 @@ void dostor(char *name, const int append, const int autorename)
             }
             atomic_file = NULL;
         }
+        replycode = 226;
         if (ret == 0) {
             addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+        } else {
+            addreply_noformat(226, MSG_ABORTED);            
         }
         displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
     }
