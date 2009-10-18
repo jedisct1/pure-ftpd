@@ -2457,23 +2457,34 @@ void opendata(void)
     if (datafd == -1) {
         addreply_noformat(425, MSG_NO_DATA_CONN);        
         return;
-    }
-    
+    }    
     if (passive != 0) {
-        fd_set rs;
-        struct timeval tv;
+        struct pollfd pfds[2];
+        struct pollfd *pfd;
+        int pollret;
         
+        pfd = &pfds[0];
+        pfd->fd = 0;
+        pfd->events = POLLERR | POLLHUP;
+        pfd->revents = 0;
+        
+        pfd = &pfds[1];
+        pfd->fd = datafd;
+        pfd->events = POLLIN | POLLERR | POLLHUP;
+        pfd->revents = 0;
+
         alarm(idletime);
         for (;;) {
-            FD_ZERO(&rs);
-            FD_SET(datafd, &rs);
-            tv.tv_sec = idletime;
-            tv.tv_usec = 0;
-            /* I suppose it would be better to listen for ABOR too... */
-            
-            if (select(datafd + 1, &rs, NULL, NULL, &tv) <= 0) {
-                die(421, LOG_INFO, MSG_TIMEOUT_DATA,
-                    (unsigned long) idletime);
+            pollret = poll(pfds, sizeof pfds / sizeof pfds[0], idletime * 1000.0);
+            if (pollret <= 0) {
+                die(421, LOG_INFO, MSG_TIMEOUT_DATA, (unsigned long) idletime);
+            }
+            if ((pfds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) != 0 ||
+                (pfds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+                die(221, LOG_INFO, MSG_LOGOUT);
+            }
+            if ((pfds[1].revents & POLLIN) == 0) {
+                continue;
             }
             socksize = (socklen_t) sizeof(dataconn);
             memset(&dataconn, 0, sizeof dataconn);
@@ -3727,7 +3738,8 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
     off_t would_be_uploaded;
     double wanted_ts;
     off_t previous_chunk_size;
-    
+
+    (void) uploaded;
     if (ulhandler->bandwidth <= 0UL) {
         *required_sleep = 0.0;
         return 0;
@@ -3972,8 +3984,8 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         if (required_sleep > 0.0) {
             repoll:
             pollret = poll(&ulhandler->pfds_command, 1, required_sleep * 1000.0);
-            if (ulhandler->pfds_command.revents &
-                (POLLERR | POLLHUP | POLLNVAL) != 0) {
+            if ((ulhandler->pfds_command.revents &
+                 (POLLERR | POLLHUP | POLLNVAL)) != 0) {
                 return -1;
             }
             if ((ulhandler->pfds_command.revents & (POLLIN | POLLPRI)) != 0) {
