@@ -29,6 +29,7 @@
 %define con_sysquotas 1
 %define con_bonjour 0
 %define con_rfc2640 0
+%define con_implicittls 0
 
 %define prefixdef  /usr/local
 %define sysconfdef /etc
@@ -71,6 +72,7 @@
 %{?with_rfc2640:%define con_rfc2640 1}
 %{?with_sysquotas:%define con_sysquotas 1}
 %{?with_bonjour:%define con_bonjour 1}
+%{?with_implicittls:%define con_implicittls 1}
 
 #If you don't like the prefix '/usr/local' you can override it like this:
 #rpm -ba|--rebuild --define 'prefix /usr'
@@ -199,7 +201,10 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} \
 %endif  
 %if %{con_bonjour}
   --with-bonjour \
-%endif  
+%endif
+%if %{con_implicittls}
+  --with-implicittls \
+%endif
   --with-paranoidmsg \
   --mandir=%{_mandir} --sysconfdir=%{sysconfdir} \
   --with-certfile=%{certfile}
@@ -310,6 +315,9 @@ install -m 755 configuration-file/pure-config.pl_replaced $RPM_BUILD_ROOT%{prefi
 %endif
 
 %changelog
+* Sun Oct 18 2009 Frank Denis <j at pureftpd dot org>
+- Add implicittls.
+
 * Mon Apr 25 2009 Frank Denis <j at pureftpd dot org>
 - README.Netfilter is no more.
 

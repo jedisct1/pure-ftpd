@@ -592,6 +592,9 @@
 /* define if you have __ss_len */
 #undef HAVE___SS_LEN
 
+/* with implicit TLS */
+#undef IMPLICIT_TLS
+
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK

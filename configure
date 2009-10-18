@@ -733,6 +733,7 @@ with_virtualchroot
 with_diraliases
 with_nonroot
 with_peruserlimits
+with_implicittls
 with_debug
 with_everything
 with_language
@@ -1423,6 +1424,8 @@ Optional Packages:
                           if you really don't have root privileges on the
                           server host.
   --with-peruserlimits    Support per-user concurrency limits
+  --with-implicittls      Implicit TLS (port 990) - DO NOT USE unless you know
+                          what you are doing
   --with-debug            For maintainers only - please do not use
   --with-everything       Build a big server with almost everything
   --with-language=        < english | german | romanian | french |
@@ -8208,6 +8211,17 @@ if test "${with_peruserlimits+set}" = set; then :
 $as_echo "#define PER_USER_LIMITS /**/" >>confdefs.h
 
       $as_echo "#define FTPWHO 1" >>confdefs.h
+
+  fi
+fi
+
+
+
+# Check whether --with-implicittls was given.
+if test "${with_implicittls+set}" = set; then :
+  withval=$with_implicittls;  if test "x$withval" = "xyes" ; then
+
+$as_echo "#define IMPLICIT_TLS /**/" >>confdefs.h
 
   fi
 fi

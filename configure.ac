@@ -764,6 +764,12 @@ AC_ARG_WITH(peruserlimits,
       AC_DEFINE(FTPWHO)
   fi ])
 
+AC_ARG_WITH(implicittls,
+[AS_HELP_STRING(--with-implicittls,Implicit TLS (port 990) - DO NOT USE unless you know what you are doing)],
+[ if test "x$withval" = "xyes" ; then
+      AC_DEFINE(IMPLICIT_TLS,,[with implicit TLS])
+  fi ])
+
 AC_ARG_WITH(debug,
 [AS_HELP_STRING(--with-debug,For maintainers only - please do not use)],
 [ if test "x$withval" = "xyes" ; then
