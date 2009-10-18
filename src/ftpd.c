@@ -4267,6 +4267,8 @@ void dostor(char *name, const int append, const int autorename)
     restartat = (off_t) 0U;    
     
     /* Here ends the real upload code */
+
+    closedata();
     
 #ifdef SHOW_REAL_DISK_SPACE
     if (FSTATFS(f, &statfsbuf) == 0) {
@@ -4281,7 +4283,7 @@ void dostor(char *name, const int append, const int autorename)
         }    
     }
 #endif
-    closedata();
+
 #ifdef QUOTAS
     quota_exceeded = 
         dostor_quota_update_close_f(overwrite, filesize, restartat,
@@ -4307,7 +4309,9 @@ void dostor(char *name, const int append, const int autorename)
             }
             atomic_file = NULL;
         }
-        addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);        
+        if (ret == 0) {
+            addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+        }
         displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
     }
     
