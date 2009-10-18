@@ -279,17 +279,9 @@ int tls_init_data_session(const int fd, const int passive)
     if (SSL_set_fd(tls_data_cnx, fd) != 1) {
         tls_error(__LINE__, 0);
     }
-    if (passive) {
-        SSL_set_accept_state(tls_data_cnx);
-    } else {
-        SSL_set_connect_state(tls_data_cnx);
-    }
+    SSL_set_accept_state(tls_data_cnx);
     for (;;) {
-        if (passive) {
-            ret = SSL_accept(tls_data_cnx);
-        } else {
-            ret = SSL_connect(tls_data_cnx);
-        }
+        ret = SSL_accept(tls_data_cnx);
         if (ret <= 0) {
             ret_ = SSL_get_error(tls_data_cnx, ret);
             if (ret == -1 && (ret_ == SSL_ERROR_WANT_READ ||
