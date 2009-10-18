@@ -754,7 +754,7 @@ rule to the authentication chain. Please read the "Authentication" section,
 later in this README file. It's an important section.
 
 - '-L <max files>:<max depth>': To avoid stupid denial-of-service attacks
-(or just CPU hogs), Pure-FTPd never displays more than 2000 files in response
+(or just CPU hogs), Pure-FTPd never displays more than 10000 files in response
 to an 'ls' command. Also, a recursive 'ls' (-R) never goes further than 5
 subdirectories. You can increase/decrease those limits with the '-L' option.
 

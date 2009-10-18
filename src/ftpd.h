@@ -503,7 +503,7 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define MAX_SITE_IDLE (42UL * 60UL)
 #endif
 #ifndef DEFAULT_MAX_LS_FILES    
-# define DEFAULT_MAX_LS_FILES 2000U
+# define DEFAULT_MAX_LS_FILES 10000U
 #endif
 #ifndef DEFAULT_MAX_LS_DEPTH
 # define DEFAULT_MAX_LS_DEPTH 5U

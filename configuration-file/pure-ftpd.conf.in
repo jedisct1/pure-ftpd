@@ -158,7 +158,7 @@ MaxIdleTime                 15
 # 'ls' recursion limits. The first argument is the maximum number of
 # files to be displayed. The second one is the max subdirectories depth
 
-LimitRecursion              2000 8
+LimitRecursion              10000 8
 
 
 
