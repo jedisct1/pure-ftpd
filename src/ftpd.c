@@ -3937,7 +3937,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
     }
     if (ulhandler->tls_fd != NULL) {
 #ifdef WITH_TLS            
-        readen = SSL_read(ulhandler->tls_clientfd, ulhandler->buf,
+        readen = SSL_read(ulhandler->tls_fd, ulhandler->buf,
                           ulhandler->chunk_size);
 #else
         abort();
