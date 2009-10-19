@@ -33,14 +33,18 @@ int quota_update(Quota * const quota,
     ssize_t readen;
     int err = -1;
     char buf[84];  
-    char *bufpnt = buf;    
+    char *bufpnt = buf;
+    int dummy_overflow;
     ssize_t left = (ssize_t) (sizeof buf - 1U);
     
-    *overflow = 0;
-    *quota = old_quota;
     if (hasquota() != 0 || chrooted == 0) {
         return -2;
     }    
+    if (overflow == NULL) {
+        overflow = &dummy_overflow;
+    }
+    *overflow = 0;
+    *quota = old_quota;
     if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW, 
                    (mode_t) 0600)) == -1) {
         return -1;
@@ -82,10 +86,10 @@ int quota_update(Quota * const quota,
             quota->files = 0ULL;
         }
     } else if (files_add > 0LL) {
+        quota->files += files_add;
         if ((user_quota_files > quota->files) && 
             (user_quota_files - quota->files >=
              (unsigned long long) files_add)) {
-            quota->files += files_add;
         } else {
             *overflow = 1;
         }
@@ -97,17 +101,13 @@ int quota_update(Quota * const quota,
             quota->size = 0ULL;
         }
     } else if (size_add > 0LL) {
+        quota->size += size_add;
         if ((user_quota_size > quota->size) &&
             (user_quota_size - quota->size >= 
              (unsigned long long) size_add)) {
-            quota->size += size_add;
         } else {
             *overflow = 2;
         }
-    }
-    if (*overflow != 0) {
-        *quota = old_quota;
-        goto okbye;
     }
     if ((old_quota.size != quota->size || old_quota.files != quota->files) &&
         !SNCHECK(snprintf(buf, sizeof buf, "%llu %llu\n",
@@ -136,13 +136,12 @@ void displayquota(Quota * const quota_)
 {
     Quota quota;
     double pct;
-    int overflow;
     
     if (hasquota() != 0) {
         return;
     }
     if (quota_ == NULL) {
-        if (quota_update(&quota, 0LL, 0LL, &overflow) != 0) {
+        if (quota_update(&quota, 0LL, 0LL, NULL) != 0) {
             return;
         }
     } else {

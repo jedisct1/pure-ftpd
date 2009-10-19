@@ -2792,10 +2792,9 @@ void dodele(char *name)
         }
         {
             Quota quota;
-            int overflow;
             
             (void) quota_update(&quota, -1LL,
-                                -((long long) st.st_size), &overflow);
+                                -((long long) st.st_size), NULL);
             displayquota(&quota);
         }
     }
@@ -3482,13 +3481,14 @@ void domkd(char *name)
 #ifdef QUOTAS
     (void) quota_update(&quota, 1LL, 0LL, &overflow);
     if (overflow != 0) {
+        (void) quota_update(&quota, -1LL, 0LL, NULL);
         addreply(550, MSG_QUOTA_EXCEEDED, name);
         goto end;
     }
 #endif
     if ((mkdir(name, (mode_t) (0777 & ~u_mask_d))) < 0) {
 #ifdef QUOTAS
-        (void) quota_update(&quota, -1LL, 0LL, &overflow);
+        (void) quota_update(&quota, -1LL, 0LL, NULL);
 #endif
         error(550, MSG_MKD_FAILURE);
     } else {
@@ -3504,7 +3504,6 @@ void dormd(char *name)
 {
 #ifdef QUOTAS
     Quota quota;
-    int overflow;
 #endif
     
 #ifndef ANON_CAN_DELETE    
@@ -3521,7 +3520,7 @@ void dormd(char *name)
         error(550, MSG_RMD_FAILURE);
     } else {
 #ifdef QUOTAS
-        (void) quota_update(&quota, -1LL, 0LL, &overflow);
+        (void) quota_update(&quota, -1LL, 0LL, NULL);
         displayquota(&quota);
 #endif
         addreply_noformat(250, MSG_RMD_SUCCESS);
@@ -3701,32 +3700,40 @@ void delete_atomic_file(void)
     (void) unlink(atomic_file);
 }
 
+static off_t get_file_size(const char * const file)
+{
+    struct stat st;
+    
+    if (stat(file, &st) != 0) {
+        return (off_t) -1;
+    }
+    return st.st_size;
+}
+
 #ifdef QUOTAS
-static int dostor_quota_update_close_f(const int overwrite,
-                                       const off_t filesize,
-                                       const off_t restartat,
-                                       const char * const atomic_file,
-                                       const char * const name, const int f)
+static int ul_quota_update(const char * const file_name,
+                           const int files_count, const off_t bytes)
 {
     Quota quota;
+    off_t file_size = (off_t) -1;
     int overflow;
-    int ret = 0;
     
-    (void) quota_update(&quota, overwrite != 0 ? 0LL : 1LL,
-                        (long long) (filesize - restartat), &overflow);
+    if (files_count == 0 && bytes == (off_t) 0) {
+        return 0;
+    }
+    (void) quota_update(&quota, files_count, (long long) bytes, &overflow);
     if (overflow != 0) {
-        addreply(550, MSG_QUOTA_EXCEEDED, name);
-        /* ftruncate+unlink is overkill, but it reduces possible races */
-        (void) ftruncate(f, (off_t) 0);
-        (void) close(f);
-        unlink(atomic_file);
-        ret = -1;
-    } else {
-        (void) close(f);
+        addreply(550, MSG_QUOTA_EXCEEDED, file_name);
+        if (file_name != NULL) {
+            file_size = get_file_size(file_name);
+        }
+        if (file_size >= (off_t) 0 && unlink(file_name) == 0) {
+            (void) quota_update(&quota, -1, (long long) file_size, NULL);
+        }
     }
     displayquota(&quota);
     
-    return ret;
+    return 0;
 }
 #endif
 
@@ -4134,7 +4141,6 @@ void dostor(char *name, const int append, const int autorename)
     double started = 0.0;
 #ifdef QUOTAS
     signed char overwrite = 0;
-    int quota_exceeded;
 #endif
     int ret;
     
@@ -4176,8 +4182,11 @@ void dostor(char *name, const int append, const int autorename)
     } else {
         ul_name = name;
     }
-    if ((f = open(ul_name, O_CREAT | O_WRONLY | O_NOFOLLOW,
-                  (mode_t) 0777 & ~u_mask)) == -1) {
+    if (atomic_file == NULL &&
+        (f = open(ul_name, O_WRONLY | O_NOFOLLOW)) != -1) {
+        overwrite++;
+    } else if ((f = open(ul_name, O_CREAT | O_WRONLY | O_NOFOLLOW,
+                         (mode_t) 0777 & ~u_mask)) == -1) {
         error(553, MSG_OPEN_FAILURE2);
         goto end;
     }
@@ -4223,15 +4232,12 @@ void dostor(char *name, const int append, const int autorename)
             goto end;
         }
 #ifdef QUOTAS
-        {
-            int overflow;
+        if (restartat != st.st_size) {
             Quota quota;
             
             (void) quota_update(&quota, 0LL, 
-                                (long long) (restartat - st.st_size), 
-                                &overflow);
+                                (long long) (restartat - st.st_size), NULL);
         }
-        overwrite++;
 #endif
     }
     opendata();
@@ -4301,20 +4307,45 @@ void dostor(char *name, const int append, const int autorename)
 #endif
 
     uploaded += (unsigned long long) ulhandler.total_uploaded;
-
-    if (autorename != 0 && restartat == (off_t) 0) {
-        if (tryautorename(atomic_file, name) != 0) {
-            error(553, MSG_RENAME_FAILURE);
+    {
+        off_t atomic_file_size;
+        off_t original_file_size;
+        int files_count;
+        
+        if (overwrite == 0) {
+            files_count = 0;
         } else {
-            atomic_file = NULL;
+            files_count = 1;
         }
-    } else if (atomic_file != NULL) {
-        if (rename(atomic_file, name) != 0) {
-            error(553, MSG_RENAME_FAILURE);
-            unlink(atomic_file);
+        if (autorename != 0 && restartat == (off_t) 0) {
+            if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
+                goto afterquota;
+            }
+            if (tryautorename(atomic_file, name) != 0) {
+                error(553, MSG_RENAME_FAILURE);
+                goto afterquota;
+            } else {
+                ul_quota_update(name, 1, atomic_file_size);
+                atomic_file = NULL;
+            }
+        } else if (atomic_file != NULL) {
+            if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0 ||
+                (original_file_size = get_file_size(name)) < (off_t) 0) {
+                goto afterquota;
+            }
+            if (rename(atomic_file, name) != 0) {
+                error(553, MSG_RENAME_FAILURE);
+                goto afterquota;
+            } else {
+                ul_quota_update(name, files_count,
+                                atomic_file_size - original_file_size);
+                atomic_file = NULL;
+            }
+        } else {
+            ul_quota_update(name, files_count, ulhandler.total_uploaded);
         }
-        atomic_file = NULL;
     }
+    afterquota:
     if (ret == 0) {
         addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
     } else {
