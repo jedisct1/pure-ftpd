@@ -4139,9 +4139,7 @@ void dostor(char *name, const int append, const int autorename)
     off_t filesize = (off_t) 0U;
     struct stat st;
     double started = 0.0;
-#ifdef QUOTAS
     signed char overwrite = 0;
-#endif
     int ret;
     
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
@@ -4325,7 +4323,9 @@ void dostor(char *name, const int append, const int autorename)
                 error(553, MSG_RENAME_FAILURE);
                 goto afterquota;
             } else {
+#ifdef QUOTAS
                 ul_quota_update(name, 1, atomic_file_size);
+#endif
                 atomic_file = NULL;
             }
         } else if (atomic_file != NULL) {
@@ -4337,12 +4337,16 @@ void dostor(char *name, const int append, const int autorename)
                 error(553, MSG_RENAME_FAILURE);
                 goto afterquota;
             } else {
+#ifdef QUOTAS
                 ul_quota_update(name, files_count,
                                 atomic_file_size - original_file_size);
+#endif                
                 atomic_file = NULL;
             }
         } else {
+#ifdef QUOTAS
             ul_quota_update(name, files_count, ulhandler.total_uploaded);
+#endif
         }
     }
     afterquota:
