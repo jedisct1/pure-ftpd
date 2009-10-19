@@ -4300,46 +4300,33 @@ void dostor(char *name, const int append, const int autorename)
     }
 #endif
 
-#ifdef QUOTAS
-    quota_exceeded = 
-        dostor_quota_update_close_f(overwrite, filesize, restartat,
-                                    atomic_file, name, f);
-#else
-    (void) close(f);
-#endif
     uploaded += (unsigned long long) ulhandler.total_uploaded;
-#ifdef QUOTAS
-    if (quota_exceeded == 0)
-#endif
-    {
-        if (autorename != 0 && restartat == (off_t) 0) {
-            if (tryautorename(atomic_file, name) != 0) {
-                error(553, MSG_RENAME_FAILURE);
-            } else {
-                atomic_file = NULL;
-            }
-        } else if (atomic_file != NULL) {
-            if (rename(atomic_file, name) != 0) {
-                error(553, MSG_RENAME_FAILURE);
-                unlink(atomic_file);
-            }
+
+    if (autorename != 0 && restartat == (off_t) 0) {
+        if (tryautorename(atomic_file, name) != 0) {
+            error(553, MSG_RENAME_FAILURE);
+        } else {
             atomic_file = NULL;
         }
-        if (ret == 0) {
-            addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
-        } else {
-            addreply_noformat(226, MSG_ABORTED);            
+    } else if (atomic_file != NULL) {
+        if (rename(atomic_file, name) != 0) {
+            error(553, MSG_RENAME_FAILURE);
+            unlink(atomic_file);
         }
-        displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
+        atomic_file = NULL;
     }
+    if (ret == 0) {
+        addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+    } else {
+        addreply_noformat(226, MSG_ABORTED);            
+    }
+    displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
     
     end:
     restartat = (off_t) 0;
     if (atomic_file != NULL) {
-        if (rename(atomic_file, name) != 0) {
-            error(553, MSG_RENAME_FAILURE);
-            unlink(atomic_file);            
-        }
+        unlink(atomic_file);
+        atomic_file = NULL;
     }
 }
 
