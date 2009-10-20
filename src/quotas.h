@@ -10,7 +10,7 @@ typedef struct Quota_ {
     unsigned long long size;
 } Quota;
 
-int quota_update(Quota * const quota,
+int quota_update(Quota *quota,
                  const long long files_add, const long long size_add,
                  int *overflow);
 

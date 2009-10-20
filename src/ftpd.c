@@ -4233,9 +4233,7 @@ void dostor(char *name, const int append, const int autorename)
         }
 #ifdef QUOTAS
         if (restartat != st.st_size) {
-            Quota quota;
-            
-            (void) quota_update(&quota, 0LL, 
+            (void) quota_update(NULL, 0LL,
                                 (long long) (restartat - st.st_size), NULL);
         }
 #endif
@@ -4501,6 +4499,13 @@ void dornfr(char *name)
 
 void dornto(char *name)
 {
+#ifdef QUOTAS    
+    off_t source_file_size = (off_t) -1;
+    off_t target_file_size = (off_t) -1;
+    int files_count = 0;
+    long long bytes = 0LL;
+#endif
+
 #ifndef ANON_CAN_RENAME
     if (guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_RENAME);
@@ -4515,27 +4520,31 @@ void dornto(char *name)
         addreply(550, MSG_SANITY_FILE_FAILURE, name);
         return;                        /* don't clear rnfrom buffer */
     }
-    /*
-     * Refuse atomic replacement of the same file for users with quotas,
-     * or with keepallfiles.
-     */
 #ifdef QUOTAS
-    if (hasquota() == 0) {
-        struct stat st;
-
-        if (lstat(name, &st) == 0) {
-            addreply_noformat(550, MSG_RENAME_ALREADY_THERE);
-            goto bye;            
+    if (hasquota() == 0) {        
+        source_file_size = get_file_size(renamefrom);
+        if (source_file_size < (off_t) 0) {
+            addreply_noformat(550, MSG_RENAME_FAILURE);
+            goto bye;
         }
+        bytes = (long long) source_file_size;
+        target_file_size = get_file_size(name);        
+        if (target_file_size > (off_t) 0) {            
+            bytes -= (long long) target_file_size;
+        }
+        if (target_file_size >= (off_t) 0) {
+            files_count = -1;
+        } else {
+            files_count = 0;
+        }
+        (void) quota_update(NULL, files_count, bytes, NULL);
     }
 #endif
-    /*
-     * There's a race between lstat() and rename(). But exploiting it is:
-     * 1) very hard
-     * 2) a script kiddy can only *lose* space.
-     */
     if ((rename(renamefrom, name)) < 0) {
         addreply(550, MSG_RENAME_FAILURE ": %s", strerror(errno));
+#ifdef QUOTAS
+        (void) quota_update(NULL, -files_count, -bytes, NULL);
+#endif
     } else {
         addreply_noformat(250, MSG_RENAME_SUCCESS);
         logfile(LOG_NOTICE, MSG_RENAME_SUCCESS ": [%s]->[%s]", 

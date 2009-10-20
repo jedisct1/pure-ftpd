@@ -40,6 +40,8 @@ enabled
 server
  - ./configure --localstatedir can now be used in order to avoid storing the
 scoreboard and other dynamic files in /var/run/
+ - Quota handling reworked (easier, and way more reliable)
+ - RNTO support even when quota are enabled.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

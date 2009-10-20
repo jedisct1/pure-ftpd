@@ -22,13 +22,14 @@ int hasquota(void)
     return 0;
 }
 
-int quota_update(Quota * const quota,
+int quota_update(Quota *quota,
                  const long long files_add,
                  const long long size_add,
                  int *overflow)
 {
     int fd;
     Quota old_quota = { 0ULL, 0ULL };
+    Quota dummy_quota;
     struct flock lock;
     ssize_t readen;
     int err = -1;
@@ -42,6 +43,9 @@ int quota_update(Quota * const quota,
     }    
     if (overflow == NULL) {
         overflow = &dummy_overflow;
+    }
+    if (quota == NULL) {
+        quota = &dummy_quota;
     }
     *overflow = 0;
     *quota = old_quota;
