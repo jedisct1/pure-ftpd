@@ -1199,7 +1199,7 @@ void dositetime(void)
     time_t now;
     
     if ((now = time(NULL)) == (time_t) -1 || (tm = localtime(&now)) == NULL) {
-        addreply_noformat(550, "time()");
+        addreply_noformat(451, "time()");
         return;
     }
     strftime(tmp, sizeof tmp, "%Y-%m-%d %H:%M:%S", tm);
@@ -2026,7 +2026,7 @@ void docwd(const char *dir)
         }
     }
     if (checknamesanity(where, dot_read_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, where);
+        addreply(553, MSG_SANITY_FILE_FAILURE, where);
         return;
     }
     if (chdir(where) != 0) {
@@ -2599,7 +2599,7 @@ void dochmod(char *name, mode_t mode)
         return;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         return;
     }
     fd = open(name, O_RDONLY);
@@ -2657,7 +2657,7 @@ void doutime(char *name, const char * const wanted_time)
         return;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         return;
     }
     memset(&tm, 0, sizeof tm);
@@ -2710,7 +2710,7 @@ void dodele(char *name)
         return;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         return;
     }
     if (keepallfiles != 0) {
@@ -3014,7 +3014,7 @@ int dlhandler_init(DLHandler * const dlhandler,
         return -1;
     }
     if (restartat > (off_t) 0 && restartat >= st.st_size) {
-        addreply(451, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+        addreply(501, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
                  (long long) restartat, (long long) st.st_size);
         return -1;
     }
@@ -3322,7 +3322,7 @@ void doretr(char *name)
     }
 # endif
     if (checknamesanity(name, dot_read_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         goto end;
     }
     if ((f = open(name, O_RDONLY)) == -1) {
@@ -3342,7 +3342,7 @@ void doretr(char *name)
     }
     if (restartat && (restartat > st.st_size)) {
         (void) close(f);
-        addreply(451, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+        addreply(501, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
                  (long long) restartat, (long long) st.st_size);
         goto end;
     }
@@ -3475,7 +3475,7 @@ void domkd(char *name)
         return;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply_noformat(550, MSG_SANITY_DIRECTORY_FAILURE);
+        addreply_noformat(553, MSG_SANITY_DIRECTORY_FAILURE);
         return;
     }
 #ifdef QUOTAS
@@ -3513,7 +3513,7 @@ void dormd(char *name)
     }
 #endif
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply_noformat(550, MSG_SANITY_DIRECTORY_FAILURE);
+        addreply_noformat(553, MSG_SANITY_DIRECTORY_FAILURE);
         return;
     }
     if ((rmdir(name)) < 0) {
@@ -4150,12 +4150,12 @@ void dostor(char *name, const int append, const int autorename)
     }
 #ifndef ANON_CAN_RESUME
     if (guest != 0 && anon_noupload != 0) {
-        addreply_noformat(553, MSG_ANON_CANT_OVERWRITE);
+        addreply_noformat(550, MSG_ANON_CANT_OVERWRITE);
         goto end;
     }
 #endif
     if (ul_check_free_space(name) == 0) {
-        addreply_noformat(553, MSG_NO_DISK_SPACE);
+        addreply_noformat(552, MSG_NO_DISK_SPACE);
         goto end;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
@@ -4197,7 +4197,7 @@ void dostor(char *name, const int append, const int autorename)
     }
     if (!S_ISREG(st.st_mode)) {
         (void) close(f);
-        addreply_noformat(553, MSG_NOT_REGULAR_FILE);
+        addreply_noformat(550, MSG_NOT_REGULAR_FILE);
         goto end;
     }
     alarm(MAX_SESSION_XFER_IDLE);
@@ -4206,7 +4206,7 @@ void dostor(char *name, const int append, const int autorename)
     if (st.st_size > (off_t) 0) {
 #ifndef ANON_CAN_RESUME
         if (guest != 0) {
-            addreply_noformat(553, MSG_ANON_CANT_OVERWRITE);
+            addreply_noformat(550, MSG_ANON_CANT_OVERWRITE);
             (void) close(f);
             goto end;
         }
@@ -4375,7 +4375,7 @@ void domdtm(const char *name)
     struct tm *t;
 
     if (!name || !*name) {
-        addreply_noformat(500, MSG_MISSING_ARG);
+        addreply_noformat(501, MSG_MISSING_ARG);
     } else if (stat(name, &st)) {
 #ifdef DEBUG
         if (debug != 0) {
@@ -4388,7 +4388,7 @@ void domdtm(const char *name)
     } else {
         t = gmtime((time_t *) &(st.st_mtime));
         if (!t) {
-            addreply_noformat(550, MSG_GMTIME_FAILURE);
+            addreply_noformat(451, MSG_GMTIME_FAILURE);
         } else {
             addreply(213, "%04d%02d%02d%02d%02d%02d",
                      t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
@@ -4402,7 +4402,7 @@ void dosize(const char *name)
     struct stat st;
 
     if (!name || !*name) {
-        addreply_noformat(500, MSG_MISSING_ARG);
+        addreply_noformat(501, MSG_MISSING_ARG);
     } else if (stat(name, &st)) {
 #ifdef DEBUG
         if (debug != 0) {
@@ -4446,7 +4446,7 @@ void dotype(const char *arg)
 void dostru(const char *arg)
 {
     if (arg == NULL || !*arg) {
-        addreply_noformat(500, MSG_MISSING_ARG);
+        addreply_noformat(501, MSG_MISSING_ARG);
     } else if (strcasecmp(arg, "F")) {
         addreply_noformat(504, MSG_STRU_FAILURE);
     } else {
@@ -4457,7 +4457,7 @@ void dostru(const char *arg)
 void domode(const char *arg)
 {
     if (arg == NULL || !*arg) {
-        addreply_noformat(500, MSG_MISSING_ARG);
+        addreply_noformat(501, MSG_MISSING_ARG);
     } else if (strcasecmp(arg, "S")) {
         addreply_noformat(504, MSG_MODE_FAILURE);
     } else {
@@ -4480,7 +4480,7 @@ void dornfr(char *name)
         return;
     }
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         return;
     }
     if ((lstat(name, &st)) == 0) {
@@ -4517,7 +4517,7 @@ void dornto(char *name)
         goto bye;
     }    
     if (checknamesanity(name, dot_write_ok) != 0) {
-        addreply(550, MSG_SANITY_FILE_FAILURE, name);
+        addreply(553, MSG_SANITY_FILE_FAILURE, name);
         return;                        /* don't clear rnfrom buffer */
     }
 #ifdef QUOTAS
@@ -4541,7 +4541,7 @@ void dornto(char *name)
     }
 #endif
     if ((rename(renamefrom, name)) < 0) {
-        addreply(550, MSG_RENAME_FAILURE ": %s", strerror(errno));
+        addreply(451, MSG_RENAME_FAILURE ": %s", strerror(errno));
 #ifdef QUOTAS
         (void) quota_update(NULL, -files_count, -bytes, NULL);
 #endif
@@ -4570,7 +4570,7 @@ void doopts(char *args)
             addreply_noformat(501, "OPTS UTF8: " MSG_MISSING_ARG);          
         } else if ((iconv_fd_fs2utf8 == NULL || iconv_fd_utf82fs == NULL)
                    && strcasecmp(charset_fs, "utf-8") != 0) {
-            addreply_noformat(500, "Disabled");
+            addreply_noformat(504, "Disabled");
         } else if (strncasecmp(cmdopts, "on", sizeof "on" - 1U) == 0) {
             utf8 = 1;       
             addreply_noformat(200, "OK, UTF-8 enabled");
@@ -4578,7 +4578,7 @@ void doopts(char *args)
             utf8 = 0;
             addreply_noformat(200, "OK, UTF-8 disabled");
         } else {
-            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+            addreply_noformat(504, MSG_UNKNOWN_COMMAND);
         }
         return; 
     }
@@ -4589,7 +4589,7 @@ void doopts(char *args)
                           "UNIX.gid;unique;");
         return;
     }   
-    addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+    addreply_noformat(504, MSG_UNKNOWN_COMMAND);
 }
 #endif
 
@@ -4695,7 +4695,7 @@ static void fortune(void)
         fortunepnt++;
     }
     if (*fortunepnt == 0) {
-    goto bye;
+        goto bye;
     }
     addreply_noformat(220, "<<");
     addreply(220, "%s", fortunepnt);
