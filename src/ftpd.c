@@ -3362,12 +3362,20 @@ void doretr(char *name)
             goto stat_failure;
         }
     }
-    if (restartat && (restartat > st.st_size)) {
+    if (restartat > st.st_size) {
         (void) close(f);
         addreply(501, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
                  (long long) restartat, (long long) st.st_size);
         goto end;
     }
+# ifndef MINIMAL
+    if (restartat == st.st_size) {
+        /* some clients insist on doing this.  I can't imagine why. */
+        (void) close(f);
+        addreply_noformat(226, MSG_NO_MORE_TO_DOWNLOAD);
+        goto end;
+    }
+# endif
     if (!S_ISREG(st.st_mode) || ((off_t) st.st_size != st.st_size)) {
         (void) close(f);
         addreply_noformat(550, MSG_NOT_REGULAR_FILE);
@@ -3394,15 +3402,7 @@ void doretr(char *name)
     if (xferfd == -1) {
         (void) close(f);
         goto end;
-    }
-    if (restartat > st.st_size) {
-        /* some clients insist on doing this.  I can't imagine why. */
-        addreply_noformat(226, MSG_NO_MORE_TO_DOWNLOAD);
-        (void) close(f);
-        closedata();
-        goto end;
-    }
-    
+    }    
 #ifndef DISABLE_HUMOR
     if ((time(NULL) % 100) == 0) {
         addreply_noformat(0, MSG_WINNER);
