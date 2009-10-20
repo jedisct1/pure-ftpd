@@ -3368,14 +3368,6 @@ void doretr(char *name)
                  (long long) restartat, (long long) st.st_size);
         goto end;
     }
-# ifndef MINIMAL
-    if (restartat == st.st_size) {
-        /* some clients insist on doing this.  I can't imagine why. */
-        (void) close(f);
-        addreply_noformat(226, MSG_NO_MORE_TO_DOWNLOAD);
-        goto end;
-    }
-# endif
     if (!S_ISREG(st.st_mode) || ((off_t) st.st_size != st.st_size)) {
         (void) close(f);
         addreply_noformat(550, MSG_NOT_REGULAR_FILE);
