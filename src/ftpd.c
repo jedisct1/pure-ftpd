@@ -4166,7 +4166,7 @@ void dostor(char *name, const int append, const int autorename)
 {
     ULHandler ulhandler;
     int f;
-    char *ul_name = NULL;
+    const char *ul_name = NULL;
     const char *atomic_file = NULL;
     off_t filesize = (off_t) 0U;
     struct stat st;
