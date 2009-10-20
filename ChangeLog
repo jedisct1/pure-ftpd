@@ -43,6 +43,8 @@ scoreboard and other dynamic files in /var/run/
  - Quota handling reworked (easier, and way more reliable)
  - RNTO support even when quota are enabled.
  - A bunch of return codes were fixed to be more RFC-conformant.
+ - ALLO command is now actually checking if an upload can occur without
+blowing the quota.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

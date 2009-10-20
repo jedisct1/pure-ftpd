@@ -1179,6 +1179,17 @@ void doallo(const off_t size)
     } else if (ul_check_free_space(wd) == 1) {
         ret = 0;
     }
+#ifdef QUOTAS
+    Quota quota;
+    
+    if (quota_update(&quota, 0LL, 0LL, NULL) == 0) {
+        if (quota.files >= user_quota_files ||
+            quota.size >= user_quota_size ||
+            (unsigned long long) size > user_quota_size - quota.size) {
+            ret = -1;
+        }
+    }
+#endif
     if (ret == 0) {
 #ifdef DISABLE_HUMOR
         addreply_noformat(200, "OK");
