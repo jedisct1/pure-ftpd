@@ -85,12 +85,9 @@ int quota_update(Quota * const quota,
         } else {
             quota->files = 0ULL;
         }
-    } else if (files_add > 0LL) {
-        quota->files += files_add;
-        if ((user_quota_files > quota->files) && 
-            (user_quota_files - quota->files >=
-             (unsigned long long) files_add)) {
-        } else {
+    } else if (files_add >= 0LL) {
+        quota->files += (unsigned long long) files_add;
+        if (quota->files > user_quota_files) {
             *overflow = 1;
         }
     }
@@ -100,12 +97,9 @@ int quota_update(Quota * const quota,
         } else {
             quota->size = 0ULL;
         }
-    } else if (size_add > 0LL) {
+    } else if (size_add >= 0LL) {
         quota->size += size_add;
-        if ((user_quota_size > quota->size) &&
-            (user_quota_size - quota->size >= 
-             (unsigned long long) size_add)) {
-        } else {
+        if (quota->size > user_quota_size) {
             *overflow = 2;
         }
     }

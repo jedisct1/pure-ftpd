@@ -3722,13 +3722,13 @@ static int ul_quota_update(const char * const file_name,
         return 0;
     }
     (void) quota_update(&quota, files_count, (long long) bytes, &overflow);
-    if (overflow != 0) {
+    if (overflow != 0) {        
         addreply(550, MSG_QUOTA_EXCEEDED, file_name);
         if (file_name != NULL) {
             file_size = get_file_size(file_name);
         }
         if (file_size >= (off_t) 0 && unlink(file_name) == 0) {
-            (void) quota_update(&quota, -1, (long long) file_size, NULL);
+            (void) quota_update(&quota, -1, (long long) -file_size, NULL);
         }
     }
     displayquota(&quota);
@@ -4311,9 +4311,9 @@ void dostor(char *name, const int append, const int autorename)
         int files_count;
         
         if (overwrite == 0) {
-            files_count = 0;
-        } else {
             files_count = 1;
+        } else {
+            files_count = 0;
         }
         if (autorename != 0 && restartat == (off_t) 0) {
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
