@@ -56,7 +56,6 @@ void ftpwho_exit(const int ret)
         (void) unlink(scoreboardfile);
     }
 #endif
-    _exit(ret);
 }
 
 void ftpwho_unlock(void) 

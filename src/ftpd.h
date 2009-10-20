@@ -386,8 +386,9 @@ void logfile(const int facility, const char *format, ...)
     __attribute__ ((format(printf, 2, 3)));
 char *skip_telnet_controls(const char *str);
 void die(const int err, const int priority, const char * const format, ...)
-    __attribute__ ((format(printf, 3, 4)));
-void die_mem(void);
+    __attribute__ ((format(printf, 3, 4))) __attribute__ ((noreturn));
+void die_mem(void) __attribute__ ((noreturn));
+void _EXIT(const int status) __attribute__ ((noreturn));
 void setprocessname(const char * const title);
 int modernformat(const char *file, char *target, size_t target_size,
                  const char * const prefix);
@@ -774,12 +775,6 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 
 #ifdef WITH_DMALLOC
 # define _exit(X) exit(X)
-#endif
-
-#ifdef FTPWHO
-# define _EXIT(X) do { delete_atomic_file(); ftpwho_exit(X); } while(0)
-#else
-# define _EXIT(X) do { delete_atomic_file(); _exit(X); } while(0)
 #endif
 
 #include "bsd-realpath.h"    

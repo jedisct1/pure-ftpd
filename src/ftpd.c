@@ -306,6 +306,15 @@ char *skip_telnet_controls(const char *str)
     return (char *) str;
 }
 
+void _EXIT(const int status)
+{
+    delete_atomic_file();
+#ifdef FTPWHO
+    ftpwho_exit(status);
+#endif
+    _exit(status);
+}
+
 void die(const int err, const int priority, const char * const format, ...)
 {
     va_list va;
@@ -1252,8 +1261,8 @@ static int doinitsupgroups(const char *user, const uid_t uid, const gid_t gid)
 
 void douser(const char *username)
 {
-    struct passwd *pw;
-    
+    struct passwd *pw = NULL;
+
     if (loggedin) {
         if (username) {
             if (!guest) {
@@ -1379,6 +1388,9 @@ void douser(const char *username)
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED_VIRTUAL ": %s", hbuf);
         }
 #endif
+        if (pw == NULL) {
+            goto cantsec;
+        }
         chrooted = 1;
         authresult.uid = pw->pw_uid;
         authresult.gid = pw->pw_gid;
@@ -1998,13 +2010,12 @@ void docwd(const char *dir)
      */
     where = dir;
     if (dir == NULL || *dir == 0) {
-        goto gohome;
+        dir = "~";
     }
     if (*dir == '~') {
         const struct passwd *pw;
         
         if (dir[1] == 0) {         /* cd ~ */
-            gohome:
             strncpy(buffer, chrooted != 0 ? "/" : authresult.dir,
                     sizeof buffer);
             buffer[sizeof buffer - (size_t) 1U] = 0;
