@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Forkert quota"
 #define MSG_QUOTA_FILES "%llu filer bliver brugt (%d%%) - autoriseret: %llu filer"
 #define MSG_QUOTA_SIZE "%llu Kbyte er brugt (%d%%) - autoriseret: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Quota grænse overskredet : %s bliver ikke gemt"
+#define MSG_QUOTA_EXCEEDED "Quota grænse overskredet : [%s] bliver ikke gemt"
 #define MSG_AUTH_UNKNOWN "Ukendt godkendelses metode"
 #define MSG_PDB_BROKEN "Kunne ikke læse den indexerede puredb fil (eller gammelt format fundet) - Prøv pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s er et alias for %s."

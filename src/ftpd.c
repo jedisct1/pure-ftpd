@@ -3717,13 +3717,14 @@ static int ul_quota_update(const char * const file_name,
     Quota quota;
     off_t file_size = (off_t) -1;
     int overflow;
+    int ret = 0;
     
     if (files_count == 0 && bytes == (off_t) 0) {
         return 0;
     }
     (void) quota_update(&quota, files_count, (long long) bytes, &overflow);
-    if (overflow != 0) {        
-        addreply(550, MSG_QUOTA_EXCEEDED, file_name);
+    if (overflow != 0) {
+        ret = 1;
         if (file_name != NULL) {
             file_size = get_file_size(file_name);
         }
@@ -3733,7 +3734,7 @@ static int ul_quota_update(const char * const file_name,
     }
     displayquota(&quota);
     
-    return 0;
+    return ret;
 }
 #endif
 
@@ -4140,6 +4141,7 @@ void dostor(char *name, const int append, const int autorename)
     struct stat st;
     double started = 0.0;
     signed char overwrite = 0;
+    int overflow = 0;
     int ret;
     
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
@@ -4338,25 +4340,29 @@ void dostor(char *name, const int append, const int autorename)
                 goto afterquota;
             } else {
 #ifdef QUOTAS
-                ul_quota_update(name, files_count,
-                                atomic_file_size - original_file_size);
+                overflow = ul_quota_update
+                    (name, files_count, atomic_file_size - original_file_size);
 #endif                
                 atomic_file = NULL;
             }
         } else {
 #ifdef QUOTAS
-            ul_quota_update(name, files_count, ulhandler.total_uploaded);
+            overflow = ul_quota_update
+                (name, files_count, ulhandler.total_uploaded);
 #endif
         }
     }
     afterquota:
-    if (ret == 0) {
-        addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+    if (overflow > 0) {
+        addreply(552, MSG_QUOTA_EXCEEDED, name);
     } else {
-        addreply_noformat(226, MSG_ABORTED);            
-    }
-    displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
-    
+        if (ret == 0) {
+            addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
+        } else {
+            addreply_noformat(226, MSG_ABORTED);            
+        }
+        displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
+    }    
     end:
     restartat = (off_t) 0;
     if (atomic_file != NULL) {

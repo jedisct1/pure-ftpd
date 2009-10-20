@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "无效的额度"
 #define MSG_QUOTA_FILES "%llu 文件数使用 (%d%%) - 授权可用: %llu 个档案"
 #define MSG_QUOTA_SIZE "%llu Kbytes使用 (%d%%) - 授权可用: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "超过额度: %s 不会被储存"
+#define MSG_QUOTA_EXCEEDED "超过额度: [%s] 不会被储存"
 #define MSG_AUTH_UNKNOWN "未知的验证方法"
 #define MSG_PDB_BROKEN "无法读取indexed puredb文件(或检测到旧格式) - 试试 pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s 是别名，给 %s 的"

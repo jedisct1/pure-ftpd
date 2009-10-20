@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "無效的額度"
 #define MSG_QUOTA_FILES "%llu 檔案數使用 (%d%%) - 授權可用: %llu 個檔案"
 #define MSG_QUOTA_SIZE "%llu Kbytes使用 (%d%%) - 授權可用: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "超過額度: %s 不會被儲存"
+#define MSG_QUOTA_EXCEEDED "超過額度: [%s] 不會被儲存"
 #define MSG_AUTH_UNKNOWN "不明的驗證方法"
 #define MSG_PDB_BROKEN "無法讀取indexed puredb檔(或偵測到舊格式) - 試試 pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s 是別名，給 %s 的"

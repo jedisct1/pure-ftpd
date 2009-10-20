@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Quota invalide"
 #define MSG_QUOTA_FILES "%llu fichiers utilises (%d%%) - autorises : %llu fichiers"
 #define MSG_QUOTA_SIZE "%llu Ko utilises (%d%%) - autorises : %llu Ko"
-#define MSG_QUOTA_EXCEEDED "Quota depasse : %s ne sera pas sauvegarde"
+#define MSG_QUOTA_EXCEEDED "Quota depasse : [%s] ne sera pas sauvegarde"
 #define MSG_AUTH_UNKNOWN "Methode d'authentification inconnue"
 #define MSG_PDB_BROKEN "Impossible de lire le fichier puredb indexe (ou il est dans un vieux format) - Essayez pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s est un raccourci pour %s."

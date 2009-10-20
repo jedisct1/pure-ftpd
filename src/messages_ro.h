@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Cota eronata"
 #define MSG_QUOTA_FILES "%llu fisiere utilizate (%d%%) - autorizat: %llu fisiere"
 #define MSG_QUOTA_SIZE "%llu Kocteti utilizati (%d%%) - autorizat: %llu Kocteti"
-#define MSG_QUOTA_EXCEEDED "Cota depasita: %s nu va fi salvat"
+#define MSG_QUOTA_EXCEEDED "Cota depasita: [%s] nu va fi salvat"
 #define MSG_AUTH_UNKNOWN "Metoda de autentificare necunoscuta"
 #define MSG_PDB_BROKEN "Nu pot citi fisierul puredb indexat (probabil e in format vechi) - Incercati pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s este un alias pentru %s."

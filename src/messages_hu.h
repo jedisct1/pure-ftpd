@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Érvénytelen kvóta"
 #define MSG_QUOTA_FILES "%llu fájl használt (%d%%) - engedélyezve: %llu fájl"
 #define MSG_QUOTA_SIZE "%llu Kbájt használt (%d%%) - engedélyezve: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Kvóta elérve: %s mentés sikertelen"
+#define MSG_QUOTA_EXCEEDED "Kvóta elérve: [%s] mentés sikertelen"
 #define MSG_AUTH_UNKNOWN "Ismeretlen hitelesítési módszer"
 #define MSG_PDB_BROKEN "Az indexelt puredb fájl olvasása sikertelen (vagy régi formátum) - próbálja: pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s egy alias %s -nak."

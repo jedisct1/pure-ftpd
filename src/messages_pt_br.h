@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Cota inválida"
 #define MSG_QUOTA_FILES "%llu arquivos usados (%d%%) - autorizado: %llu arquivos"
 #define MSG_QUOTA_SIZE "%llu Kbytes usados (%d%%) - autorizado: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Cota excedida : %s não será armazenado"
+#define MSG_QUOTA_EXCEEDED "Cota excedida : [%s] não será armazenado"
 #define MSG_AUTH_UNKNOWN "Método de autenticação desconhecido"
 #define MSG_PDB_BROKEN "Não foi possível ler o arquivo indexado do puredb (ou um formato antigo foi detectado) - Experimente pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s é um apelido para %s."

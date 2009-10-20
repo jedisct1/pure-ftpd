@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Quota tout pourri"
 #define MSG_QUOTA_FILES "%llu fichiers utilises (%d%%) - autorises : %llu fichiers"
 #define MSG_QUOTA_SIZE "%llu Ko utilises (%d%%) - autorises : %llu Ko"
-#define MSG_QUOTA_EXCEEDED "T'as explose ton quota : %s va etre pulverise"
+#define MSG_QUOTA_EXCEEDED "T'as explose ton quota : [%s] va etre pulverise"
 #define MSG_AUTH_UNKNOWN "C'est quoi ta methode d'authentification a 2 balles ?"
 #define MSG_PDB_BROKEN "Impossible de lire le fichier puredb indexe (ou il est dans un vieux format) - Essayez pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s c'est un truc de flemmard a la place de %s."

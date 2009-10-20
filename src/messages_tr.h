@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Geçersiz kota"
 #define MSG_QUOTA_FILES "%llu dosya kullaným (%d%%) - yetki: %llu dosya"
 #define MSG_QUOTA_SIZE "%llu Kbytes kullaným (%d%%) - yetki: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Kota aþýmý: %s kaydedilemedi"
+#define MSG_QUOTA_EXCEEDED "Kota aþýmý: [%s] kaydedilemedi"
 #define MSG_AUTH_UNKNOWN "Bilinmeyen yetkilendirme metodu"
 #define MSG_PDB_BROKEN "puredb dosyasýndan indexlenme okunamadý (veya eski biçim algýlandý) - pure-pw mkdb yi deneyiniz"
 #define MSG_ALIASES_ALIAS "%s takma adý %s ."

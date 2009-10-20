@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Chybná kvota"
 #define MSG_QUOTA_FILES "%llu souborù pou¾itých (%d%%) - autorizovaných: %llu souborù"
 #define MSG_QUOTA_SIZE "%llu kilobajtù pou¾itých (%d%%) - autorizovaných: %llu kilobajtù"
-#define MSG_QUOTA_EXCEEDED "Kvota pøekroèena: %s nebude ulo¾en"
+#define MSG_QUOTA_EXCEEDED "Kvota pøekroèena: [%s] nebude ulo¾en"
 #define MSG_AUTH_UNKNOWN "Neznámá autentifikaèní metoda"
 #define MSG_PDB_BROKEN "Nebylo mo¾né pøeèíst indexovaný soubor puredb (nebo byla detekována stará verze) - Vyzkou¹ejte spustit pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s je alias pro %s."

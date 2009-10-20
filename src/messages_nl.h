@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Ongeldige quota"
 #define MSG_QUOTA_FILES "%llu Bestanden in gebruik (%d%%) - goedgekeurd: %llu bestanden"
 #define MSG_QUOTA_SIZE "%llu Kbytes in gebruik (%d%%) - goedgekeurd: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Quota overschreden: %s worden niet opgeslagen"
+#define MSG_QUOTA_EXCEEDED "Quota overschreden: [%s] worden niet opgeslagen"
 #define MSG_AUTH_UNKNOWN "Onbekende autorisatie methode"
 #define MSG_PDB_BROKEN "Kan het geindexeerde  puredb bestand niet lezen (of oud formaat gedetecteerd) - Probeer pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s is een alias voor %s."

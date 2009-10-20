@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Nieprawid³owa quota"
 #define MSG_QUOTA_FILES "%llu plików u¿ytych (%d%%) - autoryzowano: %llu plików"
 #define MSG_QUOTA_SIZE "%llu Kbajtów u¿ytych (%d%%) - autoryzowano: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Przekroczona quota: %s nie zostanie zapisany"
+#define MSG_QUOTA_EXCEEDED "Przekroczona quota: [%s] nie zostanie zapisany"
 #define MSG_AUTH_UNKNOWN "Nieznana metoda autentyfikacji"
 #define MSG_PDB_BROKEN "Nie uda³o siê odczytaæ indeksowanego pliku puredb (lub wykryto stary format) - Spróbuj uruchomiæ pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s is an alias for %s."

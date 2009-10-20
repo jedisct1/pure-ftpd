@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Ogiltig kvot"
 #define MSG_QUOTA_FILES "%llu filer använda (%d%%) - authorized: %llu files"
 #define MSG_QUOTA_SIZE "%llu Kbytes använda (%d%%) - Tillåtet: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "Kvoten överskriden: %s kommer inte att sparas"
+#define MSG_QUOTA_EXCEEDED "Kvoten överskriden: [%s] kommer inte att sparas"
 #define MSG_AUTH_UNKNOWN "Okänd behörighetskontroll"
 #define MSG_PDB_BROKEN "Kan ej läsa den indexerade puredb filen (eller gammalt format) - Försök med pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s är ett alias för %s."

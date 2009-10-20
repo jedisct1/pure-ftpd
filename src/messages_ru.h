@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Неправильная квота"
 #define MSG_QUOTA_FILES "%llu файлов используется (%d%%) - разрешено: %llu файлов"
 #define MSG_QUOTA_SIZE "%llu КБ используется (%d%%) - разрешено: %llu КБ"
-#define MSG_QUOTA_EXCEEDED "Превышение квоты: %s не будет сохранен"
+#define MSG_QUOTA_EXCEEDED "Превышение квоты: [%s] не будет сохранен"
 #define MSG_AUTH_UNKNOWN "Неизвестный метод авторизации"
 #define MSG_PDB_BROKEN "Невозможно прочитать проиндексированный файл puredb (или это старый формат) - Попробуйте pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s это псевдоним для %s."

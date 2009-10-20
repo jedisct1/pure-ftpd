@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Chybna kvota"
 #define MSG_QUOTA_FILES "%llu suborov pouzitych (%d%%) - autorizovanych: %llu suborov"
 #define MSG_QUOTA_SIZE "%llu kilobajtov pouzitych (%d%%) - autorizovanych: %llu kilobajtov"
-#define MSG_QUOTA_EXCEEDED "Kvota prekrocena : %s nebude ulozeny"
+#define MSG_QUOTA_EXCEEDED "Kvota prekrocena : [%s] nebude ulozeny"
 #define MSG_AUTH_UNKNOWN "Neznama autentifikacna metoda"
 #define MSG_PDB_BROKEN "Nebolo mozne precitat indexovany subor puredb (alebo bola detekovana stara verzia) - Vyskusajte spustit pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s je aliasom pre %s."

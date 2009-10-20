@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "Quota ungültig."
 #define MSG_QUOTA_FILES "%llu Dateien benutzt (%d%%) - erlaubt: %llu Dateien."
 #define MSG_QUOTA_SIZE "%llu Kilobyte benutzt (%d%%) - erlaubt: %llu Kb."
-#define MSG_QUOTA_EXCEEDED "Quota überschritten: %s wird nicht gespeichert."
+#define MSG_QUOTA_EXCEEDED "Quota überschritten: [%s] wird nicht gespeichert."
 #define MSG_AUTH_UNKNOWN "Unbekannte Authentifizierungsmethode."
 #define MSG_PDB_BROKEN "Konnte indizierte puredb-Datei nicht lesen (oder altes Format gefunden) - Versuche pure-pw mkdb"
 #define MSG_ALIASES_ALIAS "%s ist ein Alias für %s."

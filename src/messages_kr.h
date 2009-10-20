@@ -205,7 +205,7 @@
 #define MSG_ILLEGAL_QUOTA "잘못된 쿼타 설정"
 #define MSG_QUOTA_FILES "%llu 개의 파일 (%d%%) - 최대: %llu files"
 #define MSG_QUOTA_SIZE "%llu Kbytes 사용중 (%d%%) - 최대: %llu Kb"
-#define MSG_QUOTA_EXCEEDED "쿼타가 초과되었음 : %s 는 저장되지 않았음"
+#define MSG_QUOTA_EXCEEDED "쿼타가 초과되었음 : [%s] 는 저장되지 않았음"
 #define MSG_AUTH_UNKNOWN "잘못된 인증 방식"
 #define MSG_PDB_BROKEN "puredb 인덱스 파일을 읽을수 없음 (또는 이전 포맷을 인식하지 못함) - pure-pw mkdb 를 시도해 볼것"
 #define MSG_ALIASES_ALIAS "%s은 %s의 별칭."
