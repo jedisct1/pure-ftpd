@@ -844,10 +844,11 @@ int main(int argc, char *argv[])
         }
         ftpwho_lock();
         locked++;
-        if ((scanned_entry = (FTPWhoEntry *) mmap(NULL, sizeof (FTPWhoEntry),
-                                                  PROT_READ, 
-                                                  MAP_SHARED | MAP_FILE, 
-                                                  mmap_fd, (off_t) 0)) == NULL) {
+        if ((scanned_entry =
+             (FTPWhoEntry *) mmap(NULL, sizeof (FTPWhoEntry),
+                                  PROT_READ, 
+                                  MAP_SHARED | MAP_FILE, 
+                                  mmap_fd, (off_t) 0)) == (void *) MAP_FAILED) {
             goto nextone;
         }
         if (checkproc(scanned_entry->pid) == 0) {

@@ -4643,7 +4643,7 @@ static void fortune(void)
         !(S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) || st.st_size < 2 ||
         (buf = mmap(NULL, (size_t) st.st_size,
                 PROT_READ, MAP_FILE | MAP_SHARED, fd,
-                (off_t) 0)) == (char *) MAP_FAILED) {
+                (off_t) 0)) == (void *) MAP_FAILED) {
         (void) close(fd);
         logfile(LOG_ERR, MSG_OPEN_FAILURE, fortunes_file);
         return;

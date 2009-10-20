@@ -179,10 +179,11 @@ int ftpwho_initwho(void)
     lock.l_start = (off_t) 0;
     lock.l_len = (off_t) 0;
     lock.l_pid = getpid();
-    if ((shm_data_cur = (FTPWhoEntry *) mmap(NULL, sizeof (FTPWhoEntry),
-                                             PROT_WRITE | PROT_READ,
-                                             MAP_SHARED | MAP_FILE, 
-                                             mmap_fd, (off_t) 0)) == NULL) {
+    if ((shm_data_cur =
+         (FTPWhoEntry *) mmap(NULL, sizeof (FTPWhoEntry),
+                              PROT_WRITE | PROT_READ,
+                              MAP_SHARED | MAP_FILE, 
+                              mmap_fd, (off_t) 0)) == (void *) MAP_FAILED) {
         goto err2;
     }
     return 0;
