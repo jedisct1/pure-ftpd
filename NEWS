@@ -1,6 +1,36 @@
 
 * Version 1.0.23:
-[todo]
+ - The LDAP schema has been fixed.
+ - LDAP authentication through binding is now possible in addition to
+passwords. This allows for the FTP server to run with an unprivileged LDAP
+account.
+ - In LDAP objects, the "enabled" value is accepted again as a FTPStatus
+property.
+ - Privilege separation is now enabled by default.
+ - The server should now properly compile on Solaris with privsep.
+ - Charset conversions are properly made on directory names.
+ - Transfers now handle every kind of disconnection.
+ - More informative log messages for errors and activity reporting.
+ - Virtual quotas are way more reliable and uploads are interrupted as soon as
+quotas are exceeded.
+ - Atomic uploads are only used when necessary and only if --notruncate is
+enabled.
+ - Dangling .pureftpd-upload files should be a thing of past.
+ - Enhanced conformance with RFCs and better compatibility with FTP clients.
+ - Improved SSL performance, compatibility and commands support.
+ - By default, up to 10000 files per directory can be listed instead of 2000. 
+ - ALLO can now tell clients whether an upload would blow quotas before the
+upload actually starts.
+ - PAM is now enabled by default on OSX.
+ - Switch euid to the _pure-ftpd account (unless it's nonexistent) in the
+privsep process.
+ - --without-banner is not necessary any more. Having a cookie file
+(--fortunefile=...) automatically disables the default banner, thus allowing
+full customization of the welcome banner.
+ - ./configure --localstatedir is now honored in order to change the
+run-time directory.
+ - Support for building a FTPS (implicit SSL/TLS) server, using
+--with-implicittls
 
 * Version 1.0.22:
  - the LDAP authentication backend now supports TLS encryption.
