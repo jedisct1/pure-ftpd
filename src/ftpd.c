@@ -4296,8 +4296,6 @@ void dostor(char *name, const int append, const int autorename)
     
     /* Here ends the real upload code */
 
-    closedata();
-    
 #ifdef SHOW_REAL_DISK_SPACE
     if (FSTATFS(f, &statfsbuf) == 0) {
         double space;
