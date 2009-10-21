@@ -2815,9 +2815,10 @@ void dodele(char *name)
         {
             Quota quota;
             
-            (void) quota_update(&quota, -1LL,
-                                -((long long) st.st_size), NULL);
-            displayquota(&quota);
+            if (quota_update(&quota, -1LL,
+                             -((long long) st.st_size), NULL) == 0) {
+                displayquota(&quota);
+            }
         }
     }
 #else
@@ -3493,8 +3494,7 @@ void domkd(char *name)
         return;
     }
 #ifdef QUOTAS
-    (void) quota_update(&quota, 1LL, 0LL, &overflow);
-    if (overflow != 0) {
+    if (quota_update(&quota, 1LL, 0LL, &overflow) == 0 && overflow != 0) {
         (void) quota_update(&quota, -1LL, 0LL, NULL);
         addreply(550, MSG_QUOTA_EXCEEDED, name);
         goto end;
@@ -3534,8 +3534,9 @@ void dormd(char *name)
         error(550, MSG_RMD_FAILURE);
     } else {
 #ifdef QUOTAS
-        (void) quota_update(&quota, -1LL, 0LL, NULL);
-        displayquota(&quota);
+        if (quota_update(&quota, -1LL, 0LL, NULL) == 0) {
+            displayquota(&quota);
+        }
 #endif
         addreply_noformat(250, MSG_RMD_SUCCESS);
     }
@@ -3736,7 +3737,9 @@ static int ul_quota_update(const char * const file_name,
     if (files_count == 0 && bytes == (off_t) 0) {
         return 0;
     }
-    (void) quota_update(&quota, files_count, (long long) bytes, &overflow);
+    if (quota_update(&quota, files_count, (long long) bytes, &overflow) != 0) {
+        return 0;
+    }
     if (overflow != 0) {
         ret = 1;
         if (file_name != NULL) {
@@ -3816,7 +3819,8 @@ int ul_init(ULHandler * const ulhandler,
             const int f, void * const tls_fd,
             const off_t restartat,
             const int ascii_mode,
-            const unsigned long bandwidth)
+            const unsigned long bandwidth,
+            const off_t max_filesize)
 {
     struct pollfd *pfd;
 
@@ -3838,6 +3842,7 @@ int ul_init(ULHandler * const ulhandler,
     ulhandler->min_sleep = 0.1;
     ulhandler->max_sleep = 5.0;
     ulhandler->bandwidth = bandwidth;
+    ulhandler->max_filesize = max_filesize;
     ulhandler->idletime = idletime;
     pfd = &ulhandler->pfds[PFD_DATA];    
     pfd->fd = xferfd;
@@ -3963,7 +3968,11 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
     double required_sleep = 0.0;
     int pollret;
     int ret;
-    
+
+    if (ulhandler->total_uploaded > ulhandler->max_filesize) {
+        addreply(552, MSG_ABORTED " (quota)");
+        return -2;
+    }
     if (ulhandler->chunk_size > (off_t) ulhandler->sizeof_buf) {
         ulhandler->chunk_size = ulhandler->max_chunk_size =
             ulhandler->sizeof_buf;
@@ -4166,6 +4175,10 @@ void dostor(char *name, const int append, const int autorename)
     signed char overwrite = 0;
     int overflow = 0;
     int ret;
+    off_t max_filesize = (off_t) -1;
+#ifdef QUOTAS
+    Quota quota;
+#endif
     
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
@@ -4257,10 +4270,22 @@ void dostor(char *name, const int append, const int autorename)
 #ifdef QUOTAS
         if (restartat != st.st_size) {
             (void) quota_update(NULL, 0LL,
-                                (long long) (restartat - st.st_size), NULL);
+                                (long long) (restartat - st.st_size),
+                                &overflow);
         }
 #endif
+    } 
+#ifdef QUOTAS
+    if (quota_update(&quota, 0LL, 0LL, &overflow) == 0 &&
+        (overflow > 0 || quota.files >= user_quota_files ||
+         quota.size > user_quota_size ||                           
+         (max_filesize >= (off_t) 0 &&
+          (max_filesize = user_quota_size - quota.size) < (off_t) 0))) {
+        overflow = 1;
+        (void) close(f);
+        goto afterquota;
     }
+#endif
     opendata();
     if (xferfd == -1) {
         (void) close(f);
@@ -4298,7 +4323,8 @@ void dostor(char *name, const int append, const int autorename)
     started = get_usec_time();    
     
     if (ul_init(&ulhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
-                restartat, type == 1, throttling_bandwidth_ul) == 0) {
+                restartat, type == 1, throttling_bandwidth_ul,
+                max_filesize) == 0) {
         ret = ul_send(&ulhandler);
         ul_exit(&ulhandler);
     } else {
@@ -4557,10 +4583,10 @@ void dornto(char *name)
         }
         if (target_file_size >= (off_t) 0) {
             files_count = -1;
+            (void) quota_update(NULL, files_count, bytes, NULL);            
         } else {
-            files_count = 0;
+            bytes = (off_t) 0;
         }
-        (void) quota_update(NULL, files_count, bytes, NULL);
     }
 #endif
     if ((rename(renamefrom, name)) < 0) {

@@ -334,6 +334,7 @@ typedef struct ULHandler_ {
     double min_sleep;
     double max_sleep;
     unsigned long bandwidth;
+    off_t max_filesize;
     unsigned long idletime;
     struct pollfd pfds[2];
     struct pollfd pfds_command;    
