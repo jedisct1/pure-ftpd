@@ -750,7 +750,6 @@ void doreply(void)
     if ((scannedentry = firstreply) == NULL) {
         return;
     }
-    CORK_ON(1);
     do {
         nextentry = scannedentry->next;
 #ifdef WITH_TLS
@@ -772,7 +771,6 @@ void doreply(void)
         }       
     } while ((scannedentry = nextentry) != NULL);
     fflush(stdout);    
-    CORK_OFF(1);
     /* We don't free() after printf() because of Solaris stream bugs,
      * Thanks to Kenneth Stailey */
     scannedentry = firstreply;
@@ -4608,7 +4606,6 @@ void error(int n, const char *msg)
 
     logfile(LOG_ERR, "%s: %s", msg, e);
     addreply(n, "%s: %s", msg, e);
-    CORK_OFF(1);
 }
 
 static void fixlimits(void)

@@ -576,21 +576,6 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #define PUREFTPD_TMPFILE_PREFIX ".pureftpd-"    
 #define ATOMIC_PREFIX_PREFIX PUREFTPD_TMPFILE_PREFIX "upload."
 
-#ifdef TCP_CORK  
-# ifdef DISABLE_CORK  
-#  undef TCP_CORK
-# endif
-#endif
-#ifdef TCP_CORK
-# define CORK_ON(SK) do { int optval = 1; setsockopt(SK, SOL_TCP, TCP_CORK, \
-  &optval, sizeof optval); } while(0)
-# define CORK_OFF(SK) do { int optval = 0; setsockopt(SK, SOL_TCP, TCP_CORK, \
-  &optval, sizeof optval); } while(0)
-#else
-# define CORK_ON(SK) do { } while(0)
-# define CORK_OFF(SK) do { } while(0)
-#endif
-
 #define STORAGE_PORT(X)  (*storage_port(&(X)))
 #define STORAGE_PORT6(X) (*storage_port6(&(X)))
 #define STORAGE_SIN_ADDR(X) (storage_sin_addr(&(X))->s_addr)
