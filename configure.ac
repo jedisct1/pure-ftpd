@@ -54,7 +54,7 @@ AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(unistd.h string.h strings.h sys/param.h ioctl.h sys/ioctl.h)
-AC_CHECK_HEADERS(sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h sys/fsuid.h)
+AC_CHECK_HEADERS(sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h)
 AC_CHECK_HEADERS(sys/time.h sys/resource.h sys/capability.h)
 AC_CHECK_HEADERS(shadow.h getopt.h stddef.h)
 AC_CHECK_HEADERS(netinet/in_systm.h netinet/in.h sys/pstat.h sys/file.h)

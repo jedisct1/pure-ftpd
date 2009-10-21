@@ -99,9 +99,7 @@ Conflicts:         wu-ftpd proftpd ftpd in.ftpd anonftp publicfile wuftpd ftpd-B
 
 %description
 Pure-FTPd is a fast, production-quality, standard-conformant FTP server,
-that focuses on security.
-It is really trivial to set up and it is especially designed
-for modern Linux and FreeBSD kernels (setfsuid, sendfile, capabilities) .
+that focuses on security. It is really trivial to set up.
 Features include chroot()ed and/or virtual chroot()ed home directories,
 virtual domains, built-in 'ls', anti-warez system, bounded ports for passive
 downloads, FXP protocol, bandwidth throttling, ratios, LDAP / MySQL /

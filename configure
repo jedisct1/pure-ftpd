@@ -1420,9 +1420,10 @@ Optional Packages:
   --with-virtualchroot    Enable the ability to follow symlinks outside a
                           chroot jail
   --with-diraliases       Enable directory aliases
-  --with-nonroot          Unprivileged, limited mode. Only enable this option
-                          if you really don't have root privileges on the
-                          server host.
+  --with-nonroot          Compile a limited server designed to be started as a
+                          regular user. Only enable this option as a last
+                          resort if you really don't have root privileges on
+                          the server host.
   --with-peruserlimits    Support per-user concurrency limits
   --with-implicittls      Implicit TLS (port 990) - DO NOT USE unless you know
                           what you are doing
@@ -5483,7 +5484,7 @@ fi
 
 done
 
-for ac_header in sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h sys/fsuid.h
+for ac_header in sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

@@ -221,9 +221,7 @@ static const AltLogPrefixes altlogprefixes[] = {
 # define VERSION_TLS ""
 #endif
 
-#ifndef HAVE_SYS_FSUID_H
 static sigset_t old_sigmask;
-#endif
 
 #ifndef NO_PROCNAME_CHANGE
 # if defined(__linux__) && !defined(HAVE_SETPROCTITLE)

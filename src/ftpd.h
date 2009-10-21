@@ -8,12 +8,6 @@
 # define __attribute__(a)
 #endif
 
-#if defined(SYSTEM_QUOTAS) || defined(WITH_PRIVSEP)
-# ifdef HAVE_SYS_FSUID_H
-#  undef HAVE_SYS_FSUID_H
-# endif
-#endif
-
 #include <stdio.h>
 #ifdef STDC_HEADERS
 # include <stdlib.h>
@@ -165,9 +159,6 @@
 # include <sys/sendfile.h>
 #endif
 
-#ifdef HAVE_SYS_FSUID_H
-# include <sys/fsuid.h>
-#endif
 #ifdef HAVE_ALLOCA
 # ifdef HAVE_ALLOCA_H
 #  include <alloca.h>
@@ -367,9 +358,7 @@ void domlst(const char * const file);
 void dositetime(void);
 int ul_check_free_space(const char *name);
 void mappedtov4(struct sockaddr_storage *ss);
-#ifndef HAVE_SYS_FSUID_H
 void disablesignals(void);
-#endif
 void getnames(void);
 void donlist(char *arg, const int on_ctrlconn, const int opt_l_,
              const int opt_a_, const int split_args);
@@ -402,13 +391,7 @@ void delete_atomic_file(void);
 #ifdef WITH_RFC2640
 char *charset_fs2client(const char * const string);
 #endif
-
-#ifdef HAVE_SYS_FSUID_H
-# define usleep2 usleep
-#else
 void usleep2(const unsigned long microsec);
-#endif
-
 int mysnprintf(char *str, size_t size, const char *format, ...);
 
 extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;

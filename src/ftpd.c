@@ -37,7 +37,6 @@
 # include <dmalloc.h>
 #endif
 
-#ifndef HAVE_SYS_FSUID_H
 void disablesignals(void)
 {
     sigset_t sigs;
@@ -61,7 +60,6 @@ void usleep2(const unsigned long microsec)
     usleep(microsec);
     enablesignals();
 }
-#endif
 
 int safe_write(const int fd, const void *buf_, size_t count)
 {
@@ -320,9 +318,7 @@ void die(const int err, const int priority, const char * const format, ...)
     va_list va;
     char line[MAX_SYSLOG_LINE];
     
-#ifndef HAVE_SYS_FSUID_H
     disablesignals();
-#endif
     va_start(va, format);
     vsnprintf(line, sizeof line, format, va);
     va_end(va);    
@@ -349,9 +345,7 @@ void die_mem(void)
 static RETSIGTYPE sigalarm(int sig)
 {
     (void) sig;
-#ifndef HAVE_SYS_FSUID_H
     disablesignals();
-#endif    
     die(421, LOG_INFO, MSG_TIMEOUT);
 }
 
@@ -391,9 +385,7 @@ static RETSIGTYPE sigterm_client(int sig)
 {
     (void) sig;
     
-#ifndef HAVE_SYS_FSUID_H
     disablesignals();
-#endif
     _EXIT(EXIT_SUCCESS);
 }
 
@@ -1415,14 +1407,9 @@ void douser(const char *username)
                 goto cantsec;
             }
 # else
-#  ifdef HAVE_SYS_FSUID_H
-            setfsgid(authresult.gid);
-            setfsuid(authresult.uid);
-#  else
             if (seteuid(authresult.uid) != 0) {
                 goto cantsec;
             }
-#  endif
 # endif
         }
 #endif
@@ -1787,19 +1774,14 @@ void dopass(char *password)
         wd[0] = '/';
         wd[1] = 0;
     }
-#ifdef HAVE_SYS_FSUID_H
-    setfsuid(authresult.uid);
-#endif
 #ifndef NON_ROOT_FTP
     if (setgid(authresult.gid) ||
         setegid(authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
-# ifndef HAVE_SYS_FSUID_H
     if (seteuid(authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
-# endif
 #endif
     if (check_trustedgroup(authresult.uid, authresult.gid) != 0) {
         userchroot = 0;
@@ -1889,22 +1871,18 @@ void dopass(char *password)
 #endif
     if (userchroot != 0 && chrooted == 0) {
 #ifndef NON_ROOT_FTP
-# ifndef HAVE_SYS_FSUID_H
         disablesignals();
         if (seteuid((uid_t) 0) != 0) {
             _EXIT(EXIT_FAILURE);
         }
-# endif
 #endif
         if (chdir(wd) || chroot(wd)) {    /* should never fail */
 #ifdef WITH_PRIVSEP
             (void) setuid(authresult.uid);
             (void) seteuid(authresult.uid);
 #else
-# ifndef HAVE_SYS_FSUID_H
-#  ifndef NON_ROOT_FTP
+# ifndef NON_ROOT_FTP
             (void) seteuid(authresult.uid);
-#  endif
 # endif
 #endif
             die(421, LOG_ERR, MSG_CHROOT_FAILED);
@@ -1916,12 +1894,10 @@ void dopass(char *password)
         enablesignals();        
 #else
 # ifndef NON_ROOT_FTP
-#  ifndef HAVE_SYS_FSUID_H
         if (seteuid(authresult.uid) != 0) {
             _EXIT(EXIT_FAILURE);
         }
         enablesignals();
-#  endif
 # endif
 #endif
 #ifdef USE_CAPABILITIES
@@ -2327,20 +2303,16 @@ static int doport3(const int protocol)
     int on;
     
 # ifndef NON_ROOT_FTP
-#  ifndef HAVE_SYS_FSUID_H
     disablesignals();
     seteuid((uid_t) 0);
-#  endif
 # endif    
     if ((datafd = socket(protocol, SOCK_STREAM, IPPROTO_TCP)) == -1) {
         data_socket_error:
 # ifndef NON_ROOT_FTP
-#  ifndef HAVE_SYS_FSUID_H
         if (seteuid(authresult.uid) != 0) {
             _EXIT(EXIT_FAILURE);
         }
         enablesignals();
-#  endif
 # endif
         (void) close(datafd);
         datafd = -1;
@@ -2377,12 +2349,10 @@ static int doport3(const int protocol)
 # endif
     }
 # ifndef NON_ROOT_FTP
-#  ifndef HAVE_SYS_FSUID_H
     if (seteuid(authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
     enablesignals();
-#  endif
 # endif
     
     return 0;

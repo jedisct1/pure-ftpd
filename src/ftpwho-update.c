@@ -15,9 +15,7 @@
 
 void ftpwho_exit(const int ret)
 {
-# ifndef HAVE_SYS_FSUID_H
     disablesignals();
-# endif
     if (shm_data_cur != NULL) {
         shm_data_cur->state = FTPWHO_STATE_FREE;
         if (
@@ -47,11 +45,7 @@ void ftpwho_exit(const int ret)
 #  endif
         chrooted == 0 && scoreboardfile != NULL) {
 #  ifndef NON_ROOT_FTP
-#   ifndef HAVE_SYS_FSUID_H        
         (void) seteuid((uid_t) 0);
-#   else
-        (void) setfsuid((uid_t) 0);
-#   endif
 #  endif
         (void) unlink(scoreboardfile);
     }
