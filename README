@@ -54,7 +54,7 @@ Create a specific, unprivileged user and group called _pure-ftpd, without any
 valid shell. Don't use this for anything else, including FTP virtual users.
 
 groupadd _pure-ftpd
-useradd -g _pure-ftpd -s /etc _pure-ftpd
+useradd -g _pure-ftpd -d /var/empty -s /etc _pure-ftpd
 
 If having a user whose name begins with an underscore is a no-go for you,
 you can also call it pure-ftpd, without the underscore.
