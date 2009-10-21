@@ -45,6 +45,8 @@ scoreboard and other dynamic files in /var/run/
  - A bunch of return codes were fixed to be more RFC-conformant.
  - ALLO command is now actually checking if an upload can occur without
 blowing the quota.
+ - Don't change the TCP window size. Admins should do this as part of their
+system configuration.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

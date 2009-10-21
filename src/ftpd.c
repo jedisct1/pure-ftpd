@@ -2544,17 +2544,6 @@ void opendata(void)
         fodder = IPTOS_THROUGHPUT;
         setsockopt(fd, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);
 #endif
-#ifndef NO_TCP_LARGE_WINDOW
-# if defined(SO_SNDBUF) || defined(SO_RCVBUF)
-        fodder = 65536;
-# endif
-# ifdef SO_SNDBUF
-        setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *) &fodder, sizeof fodder);
-# endif        
-# ifdef SO_RCVBUF
-        setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (char *) &fodder, sizeof fodder);
-# endif        
-#endif
 #ifndef NO_KEEPALIVE
         keepalive(fd, 1);
 #endif
