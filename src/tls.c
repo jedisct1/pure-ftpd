@@ -267,6 +267,7 @@ int tls_init_data_session(const int fd, const int passive)
     int ret;
     int ret_;
 
+    (void) passive;
     if (tls_ctx == NULL) {
         logfile(LOG_ERR, MSG_TLS_NO_CTX);
         tls_error(__LINE__, 0);

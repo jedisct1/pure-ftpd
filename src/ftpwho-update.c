@@ -13,7 +13,7 @@
 #  include <dmalloc.h>
 # endif
 
-void ftpwho_exit(const int ret)
+void ftpwho_exit(void)
 {
     disablesignals();
     if (shm_data_cur != NULL) {

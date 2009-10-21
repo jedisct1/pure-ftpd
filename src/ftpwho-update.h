@@ -42,7 +42,7 @@ typedef struct FTPWhoEntry_ {
 } FTPWhoEntry;
 
 int ftpwho_initwho(void);
-void ftpwho_exit(const int ret);
+void ftpwho_exit(void);
 void ftpwho_lock(void);
 void ftpwho_unlock(void);
 #ifndef NO_STANDALONE

@@ -308,7 +308,7 @@ void _EXIT(const int status)
 {
     delete_atomic_file();
 #ifdef FTPWHO
-    ftpwho_exit(status);
+    ftpwho_exit();
 #endif
     _exit(status);
 }
@@ -4134,7 +4134,7 @@ void dostor(char *name, const int append, const int autorename)
     double started = 0.0;
     signed char overwrite = 0;
     int overflow = 0;
-    int ret;
+    int ret = -1;
     off_t max_filesize = (off_t) -1;
 #ifdef QUOTAS
     Quota quota;
