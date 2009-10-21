@@ -749,8 +749,7 @@ AC_ARG_WITH(diraliases,
   fi ])
 
 AC_ARG_WITH(nonroot,
-[AS_HELP_STRING(--with-nonroot,[Unprivileged, limited mode. Only enable this
-option if you really don't have root privileges on the server host.])],
+[AS_HELP_STRING(--with-nonroot,[Compile a limited server designed to be started as a regular user. Only enable this option as a last resort if you really don't have root privileges on the server host.])],
 [ if test "x$withval" = "xyes" ; then
       AC_DEFINE(NON_ROOT_FTP,,[with nonroot])
       AC_DEFINE(WITH_VIRTUAL_CHROOT)
