@@ -254,7 +254,6 @@ document.
 --with-ratios: support upload/download ratios, to please w4r3z fr34k2.
 
 --with-sysquotas: support system quotas (not Pure-FTPd's virtual quotas) .
-Only enable this if you really plan to use system quotas.
 
 --with-throttling: support bandwidth throttling (see below).
 
