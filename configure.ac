@@ -1284,7 +1284,7 @@ AC_ARG_WITH(certfile,
   fi ])
 
 AC_ARG_WITH(rfc2640,
-[AS_HELP_STRING(--with-rfc2640,Enable RFC 2640 (UTF-8 encoding for file names) support (experimental, needs iconv))],
+[AS_HELP_STRING(--with-rfc2640,Enable RFC 2640 (UTF-8 encoding for file names) support (needs iconv))],
 [ if test "x$withval" = "xyes" ; then
     with_rfc2640="yes"
   fi ])
