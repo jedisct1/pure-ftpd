@@ -4336,9 +4336,11 @@ void dostor(char *name, const int append, const int autorename)
                 atomic_file = NULL;
             }
         } else if (atomic_file != NULL) {
-            if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0 ||
-                (original_file_size = get_file_size(name)) < (off_t) 0) {
+            if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;
+            }
+            if ((original_file_size = get_file_size(name)) < (off_t) 0) {
+                original_file_size = (off_t) 0;
             }
             if (rename(atomic_file, name) != 0) {
                 error(553, MSG_RENAME_FAILURE);
