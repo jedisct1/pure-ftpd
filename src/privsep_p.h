@@ -15,6 +15,10 @@
 # define CMSG_LEN(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + (len))
 #endif
 
+#ifndef PRIVSEP_USER
+# define PRIVSEP_USER "_pure-ftpd"
+#endif
+
 typedef enum PrivSepCmd_ {
     PRIVSEPCMD_NONE, 
     PRIVSEPCMD_ANSWER_ERROR, PRIVSEPCMD_ANSWER_FD,
@@ -66,5 +70,6 @@ typedef union PrivSepAnswer_ {
 } PrivSepAnswer;
 
 static int psfd = -1;
+static uid_t privsep_uid;
 
 #endif

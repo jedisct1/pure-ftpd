@@ -139,16 +139,33 @@ int privsep_recvfd(const int psfd)
     return *fdptr;
 }
 
+static void privsep_unpriv_user(void)
+{
+    if (seteuid(privsep_uid) != 0) {
+        _exit(1);
+    }
+}
+
+static void privsep_priv_user(void)
+{
+    if (seteuid((uid_t) 0) != 0) {
+        _exit(1);
+    }
+}
+
 # ifdef FTPWHO
 static int privsep_privpart_removeftpwhoentry(const int psfd)
 {
     PrivSepAnswer answer;
-    
+
+    privsep_priv_user();
     if (scoreboardfile == NULL || unlink(scoreboardfile) != 0) {
         answer.removeftpwhoentry.cmd = PRIVSEPCMD_ANSWER_ERROR;
     } else {
         answer.removeftpwhoentry.cmd = PRIVSEPCMD_ANSWER_REMOVEFTPWHOENTRY;
     }
+    privsep_unpriv_user();
+    
     return privsep_sendcmd(psfd, &answer, sizeof answer);
 }
 
@@ -185,6 +202,7 @@ int privsep_privpart_bindresport(const int psfd,
 # else
     (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof on);
 # endif
+    privsep_priv_user();
     for (;;) {
         if (query->bindresport.protocol == PF_INET6) {
             STORAGE_PORT6(query->bindresport.ss) = htons(*portlistpnt);
@@ -204,6 +222,7 @@ int privsep_privpart_bindresport(const int psfd,
         portlistpnt++;
 # endif        
     }
+    privsep_unpriv_user();
     
     bye:    
     ret = privsep_sendfd(psfd, fd);
@@ -285,11 +304,38 @@ static int privsep_privpart_closejunk(void)
     return ret;
 }
 
+static void privsep_init_privsep_user(void)
+{
+    const char *privsep_users[] = {
+        PRIVSEP_USER, "pure-ftpd", "nobody", "daemon", NULL
+    };
+    const char **privsep_user = privsep_users;
+    struct passwd *pw = NULL;
+    
+    while (*privsep_user != NULL) {
+        if ((pw = getpwnam(*privsep_user)) != NULL) {
+            break;
+        }
+        privsep_user++;
+    }
+    if (pw == NULL) {
+        return;
+    }
+    privsep_uid = pw->pw_uid;
+# ifdef HAVE_SETGROUPS
+    if (setgroups(1U, &pw->pw_gid) != 0) { _exit(1); }
+# elif defined(HAVE_INITGROUPS)
+    if (initgroups(pw->pw_name, pw->pw_gid) < 0) { _exit(1); }
+# else
+    if (setgid(pw->pw_gid) != 0) { _exit(1); }
+# endif
+}
+
 int privsep_init(void)
 {
     int sv[2];
     pid_t pid;
-    
+
     if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, sv) != 0) {
         return -1;
     }
@@ -305,10 +351,12 @@ int privsep_init(void)
         
         return 0;
     }
-    (void) close(sv[1]);        
+    (void) close(sv[1]);
     psfd = sv[0];
     setprocessname("pure-ftpd (PRIV)");
     (void) privsep_privpart_closejunk();
+    privsep_init_privsep_user();
+    privsep_unpriv_user();
     _exit(privsep_privpart_main());
     
     return -1; /* NOTREACHED */

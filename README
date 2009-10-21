@@ -48,6 +48,19 @@ DragonflyBSD, Darwin, Solaris, Tru64, Irix, AIX and HPUX are known to work,
 other operating systems may need some tweaks. With Linux, any modern
 distribution should be ok.
 
+* Step 1 (optional but recommended):
+
+Create a specific, unprivileged user and group called _pure-ftpd, without any
+valid shell. Don't use this for anything else, including FTP virtual users.
+
+groupadd _pure-ftpd
+useradd -g _pure-ftpd -s /etc _pure-ftpd
+
+If having a user whose name begins with an underscore is a no-go for you,
+you can also call it pure-ftpd, without the underscore.
+
+* Step 2:
+
 If you have Cdialog or Xdialog installed on your system, try the following
 command to build and install Pure-FTPd:
 
@@ -59,6 +72,8 @@ If you don't have Cdialog or if you prefer the conventional way, here it is:
 make install-strip
 
 Et voila! The software is now installed in /usr/local/sbin/pure-ftpd
+
+* Step 3:
 
 To launch the server, just type the following command:
 
@@ -75,14 +90,6 @@ to /etc/rc.d/rc.local or /etc/rc.d/boot.local . Don't forget the '&' sign.
 
 Note 1:
 
-On Linux systems, you will notice that the server is always running as root.
-This is intentional and more secure that servers who are changing their
-effective uid (and only effective uid, they still have root privileges in
-fact, use ps -U to see what servers are really running as root) . We are
-using Linux kernel-specific tricks to drop privileges that "ps" can't show.
-
-Note 2:
-
 To compile under Irix, you have to issue this before typing ./configure:
 
 export CC=cc
@@ -94,7 +101,7 @@ To compile under Solaris, use GNU Make, not Solaris make. Then do:
 export PATH=/usr/ccs/bin:$PATH
 export MAKE=gmake
 
-Nota 3:
+Nota 2:
 
 To deinstall Pure-FTPd (no, do you really want to do this?), use:
 ./configure
@@ -1723,13 +1730,13 @@ after authentication and chroot() and punctually communicates with the
 parent over a private channel.
 
 Privilege separation decreases performance of loaded servers, but it
-increases theorical security and reliability. Enabling it is recommended.
+increases security and reliability. Enabling it is recommended.
 
 Some old broken operating systems may allow the ptrace() system call on
 processes that revoked privileges. On these platforms, enabling privilege
 separation is a bad idea if untrusted users also have shell access. Use the
-src/ptracetest program to check this. At least Solaris, ISOS, MirBSD, OpenBSD,
-FreeBSD and Linux are known to be safe.
+src/ptracetest program to check this. At least Solaris, ISOS, MirBSD,
+OpenBSD, DragonflyBSD, FreeBSD and Linux are known to be safe.
 
 
     ------------------------ CHARSETS (RFC2640) ------------------------

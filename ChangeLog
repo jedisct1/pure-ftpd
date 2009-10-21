@@ -51,6 +51,9 @@ system configuration.
  - --without-banner is gone. If you have a cookie file (-F), the default
 banner won't be displayed.
  - Compile with PAM by default on OSX.
+ - Switch the privsep process to _pure-ftpd or pure-ftpd when no privileged
+call is actually necessary. Since only the effective uid chances, it's not
+brutally useful yet, but it paves the way for forthcoming changes.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

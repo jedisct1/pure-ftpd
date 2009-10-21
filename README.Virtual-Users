@@ -24,7 +24,7 @@ root), but it's better to have a dedicated account.
 
 Let's create an "ftpgroup" group and an "ftpuser" user.
 
-Linux/OpenBSD/NetBSD/Solaris/HPUX/a lot of other Unix-like systems:
+Linux/OpenBSD/NetBSD/Solaris/HPUX/OSX/a lot of other Unix-like systems:
 
 groupadd ftpgroup
 useradd -g ftpgroup -d /dev/null -s /etc ftpuser

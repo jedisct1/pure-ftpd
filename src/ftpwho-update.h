@@ -26,7 +26,7 @@ typedef struct FTPWhoEntry_ {
     volatile off_t download_total_size;
     volatile off_t download_current_size;    
     char account[MAX_USER_LENGTH + 1U];
-#if defined(__OpenBSD__) || defined(__MicroBSD__) || defined(__ekkoBSD__)
+#if defined(__OpenBSD__)
     char filename[1024];
 #else
 # ifdef PAGE_SIZE
