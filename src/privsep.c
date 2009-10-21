@@ -307,7 +307,7 @@ static int privsep_privpart_closejunk(void)
 static void privsep_init_privsep_user(void)
 {
     const char *privsep_users[] = {
-        PRIVSEP_USER, "pure-ftpd", "nobody", "daemon", NULL
+        PRIVSEP_USER, "pure-ftpd", NULL
     };
     const char **privsep_user = privsep_users;
     struct passwd *pw = NULL;
