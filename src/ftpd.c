@@ -4550,7 +4550,7 @@ void dornto(char *name)
     }
 #endif
     if ((rename(renamefrom, name)) < 0) {
-        addreply(451, MSG_RENAME_FAILURE ": %s", strerror(errno));
+        error(451, MSG_RENAME_FAILURE);        
 #ifdef QUOTAS
         (void) quota_update(NULL, -files_count, -bytes, NULL);
 #endif
