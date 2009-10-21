@@ -3928,7 +3928,8 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
     int pollret;
     int ret;
 
-    if (ulhandler->total_uploaded > ulhandler->max_filesize) {
+    if (ulhandler->max_filesize >= (off_t) 0 &&
+        ulhandler->total_uploaded > ulhandler->max_filesize) {
         addreply(552, MSG_ABORTED " (quota)");
         return -2;
     }
