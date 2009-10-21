@@ -394,6 +394,10 @@ AC_ARG_WITH(pam,
     with_pam="yes"
   fi ])
 
+if test "x`uname`" = "xDarwin"; then
+  with_pam="yes"
+fi
+
 if test "x$with_pam" = "xyes" ; then
   if test "x$ac_cv_header_security_pam_appl_h" != "xyes" &&
      test "x$ac_cv_header_pam_pam_appl_h" != "xyes"; then

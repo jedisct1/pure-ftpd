@@ -50,6 +50,7 @@ system configuration.
  - Privsep is now enabled by default. Use --without-privsep to disable.
  - --without-banner is gone. If you have a cookie file (-F), the default
 banner won't be displayed.
+ - Compile with PAM by default on OSX.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.
