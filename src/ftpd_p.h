@@ -209,7 +209,7 @@ static const AltLogPrefixes altlogprefixes[] = {
 # define ALTLOG_DEFAULT ALTLOG_CLF
 #endif
 
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
 # define VERSION_PRIVSEP " [privsep]"
 #else
 # define VERSION_PRIVSEP ""

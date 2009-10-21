@@ -35,9 +35,6 @@
 /* Define to 1 for DGUX with <sys/dg_sys_info.h>. */
 #undef DGUX
 
-/* without cork */
-#undef DISABLE_CORK
-
 /* without globbing */
 #undef DISABLE_GLOBBING
 
@@ -672,9 +669,6 @@
 /* with nonroot */
 #undef NON_ROOT_FTP
 
-/* without banner */
-#undef NO_BANNER
-
 /* without usernames */
 #undef NO_FTP_USERS
 
@@ -865,6 +859,9 @@
 /* without ascii */
 #undef WITHOUT_ASCII
 
+/* disable privilege separation */
+#undef WITHOUT_PRIVSEP
+
 /* with altlog */
 #undef WITH_ALTLOG
 
@@ -888,9 +885,6 @@
 
 /* with pgsql */
 #undef WITH_PGSQL
-
-/* enable privilege separation */
-#undef WITH_PRIVSEP
 
 /* with puredb */
 #undef WITH_PUREDB

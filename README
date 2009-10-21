@@ -285,9 +285,6 @@ by default.
 
 --with-boring: display boring "professionnal-looking" messages.
 
---with-privsep: enable privilege separation (see notes about this later),
-recommended.
-
 --with-bonjour: enable Bonjour support on MacOS X (see the -v switch).
 
 --with-rfc2640: enable support for charset conversion. It adds a dependency
@@ -303,13 +300,12 @@ The protocol is incompatible with FTP and listens to another port by default
 "--without-" switches
  -----------------------/
 
+--without-privsep: disable privilege separation (see notes about this later),
+not recommended.
 
 --without-ascii: does not support 7-bits transfers (ASCII) .  If you have
 customers using Windows clients to send scripts and HTML files, don't use
 this option or they will yell at you.
-
---without-banner: don't display the initial banner. This is stupid security
-through obscurity.
 
 --without-capabilities: if the capabilities library (libcap) is found,
 Pure-FTPd will try to use it in order to enhance security. This option

@@ -5,7 +5,7 @@
 # include "ftpwho-update_p.h"
 # include "ftpwho-update.h"
 # include "globals.h"
-# ifdef WITH_PRIVSEP
+# ifndef WITHOUT_PRIVSEP
 #  include "privsep.h"
 # endif
 
@@ -30,7 +30,7 @@ void ftpwho_exit(const int ret)
     if (mmap_fd != -1) {    
         (void) close(mmap_fd);
     }
-# ifdef WITH_PRIVSEP
+# ifndef WITHOUT_PRIVSEP
     if (
 # ifndef NO_INETD        
         standalone == 0 &&

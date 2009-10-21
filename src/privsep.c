@@ -1,6 +1,6 @@
 #include <config.h>
 
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
 # include "ftpd.h"
 # include "dynamic.h"
 # include "ftpwho-update.h"

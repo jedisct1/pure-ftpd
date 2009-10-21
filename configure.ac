@@ -296,12 +296,6 @@ AC_ARG_WITH(ascii,
     AC_DEFINE(WITHOUT_ASCII,,[without ascii])
   fi ])
 
-AC_ARG_WITH(banner,
-[AS_HELP_STRING(--without-banner,Don't display any initial banner)],
-[ if test "x$withval" = "xno" ; then
-    AC_DEFINE(NO_BANNER,,[without banner])
-  fi ])
-
 AC_ARG_WITH(globbing,
 [AS_HELP_STRING(--without-globbing,Don't include globbing code)],
 [ if test "x$withval" = "xno" ; then
@@ -326,10 +320,10 @@ AC_ARG_WITH(sendfile,
     AC_DEFINE(DISABLE_SENDFILE,,[without sendfile])
   fi ])
 
-AC_ARG_WITH(cork,
-[AS_HELP_STRING(--without-cork,Don't use TCP_CORK optimization)],
+AC_ARG_WITH(privsep,
+[AS_HELP_STRING(--without-privsep,Disable privilege separation)],
 [ if test "x$withval" = "xno" ; then
-    AC_DEFINE(DISABLE_CORK,,[without cork])
+    without_privsep=yes
   fi ])
 
 AC_ARG_WITH(boring,
@@ -359,7 +353,6 @@ AC_ARG_WITH(minimal,
     AC_DEFINE(DISABLE_HUMOR)
     AC_DEFINE(NO_FTP_USERS)
     AC_DEFINE(WITHOUT_ASCII)    
-    AC_DEFINE(NO_BANNER)
     AC_DEFINE(BORING_MODE)
     CFLAGS="$CFLAGS -Os -fomit-frame-pointer -fgcse -falign-functions=2 -falign-jumps=2 -fno-unroll-loops "
     LDFLAGS="$LDFLAGS -s "
@@ -752,9 +745,14 @@ AC_ARG_WITH(nonroot,
 [AS_HELP_STRING(--with-nonroot,[Compile a limited server designed to be started as a regular user. Only enable this option as a last resort if you really don't have root privileges on the server host.])],
 [ if test "x$withval" = "xyes" ; then
       AC_DEFINE(NON_ROOT_FTP,,[with nonroot])
-      AC_DEFINE(WITH_VIRTUAL_CHROOT)
+      AC_DEFINE(WITH_VIRTUAL_CHROOT)      
       non_root_ftp=yes
+      without_privsep=yes
   fi ])
+
+if test "x$without_privsep" = "xyes" ; then
+  AC_DEFINE(WITHOUT_PRIVSEP,,[disable privilege separation])
+fi
 
 AC_ARG_WITH(peruserlimits,
 [AS_HELP_STRING(--with-peruserlimits,Support per-user concurrency limits)],
@@ -791,9 +789,6 @@ AC_ARG_WITH(everything,
     AC_DEFINE(FTPWHO)
     AC_DEFINE(WITH_DIRALIASES)
     AC_DEFINE(PER_USER_LIMITS)
-if test "x$non_root_ftp" != "xyes" ; then
-    AC_DEFINE(WITH_PRIVSEP)
-fi
     with_bonjour='yes'
   fi ])
 
@@ -1257,17 +1252,6 @@ AC_ARG_WITH(pgsql,
     ],[])    
     AC_MSG_RESULT(yes)
   fi ])
-
-AC_ARG_WITH(privsep,
-[AS_HELP_STRING(--with-privsep,Enable privilege separation)],
-[ if test "x$withval" = "xyes" ; then
-    AC_DEFINE(WITH_PRIVSEP,,[enable privilege separation])
-    with_privsep=yes
-  fi ])
-
-if test "x$with_privsep" = "xyes" && test "x$non_root_ftp" = "xyes" ; then
-  AC_MSG_ERROR(Privilege separation is incompatible with non-root.)
-fi
 
 AC_ARG_WITH(tls,
 [AS_HELP_STRING(--with-tls,Enable SSL/TLS support (experimental, needs OpenSSL))],

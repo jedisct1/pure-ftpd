@@ -1,7 +1,7 @@
 #ifndef __PRIVSEP_H__
 #define __PRIVSEP_H__ 1
 
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
 
 int privsep_sendfd(const int psfd, const int fd);
 int privsep_recvfd(const int psfd);

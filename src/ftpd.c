@@ -23,7 +23,7 @@
 #include "ftpd.h"
 #include "bsd-glob.h"
 #include "getloadavg.h"
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
 # include "privsep.h"
 #endif
 #ifdef WITH_TLS
@@ -1402,7 +1402,7 @@ void douser(const char *username)
 
 #ifndef NON_ROOT_FTP
         if (authresult.uid > (uid_t) 0) {
-# ifdef WITH_PRIVSEP
+# ifndef WITHOUT_PRIVSEP
             if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
                 goto cantsec;
             }
@@ -1877,7 +1877,7 @@ void dopass(char *password)
         }
 #endif
         if (chdir(wd) || chroot(wd)) {    /* should never fail */
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
             (void) setuid(authresult.uid);
             (void) seteuid(authresult.uid);
 #else
@@ -1887,7 +1887,7 @@ void dopass(char *password)
 #endif
             die(421, LOG_ERR, MSG_CHROOT_FAILED);
         }
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
         if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
             _EXIT(EXIT_FAILURE);
         }
@@ -2287,7 +2287,7 @@ void doport(const char *arg)
     doport2(a, (p1 << 8) | p2);
 }
 
-#ifndef WITH_PRIVSEP
+#ifdef WITHOUT_PRIVSEP
 
 static int doport3(const int protocol)
 {
@@ -4627,7 +4627,7 @@ static void fixlimits(void)
 }
 
 #ifdef COOKIE
-static void fortune(void)
+static int fortune(void)
 {
     int fd;
     char *buf;
@@ -4639,11 +4639,11 @@ static void fortune(void)
     char fortune[2048];
 
     if (fortunes_file == NULL || *fortunes_file == 0) {
-        return;
+        return 0;
     }
     if ((fd = open(fortunes_file, O_RDONLY)) == -1) {
         logfile(LOG_ERR, MSG_OPEN_FAILURE, fortunes_file);
-        return;
+        return -1;
     }
     if (fstat(fd, &st) < 0 ||
         (((S_IRUSR | S_IRGRP | S_IROTH) & st.st_mode) !=
@@ -4654,7 +4654,7 @@ static void fortune(void)
                 (off_t) 0)) == (void *) MAP_FAILED) {
         (void) close(fd);
         logfile(LOG_ERR, MSG_OPEN_FAILURE, fortunes_file);
-        return;
+        return -1;
     }
 # ifdef HAVE_RANDOM
     gl = (off_t) (random() % (st.st_size - 1U));
@@ -4705,12 +4705,12 @@ static void fortune(void)
     if (*fortunepnt == 0) {
         goto bye;
     }
-    addreply_noformat(220, "<<");
     addreply(220, "%s", fortunepnt);
-    addreply_noformat(220, ">>");
     bye:
     (void) munmap(buf, st.st_size);
     (void) close(fd);
+    
+    return 1;
 }
 #endif
 
@@ -4846,6 +4846,8 @@ static void fill_atomic_prefix(void)
 static void doit(void)
 {
     socklen_t socksize;
+    unsigned int users = 0U;
+    int display_banner = 1;
 
     session_start_time = time(NULL);
     fixlimits();
@@ -4914,27 +4916,11 @@ static void doit(void)
     iptropize(&peer);
     logfile(LOG_INFO, MSG_NEW_CONNECTION, host);
 
-#ifndef NO_BANNER
-# ifdef BORING_MODE
-    addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd.");
-# else
-#  ifdef DEBUG
-    addreply_noformat(0, "--------- " MSG_WELCOME_TO 
-                      " Pure-FTPd " PACKAGE_VERSION VERSION_PRIVSEP VERSION_TLS " ----------");
-#  else
-    addreply_noformat(0, "--------- " MSG_WELCOME_TO 
-                      " Pure-FTPd" VERSION_PRIVSEP VERSION_TLS " ----------");
-#  endif    
-# endif
-#else
-    addreply_noformat(220, "FTP server ready.");
-#endif
+    replycode = 220;
     
     fill_atomic_prefix();
     
     if (maxusers > 0U) {
-        unsigned int users;
-
 #ifdef NO_STANDALONE
         users = daemons(serverport);
 #else
@@ -4953,13 +4939,7 @@ static void doit(void)
             doreply();
             _EXIT(1);
         }
-#ifndef NO_BANNER
-        if (users > 0) {
-            addreply(0, MSG_NB_USERS, users, maxusers);
-        }
-#endif
     }
-
     /* It's time to add a new entry to the ftpwho list */
 #ifdef FTPWHO
     {
@@ -5045,28 +5025,42 @@ static void doit(void)
     srand((unsigned int) session_start_time ^ (unsigned int) zrand());
 #endif
 #ifdef COOKIE
-    fortune();
-#endif
-#if !defined(NO_BANNER) && !defined(BORING_MODE)
-    {
-        struct tm *t;
-        
-        if ((t = localtime(&session_start_time)) != NULL) {
-            addreply(220, MSG_WELCOME_TIME,
-                     t->tm_hour, t->tm_min, (unsigned int) serverport);
-        }
+    if (fortune() > 0) {
+        display_banner = 0;
     }
 #endif
+    if (display_banner) {
+#ifdef BORING_MODE
+        addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd.");
+#else
+# ifdef DEBUG
+        addreply_noformat(0, "--------- " MSG_WELCOME_TO 
+                          " Pure-FTPd " PACKAGE_VERSION VERSION_PRIVSEP VERSION_TLS " ----------");
+# else
+        addreply_noformat(0, "--------- " MSG_WELCOME_TO 
+                          " Pure-FTPd" VERSION_PRIVSEP VERSION_TLS " ----------");
+# endif
+#endif
+        if (users > 0U) {
+            addreply(0, MSG_NB_USERS, users, maxusers);
+        }
+        {
+            struct tm *t;
+            
+            if ((t = localtime(&session_start_time)) != NULL) {
+                addreply(220, MSG_WELCOME_TIME,
+                         t->tm_hour, t->tm_min, (unsigned int) serverport);
+            }
+        }
+    }
     if (anon_only > 0) {
         addreply_noformat(220, MSG_ANONYMOUS_FTP_ONLY);
     } else if (anon_only < 0) {
         addreply_noformat(220, MSG_NO_ANONYMOUS_LOGIN);
     }
-#ifndef NO_BANNER
     if (allowfxp == 2) {
         addreply_noformat(220, MSG_FXP_SUPPORT);
     }
-#endif
 #ifdef RATIOS
     if (ratio_upload > 0) {
         if (ratio_for_non_anon != 0) {
@@ -5077,17 +5071,16 @@ static void doit(void)
         addreply(0, MSG_RATIOS_RULE, ratio_download, ratio_upload);
     }
 #endif
-#ifndef NO_BANNER
-    if (v6ready != 0 && STORAGE_FAMILY(peer) != AF_INET6) {
-        addreply(0, MSG_IPV6_OK);
-    }    
-    if (idletime >= 120UL) {
-        addreply(220, MSG_INFO_IDLE_M, idletime / 60UL);
-    } else {
-        addreply(220, MSG_INFO_IDLE_S, (unsigned long) idletime);
+    if (display_banner) {
+        if (v6ready != 0 && STORAGE_FAMILY(peer) != AF_INET6) {
+            addreply(0, MSG_IPV6_OK);
+        }    
+        if (idletime >= 120UL) {
+            addreply(220, MSG_INFO_IDLE_M, idletime / 60UL);
+        } else {
+            addreply(220, MSG_INFO_IDLE_S, (unsigned long) idletime);
+        }
     }
-#endif
-
     candownload = (signed char) ((maxload <= 0.0) || (load < maxload));
 
     if (force_passive_ip_s != NULL) {
@@ -5105,7 +5098,7 @@ static void doit(void)
         freeaddrinfo(res);
     }
     
-#ifdef WITH_PRIVSEP
+#ifndef WITHOUT_PRIVSEP
     if (privsep_init() != 0) {
         die(421, LOG_ERR, "privsep_init");
     }

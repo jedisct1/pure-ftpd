@@ -63,12 +63,11 @@ $dialog \
 'without-iplogging' "Never log remote IP addresses (confidentiality)" off \
 'without-humor' "Disable humor (enabled by default)" off \
 'without-ascii' "Don't support 7-bits (ASCII) transfers" off \
-'without-banner' "Don't display the nice initial banner" off \
 'without-nonalnum' "Only allow minimal alpha-numeric characters" off \
 'without-unicode' "Disable utf8 non-latin characters" off \
 'without-globbing' "Don't include the globbing code" off \
 'without-sendfile' "Don't use zero-copy optimizations" off \
-'without-cork' "Don't use TCP_CORK optimizations" off \
+'without-privsep' "Disable privilege separation" off \
 'with-brokenrealpath' "If your C library has a broken realpath()" off \
 'with-probe-random-dev' "To check for /dev/*random at run-time" off \
 'with-minimal' "Build only a minimal server for embedded systems" off \
@@ -91,7 +90,6 @@ $dialog \
 'with-virtualchroot' "Follow symlinks outside a chroot jail" off \
 'with-diraliases' "Support directory aliases" on \
 'with-peruserlimits' "Support per-user concurrency limits" on \
-'with-privsep' "Enable privilege separation" on \
 'with-tls' "Support SSL/TLS security layer (experimental)" off \
 'with-rfc2640' "Support for UTF-8 encoding for file names" off \
 'with-bonjour' "Support Bonjour on MacOS X" off \

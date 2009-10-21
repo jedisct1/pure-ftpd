@@ -24,7 +24,6 @@
 %define con_peruserlimits 1
 %define con_largefile 1
 %define con_boring 0
-%define con_privsep 1
 %define con_tls 0
 %define con_sysquotas 1
 %define con_bonjour 0
@@ -67,7 +66,6 @@
 %{?with_peruserlimits:%define con_peruserlimits 1}
 %{?with_largefile:%define con_largefile 1}
 %{?with_boring:%define con_boring 1}
-%{?with_privsep:%define con_privsep 1}
 %{?with_tls:%define con_tls 1}
 %{?with_rfc2640:%define con_rfc2640 1}
 %{?with_sysquotas:%define con_sysquotas 1}
@@ -184,9 +182,6 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} \
 %endif  
 %if %{con_boring}
   --with-boring \
-%endif  
-%if %{con_privsep}
-  --with-privsep \
 %endif  
 %if %{con_tls}
   --with-tls \

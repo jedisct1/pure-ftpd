@@ -47,6 +47,9 @@ scoreboard and other dynamic files in /var/run/
 blowing the quota.
  - Don't change the TCP window size. Admins should do this as part of their
 system configuration.
+ - Privsep is now enabled by default. Use --without-privsep to disable.
+ - --without-banner is gone. If you have a cookie file (-F), the default
+banner won't be displayed.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.
