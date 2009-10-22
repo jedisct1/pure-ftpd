@@ -110,9 +110,9 @@ Output help information and exit.
 .LP 
 To run this program the standard way type:
 .LP 
-pure\-authd \-s /var/run/ftpd.sock \-r /usr/bin/my\-auth\-program &
+pure\-authd \-s @LOCALSTATEDIR@/run/ftpd.sock \-r /usr/bin/my\-auth\-program &
 .LP 
-pure\-ftpd \-lextauth:/var/run/ftpd.sock &
+pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/ftpd.sock &
 .TP 
 /usr/bin/my\-auth\-program can be as simple as :
 #! /bin/sh

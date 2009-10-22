@@ -1362,11 +1362,17 @@ AC_SUBST(localstatedir)
 CPPFLAGS="$CPPFLAGS -DCONFDIR=\\\"$sysconfdir\\\""
 CPPFLAGS="$CPPFLAGS -DSTATEDIR=\\\"$localstatedir\\\""
 
+AC_SUBST(CONFDIR)
+AC_SUBST(LOCALSTATEDIR)
+
 AC_CONFIG_FILES(Makefile src/Makefile pam/Makefile man/Makefile
 gui/Makefile configuration-file/Makefile contrib/Makefile m4/Makefile
 configuration-file/pure-ftpd.conf configuration-file/pure-config.pl
 configuration-file/pure-config.py puredb/Makefile puredb/src/Makefile
-pure-ftpd.spec)
+pure-ftpd.spec
+man/pure-ftpd.8 man/pure-ftpwho.8 man/pure-mrtginfo.8 man/pure-uploadscript.8
+man/pure-statsdecode.8 man/pure-quotacheck.8 man/pure-pw.8 man/pure-pwconvert.8
+man/pure-authd.8)
 
 AC_OUTPUT
 

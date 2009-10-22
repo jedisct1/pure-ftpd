@@ -251,7 +251,7 @@ extension).
 .TP
 .B \-g pidfile
 In standalone mode, write the pid to that file in instead of
-/var/run/pure-ftpd.pid .
+@LOCALSTATEDIR@/run/pure-ftpd.pid .
 .TP
 .B \-G
 When this option is enabled, people can no more change the name of already
@@ -306,7 +306,7 @@ For external authentication handlers.
 .br
 Different authentication methods can be mixed together. For instance if you
 run the server with
-.I -lpuredb:/etc/pwd.pdb -lmysql:/etc/my.cf -lunix
+.I -lpuredb:@CONFDIR@/pwd.pdb -lmysql:@CONFDIR@/my.cf -lunix
 Accounts will first be authenticated from a PureDB database. If it fails, a
 MySQL server will be asked. If the account is still not found is the
 database, standard unix accounts will be scanned. Authentication methods are
@@ -565,7 +565,7 @@ does not ask anonymous users for an email address or other password.
 .PP
 2. The user connects to an IP address which resolves to the name of a
 directory in
-.I /etc/pure\-ftpd
+.I @CONFDIR@/pure\-ftpd
 (or a symlink in that directory to a real directory), and there is an
 account called "ftp" (which does not need to have a valid home
 directory). See
@@ -607,7 +607,7 @@ Shortcuts for the "cd" command can be set up if the server has been compiled
 with the \-\-with\-diraliases feature.
 .PP
 To enable directory aliases, create a file called
-.I /etc/pureftpd\-dir\-aliases
+.I @CONFDIR@/pureftpd\-dir\-aliases
 and alternate lines of alias names and associated directories.
 
 .SH "ANONYMOUS FTP"
@@ -693,7 +693,7 @@ uses this account to set the anonymous users' uid.
 2. Create a directory as described in
 .B Anonymous FTP
 and make a symlink called
-.I /etc/pure\-ftpd/10.11.12.13
+.I @CONFDIR@/pure\-ftpd/10.11.12.13
 which points to this directory.
 .PP
 3. Make sure your kernel has support for IP aliases.
@@ -707,7 +707,7 @@ That should be all. If you have problems, here are some things to
 try.
 .PP
 First, symlink
-.I /etc/pure\-ftpd/127.0.0.1
+.I @CONFDIR@/pure\-ftpd/127.0.0.1
 to some directory and say "ftp localhost". If that doesn't log you
 in, the problem is with
 .B ftpd.
@@ -728,7 +728,7 @@ If you setup a virtual hosts, normal users will not be able to login via
 this name, so
 .B don't
 create link/directory in
-.I /etc/pure\-ftpd
+.I @CONFDIR@/pure\-ftpd
 for your regular hostname.
 
 .SH "FILES"
@@ -752,7 +752,7 @@ or
 .B \-p
 options are used
 .PP
-.I /etc/pure\-ftpd/<ip address>
+.I @CONFDIR@/pure\-ftpd/<ip address>
 is the base directory for the <ip address> virtual ftp server, or a
 symbolic link to its base directory.
 .B Ftpd

@@ -7,7 +7,7 @@ pure\-uploadscript \- Automatically run an external program after a successful u
 pure\-uploadscript [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-B\fP] [\fI\-g\fP <\fIgid\fP>] [\fI\-h\fP] \fI\-r\fP <\fIprogram to run\fP> [\fI\-u\fP <\fIuid\fP>]
 .SH "DESCRIPTION"
 .LP 
-If Pure\-FTPd is compiled with \fB\-\-with\-uploadscript\fR (default in binary distributions), and if the \fB\-o\fR (or \fB\-\-uploadscript\fR) is passed to the server, a named pipe called \fB/var/run/pure\-ftpd.upload.pipe\fR is created. You will also notice an important file called \fB/var/run/pure\-ftpd.upload.lock\fR, used for locking.
+If Pure\-FTPd is compiled with \fB\-\-with\-uploadscript\fR (default in binary distributions), and if the \fB\-o\fR (or \fB\-\-uploadscript\fR) is passed to the server, a named pipe called \fB@LOCALSTATEDIR@/run/pure\-ftpd.upload.pipe\fR is created. You will also notice an important file called \fB@LOCALSTATEDIR@/run/pure\-ftpd.upload.lock\fR, used for locking.
 .br
 After a successful upload, the file name is written to the pipe.
 .br
@@ -52,9 +52,9 @@ The group name the files belongs to.
 The full user name, or the virtual user name (127 chars max) .
 .SH "FILES"
 .LP 
-\fI/var/run/pure\-ftpd.upload.pipe\fP 
-\fI/var/run/pure\-ftpd.upload.lock\fP 
-\fI/var/run/pure\-uploadscript.pid\fP 
+\fI@LOCALSTATEDIR@/run/pure\-ftpd.upload.pipe\fP 
+\fI@LOCALSTATEDIR@/run/pure\-ftpd.upload.lock\fP 
+\fI@LOCALSTATEDIR@/run/pure\-uploadscript.pid\fP 
 .SH "SECURITY"
 .LP 
 \fBpure\-ftpd\fR and \fBpure\-uploadscript\fR are trying to limit security implications of such a feature.

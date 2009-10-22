@@ -54,6 +54,7 @@ banner won't be displayed.
  - Switch the privsep process to _pure-ftpd or pure-ftpd when no privileged
 call is actually necessary. Since only the effective uid chances, it's not
 brutally useful yet, but it paves the way for forthcoming changes.
+ - Install man pages with local paths instead of hard-coded ones.
 
 * Version 1.0.22:
  - New catalan translation, by Taik0.

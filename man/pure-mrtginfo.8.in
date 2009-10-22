@@ -42,8 +42,8 @@ program such as
 .BR pure-mrtginfo .
 The author of this program uses it to graph CPU load, /var usage etc.,
 and naturally the number of users connected to his FTP servers.  See
-.nf 
-http://ee\-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html
+.nf
+http://oss.oetiker.ch/mrtg/
 .fi 
 for more information about MRTG.
 

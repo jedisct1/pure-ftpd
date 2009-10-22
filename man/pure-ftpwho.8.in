@@ -33,7 +33,7 @@ Don't resolve host names, and only show IP addresses (faster).
 A synonym for \-H.
 .TP 
 \fB\-p\fR
-Output Apple / GNUStep plist data.
+Output Mac OSX / GNUStep plist data.
 .TP 
 \fB\-s\fR
 Output only one line per client, with only numeric data, delimited by a | character.
@@ -57,7 +57,7 @@ Output well\-formed XML data for post\-processing.
 
 .SH "FILES"
 .LP 
-\fB/var/run/pure-ftpd/\fP
+\fB@LOCALSTATEDIR@/run/pure-ftpd/\fP
 Scoreboard directory. Should always owned by root and on a lockable
 filesystem.
 
