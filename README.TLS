@@ -155,7 +155,7 @@ When SSL/TLS has been successfully negociated for a connection, you'll see
 something similar to this in log files :
 
 <<
-SSL/TLS: Enabled TLSv1/SSLv3 with DES-CBC3-SHA, 168 secret bits cipher
+SSL/TLS: Enabled TLSv1/SSLv3 with AES256-SHA, 256 secret bits cipher
 >>
 
 A cipher using traditional algorithms with a 40 bits key is weak but
@@ -245,5 +245,10 @@ and Robert Vasvari.
 (explicit encryption)" as the "Servertype".
   Reported by Philip Hallstrom.
   
-  Using recent versions (> 3) is recommended.
 
+* Cyberduck (OSX)
+  http://cyberduck.ch/
+  
+  SSL/TLS works out of the box.
+  
+  
