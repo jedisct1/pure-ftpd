@@ -1,19 +1,12 @@
 
-  The "contrib" directory is yours.
 
-  If you developped something for Pure-FTPd (web pages for the pure-ftpwho
-CGI output, PHP stuff, log file analyzer, pure-uploadscript postprocessors,
-graphical front-ends, init scripts for your favorite distro, ...), maybe if
-it is useful for you, it can also be useful to other people.
-
-  So feel free to contribute. You can send whatever you want to be included
-in the "contrib" directory to <j at pureftpd.org> or to the mailing list.
+  You can send whatever you want to be included in that list to
+<j at pureftpd.org> or to the mailing list.
 
   Thank you,
 
 
                   -Frank.
-
 
 -----------------------------------------------------------------------------
 
@@ -21,6 +14,79 @@ in the "contrib" directory to <j at pureftpd.org> or to the mailing list.
 report bugs directly to authors.
 
 -----------------------------------------------------------------------------
+
+* Redmine Pure-FTPd plugin
+http://github.com/bytemine/redmine_pureftpd_user/
+
+This Redmine plugin maintains a table with pureftpd compatible users.
+
+
+* FTPd Auth Handler
+http://onrails.org/articles/2009/03/06/integrating-ftp-with-rails
+
+An extauth handler in Ruby.
+
+
+* Domain technologie control panel, as used on GPLHost
+http://github.com/carlosl/dtc
+
+
+* PureFTPd Manager
+http://jeanmatthieu.free.fr/pureftpd/
+
+PureFTPd Manager is a small Cocoa frontend to PureFTPd for Mac OS X. It
+includes a wizard to easily set up your server, Rendezvous support to
+publish your server efficiently, and groovy interfaces for virtual users and
+hosts management.
+
+
+* PureAdmin
+http://purify.sourceforge.net/
+
+PureAdmin is a graphical tool used to make the management of PureFTPd a
+little easier. It is not dependent on a specific desktop environment such as
+GNOME or KDE, but is designed with the GNOME Human Interface Guidelines in
+mind.
+
+
+* Pure-FTPd PHP User Manager
+http://ppum.sourceforge.net/
+
+ppum (PureFTPD PHP User Manager) is a PureFTPD PHP User Management System
+designed for an easy Web-based administration of SQL stored and
+authenticated FTP users.
+
+
+* User manager for Pure-FTPd
+http://machiel.generaal.net/index.php?subject=user_manager_pureftpd
+
+User manager for PureFTPd allows administrators to easily create, change, or
+delete 'virtual' PureFTPd users. It comes with a set of very good
+documentation to help with the setup of PureFTPd, MySQL, and this application.
+
+
+* PureUserAdmin
+http://pureuseradmin.sourceforge.net/
+
+PureUserAdmin is a PHP based webbased application. Sys admins can use it to
+easily manage the virtual users for their FTP server. PureUserAdmin is
+developed to be used with Pure-FTPd but it should be able to be used with
+other FTP servers as long as the FTP server gets the useraccount info from
+MySQL or PostgreSQL.
+
+
+* PurePostPro
+http://82.71.1.246/stuff/purepostpro/
+
+PurePostPro is a Perl/MySQL script that enables user uploads to be managed
+more easily. New uploads are logged in a MySQL database, and duplicate files
+are tracked using MD5 checksums.
+
+
+
+                                 ----------
+
+
 
 Current content of the "contrib" directory:
 
