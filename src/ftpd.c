@@ -134,7 +134,7 @@ ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
                 pfd.fd = fd;
                 pfd.events = POLLOUT | POLLERR | POLLHUP;
                 pfd.revents = 0;
-                if (poll(&pfd, 1U, -1) <= 0 ||
+                if (poll(&pfd, 1U, idletime * 1000UL) <= 0 ||
                     (pfd.revents & (POLLERR | POLLHUP)) != 0 ||
                     (pfd.revents & POLLOUT) == 0) {
                     errno = EPIPE;
@@ -2465,7 +2465,7 @@ void opendata(void)
 
         alarm(idletime);
         for (;;) {
-            pollret = poll(pfds, sizeof pfds / sizeof pfds[0], idletime * 1000.0);
+            pollret = poll(pfds, sizeof pfds / sizeof pfds[0], idletime * 1000UL);
             if (pollret <= 0) {
                 die(421, LOG_INFO, MSG_TIMEOUT_DATA, (unsigned long) idletime);
             }
