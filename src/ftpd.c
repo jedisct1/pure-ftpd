@@ -3453,7 +3453,7 @@ void domkd(char *name)
 #ifdef QUOTAS
     if (quota_update(&quota, 1LL, 0LL, &overflow) == 0 && overflow != 0) {
         (void) quota_update(&quota, -1LL, 0LL, NULL);
-        addreply(550, MSG_QUOTA_EXCEEDED, name);
+        addreply(552, MSG_QUOTA_EXCEEDED, name);
         goto end;
     }
 #endif
