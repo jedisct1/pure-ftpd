@@ -137,6 +137,8 @@ option later in this documentation for additional info.
 implementation. If altlog and/or pure-uploadscript doesn't seem to work
 properly on your system, try to recompile with this switch.
 
+--with-tls: enable TLS support. Read README.TLS for more about this feature.
+
 --with-certfile=<file>: the file with the SSL certificate (see README.TLS). The
 default is /etc/ssl/private/pure-ftpd.pem .
 
