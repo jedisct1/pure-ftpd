@@ -487,7 +487,11 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define DEFAULT_MAX_USERS 50
 #endif
 #ifndef DEFAULT_FTP_DATA_PORT
-# define DEFAULT_FTP_DATA_PORT 20
+# ifdef IMPLICIT_TLS
+#  define DEFAULT_FTP_DATA_PORT 989
+# else
+#  define DEFAULT_FTP_DATA_PORT 20
+# endif
 #endif
 #ifndef MAX_SYSLOG_LINE
 # define MAX_SYSLOG_LINE (MAXPATHLEN + 512U)
