@@ -20,7 +20,7 @@ int main(void)
 # include <dmalloc.h>
 #endif
 
-static inline void setcloexec(const int fd)
+static void setcloexec(const int fd)
 {
     fcntl(fd, F_SETFD, FD_CLOEXEC);
 }

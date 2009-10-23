@@ -99,7 +99,7 @@ void logfile(const int facility, const char *format, ...)
     fprintf(stderr, "\n");
 }
 
-static inline int checkproc(const pid_t proc)
+static int checkproc(const pid_t proc)
 {    
     return kill(proc, 0) == 0;
 }

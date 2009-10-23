@@ -10,7 +10,7 @@
 #  include <dmalloc.h>
 # endif
 
-static inline int checkproc(const pid_t proc)
+static int checkproc(const pid_t proc)
 {    
     return kill(proc, 0) == 0;
 }
