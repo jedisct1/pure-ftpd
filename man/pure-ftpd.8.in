@@ -4,7 +4,7 @@
 .\"
 .\" Use, modification and distribution is allowed without limitation, warranty, or liability of any kind.
 .\"
-.TH "pure-ftpd" "8" "1.0.23" "Pure-FTPd Team" "Pure-FTPd"
+.TH "pure-ftpd" "8" "1.0.24" "Pure-FTPd Team" "Pure-FTPd"
 .SH "NAME"
 pure\-ftpd \- simple File Transfer Protocol server
 

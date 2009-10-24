@@ -1,4 +1,8 @@
 
+* Version 1.0.24:
+ - When using LDAP in BIND mode, empty passwords are refused. Reported by
+Henning Brauer.
+
 * Version 1.0.23:
  - The LDAP schema has been fixed.
  - LDAP authentication through binding is now possible in addition to
