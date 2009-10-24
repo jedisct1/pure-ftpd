@@ -381,7 +381,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             goto error;
         }        
         pwret.pw_passwd = strdup(pw_passwd_ldap);
-        free(pw_passwd_ldap);
+        free((void *) pw_passwd_ldap);
         pw_passwd_ldap = NULL;
     } else {
         pwret.pw_passwd = strdup("");
