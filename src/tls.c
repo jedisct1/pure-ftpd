@@ -170,11 +170,11 @@ int tls_init_library(void)
     if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-                        | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+# else
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
 # endif
-                        );
 
     if (SSL_CTX_use_certificate_chain_file(tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
