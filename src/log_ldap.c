@@ -483,6 +483,7 @@ void pw_ldap_check(AuthResult * const result,
         
         /* Verify password by binding to LDAP */
         if (password == NULL || *password == 0) {
+            free(result->backend_data);            
             return;
         }
         if ((ld = pw_ldap_connect(dn, password)) != NULL) {
