@@ -482,6 +482,9 @@ void pw_ldap_check(AuthResult * const result,
         char *dn = (char *) result->backend_data;
         
         /* Verify password by binding to LDAP */
+        if (password == NULL || *password == 0) {
+            return;
+        }
         if ((ld = pw_ldap_connect(dn, password)) != NULL) {
              ldap_unbind(ld);
         } else {
