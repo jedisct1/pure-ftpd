@@ -97,11 +97,11 @@ needed with OpenLDAP servers. It is the default.
 - LDAPUseTLS can be True or False. True means that the server should use TLS
 to connect to the LDAP server.
 
-- LDAPAuthMethod can be BIND (default if there is no LDAPBindDN) or PASSWORD
-(default if a LDAPBindDN is set). The former tries to authenticate users by
-binding, thus allowing to use an unprivileged LDAP account. The later
-requires a privileged LDAP accounts and the FTP server itself checks against
-the userPassword attribute.
+- LDAPAuthMethod can be BIND (experimental, but default if there is no
+LDAPBindDN) or PASSWORD (default if a LDAPBindDN is set). The former tries
+to authenticate users by binding, thus allowing to use an unprivileged LDAP
+account. The later requires a privileged LDAP accounts and the FTP server
+itself checks against the userPassword attribute.
 
 In fact, the only mandatory keyword is LDAPBaseDN. Other keywords are
 optional and defaults are ok for local testing.
