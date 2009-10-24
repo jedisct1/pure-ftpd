@@ -260,3 +260,5 @@ with paths containing a /./ mark.
 * Xianghu Zhao - spotted the fact that charset conversion was needed on
 directory names in traditional listings.
 * Todd Rinaldo - sent a compatibility fix for GCC 2.95
+* Henning Brauer - reported that empty passwords would bind anonymously
+using LDAP.
