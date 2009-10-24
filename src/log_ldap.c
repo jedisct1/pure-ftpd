@@ -480,22 +480,22 @@ void pw_ldap_check(AuthResult * const result,
     if (use_ldap_bind_method == 1 && result->backend_data != NULL) {
         LDAP *ld;
         char *dn = (char *) result->backend_data;
+        int ok = 0;
         
         /* Verify password by binding to LDAP */
-        if (password == NULL || *password == 0) {
-            free(result->backend_data);            
-            return;
+        if (password != NULL && *password != 0 &&
+            (ld = pw_ldap_connect(dn, password)) != NULL) {
+            ldap_unbind(ld);
+            ok = 1;
         }
-        if ((ld = pw_ldap_connect(dn, password)) != NULL) {
-             ldap_unbind(ld);
-        } else {
-            free(result->backend_data);
+        free(result->backend_data);
+        result->backend_data = NULL;
+        if (ok <= 0) {
             return;
         }
     } else {
-        if (result->backend_data != NULL) {
-            free(result->backend_data);
-        }        
+        free(result->backend_data);
+        result->backend_data = NULL;
         spwd = pw->pw_passwd;
         if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
                         sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
