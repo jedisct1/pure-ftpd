@@ -139,7 +139,9 @@ for it, Daniel by pointing out that users could use the races to upload past
 their virtual quota when uploads and deletes are mixed.
 * Peter Ahlert <petera@gmx.net> - Reported a missing line in the
 README.Authentication-Modules sample.
-* Michele Pes - Reporting that --with-tls was documented in the README file.
+* Michele Pes - Reporting that --with-tls was documented in the README file,
+that the server required a change to compile with gcc2 and that --with-cork
+was still documented.
 
 
 
