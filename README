@@ -357,9 +357,6 @@ from these filesystems, you have to use the --without-sendfile switch to
 enable a workaround. It was also reported that PA-Risc Linux systems need this
 flag.
 
---without-cork: disable TCP_CORK optimization. Needed for some Linux
-variants like on Playstation.
-
 --without-shadow: ignore the shadow passwords, even though they are
 auto-detected. Usually a bad idea, unless you use PAM, LDAP or SQL.
 Pure-FTPd support expiration dates of shadow passwords (both for accounts
