@@ -1,3 +1,6 @@
+* Version 1.0.25:
+ - More gcc 2 compatibility, thanks to Todd Rinaldo.
+
 * Version 1.0.24:
  - Refuse empty passwords in LDAP bind mode. Reported by Henning Brauer.
  - The package can now be compiled with gcc 2.

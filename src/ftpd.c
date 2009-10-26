@@ -1172,6 +1172,9 @@ void donoop(void)
 void doallo(const off_t size)
 {
     int ret = -1;
+#ifdef QUOTAS
+    Quota quota;
+#endif
     
     if (size <= 0) {
         ret = 0;
@@ -1179,8 +1182,6 @@ void doallo(const off_t size)
         ret = 0;
     }
 #ifdef QUOTAS
-    Quota quota;
-    
     if (quota_update(&quota, 0LL, 0LL, NULL) == 0) {
         if (quota.files >= user_quota_files ||
             quota.size >= user_quota_size ||
