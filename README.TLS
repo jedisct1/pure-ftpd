@@ -2,8 +2,10 @@
 
        ------------------------ SSL/TLS SUPPORT ------------------------  
 
-  Starting with version 1.0.16, Pure-FTPd has experimental support for
-encryption of the control and data channels using SSL/TLS security mechanisms.
+  Pure-FTPd has experimental support for encryption of the control and data
+channels using SSL/TLS security mechanisms. Support for encrypted commands
+began with version 1.0.16, and encryption of the data channel has been
+implemented in version 1.0.22.
 
   When this extra security layer is enabled, login and passwords are no more
 sent cleartext. Neither are other commands sent by your client nor replies

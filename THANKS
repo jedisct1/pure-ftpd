@@ -264,3 +264,5 @@ directory names in traditional listings.
 * Todd Rinaldo - sent two compatibility fixes for GCC 2.95
 * Henning Brauer - reported that empty passwords would bind anonymously
 using LDAP.
+* Darcy Patridge - reported a mistake in the documentation.
+
