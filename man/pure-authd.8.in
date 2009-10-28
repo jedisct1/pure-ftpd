@@ -1,4 +1,4 @@
-.TH "pure-authd" "8" "1.0.24" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-authd" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-authd \- External authentication agent for Pure\-FTPd.

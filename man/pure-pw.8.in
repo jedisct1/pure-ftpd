@@ -1,4 +1,4 @@
-.TH "pure-pw" "8" "1.0.25" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-pw" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-pw \- Manage virtual users files for Pure\-FTPd

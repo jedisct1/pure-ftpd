@@ -1,4 +1,4 @@
-.TH "pure-pwconvert" "8" "1.0.0" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-pwconvert" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-pwconvert \- Generate a virtual users file from system accounts

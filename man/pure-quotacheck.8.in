@@ -1,4 +1,4 @@
-.TH "pure-quotacheck" "8" "1.0.0" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-quotacheck" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-quotacheck \- Update virtual quota files for Pure\-FTPd

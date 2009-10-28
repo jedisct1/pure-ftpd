@@ -8,7 +8,7 @@
 .\" warranty, or liability of any kind.
 .\" 
 .\" 
-.TH "pure-mrtginfo" "8" "1.0.0" "Pure-FTPd Team" "Pure-FTPd"
+.TH "pure-mrtginfo" "8" "@VERSION@" "Pure-FTPd Team" "Pure-FTPd"
 .SH "NAME"
 pure-mrtginfo \- provide an MRTG\-graphable user count for ftpd
 

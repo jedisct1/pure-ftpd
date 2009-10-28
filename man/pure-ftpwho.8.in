@@ -1,4 +1,4 @@
-.TH "pure-ftpwho" "8" "1.0.18" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-ftpwho" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-ftpwho \- Report current FTP sessions

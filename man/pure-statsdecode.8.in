@@ -1,4 +1,4 @@
-.TH "pure-statsdecode" "8" "1.0.0" "Pure-FTPd team" "Pure-FTPd"
+.TH "pure-statsdecode" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
 .LP 
 pure\-statsdecode \- Show human\-readable dates from a "stats" logfile
