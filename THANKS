@@ -142,7 +142,7 @@ README.Authentication-Modules sample.
 * Michele Pes - Reporting that --with-tls was documented in the README file,
 that the server required a change to compile with gcc2 and that --with-cork
 was still documented.
-
+* Mime Cuvalo - Reported the symlinks weren't handled consistently in MSLD.
 
 
 Mailing list-members :
