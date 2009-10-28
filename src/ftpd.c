@@ -1088,10 +1088,22 @@ int modernformat(const char *file, char *target, size_t target_size,
     struct stat st;
     int ret = 0;
     
-    if (stat(file, &st) != 0 ||
-        !(t = gmtime((time_t *) &st.st_mtime))) {
+    if (lstat(file, &st) != 0 || !(t = gmtime((time_t *) &st.st_mtime))) {
         return -1;
     }
+#if !defined(MINIMAL) && !defined(ALWAYS_SHOW_SYMLINKS_AS_SYMLINKS)
+    if (
+# ifndef ALWAYS_SHOW_RESOLVED_SYMLINKS
+        broken_client_compat != 0 &&
+# endif
+        S_ISLNK(st.st_mode)) {
+        struct stat sts;
+        
+        if (stat(file, &sts) == 0 && !S_ISLNK(sts.st_mode)) {
+            st = sts;
+        }
+    } /* Show non-dangling symlinks as files/directories */
+#endif    
     if (S_ISREG(st.st_mode)) {
         ft = "file";
     } else if (S_ISDIR(st.st_mode)) {
@@ -1106,6 +1118,8 @@ int modernformat(const char *file, char *target, size_t target_size,
         } else if (*file == '/' && file[1] == 0) {
             ft = "pdir";
         }
+    } else if (S_ISLNK(st.st_mode)) {
+        ft = "slink";
     } else {
         ft = "unknown";
     }
