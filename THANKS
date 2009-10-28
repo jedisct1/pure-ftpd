@@ -26,7 +26,7 @@ didn't parse properly the SIZE return)
 * M.Robbins (reported OpenLDAP 1.x compilation problem)
 * Marc Dukes (xinetd configuration)
 * Juergen Nagel (reported that it didn't work with old libc)
-* Marcus Danielsson <safety@fatelabs.com> (reported USER null deref).
+* Marcus Danielsson <safety at fatelabs.com> (reported USER null deref).
 * Daniel Elsaesser (suggested the -E flag and reported an AbsoluteFTP bug)
 * Jobush (thanks for your suggestions)
 * Simon Lyngshede (--bind thing, good for the FAQ)
@@ -36,15 +36,15 @@ didn't parse properly the SIZE return)
 * Jason Piterak (reported the 0.97.1 passive bug)
 * Martin Gerardi (proposed user-domain ACL)
 * Jean-Francois Cousi (stress-testing pureftpd on production servers)
-* Patrick <patrick@xsinet.com> (testing the FreeBSD port)
+* Patrick <patrick at xsinet.com> (testing the FreeBSD port)
 * Gunnar Isaksson
 * Shea Martin (reported the -U failure and suggested '.banner' for
 everyone)
-* Olivier Tharan <olive@zehc.net> (pointed out that Xinetd needs -USR2 not
+* Olivier Tharan <olive at zehc.net> (pointed out that Xinetd needs -USR2 not
 -HUP) .
 * Jean-Philippe Le Hénaff (suggested the welcome.msg compatibility and
 reported ftpwho bandwidth problems) .
-* Erik (Cirvam, <erik@sublevo.com>) for his very nice help on the Solaris
+* Erik (Cirvam, <erik at sublevo.com>) for his very nice help on the Solaris
 port.
 * François SIMOND.
 * Brian B (MrBubbs) for reporting that long-options weren't implemented on
@@ -67,12 +67,12 @@ reported various logging-related issues.
 * Brandon Covert - Thanks for reporting the pure-ftpwho parsing bug.
 * Sacha Hoehne.
 * Johan Schuld.
-* Wouter de Jong <wouter@widexs.nl>
+* Wouter de Jong <wouter at widexs.nl>
 * Keith Vance - Thanks a lot for the Mac testing.
 * Sami Farin - Thanks for reporting the bad fd CORKing in error()
 * David Vincelli - Reported OpenBSD issues.
 * Adrian Zurek - Suggested LDAP improvements.
-* Oliver Soell <oliver@fusionit.com> - RPM fixes.
+* Oliver Soell <oliver at fusionit.com> - RPM fixes.
 * Bernhard Weisshuhn - Reported that RNTO should work with existing targets.
 Corrected the german translation for grammatical/spelling errors.
 * Leszek Reimus - Suggested that /./ mix with -a to get chrooted useres with
@@ -94,29 +94,29 @@ implemented quotas in the MySQL backend.
 * Robin Ericsson - Implemented support for MySQL password() function.
 * Robert Wierzbicki - Reported a typo in README.Virtual-Users.
 * Ben Weir - Reported and straced a bug in pure-pw.
-* Eric <ericnew@pacific.net.sg> - Reported a quota bug.
+* Eric <ericnew at pacific.net.sg> - Reported a quota bug.
 * Eric Larsson - Reported a ftpwho bug.
 * Gareth Woolrdige - Fixed compilation on Corel Netwinder devices.
-* Mariusz Pekala <skoot@poczta.onet.pl> - Fixed typo-errors in the polish
+* Mariusz Pekala <skoot at poczta.onet.pl> - Fixed typo-errors in the polish
 translation.
-* Paul <paul@chipmunkweb.yi.org> - Provided SSH access to sort out a bug
+* Paul <paul at chipmunkweb.yi.org> - Provided SSH access to sort out a bug
 with a specific glibc version.
 * Benoit Massard - Suggested that dot-files should be given access even when
 virtual quotas are enabled.
 * Jan Pavlik - Reported that .ftpquota was counted in pure-quotacheck.
 * Ben Gertzfield (che_fox) - Fixed Solaris compilation and LDAP SSL
 dependencies.
-* Pierre <pierre@epinetworx.com> - Reported a compilation bug with extauth.
-* Mark Reidel <mr@domainfactory.de> - Reported that users couldn't revert
+* Pierre <pierre at epinetworx.com> - Reported a compilation bug with extauth.
+* Mark Reidel <mr at domainfactory.de> - Reported that users couldn't revert
 perms on a directory after they removed read/execute access rights.
-* Jose Pedro Oliveira <jpo@di.uminho.pt> - Spec file fixes.
-* Francis Little aka dj_oggy <oggy@hayesbrook.kent.sch.uk> - For his valuable
+* Jose Pedro Oliveira <jpo at di.uminho.pt> - Spec file fixes.
+* Francis Little aka dj_oggy <oggy at hayesbrook.kent.sch.uk> - For his valuable
 help on Sourceforge forums, his testing of snapshot and his helpful advices.
 Thanks a lot, dude.
-* iTooo <itooo@itooo.com> , for reporting a nasty typo in throttling code.
+* iTooo <itooo at itooo.com> , for reporting a nasty typo in throttling code.
 * Martin Hedenfalk (mhe) - Reported that MLST shouldn't accept any option
 nor multiple file names.
-* Ying-Chieh Liao <ijliao@csie.nctu.edu.tw> for the FreeBSD port updates and
+* Ying-Chieh Liao <ijliao at csie.nctu.edu.tw> for the FreeBSD port updates and
 for reporting that simplified and traditional chinese settings were swapped
 in 1.0.12 .
 * Kyle Herbert (http://www.firstnetimpressions.com/) for reporting a typo in
@@ -124,20 +124,20 @@ the example configuration file.
 * Anthony DeRobertis - Fixed the on-demand creation of home directories.
 * Maharaja - Reported a typo in the README file.
 * Tamás Reinhardt (freddyke) - Suggested to have consistent max user lengths.
-* Axel Apitz <a_apitz@pixelpark.com> - Support for Solaris shadow/NIS.
+* Axel Apitz <a_apitz at pixelpark.com> - Support for Solaris shadow/NIS.
 * Yann Bizeul (projects.tynsoe.org) - Reported a Panther specific issue with
 getnameinfo(). Thanks a lot for providing a temporary account on a Panther
 machine in order to implement a workaround.
 * Flaw Zero <flawzero at eyou.com> - Fixes to the simplified Chinese
 translation.
-* Andrew Victor <andrew@sanpeople.com> - Reported some old negative return
+* Andrew Victor <andrew at sanpeople.com> - Reported some old negative return
 codes that were still in recent code.
-* Henri Virtanen <hvirtanen@daous.com> - Suggested SO_REUSEPORT for FreeBSD.
-* Joce <joce@presence-pc.com> and Daniel Broms (Hogberg), Lokomo Systems -
+* Henri Virtanen <hvirtanen at daous.com> - Suggested SO_REUSEPORT for FreeBSD.
+* Joce <joce at presence-pc.com> and Daniel Broms (Hogberg), Lokomo Systems -
 Convinced me to finally implement atomic uploads. Joce by continuously asking
 for it, Daniel by pointing out that users could use the races to upload past
 their virtual quota when uploads and deletes are mixed.
-* Peter Ahlert <petera@gmx.net> - Reported a missing line in the
+* Peter Ahlert <petera at gmx.net> - Reported a missing line in the
 README.Authentication-Modules sample.
 * Michele Pes - Reporting that --with-tls was documented in the README file,
 that the server required a change to compile with gcc2 and that --with-cork
@@ -147,102 +147,102 @@ was still documented.
 
 Mailing list-members :
 
-* ahodgson@simkin.ca (thanks for your opinion on config files and your help
+* ahodgson at simkin.ca (thanks for your opinion on config files and your help
 for CVS repositories)
-* brett@ekit-inc.com 
-* claudiuc@kde.org (romanian translator and great tester)
-* dan_c@pellin.ro 
-* gumz@cs.uni-magdeburg.de (german translator and very nice guy)
-* herbsworld@stny.rr.com 
-* hirona@infotopia.or.jp 
-* ian@ugcs.caltech.edu 
-* iceyeyez@excite.com
-* kaiv@wakkanet.fi 
-* lukas@supremedesigns.com (thanks for helping users on the ML)
-* marc.angles1@fnac.net (who asked the rights questions for a FAQ)
-* mark@grapevine2.net 
-* misiek@pld-linux.org (and everyone from the PLD Linux Distribution :
+* brett at ekit-inc.com 
+* claudiuc at kde.org (romanian translator and great tester)
+* dan_c at pellin.ro 
+* gumz at cs.uni-magdeburg.de (german translator and very nice guy)
+* herbsworld at stny.rr.com 
+* hirona at infotopia.or.jp 
+* ian at ugcs.caltech.edu 
+* iceyeyez at excite.com
+* kaiv at wakkanet.fi 
+* lukas at supremedesigns.com (thanks for helping users on the ML)
+* marc.angles1 at fnac.net (who asked the rights questions for a FAQ)
+* mark at grapevine2.net 
+* misiek at pld-linux.org (and everyone from the PLD Linux Distribution :
                         http://www.pld-linux.org/)
-* ml@splio.com (who reported that accents were filtered)
-* mstern@mac.com 
-* neogenix@xsinet.co.za
-* pureftp@carpediem-it.co.uk (an hosting service company, moving from
+* ml at splio.com (who reported that accents were filtered)
+* mstern at mac.com 
+* neogenix at xsinet.co.za
+* pureftp at carpediem-it.co.uk (an hosting service company, moving from
 proftpd to pureftpd)
-* ricardo@arnet.com.ar 
-* roberttheburton@excite.com 
-* rodl@wtfo.com 
-* silent@heracles.cuties.org 
-* yachar@absium.com (very, very nice guy, helped the debian packaging)
-* yiango@cytanet.com.cy 
-* zero-cool@chello.nl 
-* bkeil@indiana.edu 
-* dan@kaylon.com 
-* gorthem@garcia-luengo.com 
-* ljohnson@stormforge.net 
-* mlong@idsi.net 
-* phatfil@optushome.com.au
-* j@falooley.org (for your patch and your code help proposal)
-* man@t-online.fr (for reporting the bug in space parsing and suggesting
+* ricardo at arnet.com.ar 
+* roberttheburton at excite.com 
+* rodl at wtfo.com 
+* silent at heracles.cuties.org 
+* yachar at absium.com (very, very nice guy, helped the debian packaging)
+* yiango at cytanet.com.cy 
+* zero-cool at chello.nl 
+* bkeil at indiana.edu 
+* dan at kaylon.com 
+* gorthem at garcia-luengo.com 
+* ljohnson at stormforge.net 
+* mlong at idsi.net 
+* phatfil at optushome.com.au
+* j at falooley.org (for your patch and your code help proposal)
+* man at t-online.fr (for reporting the bug in space parsing and suggesting
 webalizer patch/ftpwho/ftpcount)
-* drakkyl@canada.com
-* ppons@cvf.fr
-* robson555@yahoo.com
-* corleone@otenet.gr
-* jasmin.buchert@atlantica.ch
-* hellhound@geek.be (reported the syslog bug)
-* richard@tre-amigos.nu
-* bernard.lheureux@bbsoft4.org
-* ffarkas@lightning.ch
-* chris@widexs.nl (suggested authenticating users on virtual hosts)
-* dalis@upit.ro (thanks for reporting the --without-usernames stuff in
+* drakkyl at canada.com
+* ppons at cvf.fr
+* robson555 at yahoo.com
+* corleone at otenet.gr
+* jasmin.buchert at atlantica.ch
+* hellhound at geek.be (reported the syslog bug)
+* richard at tre-amigos.nu
+* bernard.lheureux at bbsoft4.org
+* ffarkas at lightning.ch
+* chris at widexs.nl (suggested authenticating users on virtual hosts)
+* dalis at upit.ro (thanks for reporting the --without-usernames stuff in
 0.98.5pre2)
-* nxg@nod4mail.pvrr.ru (very nice guy)
-* rem@rss.tl.lv
-* jseelig@compasslearning.com (who reported how to have MSIE open an
+* nxg at nod4mail.pvrr.ru (very nice guy)
+* rem at rss.tl.lv
+* jseelig at compasslearning.com (who reported how to have MSIE open an
 authentication dialog when anonymous users were denied) .
-* Olle <olle@xmms.org> - reported log format error when
+* Olle <olle at xmms.org> - reported log format error when
 working with webalizer
-* Florin Andrei <elf_too@yahoo.com> - SGI Irix fixes.
-* Marc Thoben <chojin@gmx.de> - SuSE init script.
-* Jeffrey Koetsier <jkoetsier@corp.home.nl> - Fixed MySQL documentation typo.
-* Stephan Wentz <wentz@gmx.de> - Helped to solve a bad interaction with
+* Florin Andrei <elf_too at yahoo.com> - SGI Irix fixes.
+* Marc Thoben <chojin at gmx.de> - SuSE init script.
+* Jeffrey Koetsier <jkoetsier at corp.home.nl> - Fixed MySQL documentation typo.
+* Stephan Wentz <wentz at gmx.de> - Helped to solve a bad interaction with
 Macromedia Homesite.
-* Joshua Rodman <joshua_rodman@yahoo.com> - did a major rewrite of
+* Joshua Rodman <joshua_rodman at yahoo.com> - did a major rewrite of
 pure-config.py for reliability and maintainability.
-* Michael Glad <glad@daimi.au.dk> - Submitted a patch to accept long
+* Michael Glad <glad at daimi.au.dk> - Submitted a patch to accept long
 .message files even on Irix.
-* Gareth Blades <info2@gbnetwork.co.uk> - Provided a fix for SMC Barricade
+* Gareth Blades <info2 at gbnetwork.co.uk> - Provided a fix for SMC Barricade
 routers.
-* Shiroiwa Noboru <shira@next-stage.ne.jp> - Reported a bad interaction with
+* Shiroiwa Noboru <shira at next-stage.ne.jp> - Reported a bad interaction with
 FTP Explorer.
-* Ben <ben@zaeon.com> - RPM improvements to build with SQL or LDAP.
-* Philip Mak <mak@aaanime.net> - Suggested that pure-quotacheck should be
+* Ben <ben at zaeon.com> - RPM improvements to build with SQL or LDAP.
+* Philip Mak <mak at aaanime.net> - Suggested that pure-quotacheck should be
 runnable as a non-root user.
 * Adam Kruszewski (Fantomik) and Wojtek "elluin" Kaniewski - Pointed out an
 ugly fucking stupid huge bug (initgroups() called after chroot()).
-* TJ Saunders <tj@castaglia.org> - Reported that Proftpd and
+* TJ Saunders <tj at castaglia.org> - Reported that Proftpd and
 Proftpd-modquota were different packages.
-* Kittiwat Manosuthi <kittiwat@hostpacific.com> - Help with Virtuozzo.
-* Henrik Edlund <henrik@edlund.org> - Suggested documentation fixes
+* Kittiwat Manosuthi <kittiwat at hostpacific.com> - Help with Virtuozzo.
+* Henrik Edlund <henrik at edlund.org> - Suggested documentation fixes
 (quoting field names) in PostgreSQL templates.
-* Joerg Pulz <Joerg.Pulz@frm2.tum.de> - Pointed out that upload-pipe
+* Joerg Pulz <Joerg.Pulz at frm2.tum.de> - Pointed out that upload-pipe
 locking didn't work with daemonization.
-* John Sullivan <john@benzo8.org> - Helped to spot a zeno effect with
+* John Sullivan <john at benzo8.org> - Helped to spot a zeno effect with
 pure-uploadscript in 1.0.15 snapshots when the server was started in inetd
 mode.
-* Aaron D. Marasco <aaron@marasco.com> - Noticed an obsolete comment
+* Aaron D. Marasco <aaron at marasco.com> - Noticed an obsolete comment
 in pure-ftpd.conf .
-* Paul F. William" <paul.williams@uwex.edu> - Reported that Pure-FTPd compiled
+* Paul F. William" <paul.williams at uwex.edu> - Reported that Pure-FTPd compiled
 and worked fine on an IBM RS/6000 system running AIX 5.2 using the Visual Age
 C++ Ver 6.0 compiler.
-* Marshall Pierce <mpierce@hmc.edu> - For his tests on MacOS X.
-* Shantanu <shantanu@dcpl.co.in> - For his valuable exercices in order to
+* Marshall Pierce <mpierce at hmc.edu> - For his tests on MacOS X.
+* Shantanu <shantanu at dcpl.co.in> - For his valuable exercices in order to
 hands solid like steel, ready to type billions of source code :)
-* JG <jg@cms.ac> - Reported a breakage of pure-ftpwho in version 1.0.16.
-* C. Jon Larsen <jlarsen@richweb.com> - Wrote a nice part of the FAQ about the
+* JG <jg at cms.ac> - Reported a breakage of pure-ftpwho in version 1.0.16.
+* C. Jon Larsen <jlarsen at richweb.com> - Wrote a nice part of the FAQ about the
 STOU command.
-* Oscar Sundbon <moose@djuren.org> - Fixed pastos in pid files removal.
-* Agri <agri@desnol.ru> reported that some write() were still in blocking mode
+* Oscar Sundbon <moose at djuren.org> - Fixed pastos in pid files removal.
+* Agri <agri at desnol.ru> reported that some write() were still in blocking mode
 before forking after a new connection was accepted.
 * Christer Mjellem Strand - Reported an useless close() in dochmod() that
 caused wrong errors to  be printed.
