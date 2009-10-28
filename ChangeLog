@@ -1,8 +1,8 @@
 * Version 1.0.25:
- - More gcc 2 compatibility, thanks to Todd Rinaldo.
  - Show symlinks as symlinks in MLSD, except when the broken client
 compatibility mode is turned on and links are not dangling (just like the
 old LIST and NLIST commands). Reported by Mime Cuvalo.
+ - More gcc 2 compatibility, thanks to Todd Rinaldo.
  - Properly handle custom paths in man pages. Thanks to Scott Haneda and
 Mathieu Parisot.
  - Have $localstatedir default to /var as it used to be unless
