@@ -2466,6 +2466,7 @@ void opendata(void)
 
         alarm(idletime);
         for (;;) {
+            pfds[0].revents = pfds[1].revents = 0;
             pollret = poll(pfds, sizeof pfds / sizeof pfds[0], idletime * 1000UL);
             if (pollret <= 0) {
                 die(421, LOG_INFO, MSG_TIMEOUT_DATA, (unsigned long) idletime);
@@ -3181,6 +3182,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     ssize_t readen;
 
     repoll:
+    dlhandler->pfds_f_in.revents = 0;
     pollret = poll(&dlhandler->pfds_f_in, 1U,
                    required_sleep <= 0.0 ?
                    0 : (int) (required_sleep * 1000.0));
@@ -3973,6 +3975,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         ulhandler_throttle(ulhandler, *uploaded, ts_start, &required_sleep);
         if (required_sleep > 0.0) {
             repoll:
+            ulhandler->pfds_command.revents = 0;
             pollret = poll(&ulhandler->pfds_command, 1, required_sleep * 1000.0);
             if (pollret == 0) {
                 return 0;
@@ -4017,6 +4020,8 @@ int ul_send(ULHandler * const ulhandler)
         } else {
             timeout = (int) ulhandler->idletime * 1000;
         }
+        ulhandler->pfds[PFD_DATA].revents =
+            ulhandler->pfds[PFD_COMMANDS].revents = 0;
         pollret = poll(ulhandler->pfds,
                        sizeof ulhandler->pfds / sizeof ulhandler->pfds[0],
                        timeout);
