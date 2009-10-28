@@ -3,6 +3,8 @@
  - Show symlinks as symlinks in MLSD, except when the broken client
 compatibility mode is turned on and links are not dangling (just like the
 old LIST and NLIST commands). Reported by Mime Cuvalo.
+ - Properly handle custom paths in man pages. Thanks to Scott Haneda and
+Mathieu Parisot.
 
 * Version 1.0.24:
  - Refuse empty passwords in LDAP bind mode. Reported by Henning Brauer.

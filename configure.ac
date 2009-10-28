@@ -1354,6 +1354,9 @@ if test -r /dev/random; then
   AC_DEFINE(HAVE_DEV_RANDOM,,[Define if you have /dev/random])
 fi
 
+CONFDIR=`eval echo "$CONFDIR"`
+LOCALSTATEDIR=`eval echo "$LOCALSTATEDIR"`
+
 sysconfdir="$CONFDIR"
 AC_SUBST(sysconfdir)
 localstatedir="$LOCALSTATEDIR"
