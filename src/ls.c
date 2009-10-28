@@ -391,10 +391,9 @@ static int listfile(const PureFileInfo * const fi,  const char *name)
                 _EXIT(EXIT_FAILURE);
             }
             if (S_ISLNK(st.st_mode)) {
-                char *p = alloca_nameline + strlen(alloca_nameline);
-                
+                char *p = alloca_nameline + strlen(alloca_nameline);                
                 {
-                    int sx;
+                    ssize_t sx;
                     
                     if ((sx = readlink(name, m, sizeof m - 1U)) > 0) {
                         m[sx] = 0;
