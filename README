@@ -379,8 +379,15 @@ some people find this not user-friendly.
  --------------/
 
 
-Other traditional autoconf options are of course recognised, like
-"--prefix=" to change the installation prefix, that defaults to "/usr/local/".
+Other traditional autoconf options are of course recognised, in particular:
+
+- "--prefix=" to change the installation prefix, that defaults to "/usr/local/"
+
+- "--sysconfdir=" to change the configuration files directory (defaults to
+"/etc" unless you specified a prefix with --prefix)
+
+- "--localstatedir=" to change the runtime files directory (defaults to
+"/var" even if you specified a prefix with --prefix)
 
 FYI, the binary RPM packages of Pure-FTPd are configured with the following
 command line:

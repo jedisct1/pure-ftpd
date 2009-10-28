@@ -1331,7 +1331,7 @@ if test "x$localstatedir" = 'xNONE' || test "x$localstatedir" = 'x'; then
   LOCALSTATEDIR='/var'
 else
   if test "x$localstatedir" = 'x${prefix}/var'; then
-    if test "x$prefix" = 'xNONE' || test "x$prefix" = 'x/usr'; then
+    if test "x$prefix" = 'xNONE' || test "x$prefix" = 'x/usr' || test "x$localstatedir" = 'x${prefix}/var' ; then
       LOCALSTATEDIR='/var'
     else
       LOCALSTATEDIR="$localstatedir"
