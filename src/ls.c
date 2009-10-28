@@ -277,7 +277,7 @@ static int listfile(const PureFileInfo * const fi,  const char *name)
         name[1] == '.' && name[2] == 0) {
         st.st_mode &= ~S_IFLNK;
         st.st_mode |= S_IFDIR;
-    }  /* Hack to please some Windows client that dislike ../ -> ../ */
+    }  /* Hack to please some Windows clients that dislike ../ -> ../ */
 #endif
 #if !defined(MINIMAL) && !defined(ALWAYS_SHOW_SYMLINKS_AS_SYMLINKS)
     if (
