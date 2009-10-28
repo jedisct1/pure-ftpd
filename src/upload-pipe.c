@@ -83,6 +83,12 @@ int upload_pipe_push(const char *vuser, const char *file)
 {    
     struct flock lock;
     const char starter = 2;
+    size_t sizeof_starter;
+    size_t sizeof_vuser;
+    size_t sizeof_file;
+    size_t sizeof_buf;
+    char *buf;
+    char *pnt;
     
     if (upload_pipe_lock == -1 || upload_pipe_fd == -1 ||
         file == NULL || *file == 0) {
@@ -98,9 +104,21 @@ int upload_pipe_push(const char *vuser, const char *file)
             return -1;
         }        
     }
-    (void) safe_write(upload_pipe_fd, &starter, (size_t) 1U);
-    (void) safe_write(upload_pipe_fd, vuser, strlen(vuser));
-    (void) safe_write(upload_pipe_fd, file, strlen(file) + (size_t) 1U);
+    sizeof_starter = (size_t) 1U;
+    sizeof_vuser = strlen(vuser);
+    sizeof_file = strlen(file) + (size_t) 1U;
+    sizeof_buf = sizeof_starter + sizeof_vuser + sizeof_file;
+    if ((buf = malloc(sizeof_buf)) == NULL) {
+        return -1;
+    }
+    pnt = buf;
+    *buf = starter;
+    pnt += sizeof_starter;
+    memcpy(pnt, vuser, sizeof_vuser);
+    pnt += sizeof_vuser;
+    memcpy(pnt, file, sizeof_file);
+    (void) safe_write(upload_pipe_fd, buf, sizeof_buf);
+    free(buf);
     lock.l_type = F_UNLCK;
     while (fcntl(upload_pipe_lock, F_SETLK, &lock) < 0 && errno == EINTR);
     
