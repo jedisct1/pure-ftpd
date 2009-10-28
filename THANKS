@@ -5,264 +5,198 @@ us build that tiny piece of free software. If you don't see your name in the
 following list, I'm awfully sorry. It's difficult to keep it up to date. But
 as you are reading this, you must be a very nice guy.
 
-Hosting :
-* Typhon SAS : http://www.typhon.com/
+Hosting:
+* Typhon SAS: http://www.typhon.com/
 
-Forum and external contributors :
+External contributors and people who helped in any way, shape or form:
 
-* William Kern(el panic) (thanks for your wish list)
-* Sven Goldt (sorry, no plans for gtar on the fly)
-* Ryan Laginski (suggested for -P feature)
-* JKadilak (reported a Flash FXP feature, good for the FAQ)
-* Nicolas (for all his questions)
-* Guenter Bittner (suggested the umask option and reported that LeechFTP
-didn't parse properly the SIZE return)
-* Jeff Skubick (reported that netfilter lacked EPSV/EPRT support)
-* Alex Black
+* Aaron D. Marasco <aaron at marasco.com> - Noticed an obsolete comment in pure-ftpd.conf .
 * Aaron Stephanic
-* Florent Rushuru
-* Youssef El Fathi
-* Steven Radack
-* M.Robbins (reported OpenLDAP 1.x compilation problem)
-* Marc Dukes (xinetd configuration)
-* Juergen Nagel (reported that it didn't work with old libc)
-* Marcus Danielsson <safety at fatelabs.com> (reported USER null deref).
-* Daniel Elsaesser (suggested the -E flag and reported an AbsoluteFTP bug)
-* Jobush (thanks for your suggestions)
-* Simon Lyngshede (--bind thing, good for the FAQ)
-* Cyberic (-k suggestion)
-* Mason lee (asked for SQL support)
-* Aluminiumcan (investigation of Cisco 675 NAT)
-* Jason Piterak (reported the 0.97.1 passive bug)
-* Martin Gerardi (proposed user-domain ACL)
-* Jean-Francois Cousi (stress-testing pureftpd on production servers)
-* Patrick <patrick at xsinet.com> (testing the FreeBSD port)
-* Gunnar Isaksson
-* Shea Martin (reported the -U failure and suggested '.banner' for
-everyone)
-* Olivier Tharan <olive at zehc.net> (pointed out that Xinetd needs -USR2 not
--HUP) .
-* Jean-Philippe Le Hénaff (suggested the welcome.msg compatibility and
-reported ftpwho bandwidth problems) .
-* Erik (Cirvam, <erik at sublevo.com>) for his very nice help on the Solaris
-port.
-* François SIMOND.
-* Brian B (MrBubbs) for reporting that long-options weren't implemented on
-BSD systems.
-* Jim Jones (suggested -f none) .
-* Kelton.
-* Nicklas Uvelöv.
-* Alec Lanari.
-* Martin Hedenfalk (reported a bug related to listing of symbolic links to
-directories).
-* Thomas Maschutznig.
-* Paul Hansen (Windward) - tracked down the syslog-in-clientfd bug and
-reported various logging-related issues.
-* Olivier Soell.
-* Peter Green (Peyote) - thanks for your bug reports and your posts.
-* Dannej.
-* Juan Carlos Perez.
-* Matthew Hartman.
-* Terry Davis - A very nice guy. He helped to fix ASCII upload issues.
-* Brandon Covert - Thanks for reporting the pure-ftpwho parsing bug.
-* Sacha Hoehne.
-* Johan Schuld.
-* Wouter de Jong <wouter at widexs.nl>
-* Keith Vance - Thanks a lot for the Mac testing.
-* Sami Farin - Thanks for reporting the bad fd CORKing in error()
-* David Vincelli - Reported OpenBSD issues.
+* Adam Kruszewski (Fantomik) and Wojtek "elluin" Kaniewski - Pointed out an ugly fucking stupid huge bug (initgroups() called after chroot()).
 * Adrian Zurek - Suggested LDAP improvements.
-* Oliver Soell <oliver at fusionit.com> - RPM fixes.
-* Bernhard Weisshuhn - Reported that RNTO should work with existing targets.
-Corrected the german translation for grammatical/spelling errors.
-* Leszek Reimus - Suggested that /./ mix with -a to get chrooted useres with
-no ratio.
-* Trilucid - Initial web design of pureftpd.org
-* Rafa Michalski - Reported broken throtting under FreeBSD.
-* Juergen Henge-Ernst - Reported broken process names on Linux.
-* Joe Silva (aka j03y) - Suggested adding "shadow" into PAM rules.
-* John Hart - Fixed access to remote MySQL servers.
-* Christian Janssen - Suggested the --createhomedir switch.
-* Lan Yufeng - Reported a --createhome bug.
-* Jeff Moe - Suggested --without-iplogging.
-* Thomas Ericsson - Reported documentation glitches.
-* Juan Pablo Gimenez - Improved the RPM package.
-* Tomonori Kamitaki - Helped pure-ftpd to work on Playstation 2.
-* Daniel Tschan - Thanks for reporting bugs with uploads and ReiserFS.
-* Marc Jauvin - Reported an incompatibility with old MySQL versions and
-implemented quotas in the MySQL backend.
-* Robin Ericsson - Implemented support for MySQL password() function.
-* Robert Wierzbicki - Reported a typo in README.Virtual-Users.
+* Agri <agri at desnol.ru> reported that some write() were still in blocking mode before forking after a new connection was accepted.
+* Alec Lanari
+* Alex Black
+* Aluminiumcan (investigation of Cisco 675 NAT)
+* Andrew Victor <andrew at sanpeople.com> - Reported some old negative return codes that were still in recent code.
+* Anthony DeRobertis - Fixed the on-demand creation of home directories.
+* Axel Apitz <a_apitz at pixelpark.com> - Support for Solaris shadow/NIS.
+* Ben <ben at zaeon.com> - RPM improvements to build with SQL or LDAP.
+* Ben Gertzfield (che_fox) - Fixed Solaris compilation and LDAP SSL dependencies.
 * Ben Weir - Reported and straced a bug in pure-pw.
+* Benoit Massard - Suggested that dot-files should be given access even when virtual quotas are enabled.
+* Bernhard Weisshuhn - Reported that RNTO should work with existing targets. Corrected the german translation for grammatical/spelling errors.
+* Brandon Covert - Thanks for reporting the pure-ftpwho parsing bug.
+* Brian B (MrBubbs) for reporting that long-options weren't implemented on BSD systems.
+* C. Jon Larsen <jlarsen at richweb.com> - Wrote a nice part of the FAQ about the STOU command.
+* Christer Mjellem Strand - Reported an useless close() in dochmod() that caused wrong errors to  be printed.
+* Christian Janssen - Suggested the --createhomedir switch.
+* Cyberic (-k suggestion)
+* Daniel Elsaesser (suggested the -E flag and reported an AbsoluteFTP bug)
+* Daniel Tschan - Thanks for reporting bugs with uploads and ReiserFS.
+* Dannej.
+* Darcy Patridge - reported a mistake in the documentation.
+* David Majorel - fixed LDAP FTPStatus
+* David Vincelli - Reported OpenBSD issues.
 * Eric <ericnew at pacific.net.sg> - Reported a quota bug.
 * Eric Larsson - Reported a ftpwho bug.
+* Erik (Cirvam, <erik at sublevo.com>) for his very nice help on the Solaris port.
+* Flaw Zero <flawzero at eyou.com> - Fixes to the simplified Chinese translation.
+* Florent Rushuru
+* Florin Andrei <elf_too at yahoo.com> - SGI Irix fixes.
+* Francis Little aka dj_oggy <oggy at hayesbrook.kent.sch.uk> - For his valuable help on Sourceforge forums, his testing of snapshot and his helpful advices. Thanks a lot, dude.
+* François SIMOND.
+* Frederico Gendorf - reported that on-demand directory creation didn't work with paths containing a /./ mark.
+* Gareth Blades <info2 at gbnetwork.co.uk> - Provided a fix for SMC Barricade routers.
 * Gareth Woolrdige - Fixed compilation on Corel Netwinder devices.
-* Mariusz Pekala <skoot at poczta.onet.pl> - Fixed typo-errors in the polish
-translation.
-* Paul <paul at chipmunkweb.yi.org> - Provided SSH access to sort out a bug
-with a specific glibc version.
-* Benoit Massard - Suggested that dot-files should be given access even when
-virtual quotas are enabled.
-* Jan Pavlik - Reported that .ftpquota was counted in pure-quotacheck.
-* Ben Gertzfield (che_fox) - Fixed Solaris compilation and LDAP SSL
-dependencies.
-* Pierre <pierre at epinetworx.com> - Reported a compilation bug with extauth.
-* Mark Reidel <mr at domainfactory.de> - Reported that users couldn't revert
-perms on a directory after they removed read/execute access rights.
-* Jose Pedro Oliveira <jpo at di.uminho.pt> - Spec file fixes.
-* Francis Little aka dj_oggy <oggy at hayesbrook.kent.sch.uk> - For his valuable
-help on Sourceforge forums, his testing of snapshot and his helpful advices.
-Thanks a lot, dude.
-* iTooo <itooo at itooo.com> , for reporting a nasty typo in throttling code.
-* Martin Hedenfalk (mhe) - Reported that MLST shouldn't accept any option
-nor multiple file names.
-* Ying-Chieh Liao <ijliao at csie.nctu.edu.tw> for the FreeBSD port updates and
-for reporting that simplified and traditional chinese settings were swapped
-in 1.0.12 .
-* Kyle Herbert (http://www.firstnetimpressions.com/) for reporting a typo in
-the example configuration file.
-* Anthony DeRobertis - Fixed the on-demand creation of home directories.
-* Maharaja - Reported a typo in the README file.
-* Tamás Reinhardt (freddyke) - Suggested to have consistent max user lengths.
-* Axel Apitz <a_apitz at pixelpark.com> - Support for Solaris shadow/NIS.
-* Yann Bizeul (projects.tynsoe.org) - Reported a Panther specific issue with
-getnameinfo(). Thanks a lot for providing a temporary account on a Panther
-machine in order to implement a workaround.
-* Flaw Zero <flawzero at eyou.com> - Fixes to the simplified Chinese
-translation.
-* Andrew Victor <andrew at sanpeople.com> - Reported some old negative return
-codes that were still in recent code.
+* Guenter Bittner (suggested the umask option and reported that LeechFTP didn't parse properly the SIZE return)
+* Gunnar Isaksson
+* Henning Brauer - reported that empty passwords would bind anonymously using LDAP.
 * Henri Virtanen <hvirtanen at daous.com> - Suggested SO_REUSEPORT for FreeBSD.
-* Joce <joce at presence-pc.com> and Daniel Broms (Hogberg), Lokomo Systems -
-Convinced me to finally implement atomic uploads. Joce by continuously asking
-for it, Daniel by pointing out that users could use the races to upload past
-their virtual quota when uploads and deletes are mixed.
-* Peter Ahlert <petera at gmx.net> - Reported a missing line in the
-README.Authentication-Modules sample.
-* Michele Pes - Reporting that --with-tls was documented in the README file,
-that the server required a change to compile with gcc2 and that --with-cork
-was still documented.
+* Henrik Edlund <henrik at edlund.org> - Suggested documentation fixes (quoting field names) in PostgreSQL templates.
+* JG <jg at cms.ac> - Reported a breakage of pure-ftpwho in version 1.0.16.
+* JKadilak (reported a Flash FXP feature, good for the FAQ)
+* Jan Hudoba - Support for new MySQL scrambling.
+* Jan Hudoba - support for new MySQL password scrambling.
+* Jan Pavlik - Reported that .ftpquota was counted in pure-quotacheck.
+* Jason Piterak (reported the 0.97.1 passive bug)
+* Jean-Francois Cousi (stress-testing pureftpd on production servers)
+* Jean-Philippe Le Hénaff (suggested the welcome.msg compatibility and reported ftpwho bandwidth problems) .
+* Jeff Moe - Suggested --without-iplogging.
+* Jeff Skubick (reported that netfilter lacked EPSV/EPRT support)
+* Jeffrey Koetsier <jkoetsier at corp.home.nl> - Fixed MySQL documentation typo.
+* Jim Jones (suggested -f none) .
+* Jobush (thanks for your suggestions)
+* Joce <joce at presence-pc.com> and Daniel Broms (Hogberg), Lokomo Systems - Convinced me to finally implement atomic uploads. Joce by continuously asking for it, Daniel by pointing out that users could use the races to upload past their virtual quota when uploads and deletes are mixed.
+* Joe Silva (aka j03y) - Suggested adding "shadow" into PAM rules.
+* Joerg Pulz <Joerg.Pulz at frm2.tum.de> - Pointed out that upload-pipe locking didn't work with daemonization.
+* Johan Schuld.
+* Johan Ström - Compatibility with newer OpenLDAP versions.
+* John Hart - Fixed access to remote MySQL servers.
+* John Sullivan <john at benzo8.org> - Helped to spot a zeno effect with pure-uploadscript in 1.0.15 snapshots when the server was started in inetd mode.
+* Jose Pedro Oliveira <jpo at di.uminho.pt> - Spec file fixes.
+* Joshua Rodman <joshua_rodman at yahoo.com> - did a major rewrite of pure-config.py for reliability and maintainability.
+* Juan Carlos Perez.
+* Juan Pablo Gimenez - Improved the RPM package.
+* Juergen Henge-Ernst - Reported broken process names on Linux.
+* Juergen Nagel (reported that it didn't work with old libc)
+* Keith Vance - Thanks a lot for the Mac testing.
+* Kelton.
+* Kittiwat Manosuthi <kittiwat at hostpacific.com> - Help with Virtuozzo.
+* Koczka Ferenc - suggested AUTHD_ENCRYPTED.
+* Kyle Herbert (http://www.firstnetimpressions.com/) for reporting a typo in the example configuration file.
+* Lan Yufeng - Reported a --createhome bug.
+* Leszek Reimus - Suggested that /./ mix with -a to get chrooted useres with no ratio.
+* M.Robbins (reported OpenLDAP 1.x compilation problem)
+* Maharaja - Reported a typo in the README file.
+* Marc Balmer - TLS support for LDAP.
+* Marc Dukes (xinetd configuration)
+* Marc Jauvin - Reported an incompatibility with old MySQL versions and implemented quotas in the MySQL backend.
+* Marc Thoben <chojin at gmx.de> - SuSE init script.
+* Marcus Danielsson <safety at fatelabs.com> (reported USER null deref).
+* Marcus Engene - Fixed an extra free() in the pgsql handler and a documentation error in pgsql.
+* Mariusz Pekala <skoot at poczta.onet.pl> - Fixed typo-errors in the polish translation.
+* Mark Reidel <mr at domainfactory.de> - Reported that users couldn't revert perms on a directory after they removed read/execute access rights.
+* Marshall Pierce <mpierce at hmc.edu> - For his tests on MacOS X.
+* Martin Gerardi (proposed user-domain ACL)
+* Martin Hedenfalk (mhe) - Reported that MLST shouldn't accept any option nor multiple file names.
+* Martin Hedenfalk (reported a bug related to listing of symbolic links to directories).
+* Mason lee (asked for SQL support)
+* Matthew Hartman.
+* Michael Bowe - Reported a buglet in configure script.
+* Michael Glad <glad at daimi.au.dk> - Submitted a patch to accept long .message files even on Irix.
+* Michele Pes - Reporting that --with-tls was documented in the README file, that the server required a change to compile with gcc2 and that --with-cork was still documented.
 * Mime Cuvalo - Reported the symlinks weren't handled consistently in MSLD.
-
-
-Mailing list-members :
-
-* ahodgson at simkin.ca (thanks for your opinion on config files and your help
-for CVS repositories)
+* Ned Holdbrook - reported that MLSD should display dot files.
+* Nicklas Uvelöv.
+* Nicolas (for all his questions)
+* Oliver Soell <oliver at fusionit.com> - RPM fixes.
+* Olivier Soell.
+* Olivier Tharan <olive at zehc.net> (pointed out that Xinetd needs -USR2 not -HUP) .
+* Olle <olle at xmms.org> - reported log format error when working with webalizer
+* Oscar Sundbon <moose at djuren.org> - Fixed pastos in pid files removal.
+* Patrick <patrick at xsinet.com> (testing the FreeBSD port)
+* Paul <paul at chipmunkweb.yi.org> - Provided SSH access to sort out a bug with a specific glibc version.
+* Paul F. William" <paul.williams at uwex.edu> - Reported that Pure-FTPd compiled and worked fine on an IBM RS/6000 system running AIX 5.2 using the Visual Age C++ Ver 6.0 compiler.
+* Paul Hansen (Windward) - tracked down the syslog-in-clientfd bug and reported various logging-related issues.
+* Peter Ahlert <petera at gmx.net> - Reported a missing line in the README.Authentication-Modules sample.
+* Peter Green (Peyote) - thanks for your bug reports and your posts.
+* Philip Mak <mak at aaanime.net> - Suggested that pure-quotacheck should be runnable as a non-root user.
+* Pierre <pierre at epinetworx.com> - Reported a compilation bug with extauth.
+* Rafa Michalski - Reported broken throtting under FreeBSD.
+* Robert Wierzbicki - Reported a typo in README.Virtual-Users.
+* Robin Ericsson - Implemented support for MySQL password() function.
+* Ryan Laginski (suggested for -P feature)
+* Sacha Hoehne.
+* Sami Farin - Thanks for reporting the bad fd CORKing in error()
+* Shantanu <shantanu at dcpl.co.in> - For his valuable exercices in order to hands solid like steel, ready to type billions of source code
+* Shea Martin (reported the -U failure and suggested '.banner' for everyone)
+* Shiroiwa Noboru <shira at next-stage.ne.jp> - Reported a bad interaction with FTP Explorer.
+* Simon Lyngshede (--bind thing, good for the FAQ)
+* Stephan Wentz <wentz at gmx.de> - Helped to solve a bad interaction with Macromedia Homesite.
+* Steven Radack
+* Sven Goldt (sorry, no plans for gtar on the fly)
+* TJ Saunders <tj at castaglia.org> - Reported that Proftpd and Proftpd-modquota were different packages.
+* Tamás Reinhardt (freddyke) - Suggested to have consistent max user lengths.
+* Terry Davis - A very nice guy. He helped to fix ASCII upload issues.
+* Thomas Ericsson - Reported documentation glitches.
+* Thomas Maschutznig.
+* Todd Rinaldo - sent two compatibility fixes for GCC 2.95
+* Tomonori Kamitaki - Helped pure-ftpd to work on Playstation 2.
+* Trilucid - Initial web design of pureftpd.org
+* Ulrich Zehl - Found a documentation error in the sample LDAP schema.
+* William Kern(el panic) (thanks for your wish list)
+* Wouter de Jong <wouter at widexs.nl>
+* Xianghu Zhao - spotted the fact that charset conversion was needed on directory names in traditional listings.
+* Yann Bizeul (projects.tynsoe.org) - Reported a Panther specific issue with getnameinfo(). Thanks a lot for providing a temporary account on a Panther machine in order to implement a workaround.
+* Ying-Chieh Liao <ijliao at csie.nctu.edu.tw> for the FreeBSD port updates and for reporting that simplified and traditional chinese settings were swapped in 1.0.12 .
+* Youssef El Fathi
+* ahodgson at simkin.ca (thanks for your opinion on config files and your help for CVS repositories)
+* bernard.lheureux at bbsoft4.org
+* bkeil at indiana.edu 
 * brett at ekit-inc.com 
+* chris at widexs.nl (suggested authenticating users on virtual hosts)
 * claudiuc at kde.org (romanian translator and great tester)
+* corleone at otenet.gr
+* dalis at upit.ro (thanks for reporting the --without-usernames stuff in 0.98.5pre2)
+* dan at kaylon.com 
 * dan_c at pellin.ro 
+* drakkyl at canada.com
+* ffarkas at lightning.ch
+* gorthem at garcia-luengo.com 
 * gumz at cs.uni-magdeburg.de (german translator and very nice guy)
+* hellhound at geek.be (reported the syslog bug)
 * herbsworld at stny.rr.com 
 * hirona at infotopia.or.jp 
+* iTooo <itooo at itooo.com> , for reporting a nasty typo in throttling code.
 * ian at ugcs.caltech.edu 
 * iceyeyez at excite.com
+* j at falooley.org (for your patch and your code help proposal)
+* jasmin.buchert at atlantica.ch
+* jseelig at compasslearning.com (who reported how to have MSIE open an authentication dialog when anonymous users were denied) .
 * kaiv at wakkanet.fi 
+* ljohnson at stormforge.net 
 * lukas at supremedesigns.com (thanks for helping users on the ML)
+* man at t-online.fr (for reporting the bug in space parsing and suggesting
 * marc.angles1 at fnac.net (who asked the rights questions for a FAQ)
 * mark at grapevine2.net 
-* misiek at pld-linux.org (and everyone from the PLD Linux Distribution :
-                        http://www.pld-linux.org/)
+* misiek at pld-linux.org (and everyone from the PLD Linux Distribution: http://www.pld-linux.org/)
 * ml at splio.com (who reported that accents were filtered)
+* mlong at idsi.net 
 * mstern at mac.com 
 * neogenix at xsinet.co.za
-* pureftp at carpediem-it.co.uk (an hosting service company, moving from
-proftpd to pureftpd)
+* nxg at nod4mail.pvrr.ru (very nice guy)
+* phatfil at optushome.com.au
+* ppons at cvf.fr
+* pureftp at carpediem-it.co.uk (an hosting service company, moving from proftpd to pureftpd)
+* rem at rss.tl.lv
 * ricardo at arnet.com.ar 
+* richard at tre-amigos.nu
 * roberttheburton at excite.com 
+* robson555 at yahoo.com
 * rodl at wtfo.com 
 * silent at heracles.cuties.org 
 * yachar at absium.com (very, very nice guy, helped the debian packaging)
 * yiango at cytanet.com.cy 
 * zero-cool at chello.nl 
-* bkeil at indiana.edu 
-* dan at kaylon.com 
-* gorthem at garcia-luengo.com 
-* ljohnson at stormforge.net 
-* mlong at idsi.net 
-* phatfil at optushome.com.au
-* j at falooley.org (for your patch and your code help proposal)
-* man at t-online.fr (for reporting the bug in space parsing and suggesting
 webalizer patch/ftpwho/ftpcount)
-* drakkyl at canada.com
-* ppons at cvf.fr
-* robson555 at yahoo.com
-* corleone at otenet.gr
-* jasmin.buchert at atlantica.ch
-* hellhound at geek.be (reported the syslog bug)
-* richard at tre-amigos.nu
-* bernard.lheureux at bbsoft4.org
-* ffarkas at lightning.ch
-* chris at widexs.nl (suggested authenticating users on virtual hosts)
-* dalis at upit.ro (thanks for reporting the --without-usernames stuff in
-0.98.5pre2)
-* nxg at nod4mail.pvrr.ru (very nice guy)
-* rem at rss.tl.lv
-* jseelig at compasslearning.com (who reported how to have MSIE open an
-authentication dialog when anonymous users were denied) .
-* Olle <olle at xmms.org> - reported log format error when
-working with webalizer
-* Florin Andrei <elf_too at yahoo.com> - SGI Irix fixes.
-* Marc Thoben <chojin at gmx.de> - SuSE init script.
-* Jeffrey Koetsier <jkoetsier at corp.home.nl> - Fixed MySQL documentation typo.
-* Stephan Wentz <wentz at gmx.de> - Helped to solve a bad interaction with
-Macromedia Homesite.
-* Joshua Rodman <joshua_rodman at yahoo.com> - did a major rewrite of
-pure-config.py for reliability and maintainability.
-* Michael Glad <glad at daimi.au.dk> - Submitted a patch to accept long
-.message files even on Irix.
-* Gareth Blades <info2 at gbnetwork.co.uk> - Provided a fix for SMC Barricade
-routers.
-* Shiroiwa Noboru <shira at next-stage.ne.jp> - Reported a bad interaction with
-FTP Explorer.
-* Ben <ben at zaeon.com> - RPM improvements to build with SQL or LDAP.
-* Philip Mak <mak at aaanime.net> - Suggested that pure-quotacheck should be
-runnable as a non-root user.
-* Adam Kruszewski (Fantomik) and Wojtek "elluin" Kaniewski - Pointed out an
-ugly fucking stupid huge bug (initgroups() called after chroot()).
-* TJ Saunders <tj at castaglia.org> - Reported that Proftpd and
-Proftpd-modquota were different packages.
-* Kittiwat Manosuthi <kittiwat at hostpacific.com> - Help with Virtuozzo.
-* Henrik Edlund <henrik at edlund.org> - Suggested documentation fixes
-(quoting field names) in PostgreSQL templates.
-* Joerg Pulz <Joerg.Pulz at frm2.tum.de> - Pointed out that upload-pipe
-locking didn't work with daemonization.
-* John Sullivan <john at benzo8.org> - Helped to spot a zeno effect with
-pure-uploadscript in 1.0.15 snapshots when the server was started in inetd
-mode.
-* Aaron D. Marasco <aaron at marasco.com> - Noticed an obsolete comment
-in pure-ftpd.conf .
-* Paul F. William" <paul.williams at uwex.edu> - Reported that Pure-FTPd compiled
-and worked fine on an IBM RS/6000 system running AIX 5.2 using the Visual Age
-C++ Ver 6.0 compiler.
-* Marshall Pierce <mpierce at hmc.edu> - For his tests on MacOS X.
-* Shantanu <shantanu at dcpl.co.in> - For his valuable exercices in order to
-hands solid like steel, ready to type billions of source code :)
-* JG <jg at cms.ac> - Reported a breakage of pure-ftpwho in version 1.0.16.
-* C. Jon Larsen <jlarsen at richweb.com> - Wrote a nice part of the FAQ about the
-STOU command.
-* Oscar Sundbon <moose at djuren.org> - Fixed pastos in pid files removal.
-* Agri <agri at desnol.ru> reported that some write() were still in blocking mode
-before forking after a new connection was accepted.
-* Christer Mjellem Strand - Reported an useless close() in dochmod() that
-caused wrong errors to  be printed.
-* Ulrich Zehl - Found a documentation error in the sample LDAP schema.
-* Marcus Engene - Fixed an extra free() in the pgsql handler and a
-documentation error in pgsql.
-* Michael Bowe - Reported a buglet in configure script.
-* Jan Hudoba - Support for new MySQL scrambling.
-* Marc Balmer - TLS support for LDAP.
-* David Majorel - fixed LDAP FTPStatus
-* Johan Ström - Compatibility with newer OpenLDAP versions.
-* Jan Hudoba - support for new MySQL password scrambling.
-* Koczka Ferenc - suggested AUTHD_ENCRYPTED.
-* Frederico Gendorf - reported that on-demand directory creation didn't work
-with paths containing a /./ mark.
-* Ned Holdbrook - reported that MLSD should display dot files.
-* Xianghu Zhao - spotted the fact that charset conversion was needed on
-directory names in traditional listings.
-* Todd Rinaldo - sent two compatibility fixes for GCC 2.95
-* Henning Brauer - reported that empty passwords would bind anonymously
-using LDAP.
-* Darcy Patridge - reported a mistake in the documentation.
-
