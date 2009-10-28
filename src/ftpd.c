@@ -1083,7 +1083,9 @@ void dobanner(const int type)
 int modernformat(const char *file, char *target, size_t target_size,
                  const char * const prefix)
 {
+    char link_target[MAXPATHLEN + 1U];
     const char *ft;
+    const char *ftx = "";
     struct tm *t;
     struct stat st;
     int ret = 0;
@@ -1119,15 +1121,24 @@ int modernformat(const char *file, char *target, size_t target_size,
             ft = "pdir";
         }
     } else if (S_ISLNK(st.st_mode)) {
-        ft = "slink";
+        ssize_t sx;
+        
+        ft = "OS.unix=symlink";        
+        if ((sx = readlink(file, link_target, sizeof link_target - 1U)) > 0) {
+            link_target[sx] = 0;
+            if (strpbrk(link_target, "\r\n;") == NULL) {
+                ftx = link_target;
+                ft = "OS.unix=slink:";
+            }
+        }
     } else {
         ft = "unknown";
     }
     if (guest != 0) {
         if (SNCHECK(snprintf(target, target_size,
-                             "%stype=%s;siz%c=%llu;modify=%04d%02d%02d%02d%02d%02d;UNIX.mode=0%o;unique=%xg%llx; %s",
+                             "%stype=%s%s;siz%c=%llu;modify=%04d%02d%02d%02d%02d%02d;UNIX.mode=0%o;unique=%xg%llx; %s",
                              prefix,
-                             ft,
+                             ft, ftx,
                              ret ? 'd' : 'e',
                              (unsigned long long) st.st_size,
                              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
