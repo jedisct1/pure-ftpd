@@ -1,4 +1,7 @@
 
+* Version 1.0.25:
+ (to be completed)
+
 * Version 1.0.24:
  - When using LDAP in BIND mode, empty passwords are refused. Reported by
 Henning Brauer.
