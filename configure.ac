@@ -395,7 +395,9 @@ AC_ARG_WITH(pam,
   fi ])
 
 if test "x`uname`" = "xDarwin"; then
-  with_pam="yes"
+  if test "x$with_pam" = "x"; then
+    with_pam="yes"
+  fi
 fi
 
 if test "x$with_pam" = "xyes" ; then
