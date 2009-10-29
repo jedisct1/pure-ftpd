@@ -8,6 +8,8 @@ Mathieu Parisot.
  - Have $localstatedir default to /var as it used to be unless
 --localstatedir=... is explicitely passed to ./configure
  - Use @VERSION@ in man pages.
+ - --without-pam disables PAM on OSX and iPhone.
+ - Allow cross-compilation.
 
 * Version 1.0.24:
  - Refuse empty passwords in LDAP bind mode. Reported by Henning Brauer.
