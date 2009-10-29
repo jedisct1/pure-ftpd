@@ -943,7 +943,7 @@ int main(void)
     return 0;
 }
 ]])],[CONF_SNPRINTF_TYPE=`cat conftestval`
-],[],[])
+],[],[CONF_SNPRINTF_TYPE=8])
 AC_MSG_RESULT(done)
 if test "x$CONF_SNPRINTF_TYPE" = "x" ; then
   AC_MSG_WARN(your operating system doesn't implement snprintf)
@@ -975,7 +975,7 @@ int main(void)
 AC_MSG_RESULT(yes)
 AC_DEFINE(SAFE_GETGROUPS_0,,[Define is getgroups(0, NULL) works on your system])
 ],[AC_MSG_RESULT(no)
-],[])
+],[AC_MSG_RESULT(suppose that it doesnt)])
 
 AC_MSG_CHECKING(whether realpath likes unreadable directories)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1036,7 +1036,8 @@ AC_DEFINE(REALPATH_WORKS_WITH_UNREADABLE_DIRECTORIES,,
 [Define if realpath() works on unreadable directories])
 ],[AC_MSG_RESULT(no)
 AC_DEFINE(USE_BUILTIN_REALPATH)
-],[])
+],[AC_MSG_RESULT(no)
+AC_DEFINE(USE_BUILTIN_REALPATH)])
 
 AC_MSG_CHECKING(whether you already have a standard MD5 implementation)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1063,7 +1064,7 @@ AC_MSG_RESULT(yes)
 AC_DEFINE(USE_SYSTEM_CRYPT_MD5,,[Define if you already have standard
 MD5 functions])
 ],[AC_MSG_RESULT(no)
-],[])
+],[AC_MSG_RESULT(assuming no)])
 
 AC_MSG_CHECKING(whether you already have a standard SHA1 implementation)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1089,7 +1090,7 @@ AC_MSG_RESULT(yes)
 AC_DEFINE(USE_SYSTEM_CRYPT_SHA1,,[Define if you already have standard
 SHA1 functions])
 ],[AC_MSG_RESULT(no)
-],[])
+],[AC_MSG_RESULT(assuming no)])
 
 AC_MSG_CHECKING([whether we are inside a Virtuozzo virtual host])
 if test -d /proc/vz; then
