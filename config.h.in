@@ -57,7 +57,8 @@
    this is either `int' or `gid_t'. */
 #undef GETGROUPS_T
 
-/* Define if the `getloadavg' function needs to be run setuid or setgid. */
+/* Define to 1 if the `getloadavg' function needs to be run setuid or setgid.
+   */
 #undef GETLOADAVG_PRIVILEGED
 
 /* Define to 1 if you have the `alarm' function. */
@@ -227,10 +228,6 @@
 /* Define to 1 if you have the `madvise' function. */
 #undef HAVE_MADVISE
 
-/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
-   to 0 otherwise. */
-#undef HAVE_MALLOC
-
 /* Define to 1 if you have the `mapviewoffile' function. */
 #undef HAVE_MAPVIEWOFFILE
 
@@ -305,10 +302,6 @@
 
 /* Define to 1 if you have the `random' function. */
 #undef HAVE_RANDOM
-
-/* Define to 1 if your system has a GNU libc compatible `realloc' function,
-   and to 0 otherwise. */
-#undef HAVE_REALLOC
 
 /* Define to 1 if you have the `realpath' function. */
 #undef HAVE_REALPATH
@@ -956,9 +949,6 @@
 /* ino_t type */
 #undef ino_t
 
-/* Define to rpl_malloc if the replacement function should be used. */
-#undef malloc
-
 /* Define to `int' if <sys/types.h> does not define. */
 #undef mode_t
 
@@ -970,9 +960,6 @@
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
-
-/* Define to rpl_realloc if the replacement function should be used. */
-#undef realloc
 
 /* sig_atomic_t type */
 #undef sig_atomic_t
