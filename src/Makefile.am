@@ -1,3 +1,5 @@
+noinst_LIBRARIES = libpureftpd.a
+
 sbin_PROGRAMS = \
 	pure-ftpd \
 	pure-mrtginfo \
@@ -14,15 +16,13 @@ bin_PROGRAMS = \
 noinst_PROGRAMS = \
 	ptracetest
 
-pure_ftpd_LDADD = \
-	../puredb/src/libpuredb_read.a \
-	@LDAP_SSL_LIBS@ @GETLOADAVG_LIBS@ @BONJOUR_LDADD@
+libpureftpd_a_CFLAGS = -DINCLUDE_IO_WRAPPERS=1
 
-pure_ftpd_CFLAGS = -DINCLUDE_IO_WRAPPERS=1
+libpureftpd_a_DEPENDS = \
+	../puredb/src/libpuredb_read.a
 
-pure_ftpd_SOURCES = \
+libpureftpd_a_SOURCES = \
 	daemons.c \
-	main.c \
 	ftpd.c \
 	ftpd_p.h \
 	ftpd.h \
@@ -122,6 +122,18 @@ pure_ftpd_SOURCES = \
 	bonjour.h \
 	bonjour.c
 
+pure_ftpd_DEPENDS = \
+	../puredb/src/libpuredb_read.a \
+	libpureftpd.a
+
+pure_ftpd_LDADD = \
+	../puredb/src/libpuredb_read.a \
+	libpureftpd.a \
+	@LDAP_SSL_LIBS@ @GETLOADAVG_LIBS@ @BONJOUR_LDADD@
+
+pure_ftpd_SOURCES = \
+	main.c
+
 pure_mrtginfo_CFLAGS = -DIN_PURE_MRTGINFO=1
 
 pure_mrtginfo_SOURCES = \
@@ -177,6 +189,9 @@ pure_quotacheck_SOURCES = \
 	mysnprintf.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h
+
+pure_pw_DEPENDS = \
+	../puredb/src/libpuredb_write.a
 
 pure_pw_LDADD = \
 	../puredb/src/libpuredb_write.a
