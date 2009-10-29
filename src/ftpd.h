@@ -314,6 +314,7 @@ typedef enum {
     CPL_NONE, CPL_CLEAR, CPL_SAFE, CPL_CONFIDENTIAL, CPL_PRIVATE
 } ChannelProtectionLevel;
 
+int pureftpd_start(int argc, char *argv[]);
 int safe_write(const int fd, const void *buf_, size_t count);
 #ifdef WITH_TLS
 int secure_safe_write(void * const tls_fd, const void *buf_, size_t count);

@@ -5450,7 +5450,7 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
-int main(int argc, char *argv[])
+int pureftpd_start(int argc, char *argv[])
 {
 #ifndef NO_GETOPT_LONG
     int option_index = 0;

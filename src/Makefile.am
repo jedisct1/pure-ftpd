@@ -22,6 +22,7 @@ pure_ftpd_CFLAGS = -DINCLUDE_IO_WRAPPERS=1
 
 pure_ftpd_SOURCES = \
 	daemons.c \
+	main.c \
 	ftpd.c \
 	ftpd_p.h \
 	ftpd.h \
