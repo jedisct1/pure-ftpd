@@ -749,6 +749,10 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define _exit(X) exit(X)
 #endif
 
+#ifndef offsetof
+# define offsetof(type, member) ((size_t) &((type*) NULL)->member)
+#endif    
+    
 #include "bsd-realpath.h"    
 #include "fakechroot.h"
         
