@@ -1335,13 +1335,16 @@ void douser(const char *username)
             }
             pw_.pw_uid = geteuid();
             pw_.pw_gid = getegid();
-# if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-            if ((pw_.pw_dir = getenv("WIN32_ANON_DIR")) == NULL) {
-                pw_.pw_dir = WIN32_ANON_DIR;
+            pw_.pw_dir = NON_ROOT_ANON_DIR;
+            if (home_directory != NULL) {
+                pw_.pw_dir = home_directory;
             }
-# else
-            pw_.pw_dir = strdup(s);    /* checked for == NULL later */
-# endif
+            if (getenv("FTP_ANON_DIR") != NULL) {
+                pw_.pw_dir = getenv("FTP_ANON_DIR");
+            }
+            if (pw_.pw_dir == NULL) {
+                pw_.pw_dir = strdup(s);    /* checked for == NULL later */
+            }
             pw = &pw_;
         }
 #else
@@ -5450,7 +5453,7 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
-int pureftpd_start(int argc, char *argv[])
+int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 {
 #ifndef NO_GETOPT_LONG
     int option_index = 0;
@@ -5459,6 +5462,11 @@ int pureftpd_start(int argc, char *argv[])
     int bypass_ipv6 = 0;
     struct passwd *pw;
 
+    (void) home_directory_;
+#ifdef NON_ROOT_FTP
+    home_directory = home_directory_;
+#endif
+    
 #ifdef PROBE_RANDOM_AT_RUNTIME
     pw_zrand_probe();
 #endif    

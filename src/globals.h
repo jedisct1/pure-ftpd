@@ -183,3 +183,8 @@ GLOBAL(iconv_t iconv_fd_utf82fs, NULL);
 GLOBAL0(void * tls_cnx);
 GLOBAL0(void * tls_data_cnx);
 #endif
+
+#ifdef NON_ROOT_FTP
+GLOBAL0(const char *home_directory)
+#endif
+    

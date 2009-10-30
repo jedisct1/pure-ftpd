@@ -73,7 +73,7 @@ http://www.firedaemon.com/ .
 
   (of course you can use the -e switch to disable anonymous FTP) .
 
-  Alternatively, you can have a WIN32_ANON_DIR environment variable to
+  Alternatively, you can have a FTP_ANON_DIR environment variable to
 define the directory for public files.
 
   Virtual hosting is supported as well. Files must be in:

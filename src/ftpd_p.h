@@ -345,8 +345,8 @@ typedef struct ULHandler_ {
 static struct passwd *fakegetpwnam(const char * const name);
 # define getpwnam(A) fakegetpwnam(A)
 # define getpwuid(A) fakegetpwnam(NULL)
-# define WIN32_ANON_DIR "/ftp"
 #endif
+#define NON_ROOT_ANON_DIR "/ftp"
 
 #ifdef PROBE_RANDOM_AT_RUNTIME
 static const char *random_device;
