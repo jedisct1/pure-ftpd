@@ -5460,7 +5460,8 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
-int pureftpd_start(int argc, char *argv[], const char *home_directory_)
+int pureftpd_start(int argc, char *argv[], const char *home_directory_,
+                   const char *password)
 {
 #ifndef NO_GETOPT_LONG
     int option_index = 0;
@@ -5469,6 +5470,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     int bypass_ipv6 = 0;
     struct passwd *pw;
 
+    (void) password;
     (void) home_directory_;
 #ifdef NON_ROOT_FTP
     home_directory = home_directory_;
