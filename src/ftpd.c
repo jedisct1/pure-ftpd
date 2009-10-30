@@ -4644,6 +4644,9 @@ void error(int n, const char *msg)
 
 static void fixlimits(void)
 {
+#ifdef __IPHONE__
+    return;
+#endif
 #ifdef HAVE_SETRLIMIT
     static struct rlimit lim;
 
@@ -5305,7 +5308,11 @@ static void accept_client(const int active_listen_fd) {
     sigaddset(&set, SIGCHLD);
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
+#ifdef __IPHONE__
+    child = (pid_t) 0;
+#else
     child = fork();
+#endif
     if (child == (pid_t) 0) {
         dup2(clientfd, 0);
         dup2(0, 1);
