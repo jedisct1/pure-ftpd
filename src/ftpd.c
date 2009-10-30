@@ -310,6 +310,9 @@ void _EXIT(const int status)
 #ifdef FTPWHO
     ftpwho_exit();
 #endif
+#ifdef __IPHONE__
+    longjmp(jb, 1);
+#endif
     _exit(status);
 }
 
@@ -6199,6 +6202,27 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
         (void) tls_init_library();
     }
 #endif
+    
+#ifdef __IPHONE__
+    if (setjmp(jb) != 0) {
+        close(0); close(1); close(2); close(datafd); close(xferfd);
+        chroot("/");
+        downloaded = uploaded = 0ULL;
+        datafd = xferfd = -1;
+        root_directory = NULL;
+        loggedin = 0;
+        userchroot = chrooted = 0;
+        guest = 0;
+        type = 2;
+        restartat = (off_t) 0;
+        state_needs_update = 1;
+        atomic_prefix = NULL;
+        stop_server = 0;
+        nb_children = 0;
+        listenfd = listenfd6 = -1;
+        goto bye;
+    }
+#endif
 #if !defined(NO_STANDALONE) && !defined(NO_INETD)
     if (check_standalone() != 0) {
         standalone_server();
@@ -6213,6 +6237,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
 # error Configuration error
 #endif
 
+#ifdef __IPHONE__
+    bye:
+#endif
 #ifdef WITH_UPLOAD_SCRIPT
     upload_pipe_close();
 #endif
@@ -6230,6 +6257,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
             free(previous);
         }
     }
+#ifdef __IPHONE__
+    first_authentications = last_authentications = NULL;
+#endif
     free(trustedip);
 #ifdef WITH_RFC2640
     if (iconv_fd_fs2client != NULL) {
@@ -6253,7 +6283,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
 #ifdef WITH_TLS
     tls_free_library();
 #endif
-#ifdef FTPWHO
+#ifndef __IPHONE__
     _EXIT(EXIT_SUCCESS);
 #endif
 

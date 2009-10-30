@@ -32,6 +32,11 @@
 # include <sys/wait.h>
 #endif
 
+#ifdef __IPHONE__
+# include <setjmp.h>
+static jmp_buf jb;
+#endif
+
 #define DEFAULT_BACKLOG 42
 #define DEFAULT_BACKLOG_DATA 8
 #define NICE_VALUE 10
