@@ -20,8 +20,8 @@ mv libpureftpd.a _libpureftpd-armv6.a
 )
 
 (
-export CFLAGS="-Os -arch i386"
-export LDFLAGS="-arch i386"
+export CFLAGS="-Os -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5"
+export LDFLAGS="-arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5"
 
 rm -fr obj-i386 2>/dev/null
 mkdir obj-i386 2>/dev/null
@@ -33,8 +33,8 @@ mv libpureftpd.a _libpureftpd-i386.a
 )
 
 (
-export CFLAGS="-Os -arch x86_64"
-export LDFLAGS="-arch x86_64"
+export CFLAGS="-Os -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5"
+export LDFLAGS="-arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5"
 
 rm -fr obj-x86_64 2>/dev/null
 mkdir obj-x86_64 2>/dev/null
