@@ -185,6 +185,6 @@ GLOBAL0(void * tls_data_cnx);
 #endif
 
 #ifdef NON_ROOT_FTP
-GLOBAL0(const char *home_directory)
+GLOBAL0(const char *home_directory);
 #endif
     
