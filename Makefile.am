@@ -32,4 +32,6 @@ SUBDIRS = \
 	pam \
 	gui \
 	configuration-file \
-        m4
+	m4 \
+	iphone
+

@@ -10,6 +10,7 @@ Mathieu Parisot.
  - Use @VERSION@ in man pages.
  - --without-pam disables PAM on OSX and iPhone.
  - Allow cross-compilation.
+ - Experimental iPhone target.
 
 * Version 1.0.24:
  - Refuse empty passwords in LDAP bind mode. Reported by Henning Brauer.
