@@ -6302,9 +6302,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
             free(previous);
         }
     }
-#ifdef __IPHONE__
     first_authentications = last_authentications = NULL;
-#endif
     free(trustedip);
 #ifdef WITH_RFC2640
     if (iconv_fd_fs2client != NULL) {
