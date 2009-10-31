@@ -59,8 +59,8 @@ static void randomdelay(void)
 
 int sfgets(void)
 {
-    fd_set rs;
-    struct timeval tv;
+    struct pollfd pfd;
+    int pollret;
     ssize_t readen;
     signed char seen_r = 0;
     static size_t scanned;
@@ -71,15 +71,22 @@ int sfgets(void)
         memmove(cmd, cmd + scanned, readend);   /* safe */
         scanned = (size_t) 0U;
     }
-    tv.tv_sec = idletime;
-    tv.tv_usec = 0;        
-    FD_ZERO(&rs);
+    pfd.fd = clientfd;
+    pfd.events = POLLIN | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
         if (scanned >= readend) {      /* nothing left in the buffer */
-            FD_SET(0, &rs);
-            while (select(1, &rs, NULL, NULL, &tv) <= 0 && errno == EINTR);
-            if (FD_ISSET(0, &rs) == 0) {
+            pfd.revents = 0;
+            while ((pollret = poll(&pfd, 1U, idletime * 1000UL)) < 0 &&
+                   errno == EINTR);
+            if (pollret == 0) {
                 return -1;
+            }
+            if (pollret <= 0 ||
+                (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+                return -2;
+            }
+            if ((pfd.revents & POLLIN) == 0) {
+                continue;
             }
             if (readend >= cmdsize) {
                 break;
@@ -92,8 +99,9 @@ int sfgets(void)
             } else
 #endif
             {
-                while ((readen = read(0, cmd + readend, cmdsize - readend))
-                       < (ssize_t) 0 && errno == EINTR);
+                while ((readen = read(clientfd, cmd + readend,
+                                      cmdsize - readend)) < (ssize_t) 0 &&
+                       errno == EINTR);
             }
             if (readen <= (ssize_t) 0) {
                 return -2;
@@ -190,24 +198,24 @@ char *charset_client2fs(const char * const string)
     inlen = strlen(string);
     outlen_ = outlen = inlen * (size_t) 4U + (size_t) 1U;
     if (outlen <= inlen ||
-	(output_ = output = calloc(outlen, (size_t) 1U)) == NULL) {
-	die_mem();
+        (output_ = output = calloc(outlen, (size_t) 1U)) == NULL) {
+        die_mem();
     }
     if (utf8 > 0 && strcasecmp(charset_fs, "utf-8") != 0) {
-	if (iconv(iconv_fd_utf82fs, (char **) &string,
-		  &inlen, &output_, &outlen_) == (size_t) -1) {
-	    strncpy(output, string, outlen);
-	}
+        if (iconv(iconv_fd_utf82fs, (char **) &string,
+                  &inlen, &output_, &outlen_) == (size_t) -1) {
+            strncpy(output, string, outlen);
+        }
     } else if (utf8 <= 0 && strcasecmp(charset_fs, charset_client) != 0) {
-	if (iconv(iconv_fd_client2fs, (char **) &string,
-		  &inlen, &output_, &outlen_) == (size_t) -1) {
-	    strncpy(output, string, outlen);
-	}
+        if (iconv(iconv_fd_client2fs, (char **) &string,
+                  &inlen, &output_, &outlen_) == (size_t) -1) {
+            strncpy(output, string, outlen);
+        }
     } else {
-	strncpy(output, string, outlen);
+        strncpy(output, string, outlen);
     }
     output[outlen - 1] = 0;    
-		
+    
     return output;
 }
 #endif

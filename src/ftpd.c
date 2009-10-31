@@ -316,6 +316,53 @@ void _EXIT(const int status)
     _exit(status);
 }
 
+static char replybuf[MAX_SERVER_REPLY_LEN * 4U];
+static char *replybuf_pos = replybuf;
+static size_t replybuf_left;
+
+static void client_init_reply_buf(void)
+{
+    replybuf_pos = replybuf;
+    replybuf_left = sizeof replybuf - 1U;
+}
+
+void client_fflush(void)
+{
+    if (replybuf_pos == replybuf) {
+        return;
+    }
+    safe_write(clientfd, replybuf, (size_t) (replybuf_pos - replybuf));
+    client_init_reply_buf();
+}
+
+void client_printf(const char * const format, ...)
+{
+    va_list va;
+    char buf[MAX_SERVER_REPLY_LEN];
+    size_t len;
+    int vlen;
+    
+    va_start(va, format);    
+    vlen = vsnprintf(buf, sizeof buf, format, va);
+    if (vlen < 0 || (size_t) vlen >= sizeof buf) {
+        buf[MAX_SERVER_REPLY_LEN - 1] = 0;
+        len = strlen(buf);
+    } else {
+        len = (size_t) vlen;
+    }
+    if (len >= replybuf_left) {
+        client_fflush();
+    }
+    if (len > replybuf_left) {
+        abort();
+    }
+    memcpy(replybuf_pos, buf, len);
+    replybuf_pos += len;
+    replybuf_left -= len;
+    
+    va_end(va);
+}
+
 void die(const int err, const int priority, const char * const format, ...)
 {
     va_list va;
@@ -333,8 +380,8 @@ void die(const int err, const int priority, const char * const format, ...)
     } else
 #endif
     {
-        printf("%d %s\r\n", err, line);
-        fflush(stdout);
+        client_printf("%d %s\r\n", err, line);
+        client_fflush();
     }
     logfile(priority, "%s", line);
     _EXIT(-priority - 1);
@@ -749,7 +796,7 @@ void doreply(void)
 {
     struct reply *scannedentry;
     struct reply *nextentry;
-    
+
     if ((scannedentry = firstreply) == NULL) {
         return;
     }
@@ -765,17 +812,16 @@ void doreply(void)
         } else
 #endif
         {
-            printf("%3d%c%s\r\n", replycode, nextentry == NULL ? ' ' : '-',
-                   scannedentry->line);
+            client_printf("%3d%c%s\r\n", replycode,
+                          nextentry == NULL ? ' ' : '-',
+                          scannedentry->line);
         }
         if (logging > 1) {
             logfile(LOG_DEBUG, "%3d%c%s", replycode, 
                     nextentry == NULL ? ' ' : '-', scannedentry->line);
         }       
     } while ((scannedentry = nextentry) != NULL);
-    fflush(stdout);    
-    /* We don't free() after printf() because of Solaris stream bugs,
-     * Thanks to Kenneth Stailey */
+    client_fflush();
     scannedentry = firstreply;
     do {
         nextentry = scannedentry->next;
@@ -2486,7 +2532,7 @@ void opendata(void)
         int pollret;
         
         pfd = &pfds[0];
-        pfd->fd = 0;
+        pfd->fd = clientfd;
         pfd->events = POLLERR | POLLHUP;
         pfd->revents = 0;
         
@@ -3423,7 +3469,7 @@ void doretr(char *name)
     
     started = get_usec_time();
 
-    if (mmap_init(&dlhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
+    if (mmap_init(&dlhandler, clientfd, tls_cnx, xferfd, name, f, tls_data_cnx,
                   restartat, type == 1, throttling_bandwidth_dl) == 0) {
         ret = mmap_send(&dlhandler);
         mmap_exit(&dlhandler);        
@@ -4317,7 +4363,7 @@ void dostor(char *name, const int append, const int autorename)
 
     started = get_usec_time();    
     
-    if (ul_init(&ulhandler, 0, tls_cnx, xferfd, name, f, tls_data_cnx,
+    if (ul_init(&ulhandler, clientfd, tls_cnx, xferfd, name, f, tls_data_cnx,
                 restartat, type == 1, throttling_bandwidth_ul,
                 max_filesize) == 0) {
         ret = ul_send(&ulhandler);
@@ -4756,10 +4802,15 @@ static int fortune(void)
 static int check_standalone(void)
 {
     socklen_t socksize = (socklen_t) sizeof ctrlconn;
-
     if (getsockname(0, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
+        clientfd = -1;
         return 1;
     }
+    if (dup2(0, 1) == -1) {
+        _EXIT(EXIT_FAILURE);
+    }
+    clientfd = 0;
+
     return 0;
 }
 #endif
@@ -4887,15 +4938,16 @@ static void doit(void)
     unsigned int users = 0U;
     int display_banner = 1;
 
+    client_init_reply_buf();
     session_start_time = time(NULL);
     fixlimits();
 #ifdef F_SETOWN
-    fcntl(0, F_SETOWN, getpid());
+    fcntl(clientfd, F_SETOWN, getpid());
 #endif
     set_signals_client();
     (void) umask((mode_t) 0);
     socksize = (socklen_t) sizeof ctrlconn;
-    if (getsockname(0, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
+    if (getsockname(clientfd, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
         die(421, LOG_ERR, MSG_NO_SUPERSERVER);
     }
     fourinsix(&ctrlconn);
@@ -4911,7 +4963,7 @@ static void doit(void)
        anon_only = 1;
     }
     socksize = (socklen_t) sizeof peer;
-    if (getpeername(0, (struct sockaddr *) &peer, &socksize)) {
+    if (getpeername(clientfd, (struct sockaddr *) &peer, &socksize)) {
         die(421, LOG_ERR, MSG_GETPEERNAME ": %s" , strerror(errno));
     }
     fourinsix(&peer);
@@ -5039,21 +5091,19 @@ static void doit(void)
         int fodder;
 #ifdef IPTOS_LOWDELAY
         fodder = IPTOS_LOWDELAY;
-        setsockopt(0, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);
-        setsockopt(1, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);        
+        setsockopt(clientfd, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);
 #endif
 #ifdef SO_OOBINLINE
         fodder = 1;
-        setsockopt(0, SOL_SOCKET, SO_OOBINLINE, 
+        setsockopt(clientfd, SOL_SOCKET, SO_OOBINLINE,
                    (char *) &fodder, sizeof fodder);
 #endif
 #ifdef TCP_NODELAY
         fodder = 1;
-        setsockopt(1, IPPROTO_TCP, TCP_NODELAY,
+        setsockopt(clientfd, IPPROTO_TCP, TCP_NODELAY,
                    (char *) &fodder, sizeof fodder);
 #endif
-        keepalive(0, 0);
-        keepalive(1, 0);            
+        keepalive(clientfd, 0);
     }
 #ifdef HAVE_SRANDOMDEV
     srandomdev();
@@ -5257,7 +5307,6 @@ static void accept_client(const int active_listen_fd) {
     struct sockaddr_storage sa;
     socklen_t dummy;
     pid_t child;
-    int clientfd;   
     
     memset(&sa, 0, sizeof sa);
     dummy = (socklen_t) sizeof sa;  
@@ -5304,6 +5353,7 @@ static void accept_client(const int active_listen_fd) {
                 }
             }
             (void) close(clientfd);
+            clientfd = -1;
             return;
         }
     }
@@ -5312,22 +5362,14 @@ static void accept_client(const int active_listen_fd) {
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
 #ifdef __IPHONE__
+    close(listenfd);
+    close(listenfd6);
+    listenfd = listenfd6 = -1;
     child = (pid_t) 0;
 #else
     child = fork();
 #endif
     if (child == (pid_t) 0) {
-        dup2(clientfd, 0);
-        dup2(0, 1);
-        if (clientfd > 1) {
-            (void) close(clientfd);
-        }
-        if (listenfd > 1) {
-            (void) close(listenfd);
-        }
-        if (listenfd6 > 1) {
-            (void) close(listenfd6);
-        }
         if (isatty(2)) {
             (void) close(2);
         }
@@ -5349,6 +5391,7 @@ static void accept_client(const int active_listen_fd) {
         }
     }
     (void) close(clientfd);
+    clientfd = -1;
     sigprocmask(SIG_UNBLOCK, &set, NULL);   
 }
 
@@ -6205,7 +6248,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
     
 #ifdef __IPHONE__
     if (setjmp(jb) != 0) {
-        close(0); close(1); close(2); close(datafd); close(xferfd);
+        close(listenfd); close(listenfd6);
+        listenfd = listenfd6 = -1;        
+        close(clientfd); close(datafd); close(xferfd);
+        clientfd = datafd = xferfd = -1;
         chroot("/");
         downloaded = uploaded = 0ULL;
         datafd = xferfd = -1;
@@ -6219,7 +6265,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
         atomic_prefix = NULL;
         stop_server = 0;
         nb_children = 0;
-        listenfd = listenfd6 = -1;
         goto bye;
     }
 #endif

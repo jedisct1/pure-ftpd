@@ -847,7 +847,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
         }
 #endif
     } else {                           /* STAT command */
-        c = 1;
+        c = clientfd;
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
             secure_safe_write(tls_cnx, "213-STAT" CRLF,

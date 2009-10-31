@@ -257,10 +257,10 @@ void pw_extauth_check(AuthResult * const result,
         linepnt = crpoint + 1;        
     }
     if (auth_finalized == 0 ||
-    (result->auth_ok == 1 && 
-     (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0 || 
-      result->dir == NULL))) {
-    result->auth_ok = -1;
+        (result->auth_ok == 1 && 
+         (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0 || 
+          result->dir == NULL))) {
+        result->auth_ok = -1;
     }
     bye:
     if (kindy != -1) {

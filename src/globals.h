@@ -23,6 +23,7 @@ GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(unsigned long throttling_bandwidth_ul);
 GLOBAL0(signed char allowfxp);                    /* 0=no fxp 1=authenticated 2=everybody */
 GLOBAL0(signed char passive);
+GLOBAL(int clientfd, 0);                   /* command connection file descriptor */
 GLOBAL(int datafd, -1);                    /* data connection file descriptor */
 GLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
 GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */

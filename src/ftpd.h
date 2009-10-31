@@ -366,6 +366,9 @@ void donlist(char *arg, const int on_ctrlconn, const int opt_l_,
              const int opt_a_, const int split_args);
 void opendata(void);
 void closedata(void);
+void client_fflush(void);
+void client_printf(const char * const format, ...)
+    __attribute__ ((format(printf, 1, 2)));    
 void addreply(const int code, const char * const line, ...)
     __attribute__ ((format(printf, 2, 3)));
 void addreply_noformat(const int code, const char * const line);

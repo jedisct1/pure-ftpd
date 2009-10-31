@@ -8,6 +8,7 @@
 # include "ftpd.h"
 # include "tls.h"
 # include "ftpwho-update.h"
+# include "globals.h"
 # include "messages.h"
 
 /*
@@ -228,7 +229,7 @@ int tls_init_new_session(void)
     if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
-    if (SSL_set_rfd(tls_cnx, 0) != 1 || SSL_set_wfd(tls_cnx, 1) != 1) {
+    if (SSL_set_fd(tls_cnx, clientfd) != 1) {
         tls_error(__LINE__, 0);
     }
     SSL_set_accept_state(tls_cnx);    
