@@ -56,7 +56,7 @@ static void fakesnprintf_addstr(char **str, size_t *size, const char *pnt,
     }
     if (padlen > 0U && minuspad == 0U && padlen > maxlenc) {
         size_t maxlenp = padlen - maxlenc;
-
+        
         if (maxlenp > *size) {
             maxlenp = *size;
         }
@@ -129,14 +129,14 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                 *str++ = '%';
                 size--;
                 goto breakpoint_next;
-	    case 'c': {
-		int val;
-		
-		val = va_arg(va, int);
-		*str++ = (char) val;
-		size--;
+            case 'c': {
+                int val;
+                
+                val = va_arg(va, int);
+                *str++ = (char) val;
+                size--;
                 goto breakpoint_next;
-	    }
+            }
             case 'l': case 'L':
                 longs++;
                 goto breakpoint_nextspecial_inc;
@@ -172,7 +172,7 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                 goto breakpoint_nextspecial_noinc;                
             case 's': {
                 const char *pnt;
-
+                
                 pnt = va_arg(va, const char *);
                 if (pnt == NULL) {
                     pnt = "<NULL>";
@@ -187,7 +187,7 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                 char *valspnt = vals + sizeof vals;
                 const char *basics;
                 unsigned int base;
-
+                
                 switch (longs) {
                 case 2:
                     val = va_arg(va, unsigned long long);
@@ -225,7 +225,7 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                 unsigned char minussign = 0U;
                 char vals[256];
                 char *valspnt = vals + sizeof vals;
-
+                
                 switch (longs) {
                 case 2:
                     val = va_arg(va, long long);
@@ -262,7 +262,7 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                 char vals[512];
                 char *valspnt = vals + sizeof vals / 2U;
                 char *valsleft;
-
+                
                 if (longs != 0) {
                     val = va_arg(va, long double);
                 } else {
@@ -313,7 +313,7 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
         return (int) size_;
     }
     *str = 0;
-
+    
     return (int) (size_ - size);
 }
 
@@ -322,11 +322,11 @@ int fakesnprintf_snprintf(char * const str, const size_t size,
 {
     int ret;
     va_list va;
-
+    
     va_start(va, format);
     ret = fakesnprintf_vsnprintf(str, size, format, va);
     va_end(va);
-
+    
     return ret;
 }
 
