@@ -58,6 +58,13 @@ static volatile unsigned int nb_children;
 static volatile int listenfd = -1;
 static volatile int listenfd6 = -1;
 #endif
+#ifdef __IPHONE__
+static volatile sig_atomic_t suspend_client_connections;
+static void (*logout_callback)(void *user_data);
+static void *logout_callback_user_data;
+static void (*login_callback)(void *user_data);
+static void *login_callback_user_data;
+#endif
 
 struct reply {
     struct reply *next;

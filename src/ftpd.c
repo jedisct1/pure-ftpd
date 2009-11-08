@@ -5314,8 +5314,19 @@ static void accept_client(const int active_listen_fd) {
          (active_listen_fd, (struct sockaddr *) &sa, &dummy)) == -1) {
         return;
     }
+#ifdef __IPHONE__
+    if (suspend_client_connections != 0) {
+        (void) close(clientfd);
+        clientfd = -1;
+        return;
+    }
+    if (login_callback != NULL) {
+        (*login_callback)(login_callback_user_data);
+    }
+#endif
     if (STORAGE_FAMILY(sa) != AF_INET && STORAGE_FAMILY(sa) != AF_INET6) {
         (void) close(clientfd);
+        clientfd = -1;
         return;
     }    
     if (maxusers > 0U && nb_children >= maxusers) {
@@ -5327,6 +5338,7 @@ static void accept_client(const int active_listen_fd) {
         (void) fcntl(clientfd, F_SETFL, fcntl(clientfd, F_GETFL) | O_NONBLOCK);
         (void) write(clientfd, line, strlen(line));
         (void) close(clientfd);
+        clientfd = -1;
         return;
     }
     if (maxip > 0U) {
@@ -6260,8 +6272,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
         restartat = (off_t) 0;
         state_needs_update = 1;
         atomic_prefix = NULL;
-        stop_server = 0;
-        nb_children = 0;
+        nb_children = 0;        
+        if (logout_callback != NULL && suspend_client_connections == 0) {
+            (*logout_callback)(logout_callback_user_data);
+        }
         if (stop_server > 0) {
             close(listenfd); close(listenfd6);
             listenfd = listenfd6 = -1;
@@ -6327,15 +6341,23 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
 #ifdef WITH_TLS
     tls_free_library();
 #endif
-#ifndef __IPHONE__
-    _EXIT(EXIT_SUCCESS);
+    
+#ifdef __IPHONE__
+    /* We need to duplicate what is in _EXIT(), minus the jump */
+    delete_atomic_file();
+# ifdef FTPWHO
+    ftpwho_exit();
+# endif
+    stop_server = 0;
+    return 0;
 #endif
+    _EXIT(EXIT_SUCCESS);
 
     return 0;
 }
 
 #ifdef __IPHONE__
-int pureftpd_stop(void)
+int pureftpd_shutdown(void)
 {
     stop_server = 1;
     close(clientfd);
@@ -6344,5 +6366,36 @@ int pureftpd_stop(void)
     datafd = xferfd = -1;
     close(listenfd); close(listenfd6);
     listenfd = listenfd6 = -1;
+    
+    return 0;
 }
+
+int pureftpd_enable(void)
+{
+    suspend_client_connections = 0;
+    
+    return 0;
+}
+
+int pureftpd_disable(void)
+{
+    suspend_client_connections = 1;
+    
+    return 0;
+}
+
+void pureftpd_register_login_callback(void (*callback)(void *user_data),
+                                      void *user_data)
+{
+    login_callback = callback;
+    login_callback_user_data = user_data;
+}
+
+void pureftpd_register_logout_callback(void (*callback)(void *user_data),
+                                       void *user_data)
+{
+    logout_callback = callback;
+    logout_callback_user_data = user_data;
+}
+
 #endif
