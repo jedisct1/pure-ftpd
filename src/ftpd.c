@@ -6262,6 +6262,11 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
         atomic_prefix = NULL;
         stop_server = 0;
         nb_children = 0;
+        if (stop_server > 0) {
+            close(listenfd); close(listenfd6);
+            listenfd = listenfd6 = -1;
+            goto bye;
+        }
     }
 #endif
 #if !defined(NO_STANDALONE) && !defined(NO_INETD)
@@ -6328,3 +6333,16 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
 
     return 0;
 }
+
+#ifdef __IPHONE__
+int pureftpd_stop(void)
+{
+    stop_server = 1;
+    close(clientfd);
+    clientfd = -1;    
+    close(datafd); close(xferfd);
+    datafd = xferfd = -1;
+    close(listenfd); close(listenfd6);
+    listenfd = listenfd6 = -1;
+}
+#endif
