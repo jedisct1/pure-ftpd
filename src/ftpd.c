@@ -5307,7 +5307,7 @@ static void accept_client(const int active_listen_fd) {
     struct sockaddr_storage sa;
     socklen_t dummy;
     pid_t child;
-    
+
     memset(&sa, 0, sizeof sa);
     dummy = (socklen_t) sizeof sa;  
     if ((clientfd = accept
@@ -5362,17 +5362,16 @@ static void accept_client(const int active_listen_fd) {
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
 #ifdef __IPHONE__
-    close(listenfd);
-    close(listenfd6);
-    listenfd = listenfd6 = -1;
     child = (pid_t) 0;
 #else
     child = fork();
 #endif
     if (child == (pid_t) 0) {
+#ifndef __IPHONE__
         if (isatty(2)) {
             (void) close(2);
         }
+#endif
 #ifndef SAVE_DESCRIPTORS
         if (no_syslog == 0) {
             closelog();
@@ -5411,7 +5410,7 @@ static void standalone_server(void)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_addr = NULL;
     on = 1;
-    if (no_ipv4 == 0 &&
+    if (listenfd == -1 && no_ipv4 == 0 &&
         getaddrinfo(standalone_ip, standalone_port, &hints, &res) == 0) {
         if ((listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1 ||
             setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
@@ -5433,7 +5432,7 @@ static void standalone_server(void)
         freeaddrinfo(res);
         set_cloexec_flag(listenfd);     
     }
-    if (v6ready != 0) {
+    if (listenfd6 != -1 && v6ready != 0) {
         hints.ai_family = AF_INET6;
         if (getaddrinfo(standalone_ip, standalone_port, &hints, &res6) == 0) {
             if ((listenfd6 = socket(AF_INET6,
@@ -6248,8 +6247,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
     
 #ifdef __IPHONE__
     if (setjmp(jb) != 0) {
-        close(listenfd); close(listenfd6);
-        listenfd = listenfd6 = -1;        
         close(clientfd); close(datafd); close(xferfd);
         clientfd = datafd = xferfd = -1;
         chroot("/");
@@ -6265,7 +6262,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
         atomic_prefix = NULL;
         stop_server = 0;
         nb_children = 0;
-        goto bye;
     }
 #endif
 #if !defined(NO_STANDALONE) && !defined(NO_INETD)
