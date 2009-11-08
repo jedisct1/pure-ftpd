@@ -15,7 +15,7 @@ rm -fr "obj-$arch" 2>/dev/null
 mkdir "obj-$arch" 2>/dev/null
 cd "obj-$arch" || exit 1
 ../../configure --host=arm-apple-darwin9 --without-inetd --without-pam --with-nonroot || exit 2
-make || make
+make || make
 cd src || exit 1
 mv libpureftpd.a "_libpureftpd-$arch.a"
 )
@@ -31,7 +31,7 @@ rm -fr "obj-$arch" 2>/dev/null
 mkdir "obj-$arch" 2>/dev/null
 cd "obj-$arch" || exit 1
 ../../configure --without-inetd --without-pam --with-nonroot || exit 2
-make || make
+make || make
 cd src || exit 1
 mv libpureftpd.a "_libpureftpd-$arch.a"
 )
