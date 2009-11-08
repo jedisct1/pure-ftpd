@@ -16,9 +16,9 @@
 @synthesize ftpService;
 @synthesize ftpOn;
 
-extern int  pureftpd_start(int argc, char *argv[], const char *baseDir, const char *password);
 extern void pureftpd_register_login_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_logout_callback(void (*callback)(void *user_data), void *user_data);
+extern int  pureftpd_start(int argc, char *argv[], const char *baseDir, const char *password);
 extern int  pureftpd_shutdown(void);
 extern int  pureftpd_enable(void);
 extern int  pureftpd_disable(void);
@@ -135,7 +135,7 @@ void ftpLogoutCallback(void *userData) {
 	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(ftpOnOffStatusChanged:) name: @"ftp_on_off_status_changed" object: nil];
 	
 	[window addSubview:viewController.view];
-    [window makeKeyAndVisible];
+	[window makeKeyAndVisible];
 	
 	[self ftpStart];
 }
