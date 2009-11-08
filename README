@@ -30,9 +30,6 @@ Many people new to Unix are running Pure-FTPd because they find it easy to
 install. But that software is also used on embedded systems and highly loaded
 production servers, especially for hosting services.
 
-Pure-FTPd was also part of a crack-a-machine challenge with other software,
-and that machine never got compromised.
-
 For large sites with centralized user management, Pure-FTPd provides flexible
 authentication schemes including SQL and LDAP backends, plus the ability to
 easily write new custom handlers in any language.
