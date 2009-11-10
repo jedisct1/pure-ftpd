@@ -3498,6 +3498,9 @@ void doretr(char *name)
         ftpwho_unlock();
     }
 #endif
+#ifdef HAVE_POSIX_FADVISE
+    (void) posix_fadvise(f, (off_t) 0, st.st_size, POSIX_FADV_SEQUENTIAL);
+#endif
     
     started = get_usec_time();
 

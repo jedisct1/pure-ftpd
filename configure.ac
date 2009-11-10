@@ -882,7 +882,8 @@ AC_C_VOLATILE
 
 AC_CHECK_FUNCS(initgroups setrlimit waitpid setproctitle getopt_long)
 AC_CHECK_FUNCS(seteuid setreuid setresuid setegid setregid setresgid)
-AC_CHECK_FUNCS(statvfs statfs putenv setenv unsetenv getpagesize realpath pread ptrace)
+AC_CHECK_FUNCS(statvfs statfs putenv setenv unsetenv getpagesize realpath)
+AC_CHECK_FUNCS(pread posix_fadvise ptrace)
 AC_CHECK_FUNCS(strtoull strtoq)
 AC_CHECK_FUNCS(strlcpy strlcat)
 AC_CHECK_FUNCS(memset munmap strdup fileno mapviewoffile madvise)
