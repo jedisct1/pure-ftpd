@@ -1855,6 +1855,9 @@ void dopass(char *password)
         setegid(authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
+    if ((userchroot == 0 || chrooted != 0) && setuid(authresult.uid) != 0) {
+        _EXIT(EXIT_FAILURE);
+    }
     if (seteuid(authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
