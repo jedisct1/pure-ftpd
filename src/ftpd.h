@@ -570,7 +570,10 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define DL_MAX_CHUNK_SIZE (512 * 1024UL)
 #endif
 #ifndef DL_MMAP_SIZE
-# define DL_MMAP_SIZE (10 * 1024 * 1024UL)
+# define DL_MMAP_SIZE (512 * 1024UL)
+#endif
+#if DL_MMAP_SIZE < DL_MAX_CHUNK_SIZE
+# error DL_MMAP_SIZE should be >= DL_MAX_CHUNK_SIZE
 #endif
 
 #ifndef UL_MIN_CHUNK_SIZE
