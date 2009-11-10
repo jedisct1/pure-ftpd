@@ -5535,7 +5535,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_,
 #ifdef NON_ROOT_FTP
     home_directory = home_directory_;
 #endif
-    
+    client_init_reply_buf();    
 #ifdef PROBE_RANDOM_AT_RUNTIME
     pw_zrand_probe();
 #endif    
