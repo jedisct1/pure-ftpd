@@ -123,12 +123,12 @@ libpureftpd_a_SOURCES = \
 	bonjour.c
 
 pure_ftpd_DEPENDS = \
-	../puredb/src/libpuredb_read.a \
-	libpureftpd.a
+	libpureftpd.a \
+	../puredb/src/libpuredb_read.a
 
 pure_ftpd_LDADD = \
-	../puredb/src/libpuredb_read.a \
 	libpureftpd.a \
+	../puredb/src/libpuredb_read.a \
 	@LDAP_SSL_LIBS@ @GETLOADAVG_LIBS@ @BONJOUR_LDADD@
 
 pure_ftpd_SOURCES = \
