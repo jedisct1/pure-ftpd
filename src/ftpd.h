@@ -573,7 +573,7 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # define DL_DLMAP_SIZE (128 * 1024UL)
 #endif
 #if DL_DEFAULT_CHUNK_SIZE > DL_MAX_CHUNK_SIZE || DL_MIN_CHUNK_SIZE > DL_MAX_CHUNK_SIZE
-# error DL_MAX_CHUNK_SIZE shouldn't be <= DL_MIN_CHUNK_SIZE or <= DL_DEFAULT_CHUNK_SIZE
+# error DL_MAX_CHUNK_SIZE shouldnt be <= DL_MIN_CHUNK_SIZE or <= DL_DEFAULT_CHUNK_SIZE
 #endif
 #if DL_DLMAP_SIZE < DL_MAX_CHUNK_SIZE
 # error DL_DLMAP_SIZE should be >= DL_MAX_CHUNK_SIZE
