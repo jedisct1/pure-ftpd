@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonymous felhasználók nem törölhetnek"
 #define MSG_ANON_CANT_OVERWRITE "Anonymous felhasználók talán nem írhatnak felül meglévo fájlokat"
 #define MSG_DELE_FAILED "Nem lehet törölni %s"
-#define MSG_DELE_SUCCESS "%s törölve"
+#define MSG_DELE_SUCCESS "%s%s%s%s törölve"
 #define MSG_DELE_TOTAL_FAILURE "Egyetlen fájl sem lett törölve"
 #define MSG_LOAD_TOO_HIGH \
     "A terhelés %3.2f mikor csatlakoztál. A letöltés le van tiltva\n" \

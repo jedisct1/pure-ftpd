@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonieme gebruikers kunnen geen bestanden wissen"
 #define MSG_ANON_CANT_OVERWRITE "Anonieme gebruikers kunnen geen bestaande bestanden overschrijven."
 #define MSG_DELE_FAILED "Kon %s niet wissen"
-#define MSG_DELE_SUCCESS "%s gewist"
+#define MSG_DELE_SUCCESS "%s%s%s%s gewist"
 #define MSG_DELE_TOTAL_FAILURE "Geen bestand gewist"
 #define MSG_LOAD_TOO_HIGH \
     "De belasting was %3.2f toen u verbinding kreeg. Wij staan geen\n" \

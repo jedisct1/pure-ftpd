@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Анонимным пользователям запрещено удалять файлы"
 #define MSG_ANON_CANT_OVERWRITE "Анонимным пользователям запрещено изменять существующие файлы"
 #define MSG_DELE_FAILED "Невозможно удалить %s"
-#define MSG_DELE_SUCCESS "Удалено: %s"
+#define MSG_DELE_SUCCESS "Удалено: %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Ни один файл не удален"
 #define MSG_LOAD_TOO_HIGH \
     "Когда вы подключились нагрузка  была равна %3.2f. Мы не разрешаем скачивать\n" \

@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Les utilisateurs anonymes ne sont pas autorises a supprimer des fichiers"
 #define MSG_ANON_CANT_OVERWRITE "Les utilisateurs anonymes ne sont pas autorises a ecraser/remplacer des fichiers"
 #define MSG_DELE_FAILED "Impossible de detruire %s"
-#define MSG_DELE_SUCCESS "%s detruit"
+#define MSG_DELE_SUCCESS "%s%s%s%s detruit"
 #define MSG_DELE_TOTAL_FAILURE "Aucun fichier detruit"
 #define MSG_LOAD_TOO_HIGH \
     "La charge etait de %3.2f quand vous vous etes connecte. nous n'autorisons\n" \

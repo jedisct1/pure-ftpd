@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonymni pouzivatelia nemozu mazat subory"
 #define MSG_ANON_CANT_OVERWRITE "Anonymni pouzivatelia nemozu prepisovat existujuce subory"
 #define MSG_DELE_FAILED "Nemozem zmazat %s"
-#define MSG_DELE_SUCCESS "Subor %s zmazany"
+#define MSG_DELE_SUCCESS "Subor %s%s%s%s zmazany"
 #define MSG_DELE_TOTAL_FAILURE "Ziadny subor nebol zmazany"
 #define MSG_LOAD_TOO_HIGH \
      "Zataz systemu bola%3.2f ked ste sa prihlasili. Nedovolujeme dowloady\n" \

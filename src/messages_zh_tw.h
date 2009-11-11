@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "匿名使用者不能刪除檔案"
 #define MSG_ANON_CANT_OVERWRITE "匿名使用者不能覆寫現存的檔案"
 #define MSG_DELE_FAILED "無法刪除 %s"
-#define MSG_DELE_SUCCESS "刪除 %s"
+#define MSG_DELE_SUCCESS "刪除 %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "沒有刪除檔案"
 #define MSG_LOAD_TOO_HIGH "當您連線時負載是 %3.2f 。負載如此高時，我們不准匿名使用者下載。\n上傳則都是可以的"
 

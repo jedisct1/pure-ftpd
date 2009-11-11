@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Los usuarios anónimos no pueden borrar archivos"
 #define MSG_ANON_CANT_OVERWRITE "Los usuarios anónimos no pueden sobreescribir archivos existentes"
 #define MSG_DELE_FAILED "No se pudo borrar %s"
-#define MSG_DELE_SUCCESS "Borrado %s"
+#define MSG_DELE_SUCCESS "Borrado %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Archivo no borrado"
 #define MSG_LOAD_TOO_HIGH \
     "La carga era %3.2f cuando conectaste. No permitimos descargas\n" \

@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonimowi u¿ytkownicy nie mog± kasowaæ plików"
 #define MSG_ANON_CANT_OVERWRITE "Anonimowi u¿ytkownicy nie mog± nadpisywaæ istniej±cych plików"
 #define MSG_DELE_FAILED "Nie mo¿na skasowaæ %s"
-#define MSG_DELE_SUCCESS "Skasowano %s"
+#define MSG_DELE_SUCCESS "Skasowano %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Nie skasowano ¿adnego pliku"
 #define MSG_LOAD_TOO_HIGH \
     "Obci±¿enie systemu wynnosi³o %3.2f w momencie Twojego zalogowania. Nie pozwalamy\n" \

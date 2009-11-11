@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Misafir kullanýcý dosyalarý silimez"
 #define MSG_ANON_CANT_OVERWRITE "Misafir kullanýcý varolan dosya üzerine yazamaz"
 #define MSG_DELE_FAILED "%s silinemiyor"
-#define MSG_DELE_SUCCESS "%s silindi"
+#define MSG_DELE_SUCCESS "%s%s%s%s silindi"
 #define MSG_DELE_TOTAL_FAILURE "Silinen dosya yok"
 #define MSG_LOAD_TOO_HIGH \
     "Baðlantýnýzdan sonra yük %3.2f . Aþýrý yüklenme esnasýnda misafir Ýndirmelere izin veremiyoruz.\n" \

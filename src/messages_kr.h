@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonymous 유저는 파일을 삭제 할수 없습니다."
 #define MSG_ANON_CANT_OVERWRITE "Anonymous 유저는 덮어씌우기가 불가능 합니다."
 #define MSG_DELE_FAILED "%s 를 삭제할수 없음"
-#define MSG_DELE_SUCCESS "%s 삭제됨"
+#define MSG_DELE_SUCCESS "%s%s%s%s 삭제됨"
 #define MSG_DELE_TOTAL_FAILURE "삭제된 파일 없음"
 #define MSG_LOAD_TOO_HIGH \
     "시스템의 부하가 %3.2f 입니다. 현재 다운로드는 불가능합니다.\n" \

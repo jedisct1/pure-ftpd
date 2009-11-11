@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonymní u¾ivatel nemù¾e mazat soubory"
 #define MSG_ANON_CANT_OVERWRITE "Anonymní u¾ivatel nemù¾e pøepisovat existující soubory"
 #define MSG_DELE_FAILED "%s nelze smazat"
-#define MSG_DELE_SUCCESS "Soubor %s smazán"
+#define MSG_DELE_SUCCESS "Soubor %s%s%s%s smazán"
 #define MSG_DELE_TOTAL_FAILURE "®ádný soubor nebyl smazán"
 #define MSG_LOAD_TOO_HIGH \
   "Zátì¾ systému, kdy¾ jste se pøihlásil, byla %3.2f. Nedovolujeme dowloady\n" \

@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonyme brukere kan ikke slette filer"
 #define MSG_ANON_CANT_OVERWRITE "Anonyme brukere kan ikke overskrive eksisterende filer"
 #define MSG_DELE_FAILED "Kunne ikke slette %s"
-#define MSG_DELE_SUCCESS "%s slettet"
+#define MSG_DELE_SUCCESS "%s%s%s%s slettet"
 #define MSG_DELE_TOTAL_FAILURE "Ingen filer slettet"
 #define MSG_LOAD_TOO_HIGH \
     "Belastningen var %3.2f når du logget på. Vi tillater ikke anonyme brukere\n" \

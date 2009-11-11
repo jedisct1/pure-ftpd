@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Tu touches pas a ce putain de fichier ou je te butte"
 #define MSG_ANON_CANT_OVERWRITE "Ce fichier, il est cool, alors t'es gentil, tu touches pas"
 #define MSG_DELE_FAILED "T'as pas assez de couilles pour butter %s"
-#define MSG_DELE_SUCCESS "%s s'est fait defoncer la face"
+#define MSG_DELE_SUCCESS "%s%s%s%s s'est fait defoncer la face"
 #define MSG_DELE_TOTAL_FAILURE "Total loser"
 #define MSG_LOAD_TOO_HIGH \
     "Le serveur a une putain de charge de %3.2f .\n" \

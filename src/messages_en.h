@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonymous users can not delete files"
 #define MSG_ANON_CANT_OVERWRITE "Anonymous users may not overwrite existing files"
 #define MSG_DELE_FAILED "Could not delete %s"
-#define MSG_DELE_SUCCESS "Deleted %s"
+#define MSG_DELE_SUCCESS "Deleted %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "No file deleted"
 #define MSG_LOAD_TOO_HIGH \
     "The load was %3.2f when you connected. We do not allow downloads\n" \

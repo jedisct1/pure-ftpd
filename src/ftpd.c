@@ -2865,8 +2865,11 @@ void dodele(char *name)
         goto denied;
     }
 #endif
-    addreply(250, MSG_DELE_SUCCESS, name);
-    logfile(LOG_NOTICE, "%s: " MSG_DELE_SUCCESS, wd, name);
+    addreply(250, MSG_DELE_SUCCESS, "", "", "", name);
+    logfile(LOG_NOTICE, MSG_DELE_SUCCESS, root_directory,
+            *name == '/' ? "" : wd,
+            (*name != '/' && (!*wd || wd[strlen(wd) - 1] != '/'))
+            ? "/" : "", name);
     return;
     
     denied:
@@ -2970,8 +2973,7 @@ static void displayrate(const char *word, off_t size,
         }
 # endif
 # ifdef WITH_ALTLOG
-        (void) altlog_writexfer(up,
-                                alloca_filename_real + 1, size, t);
+        (void) altlog_writexfer(up, alloca_filename_real + 1, size, t);
 # endif
 # if defined(WITH_UPLOAD_SCRIPT)
         if (do_upload_script != 0 && up != 0) {

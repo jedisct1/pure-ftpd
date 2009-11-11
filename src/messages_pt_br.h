@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Usuários anônimos não têm permissão para remover arquivos"
 #define MSG_ANON_CANT_OVERWRITE "Usuários anônimos não têm permissão para sobrescrever arquivos existentes"
 #define MSG_DELE_FAILED "Não foi possível remover %s"
-#define MSG_DELE_SUCCESS "%s foi removido"
+#define MSG_DELE_SUCCESS "%s%s%s%s foi removido"
 #define MSG_DELE_TOTAL_FAILURE "Nenhum arquivo foi removido"
 #define MSG_LOAD_TOO_HIGH \
     "A carga era %3.2f quando a conexão foi realizada. Não é permitido recebimento\n" \

@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Gli utenti anonimi non possono cancellare files"
 #define MSG_ANON_CANT_OVERWRITE "Gli utenti anonimi non possono sovrascrivere files esistenti"
 #define MSG_DELE_FAILED "Impossibile cancellare %s"
-#define MSG_DELE_SUCCESS "Cancellato %s"
+#define MSG_DELE_SUCCESS "Cancellato %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Nessun file cancellato"
 #define MSG_LOAD_TOO_HIGH \
     "Il carico era %3.2f quando ti sei connesso. Non permettiamo downloads\n" \

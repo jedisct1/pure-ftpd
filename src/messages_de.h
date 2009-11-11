@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonyme Benutzer dürfen keine Dateien löschen."
 #define MSG_ANON_CANT_OVERWRITE "Anonyme Benutzer dürfen keine existierenden Dateien überschreiben."
 #define MSG_DELE_FAILED "Konnte %s nicht löschen."
-#define MSG_DELE_SUCCESS "%s gelöscht."
+#define MSG_DELE_SUCCESS "%s%s%s%s gelöscht."
 #define MSG_DELE_TOTAL_FAILURE "Keine Datei gelöscht."
 #define MSG_LOAD_TOO_HIGH \
     "Zum Zeitpunkt der Verbindung war die Last %3.2f. Wir erlauben keinen Download\n" \

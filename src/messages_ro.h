@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Utilizatorii anonimi nu pot sterge fisiere"
 #define MSG_ANON_CANT_OVERWRITE "Utilizatorii anonimi nu pot suprascrie fisiere existente"
 #define MSG_DELE_FAILED "Nu pot sterge %s"
-#define MSG_DELE_SUCCESS "Am sters %s"
+#define MSG_DELE_SUCCESS "Am sters %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Nici un fisier selectat"
 #define MSG_LOAD_TOO_HIGH \
     "Incarcarea server-ului era %3.2f cind v-ati conectat. Nu sint permise download-uri\n" \

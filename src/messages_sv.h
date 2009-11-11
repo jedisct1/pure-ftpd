@@ -87,7 +87,7 @@
 #define MSG_ANON_CANT_DELETE "Anonyma användare kan inte radera filer"
 #define MSG_ANON_CANT_OVERWRITE "Anonyma användare kan inte skriva över existerande filer"
 #define MSG_DELE_FAILED "Kan ej radera %s"
-#define MSG_DELE_SUCCESS "Raderade %s"
+#define MSG_DELE_SUCCESS "Raderade %s%s%s%s"
 #define MSG_DELE_TOTAL_FAILURE "Ingen fil är raderad"
 #define MSG_LOAD_TOO_HIGH \
     "Belastningen var %3.2f när du upprättade förbindelse. Vi tillåter ej nedladdningar\n" \
