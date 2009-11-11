@@ -309,7 +309,6 @@ typedef struct DLHandler_ {
     off_t file_size;
     size_t min_dlmap_size;
     size_t dlmap_size;
-    off_t dlmap_gap;    
     off_t cur_pos;
     off_t chunk_size;    
     off_t min_chunk_size;

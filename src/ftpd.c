@@ -3132,7 +3132,6 @@ int dlmap_init(DLHandler * const dlhandler,
     }
     dlhandler->chunk_size = dlhandler->default_chunk_size;
     dlhandler->dlmap_size = DL_DLMAP_SIZE & ~(page_size - 1U);
-    dlhandler->dlmap_gap = 0;
     dlhandler->cur_pos = restartat;
     dlhandler->dlmap_pos = (off_t) 0;
     dlhandler->map = NULL;
@@ -3151,13 +3150,12 @@ static int _dlmap_remap(DLHandler * const dlhandler)
             dlhandler->cur_pos + dlhandler->chunk_size <=
             dlhandler->dlmap_pos + (off_t) dlhandler->dlmap_size) {
             if (dlhandler->cur_pos < dlhandler->dlmap_pos ||
-                dlhandler->cur_pos - dlhandler->dlmap_pos +
-                dlhandler->dlmap_gap > (off_t) dlhandler->dlmap_size) {
+                dlhandler->cur_pos - dlhandler->dlmap_pos >
+                (off_t) dlhandler->dlmap_size) {
                 return -1;
             }
             dlhandler->map_data =
-                dlhandler->map + dlhandler->cur_pos - dlhandler->dlmap_pos +
-                dlhandler->dlmap_gap;
+                dlhandler->map + dlhandler->cur_pos - dlhandler->dlmap_pos;
             return 0;
         }
     }
@@ -3167,9 +3165,8 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     if (dlhandler->chunk_size <= 0) {
         return 1;
     }
-    dlhandler->dlmap_gap = 0;
-    dlhandler->dlmap_pos = dlhandler->cur_pos - dlhandler->dlmap_gap;
-    min_dlmap_size = dlhandler->chunk_size + (size_t) dlhandler->dlmap_gap;
+    dlhandler->dlmap_pos = dlhandler->cur_pos;
+    min_dlmap_size = dlhandler->chunk_size;
     if (dlhandler->dlmap_size < min_dlmap_size) {
         dlhandler->dlmap_size = min_dlmap_size;
     }
