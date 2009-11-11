@@ -3135,8 +3135,8 @@ int mmap_init(DLHandler * const dlhandler,
     dlhandler->mmap_gap = 0;
     dlhandler->cur_pos = restartat;
     dlhandler->mmap_pos = (off_t) 0;
-    dlhandler->map = (void *) MAP_FAILED;
-    dlhandler->map_data = (void *) MAP_FAILED;
+    dlhandler->map = NULL;
+    dlhandler->map_data = NULL;
     
     return 0;
 }
@@ -3146,7 +3146,7 @@ int _mmap_remap(DLHandler * const dlhandler)
     size_t min_mmap_size;
     size_t max_mmap_size;
     
-    if (dlhandler->map != MAP_FAILED) {
+    if (dlhandler->map != NULL) {
         if (dlhandler->cur_pos >= dlhandler->mmap_pos &&
             dlhandler->cur_pos + dlhandler->chunk_size <=
             dlhandler->mmap_pos + (off_t) dlhandler->mmap_size) {
@@ -3160,12 +3160,6 @@ int _mmap_remap(DLHandler * const dlhandler)
                 dlhandler->mmap_gap;
             return 0;
         }
-#ifdef DOWNLOAD_USING_MMAP
-        if (munmap(dlhandler->map, dlhandler->mmap_size) != 0) {
-            error(451, MSG_MMAP_FAILED);
-            return -1;
-        }
-#endif
     }
     if (dlhandler->file_size - dlhandler->cur_pos < dlhandler->chunk_size) {
         dlhandler->chunk_size = dlhandler->file_size - dlhandler->cur_pos;
@@ -3173,12 +3167,7 @@ int _mmap_remap(DLHandler * const dlhandler)
     if (dlhandler->chunk_size <= 0) {
         return 1;
     }
-#ifdef DOWNLOAD_USING_MMAP
-    dlhandler->mmap_gap = dlhandler->cur_pos -
-        (dlhandler->cur_pos & ~((off_t) page_size - 1U));
-#else
     dlhandler->mmap_gap = 0;
-#endif
     dlhandler->mmap_pos = dlhandler->cur_pos - dlhandler->mmap_gap;
     min_mmap_size = dlhandler->chunk_size + (size_t) dlhandler->mmap_gap;
     if (dlhandler->mmap_size < min_mmap_size) {
@@ -3193,26 +3182,7 @@ int _mmap_remap(DLHandler * const dlhandler)
     if (dlhandler->mmap_size > max_mmap_size) {
         dlhandler->mmap_size = max_mmap_size;
     }
-#ifdef DOWNLOAD_USING_MMAP
-    dlhandler->map = mmap(NULL, dlhandler->mmap_size,
-                          PROT_READ, MAP_FILE | MAP_SHARED,
-                          dlhandler->f, dlhandler->mmap_pos);
-    if (dlhandler->map == (void *) MAP_FAILED) {
-        error(451, MSG_MMAP_FAILED);
-        return -1;
-    }
-# ifdef MADV_SEQUENTIAL
-#  ifdef MADV_WILLNEED
-    madvise(dlhandler->map, dlhandler->mmap_size, MADV_WILLNEED | MADV_SEQUENTIAL);
-#  else
-    madvise(dlhandler->map, dlhandler->mmap_size, MADV_SEQUENTIAL);
-#  endif
-# elif defined(MADV_WILLNEED)
-    madvise(dlhandler->map, dlhandler->mmap_size, MADV_WILLNEED);
-# endif
-    dlhandler->map_data = dlhandler->map + dlhandler->mmap_gap;
-#else
-    if (dlhandler->map == (void *) MAP_FAILED) {
+    if (dlhandler->map == NULL) {
         dlhandler->map = malloc(DL_MMAP_SIZE & ~(page_size - 1U));
         if (dlhandler->map == NULL) {
             die_mem();
@@ -3228,7 +3198,6 @@ int _mmap_remap(DLHandler * const dlhandler)
         return -1;
     }
     dlhandler->map_data = dlhandler->map;
-#endif
     
     return 0;
 }
@@ -3383,13 +3352,9 @@ int mmap_send(DLHandler * const dlhandler)
 
 int mmap_exit(DLHandler * const dlhandler)
 {
-    if (dlhandler->map != (void *) MAP_FAILED) {
-#ifdef DOWNLOAD_USING_MMAP
-        munmap(dlhandler->map, dlhandler->mmap_size);
-#else
+    if (dlhandler->map != NULL) {
         free(dlhandler->map);
-#endif
-        dlhandler->map = (void *) MAP_FAILED;
+        dlhandler->map = NULL;
         dlhandler->mmap_size = (size_t) 0U;
     }
     return 0;
