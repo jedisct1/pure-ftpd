@@ -1806,8 +1806,9 @@ void dopass(char *password)
     }
 #endif
     
-    /* Add username to the uid/name cache */
+    /* Add username and primary group to the uid/gid cache */
     (void) getname(authresult.uid);
+    (void) getgroup(authresult.gid);    
     
     if (
 #if defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL) || defined(WITH_PUREDB) || defined(WITH_EXTAUTH)
