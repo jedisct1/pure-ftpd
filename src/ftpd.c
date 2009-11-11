@@ -3134,10 +3134,46 @@ int dlmap_init(DLHandler * const dlhandler,
     dlhandler->dlmap_size = DL_DLMAP_SIZE & ~(page_size - 1U);
     dlhandler->cur_pos = restartat;
     dlhandler->dlmap_pos = (off_t) 0;
+    dlhandler->dlmap_fdpos = (off_t) -1;
     dlhandler->sizeof_map = (size_t) 0U;
     dlhandler->map = NULL;
     dlhandler->map_data = NULL;
     
+    return 0;
+}
+
+static int _dlmap_read(DLHandler * const dlhandler)
+{
+    ssize_t readen;
+    
+    if (dlhandler->dlmap_pos != dlhandler->dlmap_fdpos) {
+        do {
+#ifdef HAVE_PREAD
+            readen = pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
+                           dlhandler->dlmap_pos);
+#else
+            if (lseek(dlhandler->f, dlhandler->dlmap_pos,
+                      SEEK_SET) == (off_t) -1) {
+                dlhandler->dlmap_fdpos = (off_t) -1;
+                return -1;
+            }
+            readen = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
+#endif
+        } while (readen == (ssize_t) -1 && errno == EINTR);
+    } else {
+        do {
+            readen = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
+        } while (readen == (ssize_t) -1 && errno == EINTR);
+    }
+    if (readen <= (ssize_t) 0) {
+        dlhandler->dlmap_fdpos = (off_t) -1;
+        return -1;
+    }
+    if (readen != (ssize_t) dlhandler->dlmap_size) {
+        dlhandler->dlmap_fdpos = (off_t) -1;
+    } else {
+        dlhandler->dlmap_fdpos += (off_t) readen;
+    }    
     return 0;
 }
 
@@ -3191,9 +3227,7 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
         abort();
     }
-    if (pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
-              dlhandler->dlmap_pos) < (ssize_t) 0) {
-        logfile(LOG_ERR, "%d", __LINE__);        
+    if (_dlmap_read(dlhandler) != 0) {
         error(451, MSG_DATA_READ_FAILED);
         return -1;
     }
@@ -3355,6 +3389,7 @@ int dlmap_exit(DLHandler * const dlhandler)
     if (dlhandler->map != NULL) {
         free(dlhandler->map);
         dlhandler->map = NULL;
+        dlhandler->sizeof_map = (size_t) 0U;
         dlhandler->dlmap_size = (size_t) 0U;
     }
     return 0;

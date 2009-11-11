@@ -315,6 +315,7 @@ typedef struct DLHandler_ {
     off_t default_chunk_size;
     off_t max_chunk_size;
     off_t dlmap_pos;
+    off_t dlmap_fdpos;    
     off_t total_downloaded;
     size_t sizeof_map;
     unsigned char *map;
