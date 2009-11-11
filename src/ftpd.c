@@ -3134,6 +3134,7 @@ int dlmap_init(DLHandler * const dlhandler,
     dlhandler->dlmap_size = DL_DLMAP_SIZE & ~(page_size - 1U);
     dlhandler->cur_pos = restartat;
     dlhandler->dlmap_pos = (off_t) 0;
+    dlhandler->sizeof_map = (size_t) 0U;
     dlhandler->map = NULL;
     dlhandler->map_data = NULL;
     
@@ -3180,12 +3181,14 @@ static int _dlmap_remap(DLHandler * const dlhandler)
         dlhandler->dlmap_size = max_dlmap_size;
     }
     if (dlhandler->map == NULL) {
-        dlhandler->map = malloc(DL_DLMAP_SIZE & ~(page_size - 1U));
+        dlhandler->sizeof_map = DL_DLMAP_SIZE & ~(page_size - 1U);
+        dlhandler->map = malloc(dlhandler->sizeof_map);
         if (dlhandler->map == NULL) {
+            dlhandler->sizeof_map = (size_t) 0U;
             die_mem();
         }        
     }
-    if (dlhandler->dlmap_size > (DL_DLMAP_SIZE & ~(page_size - 1U))) {
+    if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
         abort();
     }
     if (pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
