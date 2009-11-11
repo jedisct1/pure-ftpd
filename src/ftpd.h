@@ -569,11 +569,11 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #ifndef DL_MAX_CHUNK_SIZE
 # define DL_MAX_CHUNK_SIZE (128 * 1024UL)
 #endif
-#ifndef DL_MMAP_SIZE
-# define DL_MMAP_SIZE (128 * 1024UL)
+#ifndef DL_DLMAP_SIZE
+# define DL_DLMAP_SIZE (128 * 1024UL)
 #endif
-#if DL_MMAP_SIZE < DL_MAX_CHUNK_SIZE
-# error DL_MMAP_SIZE should be >= DL_MAX_CHUNK_SIZE
+#if DL_DLMAP_SIZE < DL_MAX_CHUNK_SIZE
+# error DL_DLMAP_SIZE should be >= DL_MAX_CHUNK_SIZE
 #endif
 
 #ifndef UL_MIN_CHUNK_SIZE

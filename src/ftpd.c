@@ -3104,15 +3104,15 @@ int dlhandler_init(DLHandler * const dlhandler,
     return 0;
 }
 
-int mmap_init(DLHandler * const dlhandler, 
-              const int clientfd, void * const tls_clientfd,
-              const int xferfd,
-              const char * const name,
-              const int f,
-              void * const tls_fd,
-              const off_t restartat,
-              const int ascii_mode,
-              const unsigned long bandwidth)
+int dlmap_init(DLHandler * const dlhandler, 
+               const int clientfd, void * const tls_clientfd,
+               const int xferfd,
+               const char * const name,
+               const int f,
+               void * const tls_fd,
+               const off_t restartat,
+               const int ascii_mode,
+               const unsigned long bandwidth)
 {
     if (dlhandler_init(dlhandler, clientfd, tls_clientfd, xferfd, name, f,
                        tls_fd, restartat, ascii_mode, bandwidth) != 0) {
@@ -3131,33 +3131,33 @@ int mmap_init(DLHandler * const dlhandler,
         }
     }
     dlhandler->chunk_size = dlhandler->default_chunk_size;
-    dlhandler->mmap_size = DL_MMAP_SIZE & ~(page_size - 1U);
-    dlhandler->mmap_gap = 0;
+    dlhandler->dlmap_size = DL_DLMAP_SIZE & ~(page_size - 1U);
+    dlhandler->dlmap_gap = 0;
     dlhandler->cur_pos = restartat;
-    dlhandler->mmap_pos = (off_t) 0;
+    dlhandler->dlmap_pos = (off_t) 0;
     dlhandler->map = NULL;
     dlhandler->map_data = NULL;
     
     return 0;
 }
 
-int _mmap_remap(DLHandler * const dlhandler)
+static int _dlmap_remap(DLHandler * const dlhandler)
 {
-    size_t min_mmap_size;
-    size_t max_mmap_size;
+    size_t min_dlmap_size;
+    size_t max_dlmap_size;
     
     if (dlhandler->map != NULL) {
-        if (dlhandler->cur_pos >= dlhandler->mmap_pos &&
+        if (dlhandler->cur_pos >= dlhandler->dlmap_pos &&
             dlhandler->cur_pos + dlhandler->chunk_size <=
-            dlhandler->mmap_pos + (off_t) dlhandler->mmap_size) {
-            if (dlhandler->cur_pos < dlhandler->mmap_pos ||
-                dlhandler->cur_pos - dlhandler->mmap_pos +
-                dlhandler->mmap_gap > (off_t) dlhandler->mmap_size) {
+            dlhandler->dlmap_pos + (off_t) dlhandler->dlmap_size) {
+            if (dlhandler->cur_pos < dlhandler->dlmap_pos ||
+                dlhandler->cur_pos - dlhandler->dlmap_pos +
+                dlhandler->dlmap_gap > (off_t) dlhandler->dlmap_size) {
                 return -1;
             }
             dlhandler->map_data =
-                dlhandler->map + dlhandler->cur_pos - dlhandler->mmap_pos +
-                dlhandler->mmap_gap;
+                dlhandler->map + dlhandler->cur_pos - dlhandler->dlmap_pos +
+                dlhandler->dlmap_gap;
             return 0;
         }
     }
@@ -3167,32 +3167,32 @@ int _mmap_remap(DLHandler * const dlhandler)
     if (dlhandler->chunk_size <= 0) {
         return 1;
     }
-    dlhandler->mmap_gap = 0;
-    dlhandler->mmap_pos = dlhandler->cur_pos - dlhandler->mmap_gap;
-    min_mmap_size = dlhandler->chunk_size + (size_t) dlhandler->mmap_gap;
-    if (dlhandler->mmap_size < min_mmap_size) {
-        dlhandler->mmap_size = min_mmap_size;
+    dlhandler->dlmap_gap = 0;
+    dlhandler->dlmap_pos = dlhandler->cur_pos - dlhandler->dlmap_gap;
+    min_dlmap_size = dlhandler->chunk_size + (size_t) dlhandler->dlmap_gap;
+    if (dlhandler->dlmap_size < min_dlmap_size) {
+        dlhandler->dlmap_size = min_dlmap_size;
     }
-    dlhandler->mmap_size = (dlhandler->mmap_size + page_size - 1U) &
+    dlhandler->dlmap_size = (dlhandler->dlmap_size + page_size - 1U) &
         ~(page_size - 1U);
-    if (dlhandler->mmap_size < page_size) {
-        dlhandler->mmap_size = page_size;
+    if (dlhandler->dlmap_size < page_size) {
+        dlhandler->dlmap_size = page_size;
     }
-    max_mmap_size = dlhandler->file_size - dlhandler->mmap_pos;
-    if (dlhandler->mmap_size > max_mmap_size) {
-        dlhandler->mmap_size = max_mmap_size;
+    max_dlmap_size = dlhandler->file_size - dlhandler->dlmap_pos;
+    if (dlhandler->dlmap_size > max_dlmap_size) {
+        dlhandler->dlmap_size = max_dlmap_size;
     }
     if (dlhandler->map == NULL) {
-        dlhandler->map = malloc(DL_MMAP_SIZE & ~(page_size - 1U));
+        dlhandler->map = malloc(DL_DLMAP_SIZE & ~(page_size - 1U));
         if (dlhandler->map == NULL) {
             die_mem();
         }        
     }
-    if (dlhandler->mmap_size > (DL_MMAP_SIZE & ~(page_size - 1U))) {
+    if (dlhandler->dlmap_size > (DL_DLMAP_SIZE & ~(page_size - 1U))) {
         abort();
     }
-    if (pread(dlhandler->f, dlhandler->map, dlhandler->mmap_size,
-              dlhandler->mmap_pos) < (ssize_t) 0) {
+    if (pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
+              dlhandler->dlmap_pos) < (ssize_t) 0) {
         logfile(LOG_ERR, "%d", __LINE__);        
         error(451, MSG_DATA_READ_FAILED);
         return -1;
@@ -3305,7 +3305,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     return 0;
 }
 
-int mmap_send(DLHandler * const dlhandler)
+int dlmap_send(DLHandler * const dlhandler)
 {
     int ret;
     double ts_start = 0.0;
@@ -3318,7 +3318,7 @@ int mmap_send(DLHandler * const dlhandler)
     }
     required_sleep = 0.0;
     for (;;) {
-        ret = _mmap_remap(dlhandler);
+        ret = _dlmap_remap(dlhandler);
         if (ret < 0) {
             error(425, "mmap()");            
             return -1;
@@ -3350,12 +3350,12 @@ int mmap_send(DLHandler * const dlhandler)
     return 0;
 }
 
-int mmap_exit(DLHandler * const dlhandler)
+int dlmap_exit(DLHandler * const dlhandler)
 {
     if (dlhandler->map != NULL) {
         free(dlhandler->map);
         dlhandler->map = NULL;
-        dlhandler->mmap_size = (size_t) 0U;
+        dlhandler->dlmap_size = (size_t) 0U;
     }
     return 0;
 }
@@ -3469,12 +3469,13 @@ void doretr(char *name)
     
     started = get_usec_time();
 
-    if (mmap_init(&dlhandler, clientfd, tls_cnx, xferfd, name, f, tls_data_cnx,
-                  restartat, type == 1, throttling_bandwidth_dl) == 0) {
-        ret = mmap_send(&dlhandler);
-        mmap_exit(&dlhandler);        
+    if (dlmap_init(&dlhandler, clientfd, tls_cnx, xferfd, name, f,
+                   tls_data_cnx, restartat, type == 1,
+                   throttling_bandwidth_dl) == 0) {
+        ret = dlmap_send(&dlhandler);
+        dlmap_exit(&dlhandler);        
     } else {
-        error(426, "mmap_init()");
+        error(426, "dlmap_init()");
         ret = -1;
     }
     
