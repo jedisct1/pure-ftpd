@@ -64,6 +64,8 @@ static void (*logout_callback)(void *user_data);
 static void *logout_callback_user_data;
 static void (*login_callback)(void *user_data);
 static void *login_callback_user_data;
+static void (*log_callback)(int crit, const char *message, void *user_data);
+static void *log_callback_user_data;
 #endif
 
 struct reply {

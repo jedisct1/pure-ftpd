@@ -642,9 +642,11 @@ void logfile(const int crit, const char *format, ...)
     va_list va;
     char line[MAX_SYSLOG_LINE];
     
+# ifndef __IPHONE__
     if (no_syslog != 0) {
         return;
     }
+# endif
     va_start(va, format);
     vsnprintf(line, sizeof line, format, va);
     va_end(va);    
@@ -667,6 +669,12 @@ void logfile(const int crit, const char *format, ...)
     default:
         urgency = "";
     }
+# ifdef __IPHONE__
+    if (log_callback != NULL) {
+        (*log_callback)(crit, line, log_callback_user_data);
+    }
+    return;
+# endif
 # ifdef SAVE_DESCRIPTORS
     openlog("pure-ftpd", log_pid, syslog_facility);
 # endif
@@ -6430,6 +6438,15 @@ void pureftpd_register_logout_callback(void (*callback)(void *user_data),
 {
     logout_callback = callback;
     logout_callback_user_data = user_data;
+}
+
+void pureftpd_register_log_callback(void (*callback)(int crit,
+                                                     const char *message,
+                                                     void *user_data),
+                                    void *user_data)
+{
+    log_callback = callback;
+    log_callback_user_data = user_data;
 }
 
 #endif
