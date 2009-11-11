@@ -60,6 +60,7 @@ static volatile int listenfd6 = -1;
 #endif
 #ifdef __IPHONE__
 static volatile sig_atomic_t suspend_client_connections;
+static AuthResult embedded_simple_pw_check(const char *account, const char *password);
 static void (*logout_callback)(void *user_data);
 static void *logout_callback_user_data;
 static void (*login_callback)(void *user_data);

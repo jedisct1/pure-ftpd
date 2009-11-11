@@ -1760,7 +1760,11 @@ void dopass(char *password)
         addreply_noformat(530, MSG_WHOAREYOU);
         return;
     }
+#ifdef __IPHONE__
+    authresult = embedded_simple_pw_check(account, password);
+#else
     authresult = pw_check(account, password, &ctrlconn, &peer);
+#endif
     {
         /* Clear password from memory, paranoia */        
         volatile char *password_ = (volatile char *) password;
@@ -6447,6 +6451,26 @@ void pureftpd_register_log_callback(void (*callback)(int crit,
 {
     log_callback = callback;
     log_callback_user_data = user_data;
+}
+
+static AuthResult embedded_simple_pw_check(const char *account, const char *password)
+{
+    AuthResult authresult;
+
+    if (account == NULL || *account == 0 || password == NULL) {
+        authresult.auth_ok = 0;
+        return authresult;
+    }
+    if ((authresult.dir = strdup(home_directory)) == NULL) {
+        die_mem();
+    }
+    authresult.uid = geteuid();
+    authresult.gid = getegid();
+    authresult.auth_ok = 1;
+    authresult.slow_tilde_expansion = 0;
+    userchroot = 2;
+    
+    return authresult;
 }
 
 #endif
