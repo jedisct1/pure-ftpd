@@ -370,7 +370,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>71 272 1231 906 0 0 1920 1178 </string>
+						<string>302 265 1231 906 0 0 1920 1178 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -400,7 +400,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>09872FED10AB33E90026A466</string>
+										<string>09872FFC10AB3EC40026A466</string>
 										<key>history</key>
 										<array>
 											<string>09F65ADE109AEED80075C1E8</string>
@@ -423,7 +423,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {1023, 659}}</string>
 								<key>RubberWindowFrame</key>
-								<string>71 272 1231 906 0 0 1920 1178 </string>
+								<string>302 265 1231 906 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -443,7 +443,7 @@
 								<key>Frame</key>
 								<string>{{0, 664}, {1023, 201}}</string>
 								<key>RubberWindowFrame</key>
-								<string>71 272 1231 906 0 0 1920 1178 </string>
+								<string>302 265 1231 906 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -590,7 +590,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>279655401.335594</real>
+	<real>279658180.054869</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -615,7 +615,7 @@
 		<string>/Users/j/src/pure-ftpd/iphone/Test/Test.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>71 272 1231 906 0 0 1920 1178 </string>
+	<string>302 265 1231 906 0 0 1920 1178 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>

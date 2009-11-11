@@ -19,6 +19,7 @@
 extern void pureftpd_register_login_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_logout_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_log_callback(void (*callback)(int crit, const char *message, void *user_data), void *user_data);
+extern void pureftpd_register_simple_auth_callback(int (*callback)(const char *account, const char *password, void *user_data), void *user_data);
 extern int  pureftpd_start(int argc, char *argv[], const char *baseDir);
 extern int  pureftpd_shutdown(void);
 extern int  pureftpd_enable(void);
@@ -27,6 +28,10 @@ extern int  pureftpd_disable(void);
 // 0: The switch totally shuts the server down
 // 1: The switch accepts / refuses new connections without shutting the server down
 #define kSUSPEND_INSTEAD_OF_SHUTDOWN 0
+
+// 0: Require authentication (see the authentication callback below)
+// 1: Allow anonymous connections (ftp/anonymous)
+#define kALLOW_ANONYMOUS_CONNECTIONS 0
 
 static NSString *baseDir;
 
@@ -68,15 +73,27 @@ void ftpLogCallback(int crit, const char *message, void *userData) {
 	NSLog(@"LOG(%d) [%s]", crit, message);
 }
 
+int  ftpAuthCallback(const char *account, const char *password, void *userData) {
+	if (strcmp(account, "root") == 0 && strcmp(password, "alpine") == 0) {
+		return 1;
+	}
+	return -1;
+}
+
 - (void) ftpthread: (id) fodder {
 	[[NSAutoreleasePool alloc] init];
 	char *args[] = {
+#if kALLOW_ANONYMOUS_CONNECTIONS
 		"pure-ftpd", "--anonymouscancreatedirs", "--dontresolve", "--allowdotfiles", "--customerproof",
+#else
+		"pure-ftpd", "--dontresolve", "--allowdotfiles", "--customerproof", "--noanonymous",		
+#endif		
 		NULL
 	};
 	pureftpd_register_login_callback(ftpLoginCallback, self);
 	pureftpd_register_logout_callback(ftpLogoutCallback, self);
 	pureftpd_register_log_callback(ftpLogCallback, self);
+	pureftpd_register_simple_auth_callback(ftpAuthCallback, self);
 	NSLog(@"Server started");
 	for (;;) {		
 		pureftpd_start((int) (sizeof args / sizeof *args) - 1, args, [baseDir UTF8String]);
