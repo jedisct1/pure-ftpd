@@ -3,5 +3,5 @@
 
 int main(int argc, char *argv[])
 {
-    return pureftpd_start(argc, argv, NULL, NULL);
+    return pureftpd_start(argc, argv, NULL);
 }

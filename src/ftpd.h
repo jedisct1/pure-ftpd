@@ -314,8 +314,8 @@ typedef enum {
     CPL_NONE, CPL_CLEAR, CPL_SAFE, CPL_CONFIDENTIAL, CPL_PRIVATE
 } ChannelProtectionLevel;
 
-int pureftpd_start(int argc, char *argv[], const char *home_directory,
-                    const char *password);
+int pureftpd_start(int argc, char *argv[], const char *home_directory);
+
 #ifdef __IPHONE__
 void pureftpd_register_login_callback(void (*callback)(void *user_data),
                                       void *user_data);
