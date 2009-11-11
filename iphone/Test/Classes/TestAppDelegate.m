@@ -18,6 +18,7 @@
 
 extern void pureftpd_register_login_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_logout_callback(void (*callback)(void *user_data), void *user_data);
+extern void pureftpd_register_log_callback(void (*callback)(int crit, const char *message, void *user_data), void *user_data);
 extern int  pureftpd_start(int argc, char *argv[], const char *baseDir, const char *password);
 extern int  pureftpd_shutdown(void);
 extern int  pureftpd_enable(void);
@@ -63,14 +64,19 @@ void ftpLogoutCallback(void *userData) {
 	NSLog(@"A client just logged out");
 }
 
+void ftpLogCallback(int crit, const char *message, void *userData) {
+	NSLog(@"LOG(%d) [%s]", crit, message);
+}
+
 - (void) ftpthread: (id) fodder {
 	[[NSAutoreleasePool alloc] init];
 	char *args[] = {
-		"pure-ftpd", "-M",
+		"pure-ftpd", "--anonymouscancreatedirs", "--dontresolve", "--allowdotfiles", "--customerproof",
 		NULL
 	};
-	pureftpd_register_login_callback(ftpLoginCallback, NULL);
-	pureftpd_register_logout_callback(ftpLogoutCallback, NULL);
+	pureftpd_register_login_callback(ftpLoginCallback, self);
+	pureftpd_register_logout_callback(ftpLogoutCallback, self);
+	pureftpd_register_log_callback(ftpLogCallback, self);
 	NSLog(@"Server started");
 	for (;;) {		
 		pureftpd_start((int) (sizeof args / sizeof *args) - 1, args, [baseDir UTF8String], NULL);
