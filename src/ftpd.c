@@ -3131,14 +3131,18 @@ int dlmap_init(DLHandler * const dlhandler,
         }
     }
     dlhandler->chunk_size = dlhandler->default_chunk_size;
-    dlhandler->dlmap_size = DL_DLMAP_SIZE & ~(page_size - 1U);
+    dlhandler->dlmap_size =
+        (DL_DLMAP_SIZE + page_size - (size_t) 1U) & ~(page_size - (size_t) 1U);
     dlhandler->cur_pos = restartat;
     dlhandler->dlmap_pos = (off_t) 0;
     dlhandler->dlmap_fdpos = (off_t) -1;
     dlhandler->sizeof_map = (size_t) 0U;
-    dlhandler->map = NULL;
     dlhandler->map_data = NULL;
-    
+    dlhandler->sizeof_map = dlhandler->dlmap_size;
+    dlhandler->map = malloc(dlhandler->sizeof_map);
+    if (dlhandler->map == NULL) {
+        die_mem();
+    }        
     return 0;
 }
 
@@ -3146,6 +3150,9 @@ static int _dlmap_read(DLHandler * const dlhandler)
 {
     ssize_t readen;
     
+    if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
+        abort();
+    }
     if (dlhandler->dlmap_pos != dlhandler->dlmap_fdpos) {
         do {
 #ifdef HAVE_PREAD
@@ -3182,13 +3189,14 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     size_t min_dlmap_size;
     size_t max_dlmap_size;
     
-    if (dlhandler->map != NULL) {
+    if (dlhandler->map_data != NULL) {
         if (dlhandler->cur_pos >= dlhandler->dlmap_pos &&
             dlhandler->cur_pos + dlhandler->chunk_size <=
             dlhandler->dlmap_pos + (off_t) dlhandler->dlmap_size) {
             if (dlhandler->cur_pos < dlhandler->dlmap_pos ||
                 dlhandler->cur_pos - dlhandler->dlmap_pos >
                 (off_t) dlhandler->dlmap_size) {
+                addreply_noformat(451, "remap");
                 return -1;
             }
             dlhandler->map_data =
@@ -3207,25 +3215,14 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     if (dlhandler->dlmap_size < min_dlmap_size) {
         dlhandler->dlmap_size = min_dlmap_size;
     }
-    dlhandler->dlmap_size = (dlhandler->dlmap_size + page_size - 1U) &
-        ~(page_size - 1U);
+    dlhandler->dlmap_size = (dlhandler->dlmap_size + page_size - (size_t) 1U) &
+        ~(page_size - (size_t) 1U);
     if (dlhandler->dlmap_size < page_size) {
         dlhandler->dlmap_size = page_size;
     }
     max_dlmap_size = dlhandler->file_size - dlhandler->dlmap_pos;
     if (dlhandler->dlmap_size > max_dlmap_size) {
         dlhandler->dlmap_size = max_dlmap_size;
-    }
-    if (dlhandler->map == NULL) {
-        dlhandler->sizeof_map = DL_DLMAP_SIZE & ~(page_size - 1U);
-        dlhandler->map = malloc(dlhandler->sizeof_map);
-        if (dlhandler->map == NULL) {
-            dlhandler->sizeof_map = (size_t) 0U;
-            die_mem();
-        }        
-    }
-    if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
-        abort();
     }
     if (_dlmap_read(dlhandler) != 0) {
         error(451, MSG_DATA_READ_FAILED);
@@ -3354,7 +3351,6 @@ int dlmap_send(DLHandler * const dlhandler)
     for (;;) {
         ret = _dlmap_remap(dlhandler);
         if (ret < 0) {
-            error(425, "mmap()");            
             return -1;
         }
         if (ret == 1) {
