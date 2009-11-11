@@ -6452,12 +6452,26 @@ void pureftpd_register_log_callback(void (*callback)(int crit,
     log_callback_user_data = user_data;
 }
 
+void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
+                                                            const char *password,
+                                                            void *user_data),
+                                            void *user_data)
+{
+    simple_auth_callback = callback;
+    simple_auth_callback_user_data = user_data;
+}
+
 static AuthResult embedded_simple_pw_check(const char *account, const char *password)
 {
     AuthResult authresult;
 
-    if (account == NULL || *account == 0 || password == NULL) {
+    if (simple_auth_callback == NULL ||
+        account == NULL || *account == 0 || password == NULL) {
         authresult.auth_ok = 0;
+        return authresult;
+    }
+    if (*simple_auth_callback)(account, password, simple_auth_callback_user_data) <= 0) {
+        authresult.auth_ok = -1;
         return authresult;
     }
     if ((authresult.dir = strdup(home_directory)) == NULL) {
