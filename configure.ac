@@ -1196,12 +1196,9 @@ AC_ARG_WITH(mysql,
       LDFLAGS="$LDFLAGS -L${withval}/lib -L${withval}/lib/mysql -L${withval}/mysql/lib"
       CPPFLAGS="$CPPFLAGS -I${withval}/include -I${withval}/include/mysql -I${withval}/mysql/include"
     else
-      LD_RUN_PATH="/usr/local/mysql/lib:/usr/local/mysql/lib/mysql:/usr/lib/mysql:/usr/mysql/lib:/usr/mysql/lib/mysql:/usr/local/lib/mysql:${LD_RUN_PATH:+:}${LD_RUN_PATH}"
-      LDFLAGS="$LDFLAGS -L/usr/local/mysql/lib -L/usr/lib/mysql -L/usr/mysql/lib -L/usr/local/lib/mysql -L/usr/local/mysql/lib/mysql -L/usr/mysql/lib/mysql"
-      CPPFLAGS="$CPPFLAGS -I/usr/local/mysql/include -I/usr/include/mysql -I/usr/mysql/include -I/usr/local/include/mysql -I/usr/local/mysql/include/mysql -I/usr/mysql/include/mysql"
+      CFLAGS="$CFLAGS `mysql_config --cflags`"
+      LDFLAGS="$LDFLAGS `mysql_config --libs`"
     fi
-    AC_CHECK_LIB(m, floor)
-    AC_CHECK_LIB(z, gzclose)
     with_mysql="yes"
     AC_DEFINE(WITH_MYSQL,,[with mysql])
     AC_CHECK_LIB(mysqlclient, mysql_init, ,
@@ -1217,8 +1214,7 @@ AC_ARG_WITH(mysql,
       }
       ]])],[],[
         AC_MSG_RESULT(no)
-        AC_MSG_ERROR(Your MySQL client libraries aren't properly installed)
-      
+        AC_MSG_ERROR(Your MySQL client libraries aren't properly installed)      
     ],[])
     AC_MSG_RESULT(yes)
     AC_CHECK_FUNCS(mysql_real_escape_string)
@@ -1232,12 +1228,10 @@ AC_ARG_WITH(pgsql,
       LDFLAGS="$LDFLAGS -L${withval}/lib -L${withval}/lib/pgsql -L${withval}/lib/postgresql -L${withval}/pgsql/lib -L${withval}/postgresql/lib"
       CPPFLAGS="$CPPFLAGS -I${withval}/include -I${withval}/include/pgsql -I${withval}/include/postgresql -I${withval}/pgsql/include -I${withval}/postgresql/include"
     else
-      LD_RUN_PATH="/usr/local/pgsql/lib:/usr/local/pgsql/lib/pgsql:/usr/lib/pgsql:/usr/pgsql/lib:/usr/pgsql/lib/pgsql:/usr/local/lib/pgsql:/usr/local/postgresql/lib:/usr/local/postgresql/lib/postgresql:/usr/lib/postgresql:/usr/postgresql/lib:/usr/postgresql/lib/postgresql:/usr/local/lib/postgresql:${LD_RUN_PATH:+:}${LD_RUN_PATH}"
-      LDFLAGS="$LDFLAGS -L/usr/local/pgsql/lib -L/usr/lib/pgsql -L/usr/pgsql/lib -L/usr/local/lib/pgsql -L/usr/local/pgsql/lib/pgsql -L/usr/pgsql/lib/pgsql -L/usr/local/postgresql/lib -L/usr/lib/postgresql -L/usr/postgresql/lib -L/usr/local/lib/postgresql -L/usr/local/postgresql/lib/postgresql -L/usr/postgresql/lib/postgresql"
-      CPPFLAGS="$CPPFLAGS -I/usr/local/pgsql/include -I/usr/include/pgsql -I/usr/pgsql/include -I/usr/local/include/pgsql -I/usr/local/pgsql/include/pgsql -I/usr/pgsql/include/pgsql -I/usr/local/postgresql/include -I/usr/include/postgresql -I/usr/postgresql/include -I/usr/local/include/postgresql -I/usr/local/postgresql/include/postgresql -I/usr/postgresql/include/postgresql"
+      CFLAGS="$CFLAGS `pg_config --cflags`"
+      CPPFLAGS="$CPPFLAGS `pg_config --cppflags`"
+      LDFLAGS="$LDFLAGS `pg_config --ldflags`"
     fi
-    AC_CHECK_LIB(m, floor)
-    AC_CHECK_LIB(z, gzclose)
     with_pgsql="yes"
     AC_DEFINE(WITH_PGSQL,,[with pgsql])
     AC_CHECK_LIB(pq, PQconnectdb, ,
@@ -1253,8 +1247,7 @@ AC_ARG_WITH(pgsql,
       }
       ]])],[],[
         AC_MSG_RESULT(no)
-        AC_MSG_ERROR(Your PostgreSQL client libraries aren't properly installed)
-      
+        AC_MSG_ERROR(Your PostgreSQL client libraries aren't properly installed)      
     ],[])    
     AC_MSG_RESULT(yes)
   fi ])
