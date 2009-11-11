@@ -14,7 +14,7 @@ export CPP="$PLATFORM_PATH/Developer/usr/bin/cpp"
 rm -fr "obj-$arch" 2>/dev/null
 mkdir "obj-$arch" 2>/dev/null
 cd "obj-$arch" || exit 1
-../../configure --host=arm-apple-darwin9 --without-inetd --without-pam --with-nonroot || exit 2
+../../configure --host=arm-apple-darwin9 --without-inetd --without-pam --with-nonroot --with-rfc2640 || exit 2
 make || make
 cd src || exit 1
 mv libpureftpd.a "_libpureftpd-$arch.a"
@@ -30,7 +30,7 @@ export LDFLAGS="-pthread -arch $arch -isysroot /Developer/SDKs/MacOSX10.5.sdk -m
 rm -fr "obj-$arch" 2>/dev/null
 mkdir "obj-$arch" 2>/dev/null
 cd "obj-$arch" || exit 1
-../../configure --without-inetd --without-pam --with-nonroot || exit 2
+../../configure --without-inetd --without-pam --with-nonroot --with-rfc2640 || exit 2
 make || make
 cd src || exit 1
 mv libpureftpd.a "_libpureftpd-$arch.a"
