@@ -1199,6 +1199,8 @@ AC_ARG_WITH(mysql,
       CFLAGS="$CFLAGS `mysql_config --cflags`"
       LDFLAGS="$LDFLAGS `mysql_config --libs`"
     fi
+    AC_CHECK_LIB(m, floor)
+    AC_CHECK_LIB(z, gzclose)
     with_mysql="yes"
     AC_DEFINE(WITH_MYSQL,,[with mysql])
     AC_CHECK_LIB(mysqlclient, mysql_init, ,
@@ -1224,14 +1226,16 @@ AC_ARG_WITH(pgsql,
 [AS_HELP_STRING(--with-pgsql,Users database is a PostgreSQL database (see doc))],
 [ if test "x$withval" != "xno" ; then
     if test "x$withval" != "x" && test "x$withval" != "xyes" ; then
-      LD_RUN_PATH="${withval}/lib${LD_RUN_PATH:+:}${LD_RUN_PATH}"    
+      LD_RUN_PATH="${withval}/lib${LD_RUN_PATH:+:}${LD_RUN_PATH}"
       LDFLAGS="$LDFLAGS -L${withval}/lib -L${withval}/lib/pgsql -L${withval}/lib/postgresql -L${withval}/pgsql/lib -L${withval}/postgresql/lib"
       CPPFLAGS="$CPPFLAGS -I${withval}/include -I${withval}/include/pgsql -I${withval}/include/postgresql -I${withval}/pgsql/include -I${withval}/postgresql/include"
     else
-      CFLAGS="$CFLAGS `pg_config --cflags`"
-      CPPFLAGS="$CPPFLAGS `pg_config --cppflags`"
-      LDFLAGS="$LDFLAGS `pg_config --ldflags`"
+      LD_RUN_PATH="`pg_config --libdir`${LD_RUN_PATH:+:}${LD_RUN_PATH}"
+      CPPFLAGS="$CPPFLAGS -I`pg_config --includedir`"
+      LDFLAGS="$LDFLAGS -L`pg_config --libdir`"
     fi
+    AC_CHECK_LIB(m, floor)
+    AC_CHECK_LIB(z, gzclose)
     with_pgsql="yes"
     AC_DEFINE(WITH_PGSQL,,[with pgsql])
     AC_CHECK_LIB(pq, PQconnectdb, ,
