@@ -400,7 +400,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>09872FFC10AB3EC40026A466</string>
+										<string>0987300D10AB42350026A466</string>
 										<key>history</key>
 										<array>
 											<string>09F65ADE109AEED80075C1E8</string>
@@ -590,7 +590,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>279658180.054869</real>
+	<real>279659061.461034</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -609,9 +609,9 @@
 	<array>
 		<string>09872F8B10AB11340026A466</string>
 		<string>09872F7E10AB10420026A466</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>0957C8B7109A300300077D37</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/j/src/pure-ftpd/iphone/Test/Test.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

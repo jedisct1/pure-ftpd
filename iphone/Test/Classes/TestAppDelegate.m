@@ -31,7 +31,7 @@ extern int  pureftpd_disable(void);
 
 // 0: Require authentication (see the authentication callback below)
 // 1: Allow anonymous connections (ftp/anonymous)
-#define kALLOW_ANONYMOUS_CONNECTIONS 0
+#define kALLOW_ANONYMOUS_CONNECTIONS 1
 
 static NSString *baseDir;
 

@@ -5164,6 +5164,12 @@ static void doit(void)
         display_banner = 0;
     }
 #endif
+#ifdef __IPHONE__
+    if (display_banner) {
+        addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd (iPhone)");
+        display_banner = 0;
+    }
+#endif    
     if (display_banner) {
 #ifdef BORING_MODE
         addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd.");

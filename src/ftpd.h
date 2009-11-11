@@ -509,6 +509,9 @@ the server may be insecure if a wrong value is set here.
 Your platform has a very large MAXPATHLEN, we should not trust it.
 #endif
 
+#ifdef __IPHONE__
+# define DEFAULT_MAX_USERS 1
+#endif
 #ifndef DEFAULT_MAX_USERS    
 # define DEFAULT_MAX_USERS 50
 #endif
