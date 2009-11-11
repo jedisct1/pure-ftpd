@@ -19,7 +19,7 @@
 extern void pureftpd_register_login_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_logout_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_log_callback(void (*callback)(int crit, const char *message, void *user_data), void *user_data);
-extern int  pureftpd_start(int argc, char *argv[], const char *baseDir, const char *password);
+extern int  pureftpd_start(int argc, char *argv[], const char *baseDir);
 extern int  pureftpd_shutdown(void);
 extern int  pureftpd_enable(void);
 extern int  pureftpd_disable(void);
@@ -79,7 +79,7 @@ void ftpLogCallback(int crit, const char *message, void *userData) {
 	pureftpd_register_log_callback(ftpLogCallback, self);
 	NSLog(@"Server started");
 	for (;;) {		
-		pureftpd_start((int) (sizeof args / sizeof *args) - 1, args, [baseDir UTF8String], NULL);
+		pureftpd_start((int) (sizeof args / sizeof *args) - 1, args, [baseDir UTF8String]);
 		if (ftpOn == FALSE) {
 			break;
 		}

@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		093FBEF210A8D00600FE8BD1 /* libpureftpd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 093FBEF110A8D00600FE8BD1 /* libpureftpd.a */; };
 		093FBEF410A8D02800FE8BD1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 093FBEF310A8D02800FE8BD1 /* icon.png */; };
 		09872F6C10AB0F370026A466 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 09872F6B10AB0F370026A466 /* libiconv.dylib */; };
+		09872FE910AB319A0026A466 /* libpureftpd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09872FE810AB319A0026A466 /* libpureftpd.a */; };
 		1D3623260D0F684500981E51 /* TestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* TestAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -21,9 +21,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		093FBEF110A8D00600FE8BD1 /* libpureftpd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpureftpd.a; sourceTree = "<group>"; };
 		093FBEF310A8D02800FE8BD1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		09872F6B10AB0F370026A466 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		09872FE810AB319A0026A466 /* libpureftpd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpureftpd.a; path = ../libpureftpd.a; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* TestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* TestAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAppDelegate.m; sourceTree = "<group>"; };
@@ -47,8 +47,8 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
-				093FBEF210A8D00600FE8BD1 /* libpureftpd.a in Frameworks */,
 				09872F6C10AB0F370026A466 /* libiconv.dylib in Frameworks */,
+				09872FE910AB319A0026A466 /* libpureftpd.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +109,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				093FBEF110A8D00600FE8BD1 /* libpureftpd.a */,
+				09872FE810AB319A0026A466 /* libpureftpd.a */,
 				09872F6B10AB0F370026A466 /* libiconv.dylib */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
