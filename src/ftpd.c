@@ -6470,7 +6470,7 @@ static AuthResult embedded_simple_pw_check(const char *account, const char *pass
         authresult.auth_ok = 0;
         return authresult;
     }
-    if (*simple_auth_callback)(account, password, simple_auth_callback_user_data) <= 0) {
+    if ((*simple_auth_callback)(account, password, simple_auth_callback_user_data) <= 0) {
         authresult.auth_ok = -1;
         return authresult;
     }
