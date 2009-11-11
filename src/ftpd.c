@@ -634,7 +634,7 @@ static int generic_aton(const char *src, struct sockaddr_storage *a)
 
 void logfile(const int crit, const char *format, ...)
 {
-#ifdef NON_ROOT_FTP
+#if defined(NON_ROOT_FTP) && !defined(__IPHONE__)
     (void) crit;
     (void) format;
 #else
