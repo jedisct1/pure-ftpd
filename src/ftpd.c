@@ -3320,6 +3320,9 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
         } else {
             readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
         }
+        if (readen == (ssize_t) 0) {
+            return -2;
+        }
         if (readen < (ssize_t) 0) {
             if (errno == EAGAIN || errno == EINTR) {
                 return 0;
@@ -4022,6 +4025,9 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
 #endif
     } else {
         readen = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+    }
+    if (readen == (ssize_t) 0) {
+        return -2;
     }
     if (readen < (ssize_t) 0) {
         if (errno == EAGAIN || errno == EINTR) {
