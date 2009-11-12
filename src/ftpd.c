@@ -3301,8 +3301,6 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     char *bufpnt;
     ssize_t readnb;
 
-    close(clientfd);
-    return -2;
     repoll:
     dlhandler->pfds_f_in.revents = 0;
     pollret = poll(&dlhandler->pfds_f_in, 1U,
