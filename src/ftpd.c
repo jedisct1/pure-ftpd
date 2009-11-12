@@ -3533,7 +3533,6 @@ void doretr(char *name)
         ret = dlmap_send(&dlhandler);
         dlmap_exit(&dlhandler);        
     } else {
-        addreply_noformat(426, "dlmap_init()");
         ret = -1;
     }
     
@@ -4432,7 +4431,6 @@ void dostor(char *name, const int append, const int autorename)
         ret = ul_send(&ulhandler);
         ul_exit(&ulhandler);
     } else {
-        addreply_noformat(426, "ul_init()");
         ret = -1;
     }
     (void) close(f);
