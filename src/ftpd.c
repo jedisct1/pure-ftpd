@@ -1388,6 +1388,7 @@ void douser(const char *username)
             
             if (getcwd(s, sizeof s - (size_t) 1U) == NULL) {
                 cantsec:
+                die(421, LOG_ERR, "%d", __LINE__);
                 die(421, LOG_ERR, MSG_UNABLE_SECURE_ANON);
             }
             pw_.pw_uid = geteuid();
@@ -1428,11 +1429,13 @@ void douser(const char *username)
             size_t rd_len;
             
             if (pw->pw_dir == NULL || *pw->pw_dir != '/') {
+                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
             if ((hd = strstr(pw->pw_dir, "/./")) != NULL) {
                 rd_len = (size_t) (hd - pw->pw_dir) + sizeof "/";
                 if ((root_directory = malloc(rd_len)) == NULL) {
+                    die(421, LOG_ERR, "%d", __LINE__);                    
                     goto cantsec;
                 }
                 memcpy(root_directory, pw->pw_dir, rd_len);
@@ -1441,12 +1444,14 @@ void douser(const char *username)
             } else {
                 rd_len = strlen(pw->pw_dir) + sizeof "/";
                 if ((root_directory = malloc(rd_len)) == NULL) {
+                    die(421, LOG_ERR, "%d", __LINE__);                    
                     goto cantsec;
                 }
                 snprintf(root_directory, rd_len, "%s/", pw->pw_dir);
                 hd = (char *) "/";
             }
             if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
+                die(421, LOG_ERR, "%d [%s] [%s]", __LINE__, root_directory, hd);
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED);
@@ -1459,12 +1464,14 @@ void douser(const char *username)
                 chdir(name) || chroot(name) || chdir("/") ||
                 SNCHECK(snprintf(root_directory, rd_len, "%s:/", hbuf),
                         rd_len)) {
+                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED_VIRTUAL ": %s", hbuf);
         }
 #endif
         if (pw == NULL) {
+            die(421, LOG_ERR, "%d", __LINE__);            
             goto cantsec;
         }
         chrooted = 1;
@@ -1488,10 +1495,12 @@ void douser(const char *username)
         if (authresult.uid > (uid_t) 0) {
 # ifndef WITHOUT_PRIVSEP
             if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
+                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
 # else
             if (seteuid(authresult.uid) != 0) {
+                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
 # endif

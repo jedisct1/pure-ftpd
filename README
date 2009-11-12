@@ -217,7 +217,8 @@ listened by default in standalone mode. If you want to use the nonroot mode,
 you must compile and *install* the software (./configure --prefix=... &&
 make install-strip) . /sbin, /bin and /man directories will be created in
 that prefix. But you must also add an /etc directory (readable and writeable
-by the user pure-ftpd will run as) .
+by the user pure-ftpd will run as) . You can change the anonymous FTP root
+directory through an environment variable named FTP_ANON_DIR.
 
 --with-pam: use pluggable authentification modules. Don't use this option
 if your login/passwd pairs are always refused (but the real fix would be to
