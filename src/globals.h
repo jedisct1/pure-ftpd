@@ -36,7 +36,7 @@ GLOBAL0(signed char loggedin);                    /* != 0 if the user if logged 
 GLOBAL0(char account[MAX_USER_LENGTH + 1U]);      /* user login */
 GLOBAL0(char *renamefrom);
 GLOBAL0(in_port_t serverport);    /* local server port */
-GLOBAL0(signed char userchroot);                /* don't chroot() by default for regular users */
+GLOBAL0(signed char userchroot);                /* 0=don't chroot() by default for regular users 1=chroot except members of the trusted group 2=chroot everyone */
 GLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
 GLOBAL0(uid_t chroot_trustedgid);
 GLOBAL0(signed char broken_client_compat);         /* don't enable workarounds by default */

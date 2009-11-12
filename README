@@ -670,7 +670,8 @@ Note: 'root' (uid 0) always has full filesystem access.
 
 If you want to chroot() everyone, but root, use the following flag:
 
-- '-A': chroot() everyone, but root.
+- '-A': chroot() everyone, but root. There's no such thing as a trusted
+group. '-A' and '-a <gid>' are mutually exclusive.
 
 - '-b': Ignore parts of RFC standards in order to deal with some totally
 broken FTP clients, or broken firewalls/NAT boxes. Also, non-dangling
