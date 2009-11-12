@@ -1388,7 +1388,6 @@ void douser(const char *username)
             
             if (getcwd(s, sizeof s - (size_t) 1U) == NULL) {
                 cantsec:
-                die(421, LOG_ERR, "%d", __LINE__);
                 die(421, LOG_ERR, MSG_UNABLE_SECURE_ANON);
             }
             pw_.pw_uid = geteuid();
@@ -1429,13 +1428,11 @@ void douser(const char *username)
             size_t rd_len;
             
             if (pw->pw_dir == NULL || *pw->pw_dir != '/') {
-                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
             if ((hd = strstr(pw->pw_dir, "/./")) != NULL) {
                 rd_len = (size_t) (hd - pw->pw_dir) + sizeof "/";
                 if ((root_directory = malloc(rd_len)) == NULL) {
-                    die(421, LOG_ERR, "%d", __LINE__);                    
                     goto cantsec;
                 }
                 memcpy(root_directory, pw->pw_dir, rd_len);
@@ -1444,7 +1441,6 @@ void douser(const char *username)
             } else {
                 rd_len = strlen(pw->pw_dir) + sizeof "/";
                 if ((root_directory = malloc(rd_len)) == NULL) {
-                    die(421, LOG_ERR, "%d", __LINE__);                    
                     goto cantsec;
                 }
                 snprintf(root_directory, rd_len, "%s/", pw->pw_dir);
@@ -1464,14 +1460,12 @@ void douser(const char *username)
                 chdir(name) || chroot(name) || chdir("/") ||
                 SNCHECK(snprintf(root_directory, rd_len, "%s:/", hbuf),
                         rd_len)) {
-                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED_VIRTUAL ": %s", hbuf);
         }
 #endif
         if (pw == NULL) {
-            die(421, LOG_ERR, "%d", __LINE__);            
             goto cantsec;
         }
         chrooted = 1;
@@ -1495,12 +1489,10 @@ void douser(const char *username)
         if (authresult.uid > (uid_t) 0) {
 # ifndef WITHOUT_PRIVSEP
             if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
-                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
 # else
             if (seteuid(authresult.uid) != 0) {
-                die(421, LOG_ERR, "%d", __LINE__);                
                 goto cantsec;
             }
 # endif
@@ -1832,7 +1824,7 @@ void dopass(char *password)
         die(421, LOG_WARNING, MSG_NOTRUST);
 #endif
     }
-    
+
     /* handle /home/user/./public_html form */
     if ((root_directory = strdup(authresult.dir)) == NULL) {
         die_mem();
@@ -1877,9 +1869,6 @@ void dopass(char *password)
         setegid(authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
-    if ((userchroot == 0 || chrooted != 0) && setuid(authresult.uid) != 0) {
-        _EXIT(EXIT_FAILURE);
-    }
     if (seteuid(authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
@@ -1900,6 +1889,9 @@ void dopass(char *password)
         userchroot = 1;
     }
 #endif
+    if ((userchroot == 0 || chrooted != 0) && setuid(authresult.uid) != 0) {
+        _EXIT(EXIT_FAILURE);
+    }
     if (loggedin == 0) {
         candownload = 1;        /* real users can always download */
     }
@@ -1964,7 +1956,7 @@ void dopass(char *password)
 #endif
     if (guest == 0 && allowfxp == 1) {
         addreply_noformat(0, MSG_FXP_SUPPORT);
-    }
+    }    
 #ifdef RATIOS
     if (ratio_for_non_anon != 0 && ratio_upload > 0) {
         addreply(0, MSG_RATIO, ratio_upload, ratio_download);
@@ -3099,15 +3091,6 @@ int dlhandler_init(DLHandler * const dlhandler,
         addreply_noformat(550, MSG_NOT_REGULAR_FILE);
         return -1;
     }
-    if (restartat > (off_t) 0 && restartat >= st.st_size) {
-        addreply(554, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
-                 (long long) restartat, (long long) st.st_size);
-        return -1;
-    }
-    if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
-        error(451, "fcntl(F_SETFL, O_NONBLOCK)");
-        return -1;
-    }
     dlhandler->clientfd = clientfd;
     dlhandler->tls_clientfd = tls_clientfd;
     dlhandler->xferfd = xferfd;
@@ -3125,6 +3108,20 @@ int dlhandler_init(DLHandler * const dlhandler,
     pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
     pfd->revents = 0;
     
+    if (restartat > (off_t) 0) {
+        if (restartat == st.st_size) {
+            addreply_noformat(226, MSG_NO_MORE_TO_DOWNLOAD);
+            return -2;
+        } else if (restartat > st.st_size) {
+            addreply(554, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+                     (long long) restartat, (long long) st.st_size);
+            return -1;
+        }
+    }
+    if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
+        error(451, "fcntl(F_SETFL, O_NONBLOCK)");
+        return -1;
+    }    
     return 0;
 }
 
