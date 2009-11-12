@@ -13,7 +13,7 @@ The server has been designed to be secure in default configuration, it has no
 known vulnerability, it is really trivial to set up and it is especially
 designed for modern kernels. It was successfully ported to Linux, FreeBSD,
 DragonflyBSD, NetBSD, OpenBSD, ISOS, MirBSD, BSDi, Solaris, Darwin, Tru64,
-Irix, AIX and HPUX.
+Irix, AIX, HPUX and iPhone.
 
 Features include chroot()ed and/or virtual chroot()ed home directories,
 virtual domains, built-in 'ls', anti-warez system, configurable ports for

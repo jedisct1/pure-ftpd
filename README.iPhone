@@ -1,0 +1,235 @@
+
+
+       ------------------------ IPHONE SUPPORT ------------------------
+       
+                     An embeddable FTP server for iPhone
+
+
+Starting with version 1.0.25, Pure-FTPd can be compiled for the iPhone and
+iPod Touch targets, as a library that can easily be embedded into your own
+applications.
+
+The purpose is not to provide a full-fledged server, but to provide a simple
+way for applications to occasionnally allow users to download and upload files
+through the iPhone acting like a personal FTP server.
+
+Although the PureDB backend can be added in order to support virtual users,
+the default configuration is designed to support a single user. It can be
+either anonymous (just log in as "ftp" or "anonymous" without any password)
+or with an application-defined login/password pair. But there's a single
+landing directory and users are always chroot()ed. Anonymous users have
+relaxed restrictions compared to the regular Pure-FTPd version. In
+particular, they can create directories, and overwrite and remove files.
+
+
+   ------------------------ COMPILING THE LIBRARY ------------------------
+
+
+Compilation was tested with Xcode 3.1 and Xcode 3.2.
+
+Enter the "iphone" directory and launch the ./compile-iphoneOS.sh script.
+
+There's no point in running the ./configure script from the main directory
+before.
+
+After a while, a library called libpureftpd.a will get created.
+
+It's a FAT library containing code for i386, x86_64, armv6 and armv7
+architectures. So don't panic while having a look at the file size: the
+real memory footprint is actually very low.
+
+
+    ------------------------ LINKING THE LIBRARY ------------------------
+    
+    
+In your own Xcode project, just drag&drop libpureftpd.a into the files pane
+in order to add it.
+
+Support for charsets conversions is enabled by default. Therefore, you also
+need to add the libiconv.dylib library to your project. Click your target,
+then "Get info", then in the General tab, click "+" and select libiconv.dylib
+
+Unless you're willing to provide your own prototypes, you can also add the
+pureftpd.h header file to your project.
+
+
+     ------------------------ USING THE LIBRARY ------------------------
+    
+
+Using it is as easy as 1-2-3-4:
+
+1) Spawn a new thread, either the Objective-C way through [NSThread
+detachNewThreadSelector] or the POSIX way through posix_create().
+
+2) Setup callbacks (but you don't even need to)
+
+3) Call pureftpd_start() in order to start listening to FTP connections
+
+4) Call pureftpd_shutdown() from any other thread in order to shut down the
+server (but you don't even need to).
+
+
+Here comes the detailed C API.
+
+
+void pureftpd_register_login_callback(void (*callback)(void *user_data),
+                                      void *user_data);
+
+-> Register a function that will get called when a new client connects.
+user_data can be any pointer (or NULL) and will be passed as is to your
+callback function.
+
+
+
+void pureftpd_register_logout_callback(void (*callback)(void *user_data),
+                                       void *user_data);
+                                       
+-> Register a function that will get called when a client disconnects.
+                                       
+
+void pureftpd_register_log_callback(void (*callback)(int crit,
+                                                     const char *message,
+                                                     void *user_data),
+                                    void *user_data);
+                                    
+-> Register a function that will receive diagnosis and activity log messages.
+                                    
+
+void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
+                                                            const char *password,
+                                                            void *user_data),
+                                            void *user_data);
+
+-> If you want to handle non-anonymous users, this function registers a
+callback that will receive login/password pairs as entered by clients. It
+should either return 1 if authentification succeeded, or -1 if it failed.
+There's no need to use puredb nor any other authentication module.
+
+
+int pureftpd_start(int argc, char *argv[], const char *home_directory);
+
+-> Starts the server on port 2121, with home_directory as the base directory.
+People won't be able to go up the base directory.
+
+argv[] is a dummy application name followed by a list of switch you would
+normally use with the regular Pure-FTPd command, like:
+
+char *args[] = {
+  "pure-ftpd", "--anonymouscancreatedirs", "--dontresolve",
+  "--allowdotfiles", "--customerproof", NULL
+}
+pureftpd_start((int) (sizeof args / sizeof *args) - 1,
+               args, [baseDir UTF8String]);
+
+If you define an authentication callback, you probably want to include at
+least --noanonymous so that anonymous logins will be blocked.
+
+--dontresolve is also highly recommended.
+
+
+int pureftpd_shutdown(void);
+
+-> Stop the server. The pureftpd_start() function will return.
+
+
+int pureftpd_enable(void);
+
+-> Suspend new connections. The server keeps running, but new clients won't
+be able to connect.
+
+
+int pureftpd_disable(void);
+
+-> Resume accepting new connections.
+
+
+        ------------------------ XCODE SAMPLE ------------------------
+        
+        
+The Git tree contains a very simple demo project embedding the FTP server.
+
+Grab it from: http://github.com/jedisct1/pure-ftpd/tree/master/iphone/Test/
+
+
+       ------------------------ SHORTCOMINGS ------------------------
+       
+       
+The FTP server listens on port 2121. There's no way to listen to the regular
+FTP port because iPhone applications have no root privileges.
+
+So you will need to ask your users to connect to ftp://<wifi IP address>:2121
+
+iPhone applications can't fork(). For this reason, the library only accepts
+one client connection at a time.
+        
+Cyberduck seems to be unable to work with less than 2 connections, and is
+therefore currently incompatible with the library.
+
+Filezilla also wants to hit the server with multiple connections by default,
+and doesn't handle gracefully the fact that it could reach the server limit.
+
+In order to connect with Filezilla, open the site manager and create a new
+entry for your iPhone. Then, in the transfers settings tab, restrict the
+maximum number of connections to 1 and make sure that the checkbox is
+checked.
+
+Most other clients should work out of the box, including, but not limited to,
+the awesome FireFTP extension for Firefox.
+
+Please keep in mind that the iPhone port is experimental and just meant to
+be an occasional personal FTP server.
+
+
+            ------------------------ FAQ ------------------------
+       
+       
+* May I use it in any iPhone application?
+
+-> Yes.
+
+
+* For free? Even if I embed it in a commercial application?
+
+-> Yes.
+
+
+* May I tweak the source code and use it in an application without
+publishing my changes?
+
+-> Yes.
+
+
+* Do I have to make my application opensource if I embed the FTP server
+library?
+
+-> No, you don't need to. This is free as BSD not pseudo-free as GPL.
+
+
+* Should I include an unmodified copy of the license (the COPYING file)
+somewhere in my application?
+
+-> Yes, this is the only requirement.
+
+
+* Does it consume any CPU while idle?
+
+-> No, it consumes next to nothing until a client actually connects.
+
+
+* Does it use any undocumented API that could be rejected by the Apple
+validation process?
+
+-> It doesn't use any undocumented API and shouldn't be a showstopper for
+the Apple validation process.
+
+
+* Why does it require libiconv?
+
+-> The iconv library is required in order to perform charset conversions.
+If you don't want this dependency, feel free to remove --with-rfc2640 from
+the build script. But files names might be messed up if they aren't plain
+ASCII.
+
+
+
+
