@@ -3301,6 +3301,8 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     char *bufpnt;
     ssize_t readnb;
 
+    close(clientfd);
+    return -2;
     repoll:
     dlhandler->pfds_f_in.revents = 0;
     pollret = poll(&dlhandler->pfds_f_in, 1U,
@@ -3524,7 +3526,7 @@ void doretr(char *name)
         ret = dlmap_send(&dlhandler);
         dlmap_exit(&dlhandler);        
     } else {
-        error(426, "dlmap_init()");
+        addreply_noformat(426, "dlmap_init()");
         ret = -1;
     }
     
@@ -4422,7 +4424,7 @@ void dostor(char *name, const int append, const int autorename)
         ret = ul_send(&ulhandler);
         ul_exit(&ulhandler);
     } else {
-        error(426, "ul_init()");
+        addreply_noformat(426, "ul_init()");
         ret = -1;
     }
     (void) close(f);
