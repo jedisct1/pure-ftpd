@@ -11,6 +11,22 @@ Mathieu Parisot.
  - --without-pam disables PAM on OSX and iPhone.
  - Allow cross-compilation.
  - Experimental iPhone target.
+ - Change the way it links, building a library first.
+ - Don't use mmap() any more for downloads. It's too slow.
+ - Don't use hard-coded paths in order to find MySQL and PostgreSQL
+libraries and header files. Use mysql_config and pg_config instead.
+Suggested by John Alberts.
+ - Log the DELE command similar to the RETR and STOR commands. Suggested by
+Martin Fuxa.
+ - The primary group gets cached so that it's always displayed in directory
+listings.
+ - Avoid a client process to burn CPU in an infinite loop if the command
+channel gets disconnected before the data channel. Reported by Thomas Min
+and Marcus Kaidja.
+ - Restore the traditional behavior of a download restarting at the end of a
+file. For some weird reasons, some clients still insist on doing that. Don't
+send a 55x return code, just let them download... nothing.
+ - Documentation updates.
 
 * Version 1.0.24:
  - Refuse empty passwords in LDAP bind mode. Reported by Henning Brauer.

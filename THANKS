@@ -72,6 +72,7 @@ External contributors and people who helped in any way, shape or form:
 * Joerg Pulz <Joerg.Pulz at frm2.tum.de> - Pointed out that upload-pipe locking didn't work with daemonization.
 * Johan Schuld.
 * Johan Ström - Compatibility with newer OpenLDAP versions.
+* John Alberts - Suggested mysql_config instead of hard-coded paths.
 * John Hart - Fixed access to remote MySQL servers.
 * John Sullivan <john at benzo8.org> - Helped to spot a zeno effect with pure-uploadscript in 1.0.15 snapshots when the server was started in inetd mode.
 * Jose Pedro Oliveira <jpo at di.uminho.pt> - Spec file fixes.
@@ -95,9 +96,11 @@ External contributors and people who helped in any way, shape or form:
 * Marc Thoben <chojin at gmx.de> - SuSE init script.
 * Marcus Danielsson <safety at fatelabs.com> (reported USER null deref).
 * Marcus Engene - Fixed an extra free() in the pgsql handler and a documentation error in pgsql.
+* Marcus Kaidja - Reported an endless loop.
 * Mariusz Pekala <skoot at poczta.onet.pl> - Fixed typo-errors in the polish translation.
 * Mark Reidel <mr at domainfactory.de> - Reported that users couldn't revert perms on a directory after they removed read/execute access rights.
 * Marshall Pierce <mpierce at hmc.edu> - For his tests on MacOS X.
+* Martin Fuxa - suggested that DELE should log file names like transfer commands.
 * Martin Gerardi (proposed user-domain ACL)
 * Martin Hedenfalk (mhe) - Reported that MLST shouldn't accept any option nor multiple file names.
 * Martin Hedenfalk (reported a bug related to listing of symbolic links to directories).
@@ -141,6 +144,7 @@ External contributors and people who helped in any way, shape or form:
 * Terry Davis - A very nice guy. He helped to fix ASCII upload issues.
 * Thomas Ericsson - Reported documentation glitches.
 * Thomas Maschutznig.
+* Thomas Min - Reported an endless loop.
 * Todd Rinaldo - sent two compatibility fixes for GCC 2.95
 * Tomonori Kamitaki - Helped pure-ftpd to work on Playstation 2.
 * Trilucid - Initial web design of pureftpd.org

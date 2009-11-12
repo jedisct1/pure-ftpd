@@ -1,8 +1,19 @@
 
 * Version 1.0.25:
+ - The FTP server can now be built as a library for iPhone and iPod Touch.
  - Display symbolic links in the MSLD command as symbolic links, unless the
 broken clients mode is enabled, just like STAT/LIST/NLST.
  - Enhanced compatibility with gcc 2.x and with custom installation paths.
+ - Fix packaging issues, especially when the server isn't installed in the
+default paths
+ - Downloads now require less CPU and less memory.
+ - Fix an infinite loop that could lead to a client process burning a CPU
+core if the client didn't disconnect properly. Reported by Thomas Min and Marcus
+Kaidja.
+ - Handle fake download resumes the traditional way for the sake of being
+compatible with weird clients that insist on doing that.
+ - The group name is now always displayed instead of the gid when it matches the
+primary user group.
 
 * Version 1.0.24:
  - When using LDAP in BIND mode, empty passwords are refused. Reported by
