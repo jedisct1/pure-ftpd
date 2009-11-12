@@ -61,20 +61,20 @@ int sfgets(void)
 {
     struct pollfd pfd;
     int pollret;
-    ssize_t readen;
+    ssize_t readnb;
     signed char seen_r = 0;
     static size_t scanned;
-    static size_t readend;
+    static size_t readnbd;
     
     if (scanned > (size_t) 0U) {       /* support pipelining */
-        readend -= scanned;        
-        memmove(cmd, cmd + scanned, readend);   /* safe */
+        readnbd -= scanned;        
+        memmove(cmd, cmd + scanned, readnbd);   /* safe */
         scanned = (size_t) 0U;
     }
     pfd.fd = clientfd;
     pfd.events = POLLIN | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
-        if (scanned >= readend) {      /* nothing left in the buffer */
+        if (scanned >= readnbd) {      /* nothing left in the buffer */
             pfd.revents = 0;
             while ((pollret = poll(&pfd, 1U, idletime * 1000UL)) < 0 &&
                    errno == EINTR);
@@ -88,26 +88,26 @@ int sfgets(void)
             if ((pfd.revents & POLLIN) == 0) {
                 continue;
             }
-            if (readend >= cmdsize) {
+            if (readnbd >= cmdsize) {
                 break;
             }
 #ifdef WITH_TLS
             if (tls_cnx != NULL) {
-                while ((readen = SSL_read
-                        (tls_cnx, cmd + readend, cmdsize - readend))
+                while ((readnb = SSL_read
+                        (tls_cnx, cmd + readnbd, cmdsize - readnbd))
                        < (ssize_t) 0 && errno == EINTR);
             } else
 #endif
             {
-                while ((readen = read(clientfd, cmd + readend,
-                                      cmdsize - readend)) < (ssize_t) 0 &&
+                while ((readnb = read(clientfd, cmd + readnbd,
+                                      cmdsize - readnbd)) < (ssize_t) 0 &&
                        errno == EINTR);
             }
-            if (readen <= (ssize_t) 0) {
+            if (readnb <= (ssize_t) 0) {
                 return -2;
             }
-            readend += readen;
-            if (readend > cmdsize) {
+            readnbd += readnb;
+            if (readnbd > cmdsize) {
                 return -2;
             }
         }
@@ -124,8 +124,8 @@ int sfgets(void)
                     cmd[scanned] = 0;
                 }
 #endif
-                if (++scanned >= readend) {   /* non-pipelined command */
-                    scanned = readend = (size_t) 0U;
+                if (++scanned >= readnbd) {   /* non-pipelined command */
+                    scanned = readnbd = (size_t) 0U;
                 }
                 return 0;
             }

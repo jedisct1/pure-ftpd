@@ -31,7 +31,7 @@ int quota_update(Quota *quota,
     Quota old_quota = { 0ULL, 0ULL };
     Quota dummy_quota;
     struct flock lock;
-    ssize_t readen;
+    ssize_t readnb;
     int err = -1;
     char buf[84];  
     char *bufpnt = buf;
@@ -64,14 +64,14 @@ int quota_update(Quota *quota,
         }    
     }
     do {
-        while ((readen = read(fd, bufpnt, left)) < (ssize_t) 0 && 
+        while ((readnb = read(fd, bufpnt, left)) < (ssize_t) 0 && 
                errno == EINTR);
-        if (readen < (ssize_t) 0) {
+        if (readnb < (ssize_t) 0) {
             goto bye;        
         }
-        bufpnt += readen;
-        left -= readen;
-    } while (left > (ssize_t) 0 && readen != (ssize_t) 0);    
+        bufpnt += readnb;
+        left -= readnb;
+    } while (left > (ssize_t) 0 && readnb != (ssize_t) 0);    
     *bufpnt = 0;
     if ((bufpnt = strchr(buf, ' ')) == NULL) {
         goto skipparse;

@@ -150,20 +150,20 @@ static void callback_reply_end(const char *str, AuthResult * const result)
 static ssize_t safe_read(const int fd, void * const buf_, size_t maxlen)
 {
     unsigned char *buf = (unsigned char *) buf_;
-    ssize_t readen;
+    ssize_t readnb;
     
     do {
-        while ((readen = read(fd, buf, maxlen)) < (ssize_t) 0 && 
+        while ((readnb = read(fd, buf, maxlen)) < (ssize_t) 0 && 
                errno == EINTR);
-        if (readen < (ssize_t) 0 || readen > (ssize_t) maxlen) {
-            return readen;
+        if (readnb < (ssize_t) 0 || readnb > (ssize_t) maxlen) {
+            return readnb;
         }
-        if (readen == (ssize_t) 0) {
+        if (readnb == (ssize_t) 0) {
             ret:
             return (ssize_t) (buf - (unsigned char *) buf_);
         }
-        maxlen -= readen;
-        buf += readen;
+        maxlen -= readnb;
+        buf += readnb;
     } while (maxlen > (ssize_t) 0);
     goto ret;
 }
@@ -176,7 +176,7 @@ void pw_extauth_check(AuthResult * const result,
     int kindy = -1;
     int err;
     int tries = EXTAUTH_MAX_CONNECT_TRIES;
-    ssize_t readen;
+    ssize_t readnb;
     char *linepnt;
     char *crpoint;
     char sa_hbuf[NI_MAXHOST];
@@ -235,10 +235,10 @@ void pw_extauth_check(AuthResult * const result,
     result->dir = NULL;
     result->slow_tilde_expansion = 1;    
     auth_finalized = 0;
-    if ((readen = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
+    if ((readnb = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
         goto bye;
     }
-    line[readen] = 0;    
+    line[readnb] = 0;    
     linepnt = line;
     while ((crpoint = strchr(linepnt, '\n')) != NULL) {
         const ExtauthCallBack *scanned;

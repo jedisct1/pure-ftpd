@@ -261,13 +261,13 @@ static int freestructs(PureDBW * const dbw)
 
 static int mergefiles(PureDBW * const dbw)
 {
-    size_t readen;
+    size_t readnb;
     char buf[4096];
 
     rewind(dbw->fpdata);
-    while ((readen = fread(buf, (size_t) 1U, sizeof buf, dbw->fpdata)) >
+    while ((readnb = fread(buf, (size_t) 1U, sizeof buf, dbw->fpdata)) >
            (size_t) 0U) {
-        if (fwrite(buf, (size_t) 1U, readen, dbw->fpindex) != readen) {
+        if (fwrite(buf, (size_t) 1U, readnb, dbw->fpindex) != readnb) {
             return -1;
         }
     }

@@ -3163,7 +3163,7 @@ int dlmap_init(DLHandler * const dlhandler,
 
 static int _dlmap_read(DLHandler * const dlhandler)
 {
-    ssize_t readen;
+    ssize_t readnb;
     
     if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
         abort();
@@ -3171,7 +3171,7 @@ static int _dlmap_read(DLHandler * const dlhandler)
     if (dlhandler->dlmap_pos != dlhandler->dlmap_fdpos) {
         do {
 #ifdef HAVE_PREAD
-            readen = pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
+            readnb = pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
                            dlhandler->dlmap_pos);
 #else
             if (lseek(dlhandler->f, dlhandler->dlmap_pos,
@@ -3179,22 +3179,22 @@ static int _dlmap_read(DLHandler * const dlhandler)
                 dlhandler->dlmap_fdpos = (off_t) -1;
                 return -1;
             }
-            readen = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
+            readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
 #endif
-        } while (readen == (ssize_t) -1 && errno == EINTR);
+        } while (readnb == (ssize_t) -1 && errno == EINTR);
     } else {
         do {
-            readen = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
-        } while (readen == (ssize_t) -1 && errno == EINTR);
+            readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
+        } while (readnb == (ssize_t) -1 && errno == EINTR);
     }
-    if (readen <= (ssize_t) 0) {
+    if (readnb <= (ssize_t) 0) {
         dlhandler->dlmap_fdpos = (off_t) -1;
         return -1;
     }
-    if (readen != (ssize_t) dlhandler->dlmap_size) {
+    if (readnb != (ssize_t) dlhandler->dlmap_size) {
         dlhandler->dlmap_fdpos = (off_t) -1;
     } else {
-        dlhandler->dlmap_fdpos += (off_t) readen;
+        dlhandler->dlmap_fdpos += (off_t) readnb;
     }    
     return 0;
 }
@@ -3299,7 +3299,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     int pollret;
     char buf[100];
     char *bufpnt;
-    ssize_t readen;
+    ssize_t readnb;
 
     repoll:
     dlhandler->pfds_f_in.revents = 0;
@@ -3312,24 +3312,24 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
         if (dlhandler->tls_clientfd != NULL) {
 #ifdef WITH_TLS            
-            readen = SSL_read(dlhandler->tls_clientfd, buf,
+            readnb = SSL_read(dlhandler->tls_clientfd, buf,
                               sizeof buf - (size_t) 1U);
 #else
             abort();
 #endif
         } else {
-            readen = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+            readnb = read(dlhandler->clientfd, buf, sizeof buf - (size_t) 1U);
         }
-        if (readen == (ssize_t) 0) {
+        if (readnb == (ssize_t) 0) {
             return -2;
         }
-        if (readen < (ssize_t) 0) {
+        if (readnb < (ssize_t) 0) {
             if (errno == EAGAIN || errno == EINTR) {
                 return 0;
             }
             return -1;
         }
-        buf[readen] = 0;
+        buf[readnb] = 0;
         bufpnt = skip_telnet_controls(buf);
         if (strchr(bufpnt, '\n') != NULL) {
             if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
@@ -4014,28 +4014,28 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
 {
     char buf[100];
     char *bufpnt;    
-    ssize_t readen;
+    ssize_t readnb;
     
     if (ulhandler->tls_clientfd != NULL) {
 #ifdef WITH_TLS            
-        readen = SSL_read(ulhandler->tls_clientfd, buf,
+        readnb = SSL_read(ulhandler->tls_clientfd, buf,
                           sizeof buf - (size_t) 1U);
 #else
         abort();
 #endif
     } else {
-        readen = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
+        readnb = read(ulhandler->clientfd, buf, sizeof buf - (size_t) 1U);
     }
-    if (readen == (ssize_t) 0) {
+    if (readnb == (ssize_t) 0) {
         return -2;
     }
-    if (readen < (ssize_t) 0) {
+    if (readnb < (ssize_t) 0) {
         if (errno == EAGAIN || errno == EINTR) {
             return 0;
         }
         return -1;
     }
-    buf[readen] = 0;
+    buf[readnb] = 0;
     bufpnt = skip_telnet_controls(buf);    
     if (strchr(buf, '\n') != NULL) {
         if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
@@ -4054,7 +4054,7 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
 int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
                    const double ts_start)
 {
-    ssize_t readen;
+    ssize_t readnb;
     double required_sleep = 0.0;
     int pollret;
     int ret;
@@ -4070,26 +4070,26 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
     }
     if (ulhandler->tls_fd != NULL) {
 #ifdef WITH_TLS            
-        readen = SSL_read(ulhandler->tls_fd, ulhandler->buf,
+        readnb = SSL_read(ulhandler->tls_fd, ulhandler->buf,
                           ulhandler->chunk_size);
 #else
         abort();
 #endif
     } else {
-        readen = read(ulhandler->xferfd, ulhandler->buf,
+        readnb = read(ulhandler->xferfd, ulhandler->buf,
                       ulhandler->chunk_size);
     }
-    if (readen == (ssize_t) 0) {
+    if (readnb == (ssize_t) 0) {
         return 2;
     }
-    if (readen < (ssize_t) 0) {
+    if (readnb < (ssize_t) 0) {
         if (errno == EAGAIN || errno == EINTR) {
             return 0;
         }
         addreply_noformat(451, MSG_DATA_READ_FAILED);
         return -1;
     }    
-    if (ul_dowrite(ulhandler, ulhandler->buf, readen, uploaded) != 0) {
+    if (ul_dowrite(ulhandler, ulhandler->buf, readnb, uploaded) != 0) {
         addreply_noformat(452, MSG_WRITE_FAILED);
         return -1;
     }
