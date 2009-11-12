@@ -3091,7 +3091,7 @@ int dlhandler_init(DLHandler * const dlhandler,
         return -1;
     }
     if (restartat > (off_t) 0 && restartat >= st.st_size) {
-        addreply(501, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+        addreply(554, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
                  (long long) restartat, (long long) st.st_size);
         return -1;
     }
@@ -3450,7 +3450,7 @@ void doretr(char *name)
     }
     if (restartat > st.st_size) {
         (void) close(f);
-        addreply(501, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
+        addreply(554, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
                  (long long) restartat, (long long) st.st_size);
         goto end;
     }
@@ -3549,7 +3549,7 @@ void dorest(const char *name)
     restartat = (off_t) strtoull(name, &endptr, 10);
     if (*endptr != 0 || restartat < (off_t) 0) {
         restartat = 0;
-        addreply(501, MSG_REST_NOT_NUMERIC "\n" MSG_REST_RESET);
+        addreply(554, MSG_REST_NOT_NUMERIC "\n" MSG_REST_RESET);
     } else {
         if (type == 1 && restartat != 0) {
 #ifdef STRICT_REST
