@@ -1,6 +1,6 @@
 #! /bin/sh
 
-for arch in armv5 armv6 armv7; do
+for arch in armv6 armv7; do
 (
 export PATH="/Developer/usr/bin:/Developer/usr/sbin:$PATH"
 export PLATFORM_PATH="/Developer/Platforms/iPhoneOS.platform"
