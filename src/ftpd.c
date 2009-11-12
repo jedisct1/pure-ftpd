@@ -1392,7 +1392,7 @@ void douser(const char *username)
             }
             pw_.pw_uid = geteuid();
             pw_.pw_gid = getegid();
-            pw_.pw_dir = NON_ROOT_ANON_DIR;
+            pw_.pw_dir = (char *) NON_ROOT_ANON_DIR;
             if (home_directory != NULL) {
                 pw_.pw_dir = (char *) home_directory;
             }
