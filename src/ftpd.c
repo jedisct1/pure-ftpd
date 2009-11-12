@@ -3174,6 +3174,9 @@ static int _dlmap_read(DLHandler * const dlhandler)
     if (dlhandler->dlmap_size > dlhandler->sizeof_map) {
         abort();
     }
+    if (dlhandler->dlmap_size <= (size_t) 0U) {
+        return 0;
+    }
     if (dlhandler->dlmap_pos != dlhandler->dlmap_fdpos) {
         do {
 #ifdef HAVE_PREAD
