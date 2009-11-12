@@ -16,5 +16,6 @@ int getloadavg(double loadavg[], int nelem)
     
     return nelem;
 }
-
+#else
+extern signed char v6ready;
 #endif

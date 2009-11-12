@@ -514,7 +514,7 @@ int main(int argc, char *argv[])
             run(who, file, upload_pipe_fd);
         }
     }
-    /* Unreachable */
+    /* NOTREACHED */
 #if 0
     close(upload_pipe_fd);
     (void) unlink(uploadscript_pid_file);
