@@ -957,12 +957,6 @@ void doesta(void)
             return;
         }
     }
-    doreply();
-# ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(xferfd, passive);
-    }
-# endif    
     socksize = (socklen_t) sizeof dataconn;
     if (getsockname(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
@@ -994,12 +988,6 @@ void doestp(void)
             return;
         }
     }
-    doreply();
-# ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(xferfd, passive);
-    }
-# endif
     socksize = (socklen_t) sizeof dataconn;
     if (getpeername(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
