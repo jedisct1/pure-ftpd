@@ -957,6 +957,12 @@ void doesta(void)
             return;
         }
     }
+    doreply();
+# ifdef WITH_TLS
+    if (data_protection_level == CPL_PRIVATE) {
+        tls_init_data_session(xferfd, passive);
+    }
+# endif    
     socksize = (socklen_t) sizeof dataconn;
     if (getsockname(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
@@ -988,6 +994,12 @@ void doestp(void)
             return;
         }
     }
+    doreply();
+# ifdef WITH_TLS
+    if (data_protection_level == CPL_PRIVATE) {
+        tls_init_data_session(xferfd, passive);
+    }
+# endif
     socksize = (socklen_t) sizeof dataconn;
     if (getpeername(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
@@ -2643,11 +2655,6 @@ void opendata(void)
 #endif
     }
     xferfd = fd;
-#ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(fd, passive);
-    }
-#endif
     alarm(MAX_SESSION_XFER_IDLE);
 }
 
@@ -3487,7 +3494,7 @@ void doretr(char *name)
     if (xferfd == -1) {
         (void) close(f);
         goto end;
-    }    
+    }
 #ifndef DISABLE_HUMOR
     if ((time(NULL) % 100) == 0) {
         addreply_noformat(0, MSG_WINNER);
@@ -3497,6 +3504,11 @@ void doretr(char *name)
         addreply(0, MSG_KBYTES_LEFT, (double) ((st.st_size - restartat) / 1024.0));
     }
     doreply();
+# ifdef WITH_TLS
+    if (data_protection_level == CPL_PRIVATE) {
+        tls_init_data_session(xferfd, passive);
+    }
+# endif    
     state_needs_update = 1;
     setprocessname("pure-ftpd (DOWNLOAD)");
 
@@ -4395,6 +4407,11 @@ void dostor(char *name, const int append, const int autorename)
         goto end;
     }
     doreply();
+# ifdef WITH_TLS
+    if (data_protection_level == CPL_PRIVATE) {
+        tls_init_data_session(xferfd, passive);
+    }
+# endif    
     state_needs_update = 1;
     setprocessname("pure-ftpd (UPLOAD)");
     filesize = restartat;
@@ -5706,7 +5723,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
                         die_mem();
                     }
                 }
-                *struck = ',';
                 if (struck[1] != 0) {
                     if ((standalone_port = strdup(struck + 1)) == NULL) {
                         die_mem();
