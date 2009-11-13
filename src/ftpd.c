@@ -5706,6 +5706,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
                         die_mem();
                     }
                 }
+                *struck = ',';
                 if (struck[1] != 0) {
                     if ((standalone_port = strdup(struck + 1)) == NULL) {
                         die_mem();
