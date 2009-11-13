@@ -1,3 +1,11 @@
+* Version 1.0.26:
+ - Fix incompatibilities with Cyberduck when TLS is enabled.
+ - Don't TLS_accept() immediately after accept(). Reply on the connection
+socket first, so that clients don't have to wait before knowing that they
+can actually use TLS. It avoids lags with LFTP and hangs with Cyberduck.
+ - Properly change the process name on Linux when the -S option is used, by
+Margus Kaidja.
+
 * Version 1.0.25:
  - Show symlinks as symlinks in MLSD, except when the broken client
 compatibility mode is turned on and links are not dangling (just like the
