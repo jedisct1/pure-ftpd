@@ -838,11 +838,9 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             return;
         }
         doreply();
-        if (type == 2) {
-            addreply_noformat(0, "ASCII");
-        }
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
+            tls_init_data_session(xferfd, passive);
             tls_fd = tls_data_cnx;
         }
 #endif
