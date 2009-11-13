@@ -8,8 +8,8 @@ broken clients mode is enabled, just like STAT/LIST/NLST.
 default paths
  - Downloads now require less CPU and less memory.
  - Fix an infinite loop that could lead to a client process burning a CPU
-core if the client didn't disconnect properly. Reported by Thomas Min and Marcus
-Kaidja.
+core if the client didn't disconnect properly. Reported by Thomas Min and
+Margus Kaidja.
  - Handle fake download resumes the traditional way for the sake of being
 compatible with weird clients that insist on doing that.
  - The group name is now always displayed instead of the gid when it matches the
