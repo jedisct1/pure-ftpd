@@ -22,7 +22,7 @@ Martin Fuxa.
 listings.
  - Avoid a client process to burn CPU in an infinite loop if the command
 channel gets disconnected before the data channel. Reported by Thomas Min
-and Marcus Kaidja.
+and Margus Kaidja.
  - Restore the traditional behavior of a download restarting at the end of a
 file. For some weird reasons, some clients still insist on doing that. Don't
 send a 55x return code, just let them download... nothing.
