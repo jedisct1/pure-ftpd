@@ -1865,8 +1865,7 @@ void dopass(char *password)
         wd[1] = 0;
     }
 #ifndef NON_ROOT_FTP
-    if (setgid(authresult.gid) ||
-        setegid(authresult.gid)) {
+    if (setgid(authresult.gid) || setegid(authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
 #endif
