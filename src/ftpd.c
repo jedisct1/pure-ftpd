@@ -1495,12 +1495,11 @@ void douser(const char *username)
             if (seteuid(authresult.uid) != 0) {
                 goto cantsec;
             }
+#  ifdef USE_CAPABILITIES
+            drop_login_caps();
+#  endif            
 # endif
         }
-#endif
-        
-#ifdef USE_CAPABILITIES
-        drop_login_caps();
 #endif
         
 #ifndef MINIMAL
@@ -1959,9 +1958,6 @@ void dopass(char *password)
         if (chdir(wd) || chroot(wd)) {    /* should never fail */
             die(421, LOG_ERR, MSG_CHROOT_FAILED);
         }
-#ifdef USE_CAPABILITIES
-        drop_login_caps();
-#endif        
         chrooted = 1;
 #ifdef RATIOS
         if (ratio_for_non_anon == 0) {
@@ -2008,10 +2004,12 @@ void dopass(char *password)
     if (seteuid(authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
-# endif    
+#  ifdef USE_CAPABILITIES
+    drop_login_caps();
+#  endif
+# endif
     enablesignals();
 #endif
-
     logfile(LOG_INFO, MSG_IS_NOW_LOGGED_IN, account);
 #ifdef FTPWHO
     if (shm_data_cur != NULL) {

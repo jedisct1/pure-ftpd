@@ -13,16 +13,14 @@ cap_value_t cap_keep_startup[] = {
     CAP_NET_BIND_SERVICE,
     CAP_SYS_CHROOT,
     CAP_SYS_NICE,
-    CAP_NET_ADMIN,
     CAP_DAC_READ_SEARCH
 };
 
 cap_value_t cap_keep_login[] = {
 # ifdef WITHOUT_PRIVSEP
     CAP_SETUID,
-    CAP_NET_BIND_SERVICE,
+    CAP_NET_BIND_SERVICE
 # endif
-    CAP_NET_ADMIN
 };
 
 #endif
