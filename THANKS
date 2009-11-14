@@ -79,6 +79,7 @@ External contributors and people who helped in any way, shape or form:
 * Joshua Rodman <joshua_rodman at yahoo.com> - did a major rewrite of pure-config.py for reliability and maintainability.
 * Juan Carlos Perez.
 * Juan Pablo Gimenez - Improved the RPM package.
+* Juergen Daubert - Reported that authentication of non-chrooted users was broken in 1.0.25.
 * Juergen Henge-Ernst - Reported broken process names on Linux.
 * Juergen Nagel (reported that it didn't work with old libc)
 * Keith Vance - Thanks a lot for the Mac testing.
@@ -96,7 +97,7 @@ External contributors and people who helped in any way, shape or form:
 * Marc Thoben <chojin at gmx.de> - SuSE init script.
 * Marcus Danielsson <safety at fatelabs.com> (reported USER null deref).
 * Marcus Engene - Fixed an extra free() in the pgsql handler and a documentation error in pgsql.
-* Margus Kaidja - Reported an endless loop.
+* Margus Kaidja - Reported an endless loop and provided some nice client compatibility fixes and new features.
 * Mariusz Pekala <skoot at poczta.onet.pl> - Fixed typo-errors in the polish translation.
 * Mark Reidel <mr at domainfactory.de> - Reported that users couldn't revert perms on a directory after they removed read/execute access rights.
 * Marshall Pierce <mpierce at hmc.edu> - For his tests on MacOS X.

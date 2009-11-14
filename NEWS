@@ -1,6 +1,8 @@
 * Version 1.0.26:
  - Fix incompatibilities with Cyberduck and dramatically speed up directory
 listings and transfers when TLS is enabled with some other clients like LFTP.
+ - Allow authentication of non-chrooted users again. It was a regression
+from version 1.0.25. Spotted by Juergen Daubert.
 
 * Version 1.0.25:
  - The FTP server can now be built as a library for iPhone and iPod Touch.
