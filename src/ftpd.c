@@ -1869,9 +1869,6 @@ void dopass(char *password)
         setegid(authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
-    if (seteuid(authresult.uid) != 0) {
-        _EXIT(EXIT_FAILURE);
-    }
 #endif
     if (check_trustedgroup(authresult.uid, authresult.gid) != 0) {
         userchroot = 0;
@@ -1889,9 +1886,6 @@ void dopass(char *password)
         userchroot = 1;
     }
 #endif
-    if ((userchroot == 0 || chrooted != 0) && setuid(authresult.uid) != 0) {
-        _EXIT(EXIT_FAILURE);
-    }
     if (loggedin == 0) {
         candownload = 1;        /* real users can always download */
     }
@@ -1963,36 +1957,9 @@ void dopass(char *password)
     }
 #endif
     if (userchroot != 0 && chrooted == 0) {
-#ifndef NON_ROOT_FTP
-        disablesignals();
-        if (seteuid((uid_t) 0) != 0) {
-            _EXIT(EXIT_FAILURE);
-        }
-#endif
         if (chdir(wd) || chroot(wd)) {    /* should never fail */
-#ifndef WITHOUT_PRIVSEP
-            (void) setuid(authresult.uid);
-            (void) seteuid(authresult.uid);
-#else
-# ifndef NON_ROOT_FTP
-            (void) seteuid(authresult.uid);
-# endif
-#endif
             die(421, LOG_ERR, MSG_CHROOT_FAILED);
         }
-#ifndef WITHOUT_PRIVSEP
-        if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
-            _EXIT(EXIT_FAILURE);
-        }
-        enablesignals();        
-#else
-# ifndef NON_ROOT_FTP
-        if (seteuid(authresult.uid) != 0) {
-            _EXIT(EXIT_FAILURE);
-        }
-        enablesignals();
-# endif
-#endif
 #ifdef USE_CAPABILITIES
         drop_login_caps();
 #endif        
@@ -2031,6 +1998,21 @@ void dopass(char *password)
         addreply(230, MSG_CURRENT_DIR_IS, wd);
 #endif
     }
+    
+#ifndef NON_ROOT_FTP
+    disablesignals();
+# ifndef WITHOUT_PRIVSEP
+    if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
+        _EXIT(EXIT_FAILURE);
+    }
+# else
+    if (seteuid(authresult.uid) != 0) {
+        _EXIT(EXIT_FAILURE);
+    }
+# endif    
+    enablesignals();
+#endif
+
     logfile(LOG_INFO, MSG_IS_NOW_LOGGED_IN, account);
 #ifdef FTPWHO
     if (shm_data_cur != NULL) {
