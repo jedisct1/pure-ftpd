@@ -198,7 +198,7 @@ int tls_init_library(void)
     SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
     if (SSL_CTX_load_verify_locations(tls_ctx,
-                                      TLS_CERTIFICATE_FILE, NULL) != 0) {
+                                      TLS_CERTIFICATE_FILE, NULL) != 1) {
         tls_error(__LINE__, 0);
     }
 #endif    
