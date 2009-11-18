@@ -3787,6 +3787,7 @@ void delete_atomic_file(void)
         return;
     }
     (void) unlink(atomic_file);
+    atomic_file = NULL;
 }
 
 static off_t get_file_size(const char * const file)
@@ -6311,6 +6312,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     if (setjmp(jb) != 0) {
         close(clientfd); close(datafd); close(xferfd);
         clientfd = datafd = xferfd = -1;
+        delete_atomic_file();
         chroot("/");
         downloaded = uploaded = 0ULL;
         datafd = xferfd = -1;
