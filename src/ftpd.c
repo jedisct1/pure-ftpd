@@ -868,13 +868,15 @@ static int checknamesanity(const char *name, int dot_ok)
     }
 #endif
 #ifdef QUOTAS
-    if (hasquota() == 0 && strstr(namepnt, QUOTA_FILE) != NULL) {
-        return -1;                     /* .ftpquota => *NO* */
-    }
-#endif
-#ifndef ALLOW_DELETION_OF_TEMPORARY_FILES    
-    if (strstr(namepnt, PUREFTPD_TMPFILE_PREFIX) == namepnt) {
-        return -1;
+    if (hasquota() == 0) {
+        if (strstr(namepnt, QUOTA_FILE) != NULL) {
+            return -1;                     /* .ftpquota => *NO* */
+        }
+# ifndef ALLOW_DELETION_OF_TEMPORARY_FILES
+        if (strstr(namepnt, PUREFTPD_TMPFILE_PREFIX) == namepnt) {
+            return -1;
+        }
+# endif
     }
 #endif
     while (*namepnt != 0) {
