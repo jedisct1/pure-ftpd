@@ -177,7 +177,7 @@ MaxLoad                     4
 
 # Port range for passive connections replies. - for firewalling.
 
-# PassivePortRange          30000:50000
+# PassivePortRange          30000 50000
 
 
 
