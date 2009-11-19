@@ -168,7 +168,7 @@ effects, don't forget that broken mode is... broken mode.
 to a char buffer, because of alignment required by some architectures.
     WITH_THROTTLING should actually be THROTTLING in src/log_extauth.c . It
 fixes throttling with extauth. Reported and fixed by Marcus Merighi
-<mcmer@tor.at> through Brad our beloved OpenBSD maintainer.
+<mcmer at tor.at> through Brad our beloved OpenBSD maintainer.
     Rendezvous has been renamed Bonjour.
     A double-close in the CHMOD command has been fixed, reported by Christer
 Mjellem Strand.
@@ -223,17 +223,17 @@ synchronize data written by mmap() and read by read().
     PureUserAdmin was added to the contribs.
     getopt_long() was resynced with the OpenBSD version.
     The client socket switches to non-blocking mode before forking in
-accept_client() - reported by Agri <agri@desnol.ru>.
+accept_client() - reported by Agri <agri at desnol.ru>.
 
 * Version 1.0.18:
     Autoconf was bumped to 2.59, automake to 1.8.
     The sample source code in README.Authentication-Modules was bogus
 because of a missing 'echo end' statement. Thanks to Peter Ahlert
-<petera@gmx.net> for reporting this.
+<petera at gmx.net> for reporting this.
     New translation : hungarian. Contributed by Bánhalmi Csaba
-<banhalmi@enternet.hu>.
+<banhalmi at enternet.hu>.
     New translation : catalan. Contributed by Oriol Magrané
-<omagrane@mediapro.es>.
+<omagrane at mediapro.es>.
     Max CPU time was bumped to 60 min.
     Disable hash_password() function call on MySQL 4.1.x and later.
     We now use two listening sockets (listenfd / listenfd6), one for IPv4, one
@@ -254,7 +254,7 @@ MAX_USER_LENGTH, are now overridable without any change to src/ftpd.h
 DISABLE_UNICODE_CONTROL_CHARS and a new switch, --without-unicode, defines
 that macro.
     Unlink the right pid files in pure-authd and pure-uploadscript. Reported
-and fixed by Oscar Sundbon <moose@djuren.org>.
+and fixed by Oscar Sundbon <moose at djuren.org>.
 
 * Version 1.0.17a:
     FD_SET(-1, ...) is invalid, but it could happen on aborted transfers,
@@ -275,12 +275,12 @@ TLS_CERTIFICATE_FILE. The default value has been reverted to
     Don't drop capabilities too early, or even chroot will be prohibited.
 Thanks to Arkadiusz Patyk, Li-Ren and Philipp Kern for their report.
     Negative return codes are not used any more - reported by Andrew Victor
-<andrew@sanpeople.com>
+<andrew at sanpeople.com>
     System users whose password is '********' are now imported by
 pure-pwconvert (for newer MacOS X).
     New file : README.MacOS-X.
     Use SO_REUSEPORT in place of SO_REUSEADDR to bind the ftp-data port on
-FreeBSD. Suggested by Henri Virtanen <hvirtanen@daous.com>.
+FreeBSD. Suggested by Henri Virtanen <hvirtanen at daous.com>.
     Big change in the way upload are handled. We now maintain a per-process
 unique file name in an "atomic_prefix" global. This is the name of a temporary
 file that is actually used for upload, through the get_atomic_file() function
@@ -299,13 +299,13 @@ one is still available as pure-ftpd.old.
 
 * Version 1.0.16c:
     We should disable the raw mode and send full HTML headers in CGI mode.
-Reported by Bernard Lheureux <bernard.lheureux@bbsoft4.org>
+Reported by Bernard Lheureux <bernard.lheureux at bbsoft4.org>
     Spelling errors were fixed in the .no translation by Brynjar Eide
-<post@mislykket.no>
+<post at mislykket.no>
     Always try to include sys/param.h before sys/mount.h in the autoconf
-script. Patch by Brad Smith <brad@openbsd.org>.
+script. Patch by Brad Smith <brad at openbsd.org>.
     FAQ addition regarding the STOU command. Written by C. Jon Larsen
-<jlarsen@richweb.com>
+<jlarsen at richweb.com>
     PAM was broken in 1.0.16b due to PAM_SUCCESS not being copied to the right
 slot. It has been fixed.
     Automake has been updated to 1.7.8.
@@ -325,7 +325,7 @@ has been simplified.
     We break'ed too early when trying to resolve host names in
 pure-ftpwho and the local host name couldn't even be resolved. The problem was
 introduced in 1.0.16 when the MacOS X Panther workarounds were implemented.
-    Thanks to JG <jg@cms.ac> for his bug report.
+    Thanks to JG <jg at cms.ac> for his bug report.
     /usr/local/include, /usr/kerberos/include and /usr/local/lib are only
 added to CPPFLAGS/LDFLAGS if they actually exist.
     pure-ftpwho now outputs XHTML 1.1 conformant code in CGI mode.
@@ -378,10 +378,10 @@ linker bugs (grrr...) .
 
 * Version 1.0.15:
     New translation : Turkish, contributed by Mehmet Cokcevik
-<dns@netline.com.tr> .
+<dns at netline.com.tr> .
     PostgreSQL documentation templates have been fixed - At least User
 is a reserved keyword that needs quotes. Thanks to Henrik Edlund
-<henrik@edlund.org> .
+<henrik at edlund.org> .
     The maximal length of an account has been bumped a bit (42 chars),
 and that size is now consistent accross functions through the
 MAX_USER_LENGTH macro. Thanks to Darth Vader (freddyke) for suggesting
@@ -396,7 +396,7 @@ Anthony DeRobertis for the fix.
 working again.
     Always fill descriptors 0/1 in order to make pure-uploadscript
 actually work when daemonizing. Thanks to Joerg Pulz
-<Joerg.Pulz@frm2.tum.de> for pointing this out.
+<Joerg.Pulz at frm2.tum.de> for pointing this out.
     Don't open pipes with O_NDELAY, some systems don't like it at all.
 As a side effect, the server will now wait until pure-uploadscript is
 actually started before accepting connections and this is a _good_ thing.
@@ -460,15 +460,15 @@ properly reject Unicode control chars while we are at it.
 * Version 1.0.13a:
     Fix pure-config.pl with old versions of the Perl interpreter.
     Fix compilation with PostgreSQL, thanks to Sakari Tanhua 
-<stanhua@cc.hut.fi> .
+<stanhua at cc.hut.fi> .
     
 * Version 1.0.13 :
     Swap simplified and traditional chinese settings. Reported by Ying-Chieh
-Liao <ijliao@csie.nctu.edu.tw> .
+Liao <ijliao at csie.nctu.edu.tw> .
     Ignore ESTA if a passive IP is forced or the NAT mode is enabled, because
 the private address is probably meaningless.
     README documentation improvements, contributed by Jeffrey Lim
-<jf_____@fastmail.fm>
+<jf_____ at fastmail.fm>
     Avoid NGROUPS_MAX when possible - Idea from tuxfamily.org CVS tree.
     LDAP schema changed to work with newer OpenLDAP releases.
     New LDAP directives : LDAPFilter, LDAPHomeDir and LDAPVersion.
@@ -477,11 +477,11 @@ troubles users had with path containing extra slashes.
     Try again when the pipe can't be opened in pure-uploadscript.
     New --with-boring switch (BORING_MODE macro) .
     Fix sendfile() support on Solaris, thanks to Emmanuel Hocdet
-<man@t-online.fr>
+<man at t-online.fr>
     Add uptime support for pure-mrtginfo on FreeBSD. Contributed by
-Ying-Chieh Liao <ijliao@csie.nctu.edu.tw> .
+Ying-Chieh Liao <ijliao at csie.nctu.edu.tw> .
     Fix error when deleting files with an absolute directory when quotas are
-enabled. Contributed by Johannes Erdfelt <johannes@erdfelt.com> .
+enabled. Contributed by Johannes Erdfelt <johannes at erdfelt.com> .
     dobanner() rewritten. It's now the same code to display .message and
 .banner files and the content is sent line by line. We can't afford to load
 everything and simply call addreply_noformat(), because if a banner starts
@@ -506,13 +506,13 @@ doesn't work) .
     PAM sample fixed : ftplockout should really be ftpusers. Add some
 common system accounts by the way.
     More flexible RPM spec file, contributed by Johannes Erdfelt
-<johannes@erdfelt.com> .
+<johannes at erdfelt.com> .
     New translation : Czech, contributed by Martin Sarfy
-<xsarfy@informatics.muni.cz> .
+<xsarfy at informatics.muni.cz> .
     Merge Clive Goodhead's patch to implement MYSQLDefaultGID and
 MYSQLDefaultUID and port it to PostgreSQL.
     pure-config.pl has been completely rewritten in a clean way by
-Aristoteles Pagaltzis <pagaltzis@gmx.de> .
+Aristoteles Pagaltzis <pagaltzis at gmx.de> .
     New contrib : pure-vpopauth.pl .
     Remove backtitle in gui/build.sh, it breaks radio lists on some
 dialog versions.
@@ -538,9 +538,9 @@ by Kenneth Stailey.
     Remove dead scoreboard files in pure-ftpwho, even those whoose status
 isn't marked as free.
     New translation : Russian. Contributed by Andrey Ulanov
-<drey@rt.mipt.ru> .
+<drey at rt.mipt.ru> .
     New translations : simplified and traditional Chinese. Contributed
-by Fygul Hether <fygul@fgs.org.tw> .
+by Fygul Hether <fygul at fgs.org.tw> .
     New IPv6_OK message to tell people when a server also accepts IPv6
 connections if DISPLAY_IPV6_OK is defined.
     In extauth, there's no more need to fill fields except auth_ok
@@ -563,16 +563,16 @@ xferfd global.
 
 * Version 1.0.11 :
     New translation : Norwegian. Contributed by Kurt Inge Smådal /
-EasyISP.org <kurt@easyisp.org> .
+EasyISP.org <kurt at easyisp.org> .
     Fix typo (RATIO->RATIOS) in log_extauth.c and ratios are now working
 with the extauth module :)
     Autoconf upgraded to 2.53 .
     PAGE_SIZE can be non constant. So we try to get it with getpagesize() or
 sysconf() . PAGE_SIZE and MAP_SIZE have become page_size and map_size.
-Thanks to brad@openbsd.org .
-    Dutch translation updated - Johan Huisman <sietze.jan.huisman@12move.nl>
+Thanks to brad at openbsd.org .
+    Dutch translation updated - Johan Huisman <sietze.jan.huisman at 12move.nl>
     Typo in log_extauth.h (bandwith -> bandwidth) . Fixes throttling with
-extauth. Reported by iTooo <itooo@itooo.com> .
+extauth. Reported by iTooo <itooo at itooo.com> .
     Italian translation updates (Alex Dupre) .
     Workaround against Solaris streams bugs - Kenneth Stailey.
     getspnam() is now probed in addition to <shadow.h> in order to find
@@ -585,7 +585,7 @@ HPUX - Kenneth.
     Use pstat() to change the process title on HPUX - Kenneth.
     Cosmetic cleanups (tabs instead of spaces, etc) .
     The good'ol poweredby.jpg logo has been replaced by pure-ftpd.png, the
-new official logo contributed by Gabriele Vinci <gabriele@pronto.it> .
+new official logo contributed by Gabriele Vinci <gabriele at pronto.it> .
     We now have plenty of FTP mirrors, see the end the README file.
 
 * Version 1.0.10 :
@@ -603,8 +603,8 @@ recursivity (makes Solaris happy) and faster processing.
     New switch : -Z (--customerproof) . Right now, it adds | 0600 or | 0700
 to chmod commands to avoid users locking their own files. Additionnaly, we
 now try a traditionnal chmod() call if fchmod() fails. There's a race here,
-but no security trouble to fear. Reported by Mark Reidel <mr@domainfactory.de>
-    Spec file fixes, contributed by Jose Pedro Oliveira <jpo@di.uminho.pt>
+but no security trouble to fear. Reported by Mark Reidel <mr at domainfactory.de>
+    Spec file fixes, contributed by Jose Pedro Oliveira <jpo at di.uminho.pt>
     PureDB binary search could fail with -1 as a slot number - fixed.
 
 * Version 1.0.9 :
@@ -612,10 +612,10 @@ but no security trouble to fear. Reported by Mark Reidel <mr@domainfactory.de>
     Spanish translation updated.
     Slovak translation updated.
     Load average is now checked on Irix - Contributed by Florin Andrei
-<florin@sgi.com> and Chan Wilson <cwilson@sgi.com> .
+<florin at sgi.com> and Chan Wilson <cwilson at sgi.com> .
     Make the PAM example more generic. -Thorsten.
     External authentication modules can now be compiled in even when
-ratio/quotas/throttling aren't enabled. -reported by pierre@epinetworx.com .
+ratio/quotas/throttling aren't enabled. -reported by pierre at epinetworx.com .
     /dev/*random devices can now be probed at run-time when
 PROBE_RANDOM_AT_RUNTIME is defined. Suggested by Kenneth Stailey.
     Remove loop alignment in minimal mode - GCC doesn't like it on Solaris.
@@ -646,21 +646,21 @@ lacks mmap().
     Get rid of rd_len, rename rd -> root_directory, always ensure that it
 has a trailing '/' to simplify further code.
     Recognize the /./ hack for anonymous users ('ftp' account). Contributed
-by Teo de Hesselle <teo.dehesselle@uts.edu.au> .
+by Teo de Hesselle <teo.dehesselle at uts.edu.au> .
     Strip leading / in fakechroot (just to be coherent with the trailing /
 now in root_directory) .
     Have the non root mode work with virtual chroot. People are restricted
 to the directory pure-ftpd was started in.
     Fix compilation on AtheOS.
     Allow pure-quotacheck to run as a non-root user (suggested by Philip Mak
-<pmak@aaanime.net>) .
+<pmak at aaanime.net>) .
     Merge realpath() replacements from OpenBSD-current, because some Solaris
 libC have a broken realpath() implementation.
     Support for MD5 hashed passwords in log_mysql. Contributed by Nicolas
 Doye.
     Force a minimum of 64k i/o buffers.
     Get rid of the ugly daemons.c inclusion in pure-mrtginfo.c .
-    Merge the W3C log format - contributed by Thomas Briggs <tom@sane.com> .
+    Merge the W3C log format - contributed by Thomas Briggs <tom at sane.com> .
     Add initsupgroups() function and always call initgroups() *BEFORE*
 chroot. An important fix pointed out by Adam Kruszewski (Fantomik) and
 Wojtek "elluin" Kaniewski.
@@ -669,7 +669,7 @@ setfsuid() call. Who knows, there are maybe very strange GlibC.
     New switch : -G (--norename), new global : disallow_rename .
     sizeof(FTPWhoEntry_.filename) increased in ftpwho-update.h .
     Reply with 530, not 550 when user isn't logged in. Reported by Philip
-Mak <pmak@animeglobe.com> .
+Mak <pmak at animeglobe.com> .
     Follow symlinks in pure-quotacheck. We need this to support virtual
 chroot.
     Remove extra "." in "Entering passive mode" message to please some very
@@ -702,16 +702,16 @@ compiler up on Solaris.
 
 * Version 1.0.7 :
     Use /dev/arandom and random() instead of /dev/urandom and rand() when
-possible. Suggested by Brad Smith <brad@openbsd.org>.
+possible. Suggested by Brad Smith <brad at openbsd.org>.
     Korean translation updated (Im).
     GCC upgraded to 3.0.3 for binary packages.
     Don't chroot to /etc/pure-ftpd/<ip>/. , but to /etc/pure-ftpd/<ip> for
 virtual users. Virtual chroot didn't like it.
     RPM packages can now be built with LDAP, Mysql and PostgreSQL.
-Contributed by Ben <ben@zaeon.com> .
+Contributed by Ben <ben at zaeon.com> .
     Directory aliases (DIRALIASES macro, diraliases.{c,h}, minor tweaks to
 ftpd.c (docwd) and ftp_parser.c (site alias)) . Contributed by Kenneth
-Stailey <kstailey@yahoo.com> .
+Stailey <kstailey at yahoo.com> .
     Cindy has moved.
     Add a fake chroot wrapper for stat[v]fs[64]() and rm/mkdir.
     Check directory, not file for stat[v]fs[64]() - Option -k should really
@@ -726,12 +726,12 @@ to emulate chroot and follow symbolic links.
 are denied.
     Danish and Korean translations updated.
     Typos were fixed in the Polish translation (contributed by Mariusz
-Pekala <skoot@poczta.onet.pl>).
+Pekala <skoot at poczta.onet.pl>).
     Check for libelf before libkvm in Autoconf (Kenneth)
     Don't enable TCP_NODELAY any more on the connection socket. FTP Explorer
 doesn't like it.
     Don't assume that crypt() always returns non-NULL pointers. Thanks to
-Paul <paul@chipmunkweb.yi.org> for his help on that issue.
+Paul <paul at chipmunkweb.yi.org> for his help on that issue.
     New translation : Swedish (messages_sv.h).
     Don't clear dot_{read,write}_ok when quotas are enabled. Instead, check
 for enabled quotas in checknamesanity() and refuse everything with
@@ -767,7 +767,7 @@ ftpwho file even without this -j.)
 groups for anonymous users (disabled by default) .
     Accept 2000 chars long .message files even on systems where MAXPATHLEN
 is very low (e.g. Irix and FreeBSD) . Contributed by Michael Glad
-<glad@daimi.au.dk> .
+<glad at daimi.au.dk> .
     Recognize "p@sw" as a synonym for "pasv" to bypass SMC Barricade mangling.
     Fixed compilation on Corel Netwinder devices (Gareth Woolridge).
     Allow EPSV when IPv6, regardless of the broken compatibility flag.
@@ -833,7 +833,7 @@ LDAP passwords.
     Separate {bandwidth,quota,ratio} changed pairs in AuthResult.
     Accept @ for LDAP logins.
     Have pure-uploadscript write a /var/run/pure-uploadscript.pid file.
-    Irix portability fixes, thanks to Florin Andrei <elf_too@yahoo.com>.
+    Irix portability fixes, thanks to Florin Andrei <elf_too at yahoo.com>.
     MLST/FEAT conformance fixes.
     PAM fixes (Thorsten).
     Get rid of the dot_ok global.
@@ -850,7 +850,7 @@ Matthias.
     Don't strip spaces in commands, unless SKIP_TRAILING_SPACES is defined.
 It was an historical behavior but it breaks spaces before and after file
 names, passwords beginning with spaces, etc. Thanks to Andreas Piening
-<Andreas.Piening@ePost.de> for helping to solve that issue.
+<Andreas.Piening at ePost.de> for helping to solve that issue.
     Replace extra spaces around uploaded file names (and rnto) with '_' to
 avoid stupid practices of warez folks.
     New message files format checker (messages_check.pl) provided by
@@ -863,7 +863,7 @@ two people know why... this is the mystery of pureftpd :)
     Misc. nice cleanups everywhere (Matthias, Bernhard, Jason, Arkadiusz).
     Upgraded to gcc 3.0.2 for binaries.
     Don't increase size quota when overwriting existing files - Reported by
-Eric <ericnew@pacific.net.sg> .
+Eric <ericnew at pacific.net.sg> .
 
 * Version 0.99.9 :
     Complete rewrite of src/*ftpwho*. We now use a scoreboard directory
@@ -881,7 +881,7 @@ any OS tweaking, it's simpler code, etc.
     Refuse atomic replacement of files when quotas are enabled.
     Accept pure-pw mkdb without any further argument.
     New pid_file glob.
-    Documentation fixups. Contributed by James Metcalf <james@asset-ict.com>
+    Documentation fixups. Contributed by James Metcalf <james at asset-ict.com>
 and http://www.php4hosting.com/ .
 
 * Version 0.99.4 :
@@ -900,7 +900,7 @@ configure and fallback to mysql_escape_string() if necessary.
     Add PureDB to configuration file wrappers, thanks to Sergey Mihailov.
     Include sysconfig sample in RPMs.
     Support MySQL's password() hashing function. Contributed by Robin Ericsson.
-    Dutch translation updated (Johan Huisman <sietze.jan.huisman@12move.nl>) .
+    Dutch translation updated (Johan Huisman <sietze.jan.huisman at 12move.nl>) .
     New keyword in mysql config : MySQLTransactions.
     Reject new uploads if user_quota_files/size > quota->files/size .
     dynamic.c rewritten in a simpler way.
@@ -946,7 +946,7 @@ resume transfers.
     New program : pure-quotacheck.
     Merged the PureDB package.
     RPM can now be build with PAM support, thanks to a new variable called
-con_pam. Contributed by Juan Pablo Gimenez <jpg@rcom.com.ar>
+con_pam. Contributed by Juan Pablo Gimenez <jpg at rcom.com.ar>
     Add a "password" attributes to the PAM sample.
     Stat the / directory and compare it with what we are chmod()ing. If it's
 the same inode/device pair, enforce read+exec+write rights for the user.
@@ -970,7 +970,7 @@ especially when throttling is enabled. Thanks to Daniel Tschan.
 positive.
     New files : src/log_puredb.{c,h}
     Scan several common paths for pure-ftpd in pure-config.pl.
-    New pure-pwconvert tool, suggested by <olle@xmms.org> .
+    New pure-pwconvert tool, suggested by <olle at xmms.org> .
 
 * Version 0.99.1b :
     Fix access problems to remote MySQL servers. - Thanks to John Hart.
@@ -1072,7 +1072,7 @@ directory - Thanks to Adrian Zurek.
 Thanks to Vincent the Herisson
     Upgraded Automake to 1.4p5 and Autoconf 2.52.
     Renamed deprecated configure.in to configure.ac .
-    RPM fixes - Contributed by Oliver Soell <oliver@fusionit.com>
+    RPM fixes - Contributed by Oliver Soell <oliver at fusionit.com>
     More accurate throttling, don't only check seconds, but also usec 
 - Contributed by Frank de Bot.
     Don't log client crashes as timeouts - Reported by Matthias Andree.
@@ -1145,7 +1145,7 @@ session when WITHOUT_PAM_SESSION is defined.
     Added a contrib/ directory and README.Contrib.
     Minor Autoconf and code cleanups.
     Debian package updates - no more hang at end of the install procedure.
-    Open PAM session (patch by Sami Koskinen <tossu@cc.hut.fi>).
+    Open PAM session (patch by Sami Koskinen <tossu at cc.hut.fi>).
     It looks like some OS/C libraries don't like to share syslog
 descriptors. To be safe, we have to reopen the syslog for each client, 
 grr!
@@ -1159,7 +1159,7 @@ before authentication choked on this) .
     Don't forget to parse the last element in pure-ftpwho (reported by
 Brandon Covert).
     Merge the virtual host login code with the regular login code (suggested
-by Chris Mentjox <chris@widexs.nl>.
+by Chris Mentjox <chris at widexs.nl>.
     ftp_parser.c/sfgets() rewritten to optimize read() calls.
     Use the same policy to forbit dot-files for cd and for other commands,
 for consistency and to ease migration from other servers.
@@ -1240,7 +1240,7 @@ long group names.
 
 * Version 0.98-final :
     Added Spanish translation by Luis Llorente Campo
-<luisllorente@luisllorente.com> .
+<luisllorente at luisllorente.com> .
     Added download_total_size, download_current_size, local_addr and
 xfer_date to the FTPWhoEntry structure.
     New output targets : shell (-s) and verbose ASCII (-v) .
@@ -1286,7 +1286,7 @@ BSD) .
 
 * Version 0.97.7pre3 :
     Changed 'killall -HUP xinetd' to 'killall -USR2 xinetd' in the README
-file (pointed out by Olivier Tharan <olive@zehc.net>) .
+file (pointed out by Olivier Tharan <olive at zehc.net>) .
     configure.in : fixed --without-ascii, add --with-welcomemsg.
 
 * Version 0.97.7pre2 :
@@ -1350,9 +1350,9 @@ can work without root privileges.
     Fixed largefile+throttling compilation.
     Changed 'quota' to 'ratio' everywhere. Quotas will be something else.
     Create /var/run/pure-ftpd.pid . Remove it when a signal is catched.
-    Added romanian translation from Claudiu Costin <claudiuc@kde.org>.
-    Added german translation from Mathias Gumz <gumz@cs.uni-magdeburg.de>.
-    Added french translation from Ping <ping@root42.net>.
+    Added romanian translation from Claudiu Costin <claudiuc at kde.org>.
+    Added german translation from Mathias Gumz <gumz at cs.uni-magdeburg.de>.
+    Added french translation from Ping <ping at root42.net>.
     Allow download of 0-byte files (reported by Louis Rouxel).
     Include <netinet/in_systm.h> and <sys/mount.h> if presents.
     Define STORAGE_LEN and STORAGE_FAMILY for BSD and Glibc compatibility.
@@ -1613,7 +1613,7 @@ the login capabilities.
 
     LeechFTP (a popular Zindoz client) does a "REST 1" in ASCII mode
 after logging in. Well, maybe this violates RFC, but let's add a workaround
-(see dorest() / STRICT_REST) . Thanks to _PinG_ <ping@enjoy-unix.org> for
+(see dorest() / STRICT_REST) . Thanks to _PinG_ <ping at enjoy-unix.org> for
 reporting that kludge.
     Syslog identity changed to "pure-ftpd".
     Added noopidle (time_t of the first NOOP) and idletime_noop (maximum
