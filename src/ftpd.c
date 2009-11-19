@@ -5498,7 +5498,7 @@ static void standalone_server(void)
         freeaddrinfo(res);
         set_cloexec_flag(listenfd);     
     }
-    if (listenfd6 != -1 && v6ready != 0) {
+    if (listenfd6 == -1 && v6ready != 0) {
         hints.ai_family = AF_INET6;
         if (getaddrinfo(standalone_ip, standalone_port, &hints, &res6) == 0) {
             if ((listenfd6 = socket(AF_INET6,
