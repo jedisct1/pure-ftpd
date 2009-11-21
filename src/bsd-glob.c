@@ -669,8 +669,7 @@ static int globextend(const Char * path, glob_t * pglob, size_t * limitp)
         pglob->gl_maxfiles--;
     }
     newsize = sizeof (*pathv) * (2 + pglob->gl_pathc);
-    pathv = pglob->gl_pathv ? realloc((char *) pglob->gl_pathv, newsize) :
-        malloc(newsize);
+    pathv = realloc((char *)pglob->gl_pathv, newsize);
     if (pathv == NULL) {
         free(pglob->gl_pathv);
         pglob->gl_pathv = NULL;
