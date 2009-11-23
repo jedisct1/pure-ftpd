@@ -6313,7 +6313,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #ifdef __IPHONE__
     if (setjmp(jb) != 0) {
         close(clientfd); close(datafd); close(xferfd);
-        clientfd = datafd = xferfd = -1;
+        clientfd = datafd = xferfd = -1;        
         delete_atomic_file();
         chroot("/");
         downloaded = uploaded = 0ULL;
@@ -6326,10 +6326,13 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         restartat = (off_t) 0;
         state_needs_update = 1;
         atomic_prefix = NULL;
-        nb_children = 0;        
+        nb_children = 0;
+# ifdef WITH_TLS
+        tls_cnx_handshaked = tls_data_cnx_handshaked = 0;
+# endif
         if (logout_callback != NULL && suspend_client_connections == 0) {
             (*logout_callback)(logout_callback_user_data);
-        }
+        }        
         if (stop_server > 0) {
             close(listenfd); close(listenfd6);
             listenfd = listenfd6 = -1;

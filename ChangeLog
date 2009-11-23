@@ -3,6 +3,9 @@
 connected on iPhone.
  - Allow users with no quota to modify .pureftpd-upload-* files.
  - Unbreak ipv6 support, reported by Brad Smith.
+ - Disable SSLv3 renegotiation if an old SSL library is used. If you really
+want to re-enable SSLv3 renegotiation, even with a recent library, you can
+always define ACCEPT_SSL_RENEGOTIATION.
 
 * Version 1.0.26:
  - Fix incompatibilities with Cyberduck when TLS is enabled.

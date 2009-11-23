@@ -11,6 +11,18 @@
 # include "globals.h"
 # include "messages.h"
 
+# ifndef DISABLE_SSL_RENEGOTIATION
+#  ifndef SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+#   ifndef ACCEPT_SSL_RENEGOTIATION
+#    define DISABLE_SSL_RENEGOTIATION 1
+#   endif
+#  else
+#   ifdef ACCEPT_SSL_RENEGOTIATION
+#    define DISABLE_SSL_RENEGOTIATION 0
+#   endif
+#  endif
+# endif
+
 /*
  * Unfortunately disabled by default, because it looks like a lot of clients
  * don't support this properly yet.
@@ -99,7 +111,7 @@ static int tls_init_diffie(void)
     DH *dh = NULL;
     BIO *bio = NULL;
     int ret = 0;
-
+    
     if ((bio = BIO_new_file(TLS_CERTIFICATE_FILE, "r")) == NULL) {
         logfile(LOG_ERR, "SSL/TLS: Can't read [%s]",
                 TLS_CERTIFICATE_FILE);
@@ -138,7 +150,7 @@ static RSA *get_rsa(const unsigned long key_length)
 
 static RSA *cb_tmp_rsa(SSL * const ctx,
                        const int for_export, const int key_length)
-
+    
 {
     (void) ctx;
     if (for_export == 0 || key_length >= 1024) {
@@ -158,10 +170,43 @@ static void tls_init_cache(void)
     SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
 }
 
+# ifdef DISABLE_SSL_RENEGOTIATION
+static void ssl_info_cb(const SSL *cnx, int where, int ret)
+{
+    (void) ret;
+    
+#  if DISABLE_SSL_RENEGOTIATION == 1
+    if ((where & SSL_CB_HANDSHAKE_START) != 0) {
+        if ((cnx == tls_cnx && tls_cnx_handshaked != 0) ||
+            (cnx == tls_data_cnx && tls_data_cnx_handshaked != 0)) {
+            die(400, LOG_ERR, "SSL/TLS renegociation");
+        }
+        return;
+    }
+#  endif    
+    if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
+        if (cnx == tls_cnx) {
+            tls_cnx_handshaked = 1;
+        } else if (cnx == tls_data_cnx) {
+            tls_data_cnx_handshaked = 1;
+        }
+#  if DISABLE_SSL_RENEGOTIATION == 0
+        cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
+        cnx->s3->flags |= SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION;
+#  else
+        cnx->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
+#  endif
+        return;
+    }
+}
+# endif
+
 int tls_init_library(void) 
 {
     unsigned int rnd;
     
+    tls_cnx_handshaked = 0;
+    tls_data_cnx_handshaked = 0;
     SSL_library_init();
     SSL_load_error_strings();
     while (RAND_status() == 0) {
@@ -176,7 +221,7 @@ int tls_init_library(void)
 # else
     SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
 # endif
-
+    
     if (SSL_CTX_use_certificate_chain_file(tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
         die(421, LOG_ERR,
@@ -194,14 +239,18 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
     tls_init_cache();
-#ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
+# ifdef DISABLE_SSL_RENEGOTIATION
+    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+# endif
+    
+# ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
     SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
     if (SSL_CTX_load_verify_locations(tls_ctx,
                                       TLS_CERTIFICATE_FILE, NULL) != 1) {
         tls_error(__LINE__, 0);
     }
-#endif    
+# endif        
     return 0;
 }
 
@@ -242,7 +291,7 @@ int tls_init_new_session(void)
                  ret_ == SSL_ERROR_WANT_WRITE)) {
                 continue;
             }
-            tls_error(__LINE__, ret_);
+            die(400, LOG_WARNING, MSG_TLS_NEEDED);
         }
         break;
     }
@@ -267,7 +316,7 @@ int tls_init_data_session(const int fd, const int passive)
     SSL_CIPHER *cipher;
     int ret;
     int ret_;
-
+    
     (void) passive;
     if (tls_ctx == NULL) {
         logfile(LOG_ERR, MSG_TLS_NO_CTX);
@@ -295,15 +344,15 @@ int tls_init_data_session(const int fd, const int passive)
         }
         break;
     }
-#if ONLY_ACCEPT_REUSED_SSL_SESSIONS
+# if ONLY_ACCEPT_REUSED_SSL_SESSIONS
     if (SSL_session_reused(tls_data_cnx) == 0) {
         tls_error(__LINE__, 0);
     }
-#endif
+# endif
     if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
         int alg_bits;
         int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
-
+        
         if (alg_bits < bits) {
             bits = alg_bits;
         }
@@ -320,7 +369,7 @@ void tls_close_session(SSL ** const cnx)
 {
     if (*cnx == NULL) {
         return;
-    }
+    }    
     switch (SSL_shutdown(*cnx)) {
     case 0:
     case SSL_SENT_SHUTDOWN:
@@ -334,6 +383,11 @@ void tls_close_session(SSL ** const cnx)
         tls_error(__LINE__, 0);
     }
     SSL_free(*cnx);
+    if (*cnx == tls_cnx) {
+        tls_cnx_handshaked = 0;
+    } else if (*cnx == tls_data_cnx) {
+        tls_data_cnx_handshaked = 0;
+    }    
     *cnx = NULL;
 }
 

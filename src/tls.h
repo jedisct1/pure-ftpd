@@ -26,7 +26,17 @@ extern
 # ifndef IN_TLS_C
 extern
 # endif
+    int tls_cnx_handshaked;
+
+# ifndef IN_TLS_C
+extern
+# endif
     SSL *tls_data_cnx;
+
+# ifndef IN_TLS_C
+extern
+# endif
+    int tls_data_cnx_handshaked;
 
 /* The minimal number of bits we accept for a cipher */
 # define MINIMAL_CIPHER_KEY_LEN 40
