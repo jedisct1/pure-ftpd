@@ -6478,7 +6478,8 @@ void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
 static AuthResult embedded_simple_pw_check(const char *account, const char *password)
 {
     AuthResult authresult;
-
+    
+    memset(&authresult, 0, sizeof authresult);
     if (simple_auth_callback == NULL ||
         account == NULL || *account == 0 || password == NULL) {
         authresult.auth_ok = 0;
