@@ -206,9 +206,14 @@ library?
 
 
 * Should I include an unmodified copy of the license (the COPYING file)
-somewhere in my application?
+if I redistribute the source code ?
 
 -> Yes, this is the only requirement.
+
+
+* Should I display the license if my produce is closed-source.
+
+-> No, this is at your convenience.
 
 
 * Does it consume any CPU while idle?
