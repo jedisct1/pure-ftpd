@@ -447,16 +447,6 @@ that John is caged in /home/john/ .
 
 
 
-* Windows port.
-
--> Does Pure-FTPd run on Windows?
-
-Yes, there's a port available from http://www.pureftpd.org/windows/ .
-But the server is developped on Unix and the Win32 version should be
-considered experimental and unsupported.
-
-
-
 * ftpwho as a non-root user.
 
 -> How do I give access to the 'pure-ftpwho' command to non-root users?
