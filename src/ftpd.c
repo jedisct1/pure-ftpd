@@ -1542,6 +1542,7 @@ void douser(const char *username)
 #endif
 }
 
+#ifndef __IPHONE__
 static AuthResult pw_check(const char *account, const char *password,
                            const struct sockaddr_storage * const sa,
                            const struct sockaddr_storage * const peer)
@@ -1623,6 +1624,7 @@ static AuthResult pw_check(const char *account, const char *password,
     
     return result;
 }
+#endif
 
 /*
  * Check if an user belongs to the trusted group, either in his
