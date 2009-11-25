@@ -1,0 +1,5 @@
+This is an experimental branch for systems that are unable to fork().
+
+Never use it with untrusted users. It's designed only for experimentation
+and for running a personal, temporary FTP server.
+

@@ -71,7 +71,7 @@ int sfgets(void)
         memmove(cmd, cmd + scanned, readnbd);   /* safe */
         scanned = (size_t) 0U;
     }
-    pfd.fd = clientfd;
+    pfd.fd = LOCAL_clientfd;
     pfd.events = POLLIN | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
         if (scanned >= readnbd) {      /* nothing left in the buffer */
@@ -99,7 +99,7 @@ int sfgets(void)
             } else
 #endif
             {
-                while ((readnb = read(clientfd, cmd + readnbd,
+                while ((readnb = read(LOCAL_clientfd, cmd + readnbd,
                                       cmdsize - readnbd)) < (ssize_t) 0 &&
                        errno == EINTR);
             }
@@ -236,7 +236,7 @@ void parser(void)
     data_protection_level = CPL_PRIVATE;
 #endif
     for (;;) {
-        xferfd = -1;
+        LOCAL_xferfd = -1;
         if (state_needs_update != 0) {
             state_needs_update = 0;
             setprocessname("pure-ftpd (IDLE)");

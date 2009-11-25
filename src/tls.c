@@ -278,7 +278,7 @@ int tls_init_new_session(void)
     if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
-    if (SSL_set_fd(tls_cnx, clientfd) != 1) {
+    if (SSL_set_fd(tls_cnx, LOCAL_clientfd) != 1) {
         tls_error(__LINE__, 0);
     }
     SSL_set_accept_state(tls_cnx);    

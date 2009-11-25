@@ -4,9 +4,14 @@
 #ifdef DEFINE_GLOBALS
 # define GLOBAL0(A) A
 # define GLOBAL(A, B) A = B
+# define TGLOBAL0(A) A ## _LOCAL_INIT
+# define TGLOBAL(A, B) A ## _LOCAL_INIT = B
+# define LOCAL_INIT(A) LOCAL_ ## A = A ## _LOCAL_INIT
 #else
 # define GLOBAL0(A) extern A
 # define GLOBAL(A, B) extern A
+# define TGLOBAL0(A) extern A ## _LOCAL_INIT
+# define TGLOBAL(A, B) extern A ## _LOCAL_INIT
 #endif
 
 GLOBAL(char default_tz_for_putenv[], "TZ=UTC+00:00");                /* default value for TZ */
@@ -23,8 +28,8 @@ GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(unsigned long throttling_bandwidth_ul);
 GLOBAL0(signed char allowfxp);                    /* 0=no fxp 1=authenticated 2=everybody */
 GLOBAL0(signed char passive);
-GLOBAL(int clientfd, 0);                   /* command connection file descriptor */
-GLOBAL(int datafd, -1);                    /* data connection file descriptor */
+TGLOBAL(int clientfd, 0);                   /* command connection file descriptor */
+TGLOBAL(int datafd, -1);                    /* data connection file descriptor */
 GLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
 GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */
 GLOBAL0(signed char no_ipv4);                    /* IPv4 disabled or not */
@@ -84,7 +89,7 @@ GLOBAL0(unsigned int per_user_max);
 GLOBAL0(unsigned int per_anon_max);
 #endif
 GLOBAL0(int iptropy);
-GLOBAL(volatile int xferfd, -1);
+TGLOBAL(volatile int xferfd, -1);
 #ifndef NO_STANDALONE
 GLOBAL0(unsigned int maxip);
 #endif
