@@ -126,7 +126,7 @@ static int tls_init_diffie(void)
         ret = 1;
         goto end;
     }
-    if (SSL_CTX_set_tmp_dh(tls_ctx, dh) != 1) {
+    if (SSL_CTX_set_tmp_dh(LOCAL_tls_ctx, dh) != 1) {
         logfile(LOG_ERR, "SSL/TLS: Can't set ephemeral keys");
         ret = -1;
     }
@@ -138,7 +138,7 @@ static int tls_init_diffie(void)
         BIO_free(bio);
     }    
     if (ret != 0) {
-        SSL_CTX_set_tmp_dh_callback(tls_ctx, cb_tmp_dh);
+        SSL_CTX_set_tmp_dh_callback(LOCAL_tls_ctx, cb_tmp_dh);
     }
     return 0;
 }
@@ -163,11 +163,11 @@ static void tls_init_cache(void)
 {
     static const char *tls_ctx_id = "pure-ftpd";
     
-    SSL_CTX_set_session_cache_mode(tls_ctx, SSL_SESS_CACHE_SERVER);
-    SSL_CTX_set_session_id_context(tls_ctx, (unsigned char *) tls_ctx_id,
+    SSL_CTX_set_session_cache_mode(LOCAL_tls_ctx, SSL_SESS_CACHE_SERVER);
+    SSL_CTX_set_session_id_context(LOCAL_tls_ctx, (unsigned char *) tls_ctx_id,
                                    (unsigned int) strlen(tls_ctx_id));
-    SSL_CTX_sess_set_cache_size(tls_ctx, 10);
-    SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
+    SSL_CTX_sess_set_cache_size(LOCAL_tls_ctx, 10);
+    SSL_CTX_set_timeout(LOCAL_tls_ctx, 60 * 60L);
 }
 
 # ifdef DISABLE_SSL_RENEGOTIATION
@@ -177,18 +177,18 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
     
 #  if DISABLE_SSL_RENEGOTIATION == 1
     if ((where & SSL_CB_HANDSHAKE_START) != 0) {
-        if ((cnx == tls_cnx && tls_cnx_handshaked != 0) ||
-            (cnx == tls_data_cnx && tls_data_cnx_handshaked != 0)) {
+        if ((cnx == LOCAL_tls_cnx && LOCAL_tls_cnx_handshaked != 0) ||
+            (cnx == LOCAL_tls_data_cnx && LOCAL_tls_data_cnx_handshaked != 0)) {
             die(400, LOG_ERR, "SSL/TLS renegociation");
         }
         return;
     }
 #  endif    
     if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
-        if (cnx == tls_cnx) {
-            tls_cnx_handshaked = 1;
-        } else if (cnx == tls_data_cnx) {
-            tls_data_cnx_handshaked = 1;
+        if (cnx == LOCAL_tls_cnx) {
+            LOCAL_tls_cnx_handshaked = 1;
+        } else if (cnx == LOCAL_tls_data_cnx) {
+            LOCAL_tls_data_cnx_handshaked = 1;
         }
 #  if DISABLE_SSL_RENEGOTIATION == 0
         cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
@@ -205,48 +205,48 @@ int tls_init_library(void)
 {
     unsigned int rnd;
     
-    tls_cnx_handshaked = 0;
-    tls_data_cnx_handshaked = 0;
+    LOCAL_tls_cnx_handshaked = 0;
+    LOCAL_tls_data_cnx_handshaked = 0;
     SSL_library_init();
     SSL_load_error_strings();
     while (RAND_status() == 0) {
         rnd = zrand();
         RAND_seed(&rnd, (int) sizeof rnd);
     }
-    if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
+    if ((LOCAL_tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+    SSL_CTX_set_options(LOCAL_tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 # else
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
+    SSL_CTX_set_options(LOCAL_tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
 # endif
     
-    if (SSL_CTX_use_certificate_chain_file(tls_ctx,
+    if (SSL_CTX_use_certificate_chain_file(LOCAL_tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
         die(421, LOG_ERR,
             MSG_FILE_DOESNT_EXIST ": [%s]", TLS_CERTIFICATE_FILE);
     }
-    if (SSL_CTX_use_PrivateKey_file(tls_ctx, TLS_CERTIFICATE_FILE,
+    if (SSL_CTX_use_PrivateKey_file(LOCAL_tls_ctx, TLS_CERTIFICATE_FILE,
                                     SSL_FILETYPE_PEM) != 1) {
         tls_error(__LINE__, 0);
     }
-    if (SSL_CTX_check_private_key(tls_ctx) != 1) {
+    if (SSL_CTX_check_private_key(LOCAL_tls_ctx) != 1) {
         tls_error(__LINE__, 0);
     }    
-    SSL_CTX_set_tmp_rsa_callback(tls_ctx, cb_tmp_rsa);
+    SSL_CTX_set_tmp_rsa_callback(LOCAL_tls_ctx, cb_tmp_rsa);
     if (tls_init_diffie() < 0) {
         tls_error(__LINE__, 0);
     }
     tls_init_cache();
 # ifdef DISABLE_SSL_RENEGOTIATION
-    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+    SSL_CTX_set_info_callback(LOCAL_tls_ctx, ssl_info_cb);
 # endif
     
 # ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
-    SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
+    SSL_CTX_set_verify(LOCAL_tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
-    if (SSL_CTX_load_verify_locations(tls_ctx,
+    if (SSL_CTX_load_verify_locations(LOCAL_tls_ctx,
                                       TLS_CERTIFICATE_FILE, NULL) != 1) {
         tls_error(__LINE__, 0);
     }
@@ -256,16 +256,16 @@ int tls_init_library(void)
 
 void tls_free_library(void)
 {
-    if (tls_data_cnx != NULL) {
-        tls_close_session(&tls_data_cnx);
+    if (LOCAL_tls_data_cnx != NULL) {
+        tls_close_session(&LOCAL_tls_data_cnx);
     }
-    if (tls_cnx != NULL) {
-        SSL_free(tls_cnx);
-        tls_cnx = NULL;
+    if (LOCAL_tls_cnx != NULL) {
+        SSL_free(LOCAL_tls_cnx);
+        LOCAL_tls_cnx = NULL;
     }
-    if (tls_ctx != NULL) {
-        SSL_CTX_free(tls_ctx);
-        tls_ctx = NULL;
+    if (LOCAL_tls_ctx != NULL) {
+        SSL_CTX_free(LOCAL_tls_ctx);
+        LOCAL_tls_ctx = NULL;
     }
 }
 
@@ -275,17 +275,17 @@ int tls_init_new_session(void)
     int ret;
     int ret_;
     
-    if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
+    if (LOCAL_tls_ctx == NULL || (LOCAL_tls_cnx = SSL_new(LOCAL_tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
-    if (SSL_set_fd(tls_cnx, LOCAL_clientfd) != 1) {
+    if (SSL_set_fd(LOCAL_tls_cnx, LOCAL_clientfd) != 1) {
         tls_error(__LINE__, 0);
     }
-    SSL_set_accept_state(tls_cnx);    
+    SSL_set_accept_state(LOCAL_tls_cnx);    
     for (;;) {
-        ret = SSL_accept(tls_cnx);        
+        ret = SSL_accept(LOCAL_tls_cnx);        
         if (ret <= 0) {
-            ret_ = SSL_get_error(tls_cnx, ret);            
+            ret_ = SSL_get_error(LOCAL_tls_cnx, ret);            
             if (ret == -1 &&
                 (ret_ == SSL_ERROR_WANT_READ ||
                  ret_ == SSL_ERROR_WANT_WRITE)) {
@@ -295,7 +295,7 @@ int tls_init_new_session(void)
         }
         break;
     }
-    if ((cipher = SSL_get_current_cipher(tls_cnx)) != NULL) {
+    if ((cipher = SSL_get_current_cipher(LOCAL_tls_cnx)) != NULL) {
         int alg_bits;
         int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
         
@@ -318,23 +318,23 @@ int tls_init_data_session(const int fd, const int passive)
     int ret_;
     
     (void) passive;
-    if (tls_ctx == NULL) {
+    if (LOCAL_tls_ctx == NULL) {
         logfile(LOG_ERR, MSG_TLS_NO_CTX);
         tls_error(__LINE__, 0);
     }    
-    if (tls_data_cnx != NULL) {
-        tls_close_session(&tls_data_cnx);
-    } else if ((tls_data_cnx = SSL_new(tls_ctx)) == NULL) {
+    if (LOCAL_tls_data_cnx != NULL) {
+        tls_close_session(&LOCAL_tls_data_cnx);
+    } else if ((LOCAL_tls_data_cnx = SSL_new(LOCAL_tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }    
-    if (SSL_set_fd(tls_data_cnx, fd) != 1) {
+    if (SSL_set_fd(LOCAL_tls_data_cnx, fd) != 1) {
         tls_error(__LINE__, 0);
     }
-    SSL_set_accept_state(tls_data_cnx);
+    SSL_set_accept_state(LOCAL_tls_data_cnx);
     for (;;) {
-        ret = SSL_accept(tls_data_cnx);
+        ret = SSL_accept(LOCAL_tls_data_cnx);
         if (ret <= 0) {
-            ret_ = SSL_get_error(tls_data_cnx, ret);
+            ret_ = SSL_get_error(LOCAL_tls_data_cnx, ret);
             if (ret == -1 && (ret_ == SSL_ERROR_WANT_READ ||
                               ret_ == SSL_ERROR_WANT_WRITE)) {
                 continue;                
@@ -345,11 +345,11 @@ int tls_init_data_session(const int fd, const int passive)
         break;
     }
 # if ONLY_ACCEPT_REUSED_SSL_SESSIONS
-    if (SSL_session_reused(tls_data_cnx) == 0) {
+    if (SSL_session_reused(LOCAL_tls_data_cnx) == 0) {
         tls_error(__LINE__, 0);
     }
 # endif
-    if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
+    if ((cipher = SSL_get_current_cipher(LOCAL_tls_data_cnx)) != NULL) {
         int alg_bits;
         int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
         
@@ -383,10 +383,10 @@ void tls_close_session(SSL ** const cnx)
         tls_error(__LINE__, 0);
     }
     SSL_free(*cnx);
-    if (*cnx == tls_cnx) {
-        tls_cnx_handshaked = 0;
-    } else if (*cnx == tls_data_cnx) {
-        tls_data_cnx_handshaked = 0;
+    if (*cnx == LOCAL_tls_cnx) {
+        LOCAL_tls_cnx_handshaked = 0;
+    } else if (*cnx == LOCAL_tls_data_cnx) {
+        LOCAL_tls_data_cnx_handshaked = 0;
     }    
     *cnx = NULL;
 }

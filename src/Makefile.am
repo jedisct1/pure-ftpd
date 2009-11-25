@@ -26,6 +26,8 @@ libpureftpd_a_SOURCES = \
 	ftpd.c \
 	ftpd_p.h \
 	ftpd.h \
+	thread-local.c \
+	thread-local.h \
 	syslognames.h \
 	log_unix.c \
 	log_unix.h \

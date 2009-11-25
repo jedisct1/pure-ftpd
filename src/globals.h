@@ -4,14 +4,9 @@
 #ifdef DEFINE_GLOBALS
 # define GLOBAL0(A) A
 # define GLOBAL(A, B) A = B
-# define TGLOBAL0(A) A ## _LOCAL_INIT
-# define TGLOBAL(A, B) A ## _LOCAL_INIT = B
-# define LOCAL_INIT(A) LOCAL_ ## A = A ## _LOCAL_INIT
 #else
 # define GLOBAL0(A) extern A
 # define GLOBAL(A, B) extern A
-# define TGLOBAL0(A) extern A ## _LOCAL_INIT
-# define TGLOBAL(A, B) extern A ## _LOCAL_INIT
 #endif
 
 GLOBAL(char default_tz_for_putenv[], "TZ=UTC+00:00");                /* default value for TZ */
@@ -186,8 +181,8 @@ GLOBAL(iconv_t iconv_fd_utf82fs, NULL);
 #endif
 
 #ifndef WITH_TLS
-GLOBAL0(void * tls_cnx);
-GLOBAL0(void * tls_data_cnx);
+TGLOBAL0(void * tls_cnx);
+TGLOBAL0(void * tls_data_cnx);
 #endif
 
 #ifdef NON_ROOT_FTP

@@ -373,10 +373,10 @@ void die(const int err, const int priority, const char * const format, ...)
     vsnprintf(line, sizeof line, format, va);
     va_end(va);    
 #ifdef WITH_TLS
-    if (tls_cnx != NULL) {        
+    if (LOCAL_tls_cnx != NULL) {        
         char buf[MAX_SERVER_REPLY_LEN];
         snprintf(buf, sizeof buf, "%d %s\r\n", err, line);
-        SSL_write(tls_cnx, buf, strlen(buf));
+        SSL_write(LOCAL_tls_cnx, buf, strlen(buf));
     } else
 #endif
     {
@@ -811,12 +811,12 @@ void doreply(void)
     do {
         nextentry = scannedentry->next;
 #ifdef WITH_TLS
-        if (tls_cnx != NULL) {
+        if (LOCAL_tls_cnx != NULL) {
             char buf[MAX_SERVER_REPLY_LEN];
             
             snprintf(buf, sizeof buf, "%3d%c%s\r\n", replycode, 
                      nextentry == NULL ? ' ' : '-', scannedentry->line);
-            SSL_write(tls_cnx, buf, strlen(buf));            
+            SSL_write(LOCAL_tls_cnx, buf, strlen(buf));            
         } else
 #endif
         {
@@ -2504,8 +2504,8 @@ void closedata(void)
     volatile int tmp_xferfd = LOCAL_xferfd;   /* do not simplify this... */
 
 #ifdef WITH_TLS
-    tls_close_session(&tls_data_cnx);
-    tls_data_cnx = NULL;
+    tls_close_session(&LOCAL_tls_data_cnx);
+    LOCAL_tls_data_cnx = NULL;
 #endif    
     LOCAL_xferfd = -1;           /* ...it avoids a race */
     (void) close(tmp_xferfd);
@@ -3508,8 +3508,8 @@ void doretr(char *name)
     
     started = get_usec_time();
 
-    if (dlmap_init(&dlhandler, LOCAL_clientfd, tls_cnx, LOCAL_xferfd, name, f,
-                   tls_data_cnx, restartat, type == 1,
+    if (dlmap_init(&dlhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f,
+                   LOCAL_tls_data_cnx, restartat, type == 1,
                    throttling_bandwidth_dl) == 0) {
         ret = dlmap_send(&dlhandler);
         dlmap_exit(&dlhandler);        
@@ -4412,7 +4412,7 @@ void dostor(char *name, const int append, const int autorename)
 
     started = get_usec_time();    
     
-    if (ul_init(&ulhandler, LOCAL_clientfd, tls_cnx, LOCAL_xferfd, name, f, tls_data_cnx,
+    if (ul_init(&ulhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f, LOCAL_tls_data_cnx,
                 restartat, type == 1, throttling_bandwidth_ul,
                 max_filesize) == 0) {
         ret = ul_send(&ulhandler);
@@ -5571,17 +5571,6 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
-static int init_thread_local_storage(void)
-{
-    pthread_key_create(&thread_key, NULL);
-    pthread_setspecific(thread_key, &thread_local);
-    LOCAL_INIT(clientfd);
-    LOCAL_INIT(datafd);
-    LOCAL_INIT(xferfd);
-    
-    return 0;
-}
-
 int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 {    
 #ifndef NO_GETOPT_LONG
@@ -6342,7 +6331,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         atomic_prefix = NULL;
         nb_children = 0;
 # ifdef WITH_TLS
-        tls_cnx_handshaked = tls_data_cnx_handshaked = 0;
+        LOCAL_tls_cnx_handshaked = LOCAL_tls_data_cnx_handshaked = 0;
 # endif
         if (logout_callback != NULL && suspend_client_connections == 0) {
             (*logout_callback)(logout_callback_user_data);
