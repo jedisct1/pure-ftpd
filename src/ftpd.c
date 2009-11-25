@@ -1449,8 +1449,8 @@ void douser(const char *username)
                 hd = (char *) "/";
             }
             if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
-                die(421, LOG_ERR, MSG_CANT_CHANGE_DIR " [%s] [%s]",
-                    __LINE__, root_directory, hd);
+                die(421, LOG_ERR, MSG_CANT_CHANGE_DIR " [%s]",
+                    root_directory, hd);
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED);
