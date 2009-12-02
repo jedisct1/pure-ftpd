@@ -1,4 +1,8 @@
 * Version 1.0.27:
+ - IPv6 connections are accepted again (regression from version 1.0.26)
+ - SSLv3 renegociation has been disabled
+ - .pureftpd-upload-* files can be deleted by users with no quota.
+ - The server can be forced to shut down on iPhone.
 
 * Version 1.0.26:
  - Fix incompatibilities with Cyberduck and dramatically speed up directory
