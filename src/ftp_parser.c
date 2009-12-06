@@ -758,6 +758,18 @@ void parser(void)
                         }
                     }
 # endif
+# ifdef __IPHONE__
+                } else if (!strcasecmp(arg, "call")) {
+                    if (sitearg == NULL || *sitearg == 0) {
+                        addreply_noformat(500, "SITE CALL: " MSG_MISSING_ARG);
+                    } else {
+                        char *sitearg2 = strrchr(sitearg, ' ');
+                        if (sitearg2 == sitearg) {
+                            sitearg2 = NULL;
+                        }
+                        dositecall(sitearg, sitearg2);
+                    }                    
+# endif
                 } else if (*arg != 0) {
                     addreply(500, "SITE %s " MSG_UNKNOWN_EXTENSION, arg);
                 } else {
@@ -805,3 +817,35 @@ void parser(void)
 #endif
     }
 }
+
+#ifdef __IPHONE__
+void dositecall(const char * const site_command, const char *arg)
+{
+    Registered_SiteCallback *registered_site_callback =
+        registered_site_callbacks;
+    PureFTPd_SiteCallback *cbret;
+    int return_code;
+    
+    do {
+        if (registered_site_callback == NULL) {
+            addreply(500, "SITE CALLBACK %s " MSG_UNKNOWN_EXTENSION,
+                     site_command);
+            return;
+        }
+        if (strcasecmp(registered_site_callback->site_command,
+                       site_command) != 0) {
+            registered_site_callback = registered_site_callback->next;
+            continue;
+        }
+    } while(0);
+    cbret = registered_site_callback->callback
+        (arg, registered_site_callback->user_data);
+    if ((return_code = cbret->return_code) <= 0) {
+        return_code = 200;
+    }
+    addreply(return_code, cbret->response);
+    registered_site_callback->free_callback
+        (cbret, registered_site_callback->user_data);
+}
+
+#endif

@@ -320,12 +320,11 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory);
 typedef struct PureFTPd_SiteCallback_ {
     int return_code;
     char *response;
-    size_t response_length;
 } PureFTPd_SiteCallback;
 
 typedef struct Registered_SiteCallback_ {
     char *site_command;
-    PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data);
+    PureFTPd_SiteCallback *(*callback)(const char *arg, void *user_data);
     void (*free_callback)(PureFTPd_SiteCallback *site_callback,
                           void *user_data);
     void *user_data;
@@ -350,7 +349,7 @@ void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
 
 void pureftpd_register_site_callback
     (const char *site_command,
-     PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data),
+     PureFTPd_SiteCallback *(*callback)(const char *arg, void *user_data),
      void (*free_callback)(PureFTPd_SiteCallback *site_callback,
                            void *user_data),
      void *user_data);
@@ -358,6 +357,7 @@ void pureftpd_register_site_callback
 int pureftpd_shutdown(void);
 int pureftpd_enable(void);
 int pureftpd_disable(void);
+void dositecall(const char * const site_command, const char *arg);
 #endif
 int safe_write(const int fd, const void *buf_, size_t count);
 #ifdef WITH_TLS

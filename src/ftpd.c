@@ -6507,7 +6507,7 @@ static AuthResult embedded_simple_pw_check(const char *account, const char *pass
 
 void pureftpd_register_site_callback
     (const char *site_command,
-     PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data),
+     PureFTPd_SiteCallback *(*callback)(const char *arg, void *user_data),
      void (*free_callback)(PureFTPd_SiteCallback *site_callback,
                            void *user_data),
      void *user_data)
