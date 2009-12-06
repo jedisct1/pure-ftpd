@@ -844,8 +844,10 @@ void dositecall(const char * const site_command, const char *arg)
         return_code = 200;
     }
     addreply(return_code, cbret->response);
-    registered_site_callback->free_callback
-        (cbret, registered_site_callback->user_data);
+    if (registered_site_callback->free_callback != NULL) {
+        registered_site_callback->free_callback
+            (cbret, registered_site_callback->user_data);
+    }
 }
 
 #endif
