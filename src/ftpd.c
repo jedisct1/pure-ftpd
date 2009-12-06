@@ -6402,12 +6402,13 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     tls_free_library();
 #endif
     
-#ifdef __IPHONE__
+#ifdef __IPHONE__    
     /* We need to duplicate what is in _EXIT(), minus the jump */
     delete_atomic_file();
 # ifdef FTPWHO
     ftpwho_exit();
 # endif
+    pureftpd_unregister_site_callbacks();
     stop_server = 0;
     return 0;
 #endif
@@ -6502,6 +6503,48 @@ static AuthResult embedded_simple_pw_check(const char *account, const char *pass
     userchroot = 2;
     
     return authresult;
+}
+
+void pureftpd_register_site_callback
+    (const char *site_command,
+     PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data),
+     void (*free_callback)(PureFTPd_SiteCallback *site_callback,
+                           void *user_data),
+     void *user_data)
+{
+    Registered_SiteCallback *new_registered_site_callback;
+    
+    if ((new_registered_site_callback =
+         malloc(sizeof *new_registered_site_callback)) == NULL) {
+        die_mem();
+    }
+    new_registered_site_callback->site_command = strdup(site_command);
+    if (new_registered_site_callback->site_command == NULL) {
+        die_mem();
+    }
+    new_registered_site_callback->callback = callback;
+    new_registered_site_callback->free_callback = free_callback;
+    new_registered_site_callback->user_data = user_data;
+    new_registered_site_callback->next = NULL;
+    if (registered_site_callbacks != NULL) {
+        registered_site_callbacks->next = new_registered_site_callback;
+    } else {
+        registered_site_callbacks = new_registered_site_callback;
+    }
+    logfile(LOG_INFO, "Registered site callback: [%s]", site_command);
+}
+
+static void pureftpd_unregister_site_callbacks(void)
+{
+    Registered_SiteCallback *next;
+    
+    while (registered_site_callbacks != NULL) {
+        next = registered_site_callbacks->next;
+        free(registered_site_callbacks->site_command);
+        free(registered_site_callbacks);
+        registered_site_callbacks = next;
+    }
+    registered_site_callbacks = NULL;
 }
 
 #endif

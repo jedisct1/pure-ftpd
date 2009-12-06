@@ -329,6 +329,7 @@ typedef struct Registered_SiteCallback_ {
     void (*free_callback)(PureFTPd_SiteCallback *site_callback,
                           void *user_data);
     void *user_data;
+    struct Registered_SiteCallback_ *next;
 } Registered_SiteCallback;
 
 void pureftpd_register_login_callback(void (*callback)(void *user_data),
@@ -348,7 +349,8 @@ void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
                                             void *user_data);
 
 void pureftpd_register_site_callback
-    (PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data),
+    (const char *site_command,
+     PureFTPd_SiteCallback (**callback)(const char *arg, void *user_data),
      void (*free_callback)(PureFTPd_SiteCallback *site_callback,
                            void *user_data),
      void *user_data);
