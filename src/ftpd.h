@@ -357,6 +357,7 @@ void pureftpd_register_site_callback
 int pureftpd_shutdown(void);
 int pureftpd_enable(void);
 int pureftpd_disable(void);
+
 void dositecall(const char * const site_command, const char *arg);
 #endif
 int safe_write(const int fd, const void *buf_, size_t count);
