@@ -762,10 +762,13 @@ void parser(void)
                 } else if (!strcasecmp(arg, "call")) {
                     if (sitearg == NULL || *sitearg == 0) {
                         addreply_noformat(500, "SITE CALL: " MSG_MISSING_ARG);
-                    } else {
-                        char *sitearg2 = strrchr(sitearg, ' ');
-                        if (sitearg2 == sitearg) {
-                            sitearg2 = NULL;
+                    } else {                        
+                        char *sitearg2 = strchr(sitearg, ' ');
+                        if (sitearg2 != NULL) {
+                            *sitearg2++ = 0;
+                            if (*sitearg2 == 0) {
+                                sitearg2 = NULL;
+                            }
                         }
                         dositecall(sitearg, sitearg2);
                     }                    
@@ -826,18 +829,18 @@ void dositecall(const char * const site_command, const char *arg)
     PureFTPd_SiteCallback *cbret;
     int return_code;
     
-    do {
+    for (;;) {
         if (registered_site_callback == NULL) {
-            addreply(500, "SITE CALLBACK %s " MSG_UNKNOWN_EXTENSION,
+            addreply(500, "SITE CALL %s " MSG_UNKNOWN_EXTENSION,
                      site_command);
             return;
         }
         if (strcasecmp(registered_site_callback->site_command,
-                       site_command) != 0) {
-            registered_site_callback = registered_site_callback->next;
-            continue;
+                       site_command) == 0) {
+            break;
         }
-    } while(0);
+        registered_site_callback = registered_site_callback->next;
+    }
     cbret = registered_site_callback->callback
         (arg, registered_site_callback->user_data);
     if ((return_code = cbret->return_code) <= 0) {
