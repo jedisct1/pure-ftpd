@@ -69,6 +69,7 @@ static void (*log_callback)(int crit, const char *message, void *user_data);
 static void *log_callback_user_data;
 static int  (*simple_auth_callback)(const char *account, const char *password, void *user_data);
 static void *simple_auth_callback_user_data;
+static void pureftpd_unregister_site_callbacks(void);
 #endif
 
 struct reply {
