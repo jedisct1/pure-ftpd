@@ -16,6 +16,11 @@
 @synthesize ftpService;
 @synthesize ftpOn;
 
+typedef struct PureFTPd_SiteCallback_ {
+    int return_code;
+    char *response;
+} PureFTPd_SiteCallback;
+
 extern void pureftpd_register_login_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_logout_callback(void (*callback)(void *user_data), void *user_data);
 extern void pureftpd_register_log_callback(void (*callback)(int crit, const char *message, void *user_data), void *user_data);
@@ -24,6 +29,8 @@ extern int  pureftpd_start(int argc, char *argv[], const char *baseDir);
 extern int  pureftpd_shutdown(void);
 extern int  pureftpd_enable(void);
 extern int  pureftpd_disable(void);
+
+void pureftpd_register_site_callback(const char *site_command, PureFTPd_SiteCallback *(*callback)(const char *arg, void *user_data), void (*free_callback)(PureFTPd_SiteCallback *site_callback, void *user_data), void *user_data);
 
 // 0: The switch totally shuts the server down
 // 1: The switch accepts / refuses new connections without shutting the server down
@@ -61,6 +68,23 @@ static NSString *baseDir;
 	[baseDir retain];
 }
 
+PureFTPd_SiteCallback *ftpSiteCallPingCallback(const char *arg, void *user_data) {
+	NSLog(@"SITE PING command called with argument [%s]", arg);
+	PureFTPd_SiteCallback *site_callback = malloc(sizeof *site_callback);
+	site_callback->return_code = 200;
+	char *response;
+	asprintf(&response, "PONG! [%s]", arg);
+	site_callback->response = response;
+	
+	return site_callback;
+}
+
+void ftpSiteCallFreePingCallback(PureFTPd_SiteCallback *site_callback, void *user_data) {
+	NSLog(@"SITE PING command done - releasing allocated data");
+	free(site_callback->response);
+	free(site_callback);
+}
+
 void ftpLoginCallback(void *userData) {
 	NSLog(@"A client just logged in");
 }
@@ -94,6 +118,7 @@ int  ftpAuthCallback(const char *account, const char *password, void *userData) 
 	pureftpd_register_logout_callback(ftpLogoutCallback, self);
 	pureftpd_register_log_callback(ftpLogCallback, self);
 	pureftpd_register_simple_auth_callback(ftpAuthCallback, self);
+	pureftpd_register_site_callback("PING", ftpSiteCallPingCallback, ftpSiteCallFreePingCallback, NULL);
 	NSLog(@"Server started");
 	for (;;) {		
 		pureftpd_start((int) (sizeof args / sizeof *args) - 1, args, [baseDir UTF8String]);
