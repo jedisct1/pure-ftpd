@@ -1,3 +1,6 @@
+
+* Version 1.0.28:
+
 * Version 1.0.27:
  - Have pureftpd_shutdown() shut the server down even if a client is
 connected on iPhone.
