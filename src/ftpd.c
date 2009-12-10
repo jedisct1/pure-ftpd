@@ -6426,6 +6426,7 @@ int pureftpd_shutdown(void)
     shutdown(xferfd, SHUT_RDWR);
     close(listenfd);
     close(listenfd6);
+    listenfd = listenfd6 = -1;
     
     return 0;
 }
