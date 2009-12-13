@@ -93,18 +93,25 @@ typedef struct ThreadLocal_ {
 #define LOCAL_session_start_time THREAD_LOCAL(session_start_time)
     time_t _session_start_time;
     
+#define LOCAL_curdir THREAD_LOCAL(curdir)
+    char _curdir[MAXPATHLEN];
+
+#define LOCAL_chroot_base THREAD_LOCAL(chroot_base)
+    char *_chroot_base;
+    
+#define LOCAL_chroot_len THREAD_LOCAL(chroot_len)
+    size_t _chroot_len;
+    
 } ThreadLocal;
 
 #include <pthread.h>
 #ifdef DEFINE_GLOBALS
 pthread_key_t thread_key;
-ThreadLocal thread_local;
 # define TGLOBAL0(A) A ## _LOCAL_INIT
 # define TGLOBAL(A, B) A ## _LOCAL_INIT = B
 # define TAGLOBAL0(A, S) A ## _LOCAL_INIT[S]
 #else
 extern pthread_key_t thread_key;
-extern ThreadLocal thread_local;
 # define TGLOBAL0(A) extern A ## _LOCAL_INIT
 # define TGLOBAL(A, B) extern A ## _LOCAL_INIT
 # define TAGLOBAL0(A, S) extern A ## _LOCAL_INIT[S]

@@ -399,7 +399,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>093C446D10CBFDE00034A32C</string>
+										<string>09B9C0FC10D555CA005EFB5B</string>
 										<key>history</key>
 										<array>
 											<string>09F65ADE109AEED80075C1E8</string>
@@ -408,7 +408,7 @@
 											<string>09872F5910AB0E610026A466</string>
 											<string>09872F5A10AB0E610026A466</string>
 											<string>09872F5B10AB0E610026A466</string>
-											<string>098CC6AC10AC559C00D082C1</string>
+											<string>093C446D10CBFDE00034A32C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -420,14 +420,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1416, 394}}</string>
+								<string>{{0, 0}, {1416, 381}}</string>
 								<key>RubberWindowFrame</key>
 								<string>77 137 1624 1041 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>394pt</string>
+							<string>381pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -447,7 +447,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>093C446E10CBFDE00034A32C</string>
+										<string>09B9C0FD10D555CA005EFB5B</string>
 										<key>history</key>
 										<array>
 											<string>09F65ADE109AEED80075C1E8</string>
@@ -456,7 +456,7 @@
 											<string>09872F5910AB0E610026A466</string>
 											<string>09872F5A10AB0E610026A466</string>
 											<string>09872F5B10AB0E610026A466</string>
-											<string>093C445910CBFD500034A32C</string>
+											<string>093C446E10CBFDE00034A32C</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -468,14 +468,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 399}, {1416, 394}}</string>
+								<string>{{0, 386}, {1416, 402}}</string>
 								<key>RubberWindowFrame</key>
 								<string>77 137 1624 1041 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>394pt</string>
+							<string>402pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -488,14 +488,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 797}, {1416, 203}}</string>
+								<string>{{0, 793}, {1416, 207}}</string>
 								<key>RubberWindowFrame</key>
 								<string>77 137 1624 1041 0 0 1920 1178 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>203pt</string>
+							<string>207pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -515,9 +515,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>093C444E10CBF7A90034A32C</string>
+				<string>09B9C0FE10D555CA005EFB5B</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>093C444F10CBF7A90034A32C</string>
+				<string>09B9C0FF10D555CA005EFB5B</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
@@ -639,7 +639,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>281804256.65891099</real>
+	<real>282416586.73372102</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -656,13 +656,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>093C446F10CBFDE00034A32C</string>
-		<string>093C446510CBFDA10034A32C</string>
-		<string>093C446610CBFDA10034A32C</string>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>0957C8B7109A300300077D37</string>
-		<string>/Users/j/src/pure-ftpd-sitecalls/iphone/Test/Test.xcodeproj</string>
-		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/j/src/Pure-FTPd/pure-ftpd/iphone/Test/Test.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>77 137 1624 1041 0 0 1920 1178 </string>
@@ -703,8 +698,6 @@
 							<string>234pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -744,7 +737,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>0957C8B7109A300300077D37</string>
-				<string>093C445010CBF7A90034A32C</string>
+				<string>09B9C10010D555CA005EFB5B</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -757,7 +750,7 @@
 			<key>WindowToolGUID</key>
 			<string>0957C8B7109A300300077D37</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>

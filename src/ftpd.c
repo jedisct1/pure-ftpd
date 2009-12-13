@@ -5356,14 +5356,31 @@ static void dodaemonize(void)
 }
 #endif
 
+#ifdef __IPHONE__
+static void *client_thread(void * const parent_thread_local_)
+{
+    ThreadLocal *parent_thread_local = (ThreadLocal *) parent_thread_local_;
+    ThreadLocal *thread_local;
+    
+    init_thread_local_storage();
+    thread_local = (ThreadLocal *) pthread_getspecific(thread_key);
+    *thread_local = *parent_thread_local;   
+    doit();
+    return NULL;
+}
+#endif
+
 static void accept_client(const int active_listen_fd) {
     sigset_t set;   
     struct sockaddr_storage sa;
     socklen_t dummy;
     pid_t child;
+    ThreadLocal *thread_local;
 
     memset(&sa, 0, sizeof sa);
-    dummy = (socklen_t) sizeof sa;  
+    dummy = (socklen_t) sizeof sa;
+    
+    thread_local = (ThreadLocal *) pthread_getspecific(thread_key);    
     if ((LOCAL_clientfd = accept
          (active_listen_fd, (struct sockaddr *) &sa, &dummy)) == -1) {
         return;
@@ -5428,22 +5445,26 @@ static void accept_client(const int active_listen_fd) {
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
 #ifdef __IPHONE__
-    child = (pid_t) 0;
+    {
+        pthread_t *thread;
+        ThreadLocal *thread_local;        
+        
+        thread = malloc(sizeof *thread);
+        thread_local = (ThreadLocal *) pthread_getspecific(thread_key);
+        pthread_create(thread, NULL, client_thread, thread_local);
+    }
 #else
-    child = fork();
-#endif
+    child = fork();    
     if (child == (pid_t) 0) {
-#ifndef __IPHONE__
         if (isatty(2)) {
             (void) close(2);
         }
-#endif
-#ifndef SAVE_DESCRIPTORS
+# ifndef SAVE_DESCRIPTORS
         if (no_syslog == 0) {
             closelog();
             openlog("pure-ftpd", LOG_NDELAY | log_pid, syslog_facility);
         }
-#endif
+# endif
         doit();
         _EXIT(EXIT_SUCCESS);
     } else if (child == (pid_t) -1) {
@@ -5457,7 +5478,8 @@ static void accept_client(const int active_listen_fd) {
     }
     (void) close(LOCAL_clientfd);
     LOCAL_clientfd = -1;
-    sigprocmask(SIG_UNBLOCK, &set, NULL);   
+#endif    
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
 }
 
 static void standalone_server(void)

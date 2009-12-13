@@ -193,3 +193,10 @@ GLOBAL0(const char *home_directory);
 GLOBAL0(Registered_SiteCallback *registered_site_callbacks);
 #endif
 
+#ifdef __IPHONE__
+# ifdef WITH_VIRTUAL_CHROOT
+TAGLOBAL0(char curdir, MAXPATHLEN);
+TGLOBAL0(char *chroot_base);
+TGLOBAL0(size_t chroot_len);
+# endif
+#endif

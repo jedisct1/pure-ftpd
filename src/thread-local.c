@@ -11,8 +11,14 @@
 
 int init_thread_local_storage(void)
 {
-    pthread_key_create(&thread_key, NULL);
-    pthread_setspecific(thread_key, &thread_local);
+    ThreadLocal *thread_local;
+        
+    thread_local = malloc(sizeof *thread_local);
+    memset(thread_local, 0, sizeof thread_local);
+    if (thread_key == NULL) {
+        pthread_key_create(&thread_key, NULL);
+    }
+    pthread_setspecific(thread_key, thread_local);
     LOCAL_INIT(passive);
     LOCAL_INIT(clientfd);
     LOCAL_INIT(datafd);
@@ -41,6 +47,11 @@ int init_thread_local_storage(void)
     LOCAL_INIT(tls_cnx_handshaked);
     LOCAL_INIT(tls_data_cnx);    
     LOCAL_INIT(tls_data_cnx_handshaked);
+#endif
+#ifdef WITH_VIRTUAL_CHROOT
+    LOCAL_AINIT(curdir);
+    LOCAL_INIT(chroot_base);
+    LOCAL_INIT(chroot_len);    
 #endif
     
     return 0;
