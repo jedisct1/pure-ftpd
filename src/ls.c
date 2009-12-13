@@ -125,7 +125,7 @@ const char *getname(const uid_t uid)
 # ifndef ALWAYS_RESOLVE_IDS
         LOCAL_chrooted == 0 && 
 # endif
-        authresult.slow_tilde_expansion == 0) {
+        LOCAL_authresult.slow_tilde_expansion == 0) {
         pwd = getpwuid(uid);
     }
     if ((p = malloc(sizeof *p)) == NULL) {

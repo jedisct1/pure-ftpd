@@ -76,7 +76,7 @@ GLOBAL0(signed char force_ls_a);
 TGLOBAL0(struct sockaddr_storage peer);
 GLOBAL0(struct sockaddr_storage force_passive_ip);
 GLOBAL0(const char *force_passive_ip_s);
-GLOBAL0(in_port_t peerdataport);
+TGLOBAL0(in_port_t peerdataport);
 GLOBAL0(double maxload);
 GLOBAL(unsigned int maxusers, DEFAULT_MAX_USERS);
 #ifdef PER_USER_LIMITS
@@ -152,8 +152,8 @@ GLOBAL(const char *months[12], { MONTHS_NAMES });
 GLOBAL(const char *week_days[7], { WEEK_DAYS_NAMES });
 #endif
 
-GLOBAL0(AuthResult authresult);
-GLOBAL0(time_t session_start_time);
+TGLOBAL0(AuthResult authresult);
+TGLOBAL0(time_t session_start_time);
 
 #ifndef NO_STANDALONE
 GLOBAL(const char *pid_file, PID_FILE);

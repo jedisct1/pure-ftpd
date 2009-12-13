@@ -63,6 +63,9 @@ typedef struct ThreadLocal_ {
 #define LOCAL_peer THREAD_LOCAL(peer)
     struct sockaddr_storage _peer;
     
+#define LOCAL_peerdataport THREAD_LOCAL(peerdataport)
+    in_port_t _peerdataport;
+    
 #define LOCAL_ctrlconn THREAD_LOCAL(ctrlconn)
     struct sockaddr_storage _ctrlconn;
     
@@ -82,7 +85,14 @@ typedef struct ThreadLocal_ {
     SSL *_tls_data_cnx;
     
 #define LOCAL_tls_data_cnx_handshaked THREAD_LOCAL(tls_data_cnx_handshaked)
-    int _tls_data_cnx_handshaked;    
+    int _tls_data_cnx_handshaked;
+    
+#define LOCAL_authresult THREAD_LOCAL(authresult)
+    AuthResult _authresult;
+
+#define LOCAL_session_start_time THREAD_LOCAL(session_start_time)
+    time_t _session_start_time;
+    
 } ThreadLocal;
 
 #include <pthread.h>

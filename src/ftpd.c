@@ -1471,9 +1471,9 @@ void douser(const char *username)
             goto cantsec;
         }
         LOCAL_chrooted = 1;
-        authresult.uid = pw->pw_uid;
-        authresult.gid = pw->pw_gid;
-        if ((authresult.dir = strdup(pw->pw_dir)) == NULL) {
+        LOCAL_authresult.uid = pw->pw_uid;
+        LOCAL_authresult.gid = pw->pw_gid;
+        if ((LOCAL_authresult.dir = strdup(pw->pw_dir)) == NULL) {
             die_mem();
         }
         
@@ -1488,13 +1488,13 @@ void douser(const char *username)
 #endif
 
 #ifndef NON_ROOT_FTP
-        if (authresult.uid > (uid_t) 0) {
+        if (LOCAL_authresult.uid > (uid_t) 0) {
 # ifndef WITHOUT_PRIVSEP
-            if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
+            if (setuid(LOCAL_authresult.uid) != 0 || seteuid(LOCAL_authresult.uid) != 0) {
                 goto cantsec;
             }
 # else
-            if (seteuid(authresult.uid) != 0) {
+            if (seteuid(LOCAL_authresult.uid) != 0) {
                 goto cantsec;
             }
 #  ifdef USE_CAPABILITIES
@@ -1720,7 +1720,7 @@ static int create_home_and_chdir(const char * const home)
         return -1;
     }
     if (chmod(home, (mode_t) 0777 & ~u_mask_d) < 0 ||
-        chown(home, authresult.uid, authresult.gid) < 0) {
+        chown(home, LOCAL_authresult.uid, LOCAL_authresult.gid) < 0) {
         return -1;
     }
     
@@ -1763,9 +1763,9 @@ void dopass(char *password)
         return;
     }
 #ifdef __IPHONE__
-    authresult = embedded_simple_pw_check(LOCAL_account, password);
+    LOCAL_authresult = embedded_simple_pw_check(LOCAL_account, password);
 #else
-    authresult = pw_check(LOCAL_account, password, &LOCAL_ctrlconn, &LOCAL_peer);
+    LOCAL_authresult = pw_check(LOCAL_account, password, &LOCAL_ctrlconn, &LOCAL_peer);
 #endif
     {
         /* Clear password from memory, paranoia */        
@@ -1775,7 +1775,7 @@ void dopass(char *password)
             *password_++ = 0;
         }
     }
-    if (authresult.auth_ok != 1) {
+    if (LOCAL_authresult.auth_ok != 1) {
         tapping++;
         randomsleep(tapping);
         addreply_noformat(530, MSG_AUTH_FAILED);
@@ -1787,7 +1787,7 @@ void dopass(char *password)
         logfile(LOG_WARNING, MSG_AUTH_FAILED_LOG, LOCAL_account);
         return;
     }
-    if (authresult.uid < useruid) {
+    if (LOCAL_authresult.uid < useruid) {
         logfile(LOG_WARNING, MSG_ACCOUNT_DISABLED, LOCAL_account);
         randomsleep(tapping);
         if (tapping >= MAX_PASSWD_TRIES) {
@@ -1809,14 +1809,14 @@ void dopass(char *password)
 #endif
     
     /* Add username and primary group to the uid/gid cache */
-    (void) getname(authresult.uid);
-    (void) getgroup(authresult.gid);    
+    (void) getname(LOCAL_authresult.uid);
+    (void) getgroup(LOCAL_authresult.gid);    
     
     if (
 #if defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL) || defined(WITH_PUREDB) || defined(WITH_EXTAUTH)
-        doinitsupgroups(NULL, authresult.uid, authresult.gid) != 0
+        doinitsupgroups(NULL, LOCAL_authresult.uid, LOCAL_authresult.gid) != 0
 #else
-        doinitsupgroups(LOCAL_account, (uid_t) -1, authresult.gid) != 0
+        doinitsupgroups(LOCAL_account, (uid_t) -1, LOCAL_authresult.gid) != 0
 #endif
         ) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
@@ -1827,7 +1827,7 @@ void dopass(char *password)
     }
 
     /* handle /home/user/./public_html form */
-    if ((LOCAL_root_directory = strdup(authresult.dir)) == NULL) {
+    if ((LOCAL_root_directory = strdup(LOCAL_authresult.dir)) == NULL) {
         die_mem();
     }
     hd = strstr(LOCAL_root_directory, "/./");
@@ -1848,7 +1848,7 @@ void dopass(char *password)
         if (ratio_for_non_anon == 0) {
             ratio_upload = ratio_download = 0U;
         }
-        if (check_trustedgroup(authresult.uid, authresult.gid) != 0) {
+        if (check_trustedgroup(LOCAL_authresult.uid, LOCAL_authresult.gid) != 0) {
             dot_write_ok = dot_read_ok = 1;
             ratio_upload = ratio_download = 0U;
             keepallfiles = 0;
@@ -1857,7 +1857,7 @@ void dopass(char *password)
     } else {
         (void) free(LOCAL_root_directory);
         LOCAL_root_directory = (char *) "/";
-        if (create_home_and_chdir(authresult.dir)) {
+        if (create_home_and_chdir(LOCAL_authresult.dir)) {
             die(421, LOG_ERR, MSG_NO_HOMEDIR);
         }
     }
@@ -1866,11 +1866,11 @@ void dopass(char *password)
         LOCAL_wd[1] = 0;
     }
 #ifndef NON_ROOT_FTP
-    if (setgid(authresult.gid) || setegid(authresult.gid)) {
+    if (setgid(LOCAL_authresult.gid) || setegid(LOCAL_authresult.gid)) {
         _EXIT(EXIT_FAILURE);
     }
 #endif
-    if (check_trustedgroup(authresult.uid, authresult.gid) != 0) {
+    if (check_trustedgroup(LOCAL_authresult.uid, LOCAL_authresult.gid) != 0) {
         userchroot = 0;
         dot_write_ok = dot_read_ok = 1;
         keepallfiles = 0;
@@ -1999,11 +1999,11 @@ void dopass(char *password)
 #ifndef NON_ROOT_FTP
     disablesignals();
 # ifndef WITHOUT_PRIVSEP
-    if (setuid(authresult.uid) != 0 || seteuid(authresult.uid) != 0) {
+    if (setuid(LOCAL_authresult.uid) != 0 || seteuid(LOCAL_authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
 # else
-    if (seteuid(authresult.uid) != 0) {
+    if (seteuid(LOCAL_authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
 #  ifdef USE_CAPABILITIES
@@ -2066,7 +2066,7 @@ void docwd(const char *dir)
         const struct passwd *pw;
         
         if (dir[1] == 0) {         /* cd ~ */
-            strncpy(buffer, LOCAL_chrooted != 0 ? "/" : authresult.dir,
+            strncpy(buffer, LOCAL_chrooted != 0 ? "/" : LOCAL_authresult.dir,
                     sizeof buffer);
             buffer[sizeof buffer - (size_t) 1U] = 0;
             where = buffer;
@@ -2084,9 +2084,9 @@ void docwd(const char *dir)
             *bufpnt = 0;
             if (*buffer == 0) {        /* ~/... */
                 snprintf(buffer, sizeof buffer, "%s%s",
-                         LOCAL_chrooted != 0 ? "/" : authresult.dir, dirscan);
+                         LOCAL_chrooted != 0 ? "/" : LOCAL_authresult.dir, dirscan);
                 where = buffer;
-            } else if (authresult.slow_tilde_expansion == 0) {
+            } else if (LOCAL_authresult.slow_tilde_expansion == 0) {
                 if (LOCAL_chrooted != 0 || LOCAL_guest != 0 ||
                     (pw = getpwnam(buffer)) == NULL || pw->pw_dir == NULL) {
                     /* try with old where = dir */
@@ -2383,7 +2383,7 @@ static int doport3(const int protocol)
     if ((LOCAL_datafd = socket(protocol, SOCK_STREAM, IPPROTO_TCP)) == -1) {
         data_socket_error:
 # ifndef NON_ROOT_FTP
-        if (seteuid(authresult.uid) != 0) {
+        if (seteuid(LOCAL_authresult.uid) != 0) {
             _EXIT(EXIT_FAILURE);
         }
         enablesignals();
@@ -2423,7 +2423,7 @@ static int doport3(const int protocol)
 # endif
     }
 # ifndef NON_ROOT_FTP
-    if (seteuid(authresult.uid) != 0) {
+    if (seteuid(LOCAL_authresult.uid) != 0) {
         _EXIT(EXIT_FAILURE);
     }
     enablesignals();
@@ -2469,7 +2469,7 @@ void doport2(struct sockaddr_storage a, unsigned int p)
     if (doport3(STORAGE_FAMILY(a) == AF_INET6 ? PF_INET6 : PF_INET) != 0) {
         return;
     }
-    peerdataport = (in_port_t) p;
+    LOCAL_peerdataport = (in_port_t) p;
     if (addrcmp(&a, &LOCAL_peer) != 0) {
         char hbuf[NI_MAXHOST];
         char peerbuf[NI_MAXHOST];
@@ -2586,9 +2586,9 @@ void opendata(void)
         
         peer2 = LOCAL_peer;
         if (STORAGE_FAMILY(LOCAL_peer) == AF_INET6) {
-            STORAGE_PORT6(peer2) = htons(peerdataport);
+            STORAGE_PORT6(peer2) = htons(LOCAL_peerdataport);
         } else {
-            STORAGE_PORT(peer2) = htons(peerdataport);
+            STORAGE_PORT(peer2) = htons(LOCAL_peerdataport);
         }
         again:
         if (connect(LOCAL_datafd, (struct sockaddr *) &peer2,
@@ -2603,14 +2603,14 @@ void opendata(void)
                 goto again;
             }
             addreply(425, MSG_CNX_PORT_FAILED ": %s",
-                     peerdataport, strerror(errno));
+                     LOCAL_peerdataport, strerror(errno));
             (void) close(LOCAL_datafd);
             LOCAL_datafd = -1;
             return;
         }
         fd = LOCAL_datafd;
         LOCAL_datafd = -1;
-        addreply(150, MSG_CNX_PORT, peerdataport);
+        addreply(150, MSG_CNX_PORT, LOCAL_peerdataport);
     }
     
     {
@@ -2635,7 +2635,7 @@ void dochmod(char *name, mode_t mode)
     struct stat st2;
     int fd = -1;
     
-    if (nochmod != 0 && authresult.uid != (uid_t) 0) {
+    if (nochmod != 0 && LOCAL_authresult.uid != (uid_t) 0) {
         addreply(550, MSG_CHMOD_FAILED, name);
         return;
     }
@@ -4971,7 +4971,7 @@ static void fill_atomic_prefix(void)
     snprintf(tmp_atomic_prefix, sizeof tmp_atomic_prefix,
              "%s%lx.%x.%lx.%x",
              ATOMIC_PREFIX_PREFIX, 
-             (unsigned long) session_start_time,
+             (unsigned long) LOCAL_session_start_time,
              (unsigned int) serverport,
              (unsigned long) getpid(),
              zrand());
@@ -4987,7 +4987,7 @@ static void doit(void)
     int display_banner = 1;
 
     client_init_reply_buf();
-    session_start_time = time(NULL);
+    LOCAL_session_start_time = time(NULL);
     fixlimits();
 #ifdef F_SETOWN
     fcntl(LOCAL_clientfd, F_SETOWN, getpid());
@@ -5088,7 +5088,7 @@ static void doit(void)
             shm_data_cur->state = FTPWHO_STATE_IDLE;
             shm_data_cur->addr = LOCAL_peer;
             shm_data_cur->local_addr = LOCAL_ctrlconn;
-            shm_data_cur->date = session_start_time;
+            shm_data_cur->date = LOCAL_session_start_time;
             shm_data_cur->xfer_date = shm_data_cur->date;
             (shm_data_cur->account)[0] = '?';
             (shm_data_cur->account)[1] = 0;
@@ -5156,9 +5156,9 @@ static void doit(void)
 #ifdef HAVE_SRANDOMDEV
     srandomdev();
 #elif defined (HAVE_RANDOM)
-    srandom((unsigned int) session_start_time ^ (unsigned int) zrand());    
+    srandom((unsigned int) LOCAL_session_start_time ^ (unsigned int) zrand());    
 #else
-    srand((unsigned int) session_start_time ^ (unsigned int) zrand());
+    srand((unsigned int) LOCAL_session_start_time ^ (unsigned int) zrand());
 #endif
 #ifdef COOKIE
     if (fortune() > 0) {
@@ -5189,7 +5189,7 @@ static void doit(void)
         {
             struct tm *t;
             
-            if ((t = localtime(&session_start_time)) != NULL) {
+            if ((t = localtime(&LOCAL_session_start_time)) != NULL) {
                 addreply(220, MSG_WELCOME_TIME,
                          t->tm_hour, t->tm_min, (unsigned int) serverport);
             }

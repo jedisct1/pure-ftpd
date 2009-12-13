@@ -30,8 +30,11 @@ int init_thread_local_storage(void)
     LOCAL_INIT(restartat);
     LOCAL_INIT(replycode);    
     LOCAL_INIT(peer);
+    LOCAL_INIT(peerdataport);    
     LOCAL_INIT(ctrlconn);
     LOCAL_INIT(xferfd);
+    LOCAL_INIT(authresult);
+    LOCAL_INIT(session_start_time);
 #ifdef WITH_TLS
     LOCAL_INIT(tls_ctx);
     LOCAL_INIT(tls_cnx);
