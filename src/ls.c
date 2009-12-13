@@ -834,23 +834,23 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     }
     if (on_ctrl_conn == 0) {
         opendata();
-        if ((c = xferfd) == -1) {
+        if ((c = LOCAL_xferfd) == -1) {
             return;
         }
         doreply();
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
-            tls_init_data_session(xferfd, passive);
-            tls_fd = tls_data_cnx;
+            tls_init_data_session(LOCAL_xferfd, passive);
+            tls_fd = LOCAL_tls_data_cnx;
         }
 #endif
     } else {                           /* STAT command */
-        c = clientfd;
+        c = LOCAL_clientfd;
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
-            secure_safe_write(tls_cnx, "213-STAT" CRLF,
+            secure_safe_write(LOCAL_tls_cnx, "213-STAT" CRLF,
                               sizeof "213-STAT" CRLF - 1U);
-            tls_fd = tls_cnx;
+            tls_fd = LOCAL_tls_cnx;
         }
         else
 #endif

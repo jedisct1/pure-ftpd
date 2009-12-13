@@ -71,7 +71,7 @@ int sfgets(void)
         memmove(cmd, cmd + scanned, readnbd);   /* safe */
         scanned = (size_t) 0U;
     }
-    pfd.fd = clientfd;
+    pfd.fd = LOCAL_clientfd;
     pfd.events = POLLIN | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
         if (scanned >= readnbd) {      /* nothing left in the buffer */
@@ -92,14 +92,14 @@ int sfgets(void)
                 break;
             }
 #ifdef WITH_TLS
-            if (tls_cnx != NULL) {
+            if (LOCAL_tls_cnx != NULL) {
                 while ((readnb = SSL_read
-                        (tls_cnx, cmd + readnbd, cmdsize - readnbd))
+                        (LOCAL_tls_cnx, cmd + readnbd, cmdsize - readnbd))
                        < (ssize_t) 0 && errno == EINTR);
             } else
 #endif
             {
-                while ((readnb = read(clientfd, cmd + readnbd,
+                while ((readnb = read(LOCAL_clientfd, cmd + readnbd,
                                       cmdsize - readnbd)) < (ssize_t) 0 &&
                        errno == EINTR);
             }
@@ -236,7 +236,7 @@ void parser(void)
     data_protection_level = CPL_PRIVATE;
 #endif
     for (;;) {
-        xferfd = -1;
+        LOCAL_xferfd = -1;
         if (state_needs_update != 0) {
             state_needs_update = 0;
             setprocessname("pure-ftpd (IDLE)");
@@ -331,7 +331,7 @@ void parser(void)
 #endif
         if (!strcmp(cmd, "user")) {
 #ifdef WITH_TLS
-            if (enforce_tls_auth > 1 && tls_cnx == NULL) {
+            if (enforce_tls_auth > 1 && LOCAL_tls_cnx == NULL) {
                 die(421, LOG_WARNING, MSG_TLS_NEEDED);
             }
 #endif
@@ -357,14 +357,14 @@ void parser(void)
                    !strcmp(cmd, "auth") && !strcasecmp(arg, "tls")) {
             addreply_noformat(234, "AUTH TLS OK.");
             doreply();
-            if (tls_cnx == NULL) {
+            if (LOCAL_tls_cnx == NULL) {
                 (void) tls_init_new_session();
             }
             goto wayout;
         } else if (!strcmp(cmd, "pbsz")) {
-            addreply_noformat(tls_cnx == NULL ? 503 : 200, "PBSZ=0");
+            addreply_noformat(LOCAL_tls_cnx == NULL ? 503 : 200, "PBSZ=0");
         } else if (!strcmp(cmd, "prot")) {
-            if (tls_cnx == NULL) {
+            if (LOCAL_tls_cnx == NULL) {
                 addreply_noformat(503, MSG_PROT_BEFORE_PBSZ);
                 goto wayout;
             }

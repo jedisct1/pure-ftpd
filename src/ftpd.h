@@ -810,8 +810,9 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #ifndef offsetof
 # define offsetof(type, member) ((size_t) &((type*) NULL)->member)
 #endif    
-    
+
+#include "thread-local.h"          
 #include "bsd-realpath.h"    
 #include "fakechroot.h"
-        
+                
 #endif

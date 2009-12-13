@@ -16,27 +16,27 @@ void tls_close_session(SSL **cnx);
 # ifndef IN_TLS_C
 extern
 # endif
-    SSL_CTX *tls_ctx;
+    SSL_CTX *tls_ctx_LOCAL_INIT;
 
 # ifndef IN_TLS_C
 extern
 # endif
-    SSL *tls_cnx;
+    SSL *tls_cnx_LOCAL_INIT;
 
 # ifndef IN_TLS_C
 extern
 # endif
-    int tls_cnx_handshaked;
+    int tls_cnx_handshaked_LOCAL_INIT;
 
 # ifndef IN_TLS_C
 extern
 # endif
-    SSL *tls_data_cnx;
+    SSL *tls_data_cnx_LOCAL_INIT;
 
 # ifndef IN_TLS_C
 extern
 # endif
-    int tls_data_cnx_handshaked;
+    int tls_data_cnx_handshaked_LOCAL_INIT;
 
 /* The minimal number of bits we accept for a cipher */
 # define MINIMAL_CIPHER_KEY_LEN 40

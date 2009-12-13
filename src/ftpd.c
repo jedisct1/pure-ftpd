@@ -331,7 +331,7 @@ void client_fflush(void)
     if (replybuf_pos == replybuf) {
         return;
     }
-    safe_write(clientfd, replybuf, (size_t) (replybuf_pos - replybuf));
+    safe_write(LOCAL_clientfd, replybuf, (size_t) (replybuf_pos - replybuf));
     client_init_reply_buf();
 }
 
@@ -373,10 +373,10 @@ void die(const int err, const int priority, const char * const format, ...)
     vsnprintf(line, sizeof line, format, va);
     va_end(va);    
 #ifdef WITH_TLS
-    if (tls_cnx != NULL) {        
+    if (LOCAL_tls_cnx != NULL) {        
         char buf[MAX_SERVER_REPLY_LEN];
         snprintf(buf, sizeof buf, "%d %s\r\n", err, line);
-        SSL_write(tls_cnx, buf, strlen(buf));
+        SSL_write(LOCAL_tls_cnx, buf, strlen(buf));
     } else
 #endif
     {
@@ -811,12 +811,12 @@ void doreply(void)
     do {
         nextentry = scannedentry->next;
 #ifdef WITH_TLS
-        if (tls_cnx != NULL) {
+        if (LOCAL_tls_cnx != NULL) {
             char buf[MAX_SERVER_REPLY_LEN];
             
             snprintf(buf, sizeof buf, "%3d%c%s\r\n", replycode, 
                      nextentry == NULL ? ' ' : '-', scannedentry->line);
-            SSL_write(tls_cnx, buf, strlen(buf));            
+            SSL_write(LOCAL_tls_cnx, buf, strlen(buf));            
         } else
 #endif
         {
@@ -928,8 +928,8 @@ static void do_ipv6_port(char *p, char delim)
     }
     if (*p != delim || atoi(p + 1) == 0) {
         nope:
-        (void) close(datafd);
-        datafd = -1;
+        (void) close(LOCAL_datafd);
+        LOCAL_datafd = -1;
         addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
         return;
     }
@@ -948,19 +948,19 @@ void doesta(void)
     char hbuf[NI_MAXHOST];
     char pbuf[NI_MAXSERV];
     
-    if (passive != 0 || datafd == -1) {
+    if (passive != 0 || LOCAL_datafd == -1) {
         addreply_noformat(520, MSG_ACTIVE_DISABLED);
         return;
     }
-    if (xferfd == -1) {
+    if (LOCAL_xferfd == -1) {
         opendata();
-        if (xferfd == -1) {
+        if (LOCAL_xferfd == -1) {
             addreply_noformat(425, MSG_CANT_CREATE_DATA_SOCKET);
             return;
         }
     }
     socksize = (socklen_t) sizeof dataconn;
-    if (getsockname(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
+    if (getsockname(LOCAL_xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
                     hbuf, sizeof hbuf, pbuf, sizeof pbuf,
                     NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
@@ -979,19 +979,19 @@ void doestp(void)
     char hbuf[NI_MAXHOST];
     char pbuf[NI_MAXSERV];
     
-    if (passive == 0 || datafd == -1) {
+    if (passive == 0 || LOCAL_datafd == -1) {
         addreply_noformat(520, MSG_CANT_PASSIVE);
         return;
     }
-    if (xferfd == -1) {
+    if (LOCAL_xferfd == -1) {
         opendata();
-        if (xferfd == -1) {
+        if (LOCAL_xferfd == -1) {
             addreply_noformat(425, MSG_CANT_CREATE_DATA_SOCKET);
             return;
         }
     }
     socksize = (socklen_t) sizeof dataconn;
-    if (getpeername(xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
+    if (getpeername(LOCAL_xferfd, (struct sockaddr *) &dataconn, &socksize) < 0 ||
         getnameinfo((struct sockaddr *) &dataconn, STORAGE_LEN(dataconn),
                     hbuf, sizeof hbuf, pbuf, sizeof pbuf,
                     NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
@@ -1449,8 +1449,7 @@ void douser(const char *username)
                 hd = (char *) "/";
             }
             if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
-                die(421, LOG_ERR, MSG_CANT_CHANGE_DIR " [%s]",
-                    root_directory, hd);
+                die(421, LOG_ERR, "%d [%s] [%s]", __LINE__, root_directory, hd);
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED);
@@ -1542,7 +1541,6 @@ void douser(const char *username)
 #endif
 }
 
-#ifndef __IPHONE__
 static AuthResult pw_check(const char *account, const char *password,
                            const struct sockaddr_storage * const sa,
                            const struct sockaddr_storage * const peer)
@@ -1624,7 +1622,6 @@ static AuthResult pw_check(const char *account, const char *password,
     
     return result;
 }
-#endif
 
 /*
  * Check if an user belongs to the trusted group, either in his
@@ -2257,9 +2254,9 @@ void dopasv(int psvtype)
         addreply_noformat(530, MSG_NOT_LOGGED_IN);
         return;
     }
-    if (datafd != -1) {                /* for buggy clients */
-        (void) close(datafd);
-        datafd = -1;
+    if (LOCAL_datafd != -1) {                /* for buggy clients */
+        (void) close(LOCAL_datafd);
+        LOCAL_datafd = -1;
     }
     fourinsix(&ctrlconn);
     if (STORAGE_FAMILY(ctrlconn) == AF_INET6 && psvtype == 0) {
@@ -2268,13 +2265,13 @@ void dopasv(int psvtype)
     }
     firstporttried = firstport + zrand() % (lastport - firstport + 1);
     p = firstporttried;
-    datafd = socket(STORAGE_FAMILY(ctrlconn), SOCK_STREAM, IPPROTO_TCP);
-    if (datafd == -1) {
+    LOCAL_datafd = socket(STORAGE_FAMILY(ctrlconn), SOCK_STREAM, IPPROTO_TCP);
+    if (LOCAL_datafd == -1) {
         error(425, MSG_CANT_PASSIVE);
         return;
     }
     on = 1;
-    if (setsockopt(datafd, SOL_SOCKET, SO_REUSEADDR,
+    if (setsockopt(LOCAL_datafd, SOL_SOCKET, SO_REUSEADDR,
                    (char *) &on, sizeof on) < 0) {
         error(421, "setsockopt");
         return;
@@ -2286,7 +2283,7 @@ void dopasv(int psvtype)
         } else {
             STORAGE_PORT(dataconn) = htons(p);
         }
-        if (bind(datafd, (struct sockaddr *) &dataconn,
+        if (bind(LOCAL_datafd, (struct sockaddr *) &dataconn,
                  STORAGE_LEN(dataconn)) == 0) {
             break;
         }
@@ -2295,16 +2292,16 @@ void dopasv(int psvtype)
             p = lastport;
         }
         if (p == firstporttried) {
-            (void) close(datafd);
-            datafd = -1;
+            (void) close(LOCAL_datafd);
+            LOCAL_datafd = -1;
             addreply_noformat(425, MSG_PORTS_BUSY);
             return;
         }
     }
     alarm(idletime);
-    if (listen(datafd, DEFAULT_BACKLOG_DATA) < 0) {
-        (void) close(datafd);
-        datafd = -1;
+    if (listen(LOCAL_datafd, DEFAULT_BACKLOG_DATA) < 0) {
+        (void) close(LOCAL_datafd);
+        LOCAL_datafd = -1;
         error(425, MSG_GETSOCKNAME_DATA);
         return;
     }
@@ -2313,8 +2310,8 @@ void dopasv(int psvtype)
         if (STORAGE_FAMILY(force_passive_ip) == 0) {
             a = ntohl(STORAGE_SIN_ADDR(dataconn));
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET6) {
-            (void) close(datafd);
-            datafd = -1;
+            (void) close(LOCAL_datafd);
+            LOCAL_datafd = -1;
             addreply_noformat(425, MSG_NO_EPSV);
             return;
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET) {
@@ -2383,7 +2380,7 @@ static int doport3(const int protocol)
     disablesignals();
     seteuid((uid_t) 0);
 # endif    
-    if ((datafd = socket(protocol, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+    if ((LOCAL_datafd = socket(protocol, SOCK_STREAM, IPPROTO_TCP)) == -1) {
         data_socket_error:
 # ifndef NON_ROOT_FTP
         if (seteuid(authresult.uid) != 0) {
@@ -2391,18 +2388,18 @@ static int doport3(const int protocol)
         }
         enablesignals();
 # endif
-        (void) close(datafd);
-        datafd = -1;
+        (void) close(LOCAL_datafd);
+        LOCAL_datafd = -1;
         error(425, MSG_CANT_CREATE_DATA_SOCKET);
         
         return -1;
     }
     on = 1;
 # ifdef SO_REUSEPORT
-    (void) setsockopt(datafd, SOL_SOCKET, SO_REUSEPORT,
+    (void) setsockopt(LOCAL_datafd, SOL_SOCKET, SO_REUSEPORT,
                       (char *) &on, sizeof on);    
 # else
-    (void) setsockopt(datafd, SOL_SOCKET, SO_REUSEADDR,
+    (void) setsockopt(LOCAL_datafd, SOL_SOCKET, SO_REUSEADDR,
                       (char *) &on, sizeof on);
 # endif
     memcpy(&dataconn, &ctrlconn, sizeof dataconn);
@@ -2412,7 +2409,7 @@ static int doport3(const int protocol)
         } else {
             STORAGE_PORT(dataconn) = htons(*portlistpnt);
         }
-        if (bind(datafd, (struct sockaddr *) &dataconn, 
+        if (bind(LOCAL_datafd, (struct sockaddr *) &dataconn, 
                  STORAGE_LEN(dataconn)) == 0) {
             break;
         }
@@ -2441,7 +2438,7 @@ static int doport3(const int protocol)
 
 static int doport3(const int protocol)
 {
-    if ((datafd = privsep_bindresport(protocol, ctrlconn)) == -1) {
+    if ((LOCAL_datafd = privsep_bindresport(protocol, ctrlconn)) == -1) {
         error(425, MSG_CANT_CREATE_DATA_SOCKET);
         
         return -1;
@@ -2461,9 +2458,9 @@ void doport2(struct sockaddr_storage a, unsigned int p)
         addreply_noformat(501, MSG_ACTIVE_DISABLED);
         return;
     }
-    if (datafd != -1) {    /* for buggy clients saying PORT over and over */
-        (void) close(datafd);
-        datafd = -1;
+    if (LOCAL_datafd != -1) {    /* for buggy clients saying PORT over and over */
+        (void) close(LOCAL_datafd);
+        LOCAL_datafd = -1;
     }
     if (p < 1024U) {
         addreply_noformat(501, MSG_BAD_PORT);
@@ -2487,8 +2484,8 @@ void doport2(struct sockaddr_storage a, unsigned int p)
         }
         if (allowfxp == 0 || (allowfxp == 1 && guest != 0)) {
             hu:
-            (void) close(datafd);
-            datafd = -1;
+            (void) close(LOCAL_datafd);
+            LOCAL_datafd = -1;
             addreply(500, MSG_NO_FXP, hbuf, peerbuf);
             return;
         } else {
@@ -2504,13 +2501,13 @@ void doport2(struct sockaddr_storage a, unsigned int p)
 
 void closedata(void)
 {
-    volatile int tmp_xferfd = xferfd;   /* do not simplify this... */
+    volatile int tmp_xferfd = LOCAL_xferfd;   /* do not simplify this... */
 
 #ifdef WITH_TLS
-    tls_close_session(&tls_data_cnx);
-    tls_data_cnx = NULL;
+    tls_close_session(&LOCAL_tls_data_cnx);
+    LOCAL_tls_data_cnx = NULL;
 #endif    
-    xferfd = -1;           /* ...it avoids a race */
+    LOCAL_xferfd = -1;           /* ...it avoids a race */
     (void) close(tmp_xferfd);
 }
 
@@ -2520,10 +2517,10 @@ void opendata(void)
     int fd;
     socklen_t socksize;
     
-    if (xferfd != -1) {
+    if (LOCAL_xferfd != -1) {
         closedata();
     }
-    if (datafd == -1) {
+    if (LOCAL_datafd == -1) {
         addreply_noformat(425, MSG_NO_DATA_CONN);        
         return;
     }    
@@ -2533,12 +2530,12 @@ void opendata(void)
         int pollret;
         
         pfd = &pfds[0];
-        pfd->fd = clientfd;
+        pfd->fd = LOCAL_clientfd;
         pfd->events = POLLERR | POLLHUP;
         pfd->revents = 0;
         
         pfd = &pfds[1];
-        pfd->fd = datafd;
+        pfd->fd = LOCAL_datafd;
         pfd->events = POLLIN | POLLERR | POLLHUP;
         pfd->revents = 0;
 
@@ -2558,11 +2555,11 @@ void opendata(void)
             }
             socksize = (socklen_t) sizeof(dataconn);
             memset(&dataconn, 0, sizeof dataconn);
-            if ((fd = accept(datafd, (struct sockaddr *) &dataconn,
+            if ((fd = accept(LOCAL_datafd, (struct sockaddr *) &dataconn,
                              &socksize)) == -1) {
                 nope:
-                (void) close(datafd);
-                datafd = -1;
+                (void) close(LOCAL_datafd);
+                LOCAL_datafd = -1;
                 error(421, MSG_ACCEPT_FAILED);
                 return;
             }
@@ -2594,7 +2591,7 @@ void opendata(void)
             STORAGE_PORT(peer2) = htons(peerdataport);
         }
         again:
-        if (connect(datafd, (struct sockaddr *) &peer2,
+        if (connect(LOCAL_datafd, (struct sockaddr *) &peer2,
                     STORAGE_LEN(peer2)) != 0) {
             if ((errno == EAGAIN || errno == EINTR
 #ifdef EADDRINUSE
@@ -2607,12 +2604,12 @@ void opendata(void)
             }
             addreply(425, MSG_CNX_PORT_FAILED ": %s",
                      peerdataport, strerror(errno));
-            (void) close(datafd);
-            datafd = -1;
+            (void) close(LOCAL_datafd);
+            LOCAL_datafd = -1;
             return;
         }
-        fd = datafd;
-        datafd = -1;
+        fd = LOCAL_datafd;
+        LOCAL_datafd = -1;
         addreply(150, MSG_CNX_PORT, peerdataport);
     }
     
@@ -2626,7 +2623,7 @@ void opendata(void)
         keepalive(fd, 1);
 #endif
     }
-    xferfd = fd;
+    LOCAL_xferfd = fd;
     alarm(MAX_SESSION_XFER_IDLE);
 }
 
@@ -3463,7 +3460,7 @@ void doretr(char *name)
     }
 #endif
     opendata();
-    if (xferfd == -1) {
+    if (LOCAL_xferfd == -1) {
         (void) close(f);
         goto end;
     }
@@ -3478,7 +3475,7 @@ void doretr(char *name)
     doreply();
 # ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(xferfd, passive);
+        tls_init_data_session(LOCAL_xferfd, passive);
     }
 # endif    
     state_needs_update = 1;
@@ -3511,8 +3508,8 @@ void doretr(char *name)
     
     started = get_usec_time();
 
-    if (dlmap_init(&dlhandler, clientfd, tls_cnx, xferfd, name, f,
-                   tls_data_cnx, restartat, type == 1,
+    if (dlmap_init(&dlhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f,
+                   LOCAL_tls_data_cnx, restartat, type == 1,
                    throttling_bandwidth_dl) == 0) {
         ret = dlmap_send(&dlhandler);
         dlmap_exit(&dlhandler);        
@@ -4375,14 +4372,14 @@ void dostor(char *name, const int append, const int autorename)
     }
 #endif
     opendata();
-    if (xferfd == -1) {
+    if (LOCAL_xferfd == -1) {
         (void) close(f);
         goto end;
     }
     doreply();
 # ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
-        tls_init_data_session(xferfd, passive);
+        tls_init_data_session(LOCAL_xferfd, passive);
     }
 # endif    
     state_needs_update = 1;
@@ -4415,7 +4412,7 @@ void dostor(char *name, const int append, const int autorename)
 
     started = get_usec_time();    
     
-    if (ul_init(&ulhandler, clientfd, tls_cnx, xferfd, name, f, tls_data_cnx,
+    if (ul_init(&ulhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f, LOCAL_tls_data_cnx,
                 restartat, type == 1, throttling_bandwidth_ul,
                 max_filesize) == 0) {
         ret = ul_send(&ulhandler);
@@ -4854,13 +4851,13 @@ static int check_standalone(void)
 {
     socklen_t socksize = (socklen_t) sizeof ctrlconn;
     if (getsockname(0, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
-        clientfd = -1;
+        LOCAL_clientfd = -1;
         return 1;
     }
     if (dup2(0, 1) == -1) {
         _EXIT(EXIT_FAILURE);
     }
-    clientfd = 0;
+    LOCAL_clientfd = 0;
 
     return 0;
 }
@@ -4993,12 +4990,12 @@ static void doit(void)
     session_start_time = time(NULL);
     fixlimits();
 #ifdef F_SETOWN
-    fcntl(clientfd, F_SETOWN, getpid());
+    fcntl(LOCAL_clientfd, F_SETOWN, getpid());
 #endif
     set_signals_client();
     (void) umask((mode_t) 0);
     socksize = (socklen_t) sizeof ctrlconn;
-    if (getsockname(clientfd, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
+    if (getsockname(LOCAL_clientfd, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
         die(421, LOG_ERR, MSG_NO_SUPERSERVER);
     }
     fourinsix(&ctrlconn);
@@ -5014,7 +5011,7 @@ static void doit(void)
        anon_only = 1;
     }
     socksize = (socklen_t) sizeof peer;
-    if (getpeername(clientfd, (struct sockaddr *) &peer, &socksize)) {
+    if (getpeername(LOCAL_clientfd, (struct sockaddr *) &peer, &socksize)) {
         die(421, LOG_ERR, MSG_GETPEERNAME ": %s" , strerror(errno));
     }
     fourinsix(&peer);
@@ -5142,19 +5139,19 @@ static void doit(void)
         int fodder;
 #ifdef IPTOS_LOWDELAY
         fodder = IPTOS_LOWDELAY;
-        setsockopt(clientfd, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);
+        setsockopt(LOCAL_clientfd, SOL_IP, IP_TOS, (char *) &fodder, sizeof fodder);
 #endif
 #ifdef SO_OOBINLINE
         fodder = 1;
-        setsockopt(clientfd, SOL_SOCKET, SO_OOBINLINE,
+        setsockopt(LOCAL_clientfd, SOL_SOCKET, SO_OOBINLINE,
                    (char *) &fodder, sizeof fodder);
 #endif
 #ifdef TCP_NODELAY
         fodder = 1;
-        setsockopt(clientfd, IPPROTO_TCP, TCP_NODELAY,
+        setsockopt(LOCAL_clientfd, IPPROTO_TCP, TCP_NODELAY,
                    (char *) &fodder, sizeof fodder);
 #endif
-        keepalive(clientfd, 0);
+        keepalive(LOCAL_clientfd, 0);
     }
 #ifdef HAVE_SRANDOMDEV
     srandomdev();
@@ -5367,14 +5364,14 @@ static void accept_client(const int active_listen_fd) {
 
     memset(&sa, 0, sizeof sa);
     dummy = (socklen_t) sizeof sa;  
-    if ((clientfd = accept
+    if ((LOCAL_clientfd = accept
          (active_listen_fd, (struct sockaddr *) &sa, &dummy)) == -1) {
         return;
     }
 #ifdef __IPHONE__
     if (suspend_client_connections != 0) {
-        (void) close(clientfd);
-        clientfd = -1;
+        (void) close(LOCAL_clientfd);
+        LOCAL_clientfd = -1;
         return;
     }
     if (login_callback != NULL) {
@@ -5382,8 +5379,8 @@ static void accept_client(const int active_listen_fd) {
     }
 #endif
     if (STORAGE_FAMILY(sa) != AF_INET && STORAGE_FAMILY(sa) != AF_INET6) {
-        (void) close(clientfd);
-        clientfd = -1;
+        (void) close(LOCAL_clientfd);
+        LOCAL_clientfd = -1;
         return;
     }    
     if (maxusers > 0U && nb_children >= maxusers) {
@@ -5392,10 +5389,10 @@ static void accept_client(const int active_listen_fd) {
         snprintf(line, sizeof line, "421 " MSG_MAX_USERS "\r\n",
                  (unsigned long) maxusers);
         /* No need to check a return value to say 'f*ck' */
-        (void) fcntl(clientfd, F_SETFL, fcntl(clientfd, F_GETFL) | O_NONBLOCK);
-        (void) write(clientfd, line, strlen(line));
-        (void) close(clientfd);
-        clientfd = -1;
+        (void) fcntl(LOCAL_clientfd, F_SETFL, fcntl(LOCAL_clientfd, F_GETFL) | O_NONBLOCK);
+        (void) write(LOCAL_clientfd, line, strlen(line));
+        (void) close(LOCAL_clientfd);
+        LOCAL_clientfd = -1;
         return;
     }
     if (maxip > 0U) {
@@ -5405,11 +5402,11 @@ static void accept_client(const int active_listen_fd) {
             char hbuf[NI_MAXHOST];
             static struct sockaddr_storage old_sa;
             
-            (void) fcntl(clientfd, F_SETFL, fcntl(clientfd, F_GETFL) | O_NONBLOCK);
+            (void) fcntl(LOCAL_clientfd, F_SETFL, fcntl(LOCAL_clientfd, F_GETFL) | O_NONBLOCK);
             if (!SNCHECK(snprintf(line, sizeof line,
                                   "421 " MSG_MAX_USERS_IP "\r\n",
                                   (unsigned long) maxip), sizeof line)) {
-                (void) write(clientfd, line, strlen(line));
+                (void) write(LOCAL_clientfd, line, strlen(line));
             }
             if (addrcmp(&old_sa, &sa) != 0) {
                 old_sa = sa;
@@ -5421,8 +5418,8 @@ static void accept_client(const int active_listen_fd) {
                             (unsigned long) maxip, hbuf);
                 }
             }
-            (void) close(clientfd);
-            clientfd = -1;
+            (void) close(LOCAL_clientfd);
+            LOCAL_clientfd = -1;
             return;
         }
     }
@@ -5458,8 +5455,8 @@ static void accept_client(const int active_listen_fd) {
             iptrack_add(&sa, child);
         }
     }
-    (void) close(clientfd);
-    clientfd = -1;
+    (void) close(LOCAL_clientfd);
+    LOCAL_clientfd = -1;
     sigprocmask(SIG_UNBLOCK, &set, NULL);   
 }
 
@@ -5575,7 +5572,7 @@ static struct passwd *fakegetpwnam(const char * const name)
 #endif
 
 int pureftpd_start(int argc, char *argv[], const char *home_directory_)
-{
+{    
 #ifndef NO_GETOPT_LONG
     int option_index = 0;
 #endif
@@ -5584,6 +5581,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     struct passwd *pw;
 
     (void) home_directory_;
+    
+    init_thread_local_storage();
+    
 #ifdef NON_ROOT_FTP
     home_directory = home_directory_;
 #endif
@@ -6315,12 +6315,12 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     
 #ifdef __IPHONE__
     if (setjmp(jb) != 0) {
-        close(clientfd); close(datafd); close(xferfd);
-        clientfd = datafd = xferfd = -1;        
+        close(LOCAL_clientfd); close(LOCAL_datafd); close(LOCAL_xferfd);
+        LOCAL_clientfd = LOCAL_datafd = LOCAL_xferfd = -1;        
         delete_atomic_file();
         chroot("/");
         downloaded = uploaded = 0ULL;
-        datafd = xferfd = -1;
+        LOCAL_datafd = LOCAL_xferfd = -1;
         root_directory = NULL;
         loggedin = 0;
         userchroot = chrooted = 0;
@@ -6331,7 +6331,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         atomic_prefix = NULL;
         nb_children = 0;
 # ifdef WITH_TLS
-        tls_cnx_handshaked = tls_data_cnx_handshaked = 0;
+        LOCAL_tls_cnx_handshaked = LOCAL_tls_data_cnx_handshaked = 0;
 # endif
         if (logout_callback != NULL && suspend_client_connections == 0) {
             (*logout_callback)(logout_callback_user_data);
@@ -6480,8 +6480,7 @@ void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
 static AuthResult embedded_simple_pw_check(const char *account, const char *password)
 {
     AuthResult authresult;
-    
-    memset(&authresult, 0, sizeof authresult);
+
     if (simple_auth_callback == NULL ||
         account == NULL || *account == 0 || password == NULL) {
         authresult.auth_ok = 0;
