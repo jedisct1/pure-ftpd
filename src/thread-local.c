@@ -9,6 +9,8 @@
 #endif
 #include "thread-local.h"
 
+#ifdef __IPHONE__
+
 int init_thread_local_storage(void)
 {
     thread_children = NULL;    
@@ -100,3 +102,9 @@ int spawn_client_thread(void)
     }
     return 0;
 }
+
+#else
+
+extern signed char v6ready;
+
+#endif
