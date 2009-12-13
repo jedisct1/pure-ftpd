@@ -34,7 +34,7 @@ TAGLOBAL0(char wd, MAXPATHLEN + 1U);            /* current working directory */
 TGLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
 TGLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
 TAGLOBAL0(char account, MAX_USER_LENGTH + 1U);      /* user login */
-GLOBAL0(char *renamefrom);
+TGLOBAL0(char *renamefrom);
 GLOBAL0(in_port_t serverport);    /* local server port */
 GLOBAL0(signed char userchroot);                /* 0=don't chroot() by default for regular users 1=chroot except members of the trusted group 2=chroot everyone */
 TGLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
@@ -44,7 +44,7 @@ GLOBAL0(uid_t warez);                    /* don't guard against warez */
 GLOBAL0(signed char debug);                        /* don't give debug output */
 TGLOBAL0(signed char guest);                        /* if non-zero, it's a guest user */
 GLOBAL0(uid_t useruid);                    /* smallest uid which can ftp */
-GLOBAL0(signed char candownload);                /* if non-zero, don't let the user download */
+TGLOBAL0(signed char candownload);                /* if non-zero, don't let the user download */
 GLOBAL0(double load);                    /* for reporting what the load was */
 GLOBAL(time_t noopidle, (time_t) - 1);    /* when we started to receive NOOP */
 GLOBAL(unsigned int firstport, 1024U);        /* first and last ports to use, if we're */
@@ -53,16 +53,16 @@ GLOBAL(signed char dot_write_ok, 1);           /* -x option */
 GLOBAL(signed char dot_read_ok, 1);            /* -X option */
 GLOBAL0(signed char dot_read_anon_ok);            /* -z option */
 #ifndef DEFAULT_TO_BINARY_TYPE
-GLOBAL(signed char type, 1);                    /* type - 0 = error, 1 = ascii, 2 = binary */
+TGLOBAL(signed char type, 1);                    /* type - 0 = error, 1 = ascii, 2 = binary */
 #else
-GLOBAL(signed char type, 2);
+TGLOBAL(signed char type, 2);
 #endif
 #ifdef RATIOS
 GLOBAL0(unsigned int ratio_upload);
 GLOBAL0(unsigned int ratio_download);
 GLOBAL0(signed char ratio_for_non_anon);
 #endif
-GLOBAL0(off_t restartat);
+TGLOBAL0(off_t restartat);
 GLOBAL(unsigned long int idletime, DEFAULT_IDLE);
 GLOBAL0(double idletime_noop);
 GLOBAL(signed char resolve_hostnames, 1);

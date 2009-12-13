@@ -512,7 +512,7 @@ void parser(void)
                     dorest(arg);
                 } else {
                     addreply_noformat(501, MSG_NO_RESTART_POINT);
-                    restartat = (off_t) 0;
+                    LOCAL_restartat = (off_t) 0;
                 }
                 goto wayout;
             } else if (!strcmp(LOCAL_cmd, "dele")) {

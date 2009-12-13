@@ -1887,7 +1887,7 @@ void dopass(char *password)
     }
 #endif
     if (LOCAL_loggedin == 0) {
-        candownload = 1;        /* real users can always download */
+        LOCAL_candownload = 1;        /* real users can always download */
     }
 #ifdef THROTTLING
     if ((throttling == 2) || (LOCAL_guest != 0 && throttling == 1)) {
@@ -3402,12 +3402,12 @@ void doretr(char *name)
     double started = 0.0;
     int ret;
 
-    if (!candownload) {
+    if (!LOCAL_candownload) {
         addreply(550, MSG_LOAD_TOO_HIGH, load);
         goto end;
     }
 # if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32__) && !defined(__CYGWIN__)
-    if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
+    if (LOCAL_type < 1 || (LOCAL_type == 1 && LOCAL_restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
         goto end;
     }
@@ -3431,10 +3431,10 @@ void doretr(char *name)
             goto stat_failure;
         }
     }
-    if (restartat > st.st_size) {
+    if (LOCAL_restartat > st.st_size) {
         (void) close(f);
         addreply(554, MSG_REST_TOO_LARGE_FOR_FILE "\n" MSG_REST_RESET,
-                 (long long) restartat, (long long) st.st_size);
+                 (long long) LOCAL_restartat, (long long) st.st_size);
         goto end;
     }
     if (!S_ISREG(st.st_mode) || ((off_t) st.st_size != st.st_size)) {
@@ -3449,7 +3449,7 @@ void doretr(char *name)
     }
 #ifdef RATIOS
     if (ratio_upload > 0U && ratio_download > 0U) {
-        if ((downloaded + st.st_size - restartat) / ratio_download >
+        if ((downloaded + st.st_size - LOCAL_restartat) / ratio_download >
             (uploaded / ratio_upload)) {
             (void) close(f);
             addreply(550, MSG_RATIO_DENIAL, ratio_upload, ratio_download,
@@ -3469,8 +3469,8 @@ void doretr(char *name)
         addreply_noformat(0, MSG_WINNER);
     }
 #endif
-    if (st.st_size - restartat > 4096) {
-        addreply(0, MSG_KBYTES_LEFT, (double) ((st.st_size - restartat) / 1024.0));
+    if (st.st_size - LOCAL_restartat > 4096) {
+        addreply(0, MSG_KBYTES_LEFT, (double) ((st.st_size - LOCAL_restartat) / 1024.0));
     }
     doreply();
 # ifdef WITH_TLS
@@ -3488,8 +3488,8 @@ void doretr(char *name)
         ftpwho_lock();
         shm_data_cur->state = FTPWHO_STATE_DOWNLOAD;
         shm_data_cur->download_total_size = st.st_size;
-        shm_data_cur->download_current_size = restartat;
-        shm_data_cur->restartat = restartat;
+        shm_data_cur->download_current_size = LOCAL_restartat;
+        shm_data_cur->restartat = LOCAL_restartat;
         (void) time(&shm_data_cur->xfer_date);
         if (sl < sizeof shm_data_cur->filename - 1U) {
             /* no overflow, see the previous line */
@@ -3509,7 +3509,7 @@ void doretr(char *name)
     started = get_usec_time();
 
     if (dlmap_init(&dlhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f,
-                   LOCAL_tls_data_cnx, restartat, type == 1,
+                   LOCAL_tls_data_cnx, LOCAL_restartat, LOCAL_type == 1,
                    throttling_bandwidth_dl) == 0) {
         ret = dlmap_send(&dlhandler);
         dlmap_exit(&dlhandler);        
@@ -3526,30 +3526,30 @@ void doretr(char *name)
     displayrate(MSG_DOWNLOADED, dlhandler.total_downloaded, started, name, 0);
     
     end:
-    restartat = (off_t) 0;
+    LOCAL_restartat = (off_t) 0;
 }
 
 void dorest(const char *name)
 {
     char *endptr;
     
-    restartat = (off_t) strtoull(name, &endptr, 10);
-    if (*endptr != 0 || restartat < (off_t) 0) {
-        restartat = 0;
+    LOCAL_restartat = (off_t) strtoull(name, &endptr, 10);
+    if (*endptr != 0 || LOCAL_restartat < (off_t) 0) {
+        LOCAL_restartat = 0;
         addreply(554, MSG_REST_NOT_NUMERIC "\n" MSG_REST_RESET);
     } else {
-        if (type == 1 && restartat != 0) {
+        if (LOCAL_type == 1 && LOCAL_restartat != 0) {
 #ifdef STRICT_REST
             addreply_noformat(504, MSG_REST_ASCII_STRICT);
 #else
             addreply(350, MSG_REST_ASCII_WORKAROUND,
-                     (long long) restartat);
+                     (long long) LOCAL_restartat);
 #endif
         } else {
-            if (restartat != 0) {
-                logfile(LOG_NOTICE, MSG_REST_SUCCESS, (long long) restartat);
+            if (LOCAL_restartat != 0) {
+                logfile(LOG_NOTICE, MSG_REST_SUCCESS, (long long) LOCAL_restartat);
             }
-            addreply(350, MSG_REST_SUCCESS, (long long) restartat);
+            addreply(350, MSG_REST_SUCCESS, (long long) LOCAL_restartat);
         }
     }
 }
@@ -4265,7 +4265,7 @@ void dostor(char *name, const int append, const int autorename)
     Quota quota;
 #endif
     
-    if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
+    if (LOCAL_type < 1 || (LOCAL_type == 1 && LOCAL_restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
         goto end;
     }
@@ -4286,12 +4286,12 @@ void dostor(char *name, const int append, const int autorename)
     if (autorename != 0) {
         no_truncate = 1;
     }
-    if (restartat > (off_t) 0 || no_truncate != 0) {
+    if (LOCAL_restartat > (off_t) 0 || no_truncate != 0) {
         if ((atomic_file = get_atomic_file(name)) == NULL) {
             addreply(553, MSG_SANITY_FILE_FAILURE, name);
             goto end;
         }
-        if (restartat > (off_t) 0 &&
+        if (LOCAL_restartat > (off_t) 0 &&
             rename(name, atomic_file) != 0 && errno != ENOENT) {
             error(553, MSG_RENAME_FAILURE);
             atomic_file = NULL;
@@ -4333,29 +4333,29 @@ void dostor(char *name, const int append, const int autorename)
         }
 #endif
         if (append != 0) {
-            restartat = st.st_size;
+            LOCAL_restartat = st.st_size;
         }
     } else {
-        restartat = (off_t) 0;
+        LOCAL_restartat = (off_t) 0;
     }
-    if (restartat > st.st_size) {
-        restartat = st.st_size;
+    if (LOCAL_restartat > st.st_size) {
+        LOCAL_restartat = st.st_size;
     }
-    if (restartat > (off_t) 0 && lseek(f, restartat, SEEK_SET) < (off_t) 0) {
+    if (LOCAL_restartat > (off_t) 0 && lseek(f, LOCAL_restartat, SEEK_SET) < (off_t) 0) {
         (void) close(f);
         error(451, "seek");
         goto end;
     }
-    if (restartat < st.st_size) {
-        if (ftruncate(f, restartat) < 0) {
+    if (LOCAL_restartat < st.st_size) {
+        if (ftruncate(f, LOCAL_restartat) < 0) {
             (void) close(f);
             error(451, "ftruncate");
             goto end;
         }
 #ifdef QUOTAS
-        if (restartat != st.st_size) {
+        if (LOCAL_restartat != st.st_size) {
             (void) quota_update(NULL, 0LL,
-                                (long long) (restartat - st.st_size),
+                                (long long) (LOCAL_restartat - st.st_size),
                                 &overflow);
         }
 #endif
@@ -4384,7 +4384,7 @@ void dostor(char *name, const int append, const int autorename)
 # endif    
     state_needs_update = 1;
     setprocessname("pure-ftpd (UPLOAD)");
-    filesize = restartat;
+    filesize = LOCAL_restartat;
     
 #ifdef FTPWHO
     if (shm_data_cur != NULL) {
@@ -4394,7 +4394,7 @@ void dostor(char *name, const int append, const int autorename)
         shm_data_cur->state = FTPWHO_STATE_UPLOAD;
         shm_data_cur->download_total_size = (off_t) 0U;
         shm_data_cur->download_current_size = (off_t) filesize;
-        shm_data_cur->restartat = restartat;
+        shm_data_cur->restartat = LOCAL_restartat;
         (void) time(&shm_data_cur->xfer_date);
         if (sl < sizeof shm_data_cur->filename - 1U) {
             /* no overflow, see the previous line */
@@ -4413,7 +4413,7 @@ void dostor(char *name, const int append, const int autorename)
     started = get_usec_time();    
     
     if (ul_init(&ulhandler, LOCAL_clientfd, LOCAL_tls_cnx, LOCAL_xferfd, name, f, LOCAL_tls_data_cnx,
-                restartat, type == 1, throttling_bandwidth_ul,
+                LOCAL_restartat, LOCAL_type == 1, throttling_bandwidth_ul,
                 max_filesize) == 0) {
         ret = ul_send(&ulhandler);
         ul_exit(&ulhandler);
@@ -4422,7 +4422,7 @@ void dostor(char *name, const int append, const int autorename)
     }
     (void) close(f);
     closedata();
-    restartat = (off_t) 0U;    
+    LOCAL_restartat = (off_t) 0U;    
     
     /* Here ends the real upload code */
 
@@ -4451,7 +4451,7 @@ void dostor(char *name, const int append, const int autorename)
         } else {
             files_count = 0;
         }
-        if (autorename != 0 && restartat == (off_t) 0) {
+        if (autorename != 0 && LOCAL_restartat == (off_t) 0) {
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;
             }
@@ -4500,7 +4500,7 @@ void dostor(char *name, const int append, const int autorename)
         displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
     }    
     end:
-    restartat = (off_t) 0;
+    LOCAL_restartat = (off_t) 0;
     if (atomic_file != NULL) {
         unlink(atomic_file);
         atomic_file = NULL;
@@ -4562,23 +4562,23 @@ void dotype(const char *arg)
     if (!arg || !*arg) {
         addreply(501, MSG_MISSING_ARG "\n" "A(scii) I(mage) L(ocal)");
     } else if (tolower((unsigned char) *arg) == 'a')
-        type = 1;
+        LOCAL_type = 1;
     else if (tolower((unsigned char) *arg) == 'i')
-        type = 2;
+        LOCAL_type = 2;
     else if (tolower((unsigned char) *arg) == 'l') {
         if (arg[1] == '8') {
-            type = 2;
+            LOCAL_type = 2;
         } else if (isdigit((unsigned char) arg[1])) {
             addreply_noformat(504, MSG_TYPE_8BIT_FAILURE);
         } else {
             addreply_noformat(0, MSG_MISSING_ARG);
-            type = 2;
+            LOCAL_type = 2;
         }
     } else {
         addreply(504, MSG_TYPE_UNKNOWN ": %s", arg);
     }
 
-    addreply(0, MSG_TYPE_SUCCESS " %s", (type > 1) ? "8-bit binary" : "ASCII");
+    addreply(0, MSG_TYPE_SUCCESS " %s", (LOCAL_type > 1) ? "8-bit binary" : "ASCII");
 }
 
 void dostru(const char *arg)
@@ -4622,11 +4622,11 @@ void dornfr(char *name)
         return;
     }
     if ((lstat(name, &st)) == 0) {
-        if (renamefrom != NULL) {
+        if (LOCAL_renamefrom != NULL) {
             addreply_noformat(0, MSG_RENAME_ABORT);
-            (void) free(renamefrom);
+            (void) free(LOCAL_renamefrom);
         }
-        if ((renamefrom = strdup(name)) == NULL) {
+        if ((LOCAL_renamefrom = strdup(name)) == NULL) {
             die_mem();
         }
         addreply_noformat(350, MSG_RENAME_RNFR_SUCCESS);
@@ -4650,7 +4650,7 @@ void dornto(char *name)
         goto bye;
     }
 #endif
-    if (renamefrom == NULL) {
+    if (LOCAL_renamefrom == NULL) {
         addreply_noformat(503, MSG_RENAME_NORNFR);
         goto bye;
     }    
@@ -4660,7 +4660,7 @@ void dornto(char *name)
     }
 #ifdef QUOTAS
     if (hasquota() == 0) {        
-        source_file_size = get_file_size(renamefrom);
+        source_file_size = get_file_size(LOCAL_renamefrom);
         if (source_file_size < (off_t) 0) {
             addreply_noformat(550, MSG_RENAME_FAILURE);
             goto bye;
@@ -4678,7 +4678,7 @@ void dornto(char *name)
         }
     }
 #endif
-    if ((rename(renamefrom, name)) < 0) {
+    if ((rename(LOCAL_renamefrom, name)) < 0) {
         error(451, MSG_RENAME_FAILURE);        
 #ifdef QUOTAS
         (void) quota_update(NULL, -files_count, -bytes, NULL);
@@ -4686,11 +4686,11 @@ void dornto(char *name)
     } else {
         addreply_noformat(250, MSG_RENAME_SUCCESS);
         logfile(LOG_NOTICE, MSG_RENAME_SUCCESS ": [%s]->[%s]", 
-                renamefrom, name);
+                LOCAL_renamefrom, name);
     }
     bye:
-    (void) free(renamefrom);
-    renamefrom = NULL;
+    (void) free(LOCAL_renamefrom);
+    LOCAL_renamefrom = NULL;
 }
 
 #ifndef MINIMAL
@@ -5223,7 +5223,7 @@ static void doit(void)
             addreply(220, MSG_INFO_IDLE_S, (unsigned long) idletime);
         }
     }
-    candownload = (signed char) ((maxload <= 0.0) || (load < maxload));
+    LOCAL_candownload = (signed char) ((maxload <= 0.0) || (load < maxload));
 
     if (force_passive_ip_s != NULL) {
         struct addrinfo hints, *res;
@@ -6325,8 +6325,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         LOCAL_loggedin = 0;
         userchroot = LOCAL_chrooted = 0;
         LOCAL_guest = 0;
-        type = 2;
-        restartat = (off_t) 0;
+        LOCAL_type = 2;
+        LOCAL_restartat = (off_t) 0;
         state_needs_update = 1;
         atomic_prefix = NULL;
         nb_children = 0;

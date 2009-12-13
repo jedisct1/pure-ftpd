@@ -36,11 +36,23 @@ typedef struct ThreadLocal_ {
 #define LOCAL_loggedin THREAD_LOCAL(loggedin)
     signed char _loggedin;
     
+#define LOCAL_renamefrom THREAD_LOCAL(renamefrom)
+    char *_renamefrom;
+    
 #define LOCAL_guest THREAD_LOCAL(guest)
     signed char _guest;
 
+#define LOCAL_candownload THREAD_LOCAL(candownload)
+    signed char _candownload;
+
 #define LOCAL_chrooted THREAD_LOCAL(chrooted)
     signed char _chrooted;
+
+#define LOCAL_type THREAD_LOCAL(type)
+    signed char _type;
+
+#define LOCAL_restartat THREAD_LOCAL(restartat)
+    off_t _restartat;
 
 #define LOCAL_ctrlconn THREAD_LOCAL(ctrlconn)
     struct sockaddr_storage _ctrlconn;

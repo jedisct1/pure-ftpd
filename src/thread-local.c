@@ -21,8 +21,12 @@ int init_thread_local_storage(void)
     LOCAL_AINIT(account);    
     LOCAL_INIT(root_directory);
     LOCAL_INIT(loggedin);
+    LOCAL_INIT(renamefrom);
+    LOCAL_INIT(candownload);
     LOCAL_INIT(guest);
     LOCAL_INIT(chrooted);
+    LOCAL_INIT(type);
+    LOCAL_INIT(restartat);
     LOCAL_INIT(ctrlconn);
     LOCAL_INIT(xferfd);
 #ifdef WITH_TLS
