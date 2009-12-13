@@ -30,6 +30,9 @@ typedef struct ThreadLocal_ {
 #define LOCAL_account THREAD_LOCAL(account)
     char _account[MAX_USER_LENGTH + 1U];
     
+#define LOCAL_host THREAD_LOCAL(host)
+    char _host[NI_MAXHOST];
+    
 #define LOCAL_root_directory THREAD_LOCAL(root_directory)
     char *_root_directory;
     
@@ -54,6 +57,12 @@ typedef struct ThreadLocal_ {
 #define LOCAL_restartat THREAD_LOCAL(restartat)
     off_t _restartat;
 
+#define LOCAL_replycode THREAD_LOCAL(replycode)
+    int _replycode;
+
+#define LOCAL_peer THREAD_LOCAL(peer)
+    struct sockaddr_storage _peer;
+    
 #define LOCAL_ctrlconn THREAD_LOCAL(ctrlconn)
     struct sockaddr_storage _ctrlconn;
     

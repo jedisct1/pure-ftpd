@@ -680,7 +680,7 @@ void logfile(const int crit, const char *format, ...)
 # endif
     syslog(crit, "(%s@%s) %s%s",
            ((LOCAL_loggedin != 0 && *LOCAL_account != 0) ? LOCAL_account : "?"),
-           (*host != 0 ? host : "?"),
+           (*LOCAL_host != 0 ? LOCAL_host : "?"),
            urgency, line);
 # ifdef SAVE_DESCRIPTORS
     closelog();
@@ -760,7 +760,7 @@ static void addreply_newline(const char * const str, const size_t size)
 void addreply_noformat(const int code, const char * const line)
 {
     if (code != 0) {
-        replycode = code;
+        LOCAL_replycode = code;
     }
     addreply_newline(line, strlen(line) + (size_t) 1U);
 }
@@ -774,7 +774,7 @@ void addreply(const int code, const char * const line, ...)
     char buf[MAX_SERVER_REPLY_LEN];
     
     if (code != 0) {
-        replycode = code;
+        LOCAL_replycode = code;
     }
     va_start(ap, line);
     vsnprintf(buf, sizeof buf, line, ap);
@@ -814,18 +814,18 @@ void doreply(void)
         if (LOCAL_tls_cnx != NULL) {
             char buf[MAX_SERVER_REPLY_LEN];
             
-            snprintf(buf, sizeof buf, "%3d%c%s\r\n", replycode, 
+            snprintf(buf, sizeof buf, "%3d%c%s\r\n", LOCAL_replycode, 
                      nextentry == NULL ? ' ' : '-', scannedentry->line);
             SSL_write(LOCAL_tls_cnx, buf, strlen(buf));            
         } else
 #endif
         {
-            client_printf("%3d%c%s\r\n", replycode,
+            client_printf("%3d%c%s\r\n", LOCAL_replycode,
                           nextentry == NULL ? ' ' : '-',
                           scannedentry->line);
         }
         if (logging > 1) {
-            logfile(LOG_DEBUG, "%3d%c%s", replycode, 
+            logfile(LOG_DEBUG, "%3d%c%s", LOCAL_replycode, 
                     nextentry == NULL ? ' ' : '-', scannedentry->line);
         }       
     } while ((scannedentry = nextentry) != NULL);
@@ -1765,7 +1765,7 @@ void dopass(char *password)
 #ifdef __IPHONE__
     authresult = embedded_simple_pw_check(LOCAL_account, password);
 #else
-    authresult = pw_check(LOCAL_account, password, &LOCAL_ctrlconn, &peer);
+    authresult = pw_check(LOCAL_account, password, &LOCAL_ctrlconn, &LOCAL_peer);
 #endif
     {
         /* Clear password from memory, paranoia */        
@@ -2470,14 +2470,14 @@ void doport2(struct sockaddr_storage a, unsigned int p)
         return;
     }
     peerdataport = (in_port_t) p;
-    if (addrcmp(&a, &peer) != 0) {
+    if (addrcmp(&a, &LOCAL_peer) != 0) {
         char hbuf[NI_MAXHOST];
         char peerbuf[NI_MAXHOST];
         
         if (getnameinfo((struct sockaddr *) &a, STORAGE_LEN(a),
                         hbuf, sizeof hbuf, NULL,
                         (size_t) 0U, NI_NUMERICHOST) != 0 ||
-            getnameinfo((struct sockaddr *) &peer, STORAGE_LEN(peer),
+            getnameinfo((struct sockaddr *) &LOCAL_peer, STORAGE_LEN(LOCAL_peer),
                         peerbuf, sizeof peerbuf, NULL,
                         (size_t) 0U, NI_NUMERICHOST) != 0) {
             goto hu;
@@ -2490,7 +2490,7 @@ void doport2(struct sockaddr_storage a, unsigned int p)
             return;
         } else {
             addreply(0, MSG_FXP, peerbuf, hbuf);
-            memcpy(&peer, &a, sizeof a);
+            memcpy(&LOCAL_peer, &a, sizeof a);
         }
     }
     LOCAL_passive = 0;
@@ -2569,7 +2569,7 @@ void opendata(void)
                 goto nope;
             }
             fourinsix(&dataconn);
-            if (addrcmp(&peer, &dataconn) == 0) {
+            if (addrcmp(&LOCAL_peer, &dataconn) == 0) {
                 break;
             }
             if (allowfxp == 0 || (allowfxp == 1 && LOCAL_guest != 0)) {
@@ -2584,8 +2584,8 @@ void opendata(void)
         struct sockaddr_storage peer2;
         unsigned long tries = 1UL + idletime / 2UL;
         
-        peer2 = peer;
-        if (STORAGE_FAMILY(peer) == AF_INET6) {
+        peer2 = LOCAL_peer;
+        if (STORAGE_FAMILY(LOCAL_peer) == AF_INET6) {
             STORAGE_PORT6(peer2) = htons(peerdataport);
         } else {
             STORAGE_PORT(peer2) = htons(peerdataport);
@@ -4557,7 +4557,7 @@ void dosize(const char *name)
 
 void dotype(const char *arg)
 {
-    replycode = 200;            /* bloody awful hack */
+    LOCAL_replycode = 200;            /* bloody awful hack */
 
     if (!arg || !*arg) {
         addreply(501, MSG_MISSING_ARG "\n" "A(scii) I(mage) L(ocal)");
@@ -5010,12 +5010,12 @@ static void doit(void)
     if (trustedip != NULL && addrcmp(&LOCAL_ctrlconn, trustedip) != 0) {
        anon_only = 1;
     }
-    socksize = (socklen_t) sizeof peer;
-    if (getpeername(LOCAL_clientfd, (struct sockaddr *) &peer, &socksize)) {
+    socksize = (socklen_t) sizeof LOCAL_peer;
+    if (getpeername(LOCAL_clientfd, (struct sockaddr *) &LOCAL_peer, &socksize)) {
         die(421, LOG_ERR, MSG_GETPEERNAME ": %s" , strerror(errno));
     }
-    fourinsix(&peer);
-    if (checkvalidaddr(&peer) == 0) {
+    fourinsix(&LOCAL_peer);
+    if (checkvalidaddr(&LOCAL_peer) == 0) {
         die(425, LOG_ERR, MSG_INVALID_IP);
     }
 #ifndef DONT_LOG_IP
@@ -5023,8 +5023,8 @@ static void doit(void)
         int eai;
         
         if ((eai = getnameinfo
-             ((struct sockaddr *) &peer, STORAGE_LEN(peer), host,
-              sizeof host, NULL, (size_t) 0U, 
+             ((struct sockaddr *) &LOCAL_peer, STORAGE_LEN(LOCAL_peer), LOCAL_host,
+              sizeof LOCAL_host, NULL, (size_t) 0U, 
               resolve_hostnames != 0 ? 0 : NI_NUMERICHOST)) == 0) {
             break;
         }
@@ -5037,8 +5037,8 @@ static void doit(void)
         if ((eai == EAI_NONAME || eai == EAI_SYSTEM) &&
             resolve_hostnames != 0 &&
            getnameinfo
-            ((struct sockaddr *) &peer, STORAGE_LEN(peer), host,
-             sizeof host, NULL, (size_t) 0U, NI_NUMERICHOST) == 0) {
+            ((struct sockaddr *) &LOCAL_peer, STORAGE_LEN(LOCAL_peer), LOCAL_host,
+             sizeof LOCAL_host, NULL, (size_t) 0U, NI_NUMERICHOST) == 0) {
             break;
         }
 # endif
@@ -5046,15 +5046,15 @@ static void doit(void)
     }
 #endif
 #ifndef DONT_LOG_IP
-    dns_sanitize(host);
+    dns_sanitize(LOCAL_host);
 #else
-    *host = '?';
-    host[1] = 0;
+    *LOCAL_host = '?';
+    LOCAL_host[1] = 0;
 #endif
-    iptropize(&peer);
-    logfile(LOG_INFO, MSG_NEW_CONNECTION, host);
+    iptropize(&LOCAL_peer);
+    logfile(LOG_INFO, MSG_NEW_CONNECTION, LOCAL_host);
 
-    replycode = 220;
+    LOCAL_replycode = 220;
     
     fill_atomic_prefix();
     
@@ -5086,7 +5086,7 @@ static void doit(void)
             ftpwho_lock();
             shm_data_cur->pid = getpid();
             shm_data_cur->state = FTPWHO_STATE_IDLE;
-            shm_data_cur->addr = peer;
+            shm_data_cur->addr = LOCAL_peer;
             shm_data_cur->local_addr = LOCAL_ctrlconn;
             shm_data_cur->date = session_start_time;
             shm_data_cur->xfer_date = shm_data_cur->date;
@@ -5214,7 +5214,7 @@ static void doit(void)
     }
 #endif
     if (display_banner) {
-        if (v6ready != 0 && STORAGE_FAMILY(peer) != AF_INET6) {
+        if (v6ready != 0 && STORAGE_FAMILY(LOCAL_peer) != AF_INET6) {
             addreply(0, MSG_IPV6_OK);
         }    
         if (idletime >= 120UL) {
