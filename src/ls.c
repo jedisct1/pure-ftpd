@@ -123,7 +123,7 @@ const char *getname(const uid_t uid)
     }
     if (
 # ifndef ALWAYS_RESOLVE_IDS
-        chrooted == 0 && 
+        LOCAL_chrooted == 0 && 
 # endif
         authresult.slow_tilde_expansion == 0) {
         pwd = getpwuid(uid);
@@ -164,7 +164,7 @@ const char *getgroup(const gid_t gid)
         }
     } 
 # ifndef ALWAYS_RESOLVE_IDS   
-    if (chrooted == 0) 
+    if (LOCAL_chrooted == 0) 
 # endif
     {
         pwd = getgrgid(gid);
@@ -753,7 +753,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                 goto toomany;
             }                
             if (chdir("..")) {    /* defensive in the extreme... */
-                chdir(wd);
+                chdir(LOCAL_wd);
                 if (chdir(name)) {    /* someone rmdir()'d it? */
                     die(421, LOG_ERR, "chdir: %s" ,
                         strerror(errno));
@@ -935,7 +935,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                         }
                         if (!chdir(*path)) {
                             listdir(0U, c, tls_fd, *path);
-                            chdir(wd);
+                            chdir(LOCAL_wd);
                         }
                     }
                     path++;
@@ -989,5 +989,5 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
         addreply(226, MSG_LS_SUCCESS, matches);
     }
     end:
-    chdir(wd);
+    chdir(LOCAL_wd);
 }

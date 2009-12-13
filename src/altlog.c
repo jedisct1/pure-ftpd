@@ -295,7 +295,7 @@ static int altlog_writexfer_xferlog(const int upload,
                           quoted_filename,
                           type == 1 ? 'a' : 'b',
                           upload != 0 ? 'i' : 'o',
-                          loggedin != 0 ? 'r' : 'a',
+                          LOCAL_loggedin != 0 ? 'r' : 'a',
                           account_), line_size)) {
         altlog_write(alloca_line);
     }

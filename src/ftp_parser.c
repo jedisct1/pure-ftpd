@@ -339,7 +339,7 @@ void parser(void)
         } else if (!strcmp(LOCAL_cmd, "acct")) {
             addreply(202, MSG_WHOAREYOU);
         } else if (!strcmp(LOCAL_cmd, "pass")) {
-            if (guest == 0) {
+            if (LOCAL_guest == 0) {
                 randomdelay();
             }
             dopass(arg);
@@ -429,7 +429,7 @@ void parser(void)
             addreply(200, MSG_XDBG_OK, debug);
             goto wayout;
 #endif            
-        } else if (loggedin == 0) {            
+        } else if (LOCAL_loggedin == 0) {            
             /* from this point, all commands need authentication */
             addreply_noformat(530, MSG_NOT_LOGGED_IN);
             goto wayout;
@@ -482,11 +482,11 @@ void parser(void)
 #endif
                 antiidle();
 #ifdef WITH_RFC2640
-		nwd = charset_fs2client(wd);
+		nwd = charset_fs2client(LOCAL_wd);
 		addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, nwd);
 		free(nwd);
 #else
-                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, wd);
+                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, LOCAL_wd);
 #endif
                 goto wayout;                
             } else if (!strcmp(LOCAL_cmd, "cdup") || !strcmp(LOCAL_cmd, "xcup")) {

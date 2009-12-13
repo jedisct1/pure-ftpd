@@ -22,7 +22,7 @@ void ftpwho_exit(void)
 # ifndef NO_INETD
             standalone == 0 && 
 # endif
-            chrooted != 0) {
+            LOCAL_chrooted != 0) {
             (void) msync((void *) shm_data_cur, sizeof (FTPWhoEntry), MS_ASYNC);
         }
         (void) munmap((void *) shm_data_cur, sizeof (FTPWhoEntry));
@@ -43,7 +43,7 @@ void ftpwho_exit(void)
 #  ifndef NO_INETD
         standalone == 0 &&
 #  endif
-        chrooted == 0 && scoreboardfile != NULL) {
+        LOCAL_chrooted == 0 && scoreboardfile != NULL) {
 #  ifndef NON_ROOT_FTP
         (void) seteuid((uid_t) 0);
 #  endif

@@ -30,19 +30,19 @@ GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */
 GLOBAL0(signed char no_ipv4);                    /* IPv4 disabled or not */
 GLOBAL(const size_t cmdsize, MAXPATHLEN + 16U);
 TAGLOBAL0(char cmd, MAXPATHLEN + 32U);        /* command line - about 30 chars for command */
-GLOBAL0(char wd[MAXPATHLEN + 1U]);            /* current working directory */
-GLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
-GLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
-GLOBAL0(char account[MAX_USER_LENGTH + 1U]);      /* user login */
+TAGLOBAL0(char wd, MAXPATHLEN + 1U);            /* current working directory */
+TGLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
+TGLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
+TAGLOBAL0(char account, MAX_USER_LENGTH + 1U);      /* user login */
 GLOBAL0(char *renamefrom);
 GLOBAL0(in_port_t serverport);    /* local server port */
 GLOBAL0(signed char userchroot);                /* 0=don't chroot() by default for regular users 1=chroot except members of the trusted group 2=chroot everyone */
-GLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
+TGLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
 GLOBAL0(uid_t chroot_trustedgid);
 GLOBAL0(signed char broken_client_compat);         /* don't enable workarounds by default */
 GLOBAL0(uid_t warez);                    /* don't guard against warez */
 GLOBAL0(signed char debug);                        /* don't give debug output */
-GLOBAL0(signed char guest);                        /* if non-zero, it's a guest user */
+TGLOBAL0(signed char guest);                        /* if non-zero, it's a guest user */
 GLOBAL0(uid_t useruid);                    /* smallest uid which can ftp */
 GLOBAL0(signed char candownload);                /* if non-zero, don't let the user download */
 GLOBAL0(double load);                    /* for reporting what the load was */

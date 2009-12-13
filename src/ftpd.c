@@ -679,7 +679,7 @@ void logfile(const int crit, const char *format, ...)
     openlog("pure-ftpd", log_pid, syslog_facility);
 # endif
     syslog(crit, "(%s@%s) %s%s",
-           ((loggedin != 0 && *account != 0) ? account : "?"),
+           ((LOCAL_loggedin != 0 && *LOCAL_account != 0) ? LOCAL_account : "?"),
            (*host != 0 ? host : "?"),
            urgency, line);
 # ifdef SAVE_DESCRIPTORS
@@ -1193,7 +1193,7 @@ int modernformat(const char *file, char *target, size_t target_size,
     } else {
         ft = "unknown";
     }
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         if (SNCHECK(snprintf(target, target_size,
                              "%stype=%s%s;siz%c=%llu;modify=%04d%02d%02d%02d%02d%02d;UNIX.mode=0%o;unique=%xg%llx; %s",
                              prefix,
@@ -1262,7 +1262,7 @@ void doallo(const off_t size)
     
     if (size <= 0) {
         ret = 0;
-    } else if (ul_check_free_space(wd) == 1) {
+    } else if (ul_check_free_space(LOCAL_wd) == 1) {
         ret = 0;
     }
 #ifdef QUOTAS
@@ -1338,9 +1338,9 @@ void douser(const char *username)
 {
     struct passwd *pw = NULL;
 
-    if (loggedin) {
+    if (LOCAL_loggedin) {
         if (username) {
-            if (!guest) {
+            if (!LOCAL_guest) {
                 addreply_noformat(530, MSG_ALREADY_LOGGED);
             } else if (broken_client_compat != 0) {
                 addreply_noformat(331, MSG_ANY_PASSWORD);
@@ -1355,10 +1355,10 @@ void douser(const char *username)
     if (anon_only <= 0 && username != NULL && *username != 0 &&
         (anon_only < 0 || (strcasecmp(username, "ftp") &&
                            strcasecmp(username, "anonymous")))) {
-        strncpy(account, username, sizeof(account) - 1);
-        account[sizeof(account) - (size_t) 1U] = 0;
-        addreply(331, MSG_USER_OK, account);
-        loggedin = 0;
+        strncpy(LOCAL_account, username, sizeof(LOCAL_account) - 1);
+        LOCAL_account[sizeof(LOCAL_account) - (size_t) 1U] = 0;
+        addreply(331, MSG_USER_OK, LOCAL_account);
+        LOCAL_loggedin = 0;
     } else if (anon_only < 0) {
         if (broken_client_compat != 0) {
             addreply(331, MSG_USER_OK, username);
@@ -1371,7 +1371,7 @@ void douser(const char *username)
         char name[MAXPATHLEN];
         char hbuf[NI_MAXHOST];
 #endif
-        if (chrooted != 0) {
+        if (LOCAL_chrooted != 0) {
             die(421, LOG_DEBUG, MSG_CANT_DO_TWICE);
         }
         
@@ -1434,22 +1434,22 @@ void douser(const char *username)
             }
             if ((hd = strstr(pw->pw_dir, "/./")) != NULL) {
                 rd_len = (size_t) (hd - pw->pw_dir) + sizeof "/";
-                if ((root_directory = malloc(rd_len)) == NULL) {
+                if ((LOCAL_root_directory = malloc(rd_len)) == NULL) {
                     goto cantsec;
                 }
-                memcpy(root_directory, pw->pw_dir, rd_len);
-                root_directory[rd_len - (size_t) 1U] = 0;
+                memcpy(LOCAL_root_directory, pw->pw_dir, rd_len);
+                LOCAL_root_directory[rd_len - (size_t) 1U] = 0;
                 hd += 2;
             } else {
                 rd_len = strlen(pw->pw_dir) + sizeof "/";
-                if ((root_directory = malloc(rd_len)) == NULL) {
+                if ((LOCAL_root_directory = malloc(rd_len)) == NULL) {
                     goto cantsec;
                 }
-                snprintf(root_directory, rd_len, "%s/", pw->pw_dir);
+                snprintf(LOCAL_root_directory, rd_len, "%s/", pw->pw_dir);
                 hd = (char *) "/";
             }
-            if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
-                die(421, LOG_ERR, "%d [%s] [%s]", __LINE__, root_directory, hd);
+            if (chdir(LOCAL_root_directory) || chroot(LOCAL_root_directory) || chdir(hd)) {
+                die(421, LOG_ERR, "%d [%s] [%s]", __LINE__, LOCAL_root_directory, hd);
                 goto cantsec;
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED);
@@ -1458,9 +1458,9 @@ void douser(const char *username)
         else {                       /* virtual host */
             const size_t rd_len = strlen(hbuf) + sizeof ":/";
             
-            if ((root_directory = malloc(rd_len)) == NULL ||
+            if ((LOCAL_root_directory = malloc(rd_len)) == NULL ||
                 chdir(name) || chroot(name) || chdir("/") ||
-                SNCHECK(snprintf(root_directory, rd_len, "%s:/", hbuf),
+                SNCHECK(snprintf(LOCAL_root_directory, rd_len, "%s:/", hbuf),
                         rd_len)) {
                 goto cantsec;
             }
@@ -1470,7 +1470,7 @@ void douser(const char *username)
         if (pw == NULL) {
             goto cantsec;
         }
-        chrooted = 1;
+        LOCAL_chrooted = 1;
         authresult.uid = pw->pw_uid;
         authresult.gid = pw->pw_gid;
         if ((authresult.dir = strdup(pw->pw_dir)) == NULL) {
@@ -1515,26 +1515,26 @@ void douser(const char *username)
         }
         dot_write_ok = 0;
         dot_read_ok = dot_read_anon_ok;
-        strncpy(account, "ftp", sizeof account - (size_t) 1U);
-        account[(sizeof account) - 1U] = 0;
+        strncpy(LOCAL_account, "ftp", sizeof LOCAL_account - (size_t) 1U);
+        LOCAL_account[(sizeof LOCAL_account) - 1U] = 0;
 #ifdef FTPWHO
         if (shm_data_cur != NULL) {
             ftpwho_lock();
-            strncpy(shm_data_cur->account, account,
+            strncpy(shm_data_cur->LOCAL_account, LOCAL_account,
                     sizeof shm_data_cur->account - (size_t) 1U);
             shm_data_cur->account[sizeof shm_data_cur->account - 1U] = 0;
             ftpwho_unlock();
             state_needs_update = 1;
         }
 #endif
-        loggedin = guest = 1;
+        LOCAL_loggedin = LOCAL_guest = 1;
 #ifdef QUOTAS
         user_quota_size = user_quota_files = ULONG_LONG_MAX;
 #endif
     }
-    if (getcwd(wd, sizeof wd - (size_t) 1U) == NULL) {
-        wd[0] = '/';
-        wd[1] = 0;
+    if (getcwd(LOCAL_wd, sizeof LOCAL_wd - (size_t) 1U) == NULL) {
+        LOCAL_wd[0] = '/';
+        LOCAL_wd[1] = 0;
     }
 #ifdef WITH_BONJOUR
     refreshManager();
@@ -1747,25 +1747,25 @@ void dopass(char *password)
     char *nwd = NULL;
 #endif
     
-    if (loggedin != 0) {
-        if (guest != 0) {
+    if (LOCAL_loggedin != 0) {
+        if (LOCAL_guest != 0) {
             addreply_noformat(230, MSG_NO_PASSWORD_NEEDED);
 #ifdef LOG_ANON_EMAIL
-            snprintf(account, sizeof account, "ftp: <%s> ", password);
+            snprintf(LOCAL_account, sizeof LOCAL_account, "ftp: <%s> ", password);
 #endif
         } else {
             addreply_noformat(530, MSG_CANT_DO_TWICE);
         }
         return;
     }
-    if (*account == 0) {
+    if (*LOCAL_account == 0) {
         addreply_noformat(530, MSG_WHOAREYOU);
         return;
     }
 #ifdef __IPHONE__
-    authresult = embedded_simple_pw_check(account, password);
+    authresult = embedded_simple_pw_check(LOCAL_account, password);
 #else
-    authresult = pw_check(account, password, &LOCAL_ctrlconn, &peer);
+    authresult = pw_check(LOCAL_account, password, &LOCAL_ctrlconn, &peer);
 #endif
     {
         /* Clear password from memory, paranoia */        
@@ -1784,11 +1784,11 @@ void dopass(char *password)
             logfile(LOG_ERR, MSG_AUTH_TOOMANY);
             _EXIT(EXIT_FAILURE);
         }
-        logfile(LOG_WARNING, MSG_AUTH_FAILED_LOG, account);
+        logfile(LOG_WARNING, MSG_AUTH_FAILED_LOG, LOCAL_account);
         return;
     }
     if (authresult.uid < useruid) {
-        logfile(LOG_WARNING, MSG_ACCOUNT_DISABLED, account);
+        logfile(LOG_WARNING, MSG_ACCOUNT_DISABLED, LOCAL_account);
         randomsleep(tapping);
         if (tapping >= MAX_PASSWD_TRIES) {
             addreply_noformat(530, MSG_AUTH_FAILED);
@@ -1801,7 +1801,7 @@ void dopass(char *password)
     }
     
 #ifdef PER_USER_LIMITS
-    if (per_user_max > 0U && ftpwho_read_count(account) >= per_user_max) {
+    if (per_user_max > 0U && ftpwho_read_count(LOCAL_account) >= per_user_max) {
         addreply(421, MSG_PERUSER_MAX, (unsigned long) per_user_max);
         doreply();
         _EXIT(1);
@@ -1816,7 +1816,7 @@ void dopass(char *password)
 #if defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL) || defined(WITH_PUREDB) || defined(WITH_EXTAUTH)
         doinitsupgroups(NULL, authresult.uid, authresult.gid) != 0
 #else
-        doinitsupgroups(account, (uid_t) -1, authresult.gid) != 0
+        doinitsupgroups(LOCAL_account, (uid_t) -1, authresult.gid) != 0
 #endif
         ) {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
@@ -1827,23 +1827,23 @@ void dopass(char *password)
     }
 
     /* handle /home/user/./public_html form */
-    if ((root_directory = strdup(authresult.dir)) == NULL) {
+    if ((LOCAL_root_directory = strdup(authresult.dir)) == NULL) {
         die_mem();
     }
-    hd = strstr(root_directory, "/./");
+    hd = strstr(LOCAL_root_directory, "/./");
     if (hd != NULL) {
-        if (chrooted != 0) {
+        if (LOCAL_chrooted != 0) {
             die(421, LOG_DEBUG, MSG_CANT_DO_TWICE);
         }
-        if (create_home_and_chdir(root_directory)) {
+        if (create_home_and_chdir(LOCAL_root_directory)) {
             die(421, LOG_ERR, MSG_NO_HOMEDIR);
         }
         *++hd = 0;
         hd++;        
-        if (chroot(root_directory) || chdir(hd)) {
+        if (chroot(LOCAL_root_directory) || chdir(hd)) {
             die(421, LOG_ERR, MSG_NO_HOMEDIR);
         }
-        chrooted = 1;
+        LOCAL_chrooted = 1;
 #ifdef RATIOS
         if (ratio_for_non_anon == 0) {
             ratio_upload = ratio_download = 0U;
@@ -1855,15 +1855,15 @@ void dopass(char *password)
         }
 #endif
     } else {
-        (void) free(root_directory);
-        root_directory = (char *) "/";
+        (void) free(LOCAL_root_directory);
+        LOCAL_root_directory = (char *) "/";
         if (create_home_and_chdir(authresult.dir)) {
             die(421, LOG_ERR, MSG_NO_HOMEDIR);
         }
     }
-    if (getcwd(wd, sizeof wd - (size_t) 1U) == NULL) {
-        wd[0] = '/';
-        wd[1] = 0;
+    if (getcwd(LOCAL_wd, sizeof LOCAL_wd - (size_t) 1U) == NULL) {
+        LOCAL_wd[0] = '/';
+        LOCAL_wd[1] = 0;
     }
 #ifndef NON_ROOT_FTP
     if (setgid(authresult.gid) || setegid(authresult.gid)) {
@@ -1886,11 +1886,11 @@ void dopass(char *password)
         userchroot = 1;
     }
 #endif
-    if (loggedin == 0) {
+    if (LOCAL_loggedin == 0) {
         candownload = 1;        /* real users can always download */
     }
 #ifdef THROTTLING
-    if ((throttling == 2) || (guest != 0 && throttling == 1)) {
+    if ((throttling == 2) || (LOCAL_guest != 0 && throttling == 1)) {
         addreply_noformat(0, MSG_BANDWIDTH_RESTRICTED);
         (void) nice(NICE_VALUE);
     } else {
@@ -1915,13 +1915,13 @@ void dopass(char *password)
         die_mem();
     }
     ngroups = getgroups(ngroups_max, groups);
-    if (guest == 0 && ngroups > 0) {
+    if (LOCAL_guest == 0 && ngroups > 0) {
         char reply[80 + MAX_USER_LENGTH];
         const char *q;       
         size_t p;
         
         if (SNCHECK(snprintf(reply, sizeof reply,
-                             MSG_USER_GROUP_ACCESS ": ", account),
+                             MSG_USER_GROUP_ACCESS ": ", LOCAL_account),
                     sizeof reply)) {
             _EXIT(EXIT_FAILURE);
         }
@@ -1948,7 +1948,7 @@ void dopass(char *password)
     }
     free(groups);
 #endif
-    if (guest == 0 && allowfxp == 1) {
+    if (LOCAL_guest == 0 && allowfxp == 1) {
         addreply_noformat(0, MSG_FXP_SUPPORT);
     }    
 #ifdef RATIOS
@@ -1956,43 +1956,43 @@ void dopass(char *password)
         addreply(0, MSG_RATIO, ratio_upload, ratio_download);
     }
 #endif
-    if (userchroot != 0 && chrooted == 0) {
-        if (chdir(wd) || chroot(wd)) {    /* should never fail */
+    if (userchroot != 0 && LOCAL_chrooted == 0) {
+        if (chdir(LOCAL_wd) || chroot(LOCAL_wd)) {    /* should never fail */
             die(421, LOG_ERR, MSG_CHROOT_FAILED);
         }
-        chrooted = 1;
+        LOCAL_chrooted = 1;
 #ifdef RATIOS
         if (ratio_for_non_anon == 0) {
             ratio_upload = ratio_download = 0U;
         }
 #endif
         {
-            const size_t rd_len = strlen(wd) + sizeof "/";
+            const size_t rd_len = strlen(LOCAL_wd) + sizeof "/";
             
-            if ((root_directory = malloc(rd_len)) == NULL) {
+            if ((LOCAL_root_directory = malloc(rd_len)) == NULL) {
                 die_mem();
             }
-            snprintf(root_directory, rd_len, "%s/", wd);
+            snprintf(LOCAL_root_directory, rd_len, "%s/", LOCAL_wd);
         }
-        wd[0] = '/';
-        wd[1] = 0;
-        if (chdir(wd)) {
+        LOCAL_wd[0] = '/';
+        LOCAL_wd[1] = 0;
+        if (chdir(LOCAL_wd)) {
             _EXIT(EXIT_FAILURE);
         }
 #ifdef WITH_RFC2640
-        nwd = charset_fs2client(wd);
+        nwd = charset_fs2client(LOCAL_wd);
         addreply(230, MSG_CURRENT_RESTRICTED_DIR_IS, nwd);
         free(nwd);
 #else
-        addreply(230, MSG_CURRENT_RESTRICTED_DIR_IS, wd);
+        addreply(230, MSG_CURRENT_RESTRICTED_DIR_IS, LOCAL_wd);
 #endif
     } else {
 #ifdef WITH_RFC2640
-        nwd = charset_fs2client(wd);
+        nwd = charset_fs2client(LOCAL_wd);
         addreply(230, MSG_CURRENT_DIR_IS, nwd);
         free(nwd);
 #else
-        addreply(230, MSG_CURRENT_DIR_IS, wd);
+        addreply(230, MSG_CURRENT_DIR_IS, LOCAL_wd);
 #endif
     }
     
@@ -2012,21 +2012,21 @@ void dopass(char *password)
 # endif
     enablesignals();
 #endif
-    logfile(LOG_INFO, MSG_IS_NOW_LOGGED_IN, account);
+    logfile(LOG_INFO, MSG_IS_NOW_LOGGED_IN, LOCAL_account);
 #ifdef FTPWHO
     if (shm_data_cur != NULL) {
         ftpwho_lock();
-        strncpy(shm_data_cur->account, account,
+        strncpy(shm_data_cur->account, LOCAL_account,
                 sizeof shm_data_cur->account - (size_t) 1U);
         shm_data_cur->account[sizeof shm_data_cur->account - 1U] = 0;
         ftpwho_unlock();
         state_needs_update = 1;
     }
 #endif
-    loggedin = 1;
-    if (getcwd(wd, sizeof wd - (size_t) 1U) == NULL) {
-        wd[0] = '/';
-        wd[1] = 0;
+    LOCAL_loggedin = 1;
+    if (getcwd(LOCAL_wd, sizeof LOCAL_wd - (size_t) 1U) == NULL) {
+        LOCAL_wd[0] = '/';
+        LOCAL_wd[1] = 0;
     }
 #ifndef MINIMAL
     dobanner(0);
@@ -2050,7 +2050,7 @@ void docwd(const char *dir)
     char *nwd = NULL;
 #endif
     
-    if (loggedin == 0) {
+    if (LOCAL_loggedin == 0) {
         goto kaboom;
     }
     /*
@@ -2066,7 +2066,7 @@ void docwd(const char *dir)
         const struct passwd *pw;
         
         if (dir[1] == 0) {         /* cd ~ */
-            strncpy(buffer, chrooted != 0 ? "/" : authresult.dir,
+            strncpy(buffer, LOCAL_chrooted != 0 ? "/" : authresult.dir,
                     sizeof buffer);
             buffer[sizeof buffer - (size_t) 1U] = 0;
             where = buffer;
@@ -2084,10 +2084,10 @@ void docwd(const char *dir)
             *bufpnt = 0;
             if (*buffer == 0) {        /* ~/... */
                 snprintf(buffer, sizeof buffer, "%s%s",
-                         chrooted != 0 ? "/" : authresult.dir, dirscan);
+                         LOCAL_chrooted != 0 ? "/" : authresult.dir, dirscan);
                 where = buffer;
             } else if (authresult.slow_tilde_expansion == 0) {
-                if (chrooted != 0 || guest != 0 ||
+                if (LOCAL_chrooted != 0 || LOCAL_guest != 0 ||
                     (pw = getpwnam(buffer)) == NULL || pw->pw_dir == NULL) {
                     /* try with old where = dir */
                 } else {
@@ -2144,25 +2144,25 @@ void docwd(const char *dir)
     failures = 0UL;
     dobanner(1);
 #endif
-    if (getcwd(wd, sizeof wd - (size_t) 1U) == NULL) {
+    if (getcwd(LOCAL_wd, sizeof LOCAL_wd - (size_t) 1U) == NULL) {
         if (*dir == '/') {
-            if (SNCHECK(snprintf(wd, sizeof wd, "%s", dir), sizeof wd)) { /* already checked */
+            if (SNCHECK(snprintf(LOCAL_wd, sizeof LOCAL_wd, "%s", dir), sizeof LOCAL_wd)) { /* already checked */
                 _EXIT(EXIT_FAILURE);
             }
         } else {
-            if (SNCHECK(snprintf(wd, sizeof wd, "%s/%s", wd, dir),
-                        sizeof wd)) {
+            if (SNCHECK(snprintf(LOCAL_wd, sizeof LOCAL_wd, "%s/%s", LOCAL_wd, dir),
+                        sizeof LOCAL_wd)) {
                 kaboom:
                 die(421, LOG_ERR, MSG_PATH_TOO_LONG);
             }
         }
     }
 #ifdef WITH_RFC2640
-    nwd = charset_fs2client(wd);
+    nwd = charset_fs2client(LOCAL_wd);
     addreply(250, MSG_CURRENT_DIR_IS, nwd);
     free(nwd);
 #else
-    addreply(250, MSG_CURRENT_DIR_IS, wd);
+    addreply(250, MSG_CURRENT_DIR_IS, LOCAL_wd);
 #endif
 }
 
@@ -2201,7 +2201,7 @@ unsigned int zrand(void)
     int fd;
     int ret;
     
-    if (chrooted != 0 ||
+    if (LOCAL_chrooted != 0 ||
 #ifdef PROBE_RANDOM_AT_RUNTIME
         ((fd = open(random_device, O_RDONLY | O_NONBLOCK)) == -1)        
 #elif defined(HAVE_DEV_ARANDOM)
@@ -2250,7 +2250,7 @@ void dopasv(int psvtype)
     int on;
     unsigned int firstporttried;
     
-    if (loggedin == 0) {
+    if (LOCAL_loggedin == 0) {
         addreply_noformat(530, MSG_NOT_LOGGED_IN);
         return;
     }
@@ -2450,7 +2450,7 @@ static int doport3(const int protocol)
 
 void doport2(struct sockaddr_storage a, unsigned int p)
 {
-    if (loggedin == 0) {
+    if (LOCAL_loggedin == 0) {
         addreply_noformat(530, MSG_NOT_LOGGED_IN);
         return;
     }
@@ -2482,7 +2482,7 @@ void doport2(struct sockaddr_storage a, unsigned int p)
                         (size_t) 0U, NI_NUMERICHOST) != 0) {
             goto hu;
         }
-        if (allowfxp == 0 || (allowfxp == 1 && guest != 0)) {
+        if (allowfxp == 0 || (allowfxp == 1 && LOCAL_guest != 0)) {
             hu:
             (void) close(LOCAL_datafd);
             LOCAL_datafd = -1;
@@ -2572,7 +2572,7 @@ void opendata(void)
             if (addrcmp(&peer, &dataconn) == 0) {
                 break;
             }
-            if (allowfxp == 0 || (allowfxp == 1 && guest != 0)) {
+            if (allowfxp == 0 || (allowfxp == 1 && LOCAL_guest != 0)) {
                 shutdown(fd, 2);
                 (void) close(fd);
             } else {
@@ -2640,7 +2640,7 @@ void dochmod(char *name, mode_t mode)
         return;
     }
 # ifndef ANON_CAN_CHANGE_PERMS
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_CHANGE_PERMS);
         return;
     }
@@ -2698,7 +2698,7 @@ void doutime(char *name, const char * const wanted_time)
     struct utimbuf tb;
     
 # ifndef ANON_CAN_CHANGE_UTIME
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_CHANGE_PERMS);
         return;
     }
@@ -2751,7 +2751,7 @@ void doutime(char *name, const char * const wanted_time)
 void dodele(char *name)
 {
 #ifndef ANON_CAN_DELETE
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_DELETE);
         return;
     }
@@ -2856,9 +2856,9 @@ void dodele(char *name)
     }
 #endif
     addreply(250, MSG_DELE_SUCCESS, "", "", "", name);
-    logfile(LOG_NOTICE, MSG_DELE_SUCCESS, root_directory,
-            *name == '/' ? "" : wd,
-            (*name != '/' && (!*wd || wd[strlen(wd) - 1] != '/'))
+    logfile(LOG_NOTICE, MSG_DELE_SUCCESS, LOCAL_root_directory,
+            *name == '/' ? "" : LOCAL_wd,
+            (*name != '/' && (!*LOCAL_wd || LOCAL_wd[strlen(LOCAL_wd) - 1] != '/'))
             ? "/" : "", name);
     return;
     
@@ -2905,9 +2905,9 @@ static void displayrate(const char *word, off_t size,
                           " (%llu bytes, %.2fKB/sec)",
                           (unsigned long long) size, speed / 1024.0),
                  sizeof speedstring)) {
-        logfile(LOG_NOTICE, "%s%s%s%s %s %s", root_directory,
-                *name == '/' ? "" : wd,
-                (*name != '/' && (!*wd || wd[strlen(wd) - 1] != '/'))
+        logfile(LOG_NOTICE, "%s%s%s%s %s %s", LOCAL_root_directory,
+                *name == '/' ? "" : LOCAL_wd,
+                (*name != '/' && (!*LOCAL_wd || LOCAL_wd[strlen(LOCAL_wd) - 1] != '/'))
                 ? "/" : "", name, word, speedstring);
     }
     /* Tons of #ifdef here, but it avoids a pointless call to realpath() */
@@ -2956,7 +2956,7 @@ static void displayrate(const char *word, off_t size,
         }        
 # else
         if (SNCHECK(snprintf(alloca_filename_real, sizeof_filename_real,
-                             "\001%s%s", root_directory,
+                             "\001%s%s", LOCAL_root_directory,
                              (*resolved_path == '/' ? resolved_path + 1 :
                               resolved_path)), sizeof_filename_real)) {
             goto rp_failure;
@@ -2967,7 +2967,7 @@ static void displayrate(const char *word, off_t size,
 # endif
 # if defined(WITH_UPLOAD_SCRIPT)
         if (do_upload_script != 0 && up != 0) {
-            upload_pipe_push(account, alloca_filename_real);
+            upload_pipe_push(LOCAL_account, alloca_filename_real);
         }
 # endif
         rp_failure:
@@ -3442,7 +3442,7 @@ void doretr(char *name)
         addreply_noformat(550, MSG_NOT_REGULAR_FILE);
         goto end;
     }
-    if (warez != 0 && st.st_uid == warez && guest != 0) {
+    if (warez != 0 && st.st_uid == warez && LOCAL_guest != 0) {
         (void) close(f);
         addreply(550, MSG_NOT_MODERATED);
         goto end;
@@ -3561,7 +3561,7 @@ void domkd(char *name)
     int overflow;
 #endif
     
-    if (guest != 0 && allow_anon_mkdir == 0) {
+    if (LOCAL_guest != 0 && allow_anon_mkdir == 0) {
         addreply_noformat(550, MSG_ANON_CANT_MKD);
         return;
     }
@@ -3597,7 +3597,7 @@ void dormd(char *name)
 #endif
     
 #ifndef ANON_CAN_DELETE    
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_RMD);
         return;
     }
@@ -4270,7 +4270,7 @@ void dostor(char *name, const int append, const int autorename)
         goto end;
     }
 #ifndef ANON_CAN_RESUME
-    if (guest != 0 && anon_noupload != 0) {
+    if (LOCAL_guest != 0 && anon_noupload != 0) {
         addreply_noformat(550, MSG_ANON_CANT_OVERWRITE);
         goto end;
     }
@@ -4326,7 +4326,7 @@ void dostor(char *name, const int append, const int autorename)
     /* Anonymous users *CAN* overwrite 0-bytes files - This is the right behavior */
     if (st.st_size > (off_t) 0) {
 #ifndef ANON_CAN_RESUME
-        if (guest != 0) {
+        if (LOCAL_guest != 0) {
             addreply_noformat(550, MSG_ANON_CANT_OVERWRITE);
             (void) close(f);
             goto end;
@@ -4517,7 +4517,7 @@ void domdtm(const char *name)
     } else if (stat(name, &st)) {
 #ifdef DEBUG
         if (debug != 0) {
-            addreply(0, "arg: %s, wd: %s", name, wd);
+            addreply(0, "arg: %s, wd: %s", name, LOCAL_wd);
         }
 #endif
         addreply_noformat(550, MSG_STAT_FAILURE2);
@@ -4544,7 +4544,7 @@ void dosize(const char *name)
     } else if (stat(name, &st)) {
 #ifdef DEBUG
         if (debug != 0) {
-            addreply(0, "arg: %s, wd: %s", name, wd);
+            addreply(0, "arg: %s, wd: %s", name, LOCAL_wd);
         }
 #endif
         addreply_noformat(550, MSG_STAT_FAILURE2);
@@ -4608,7 +4608,7 @@ void dornfr(char *name)
     struct stat st;
 
 #ifndef ANON_CAN_RENAME
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_RENAME);
         return;
     }
@@ -4645,7 +4645,7 @@ void dornto(char *name)
 #endif
 
 #ifndef ANON_CAN_RENAME
-    if (guest != 0) {
+    if (LOCAL_guest != 0) {
         addreply_noformat(550, MSG_ANON_CANT_RENAME);
         goto bye;
     }
@@ -5129,9 +5129,9 @@ static void doit(void)
         }
     }
 #ifndef NON_ROOT_FTP
-    wd[0] = '/';
-    wd[1] = 0;
-    if (chdir(wd)) {
+    LOCAL_wd[0] = '/';
+    LOCAL_wd[1] = 0;
+    if (chdir(LOCAL_wd)) {
         _EXIT(EXIT_FAILURE);
     }
 #endif
@@ -5625,7 +5625,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #endif
     set_signals();
 
-    loggedin = 0;
+    LOCAL_loggedin = 0;
 
 #ifdef BANNER_ENVIRON
 # ifdef COOKIE
@@ -6321,10 +6321,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         chroot("/");
         downloaded = uploaded = 0ULL;
         LOCAL_datafd = LOCAL_xferfd = -1;
-        root_directory = NULL;
-        loggedin = 0;
-        userchroot = chrooted = 0;
-        guest = 0;
+        LOCAL_root_directory = NULL;
+        LOCAL_loggedin = 0;
+        userchroot = LOCAL_chrooted = 0;
+        LOCAL_guest = 0;
         type = 2;
         restartat = (off_t) 0;
         state_needs_update = 1;
@@ -6482,11 +6482,11 @@ static AuthResult embedded_simple_pw_check(const char *account, const char *pass
     AuthResult authresult;
 
     if (simple_auth_callback == NULL ||
-        account == NULL || *account == 0 || password == NULL) {
+        LOCAL_account == NULL || *LOCAL_account == 0 || password == NULL) {
         authresult.auth_ok = 0;
         return authresult;
     }
-    if ((*simple_auth_callback)(account, password, simple_auth_callback_user_data) <= 0) {
+    if ((*simple_auth_callback)(LOCAL_account, password, simple_auth_callback_user_data) <= 0) {
         authresult.auth_ok = -1;
         return authresult;
     }
