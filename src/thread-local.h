@@ -8,6 +8,13 @@ typedef void *SSL_CTX;
 typedef void *SSL;
 #endif
 
+typedef struct ThreadChild_ {
+    struct ThreadChild_ *next;
+    pthread_t child;
+} ThreadChild;
+
+static ThreadChild *thread_children;
+
 #define THREAD_LOCAL(LOCAL_VAR) \
         (((ThreadLocal *) pthread_getspecific(thread_key))->_ ## LOCAL_VAR)
 
@@ -121,5 +128,8 @@ extern pthread_key_t thread_key;
 #define LOCAL_AINIT(A) *(LOCAL_ ## A) = 0
 
 int init_thread_local_storage(void);
+void free_thread_local_storage(void);
+int alloc_thread_local_storage(void);
+int spawn_client_thread(void);
 
 #endif

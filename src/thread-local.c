@@ -11,11 +11,34 @@
 
 int init_thread_local_storage(void)
 {
+    thread_children = NULL;    
+    return 0;
+}
+
+void free_thread_local_storage(void)
+{
+    ThreadChild *thread_child = thread_children;
+    ThreadChild *next_thread_child = thread_children;
+    void *ret;
+    
+    while (thread_child != NULL) {
+        pthread_cancel(thread_child->child);
+        pthread_join(thread_child->child, &ret);
+        next_thread_child = thread_child->next;
+        thread_child->next = NULL;
+        free(thread_child);
+        thread_child = next_thread_child;
+    }
+    thread_children = NULL;
+}
+
+int alloc_thread_local_storage(void)
+{
     ThreadLocal *thread_local;
         
     thread_local = malloc(sizeof *thread_local);
     memset(thread_local, 0, sizeof thread_local);
-    if (thread_key == NULL) {
+    if (thread_key == (pthread_key_t) 0) {
         pthread_key_create(&thread_key, NULL);
     }
     pthread_setspecific(thread_key, thread_local);
@@ -54,5 +77,26 @@ int init_thread_local_storage(void)
     LOCAL_INIT(chroot_len);    
 #endif
     
+    return 0;
+}
+
+int spawn_client_thread(void)
+{
+    ThreadChild *thread_child;
+    ThreadLocal *thread_local;        
+    
+    thread_child = malloc(sizeof *thread_child);
+    thread_child->next = NULL;
+    thread_local = (ThreadLocal *) pthread_getspecific(thread_key);
+    if (pthread_create(&thread_child->child, NULL,
+                       client_thread, thread_local) != 0) {
+        free(thread_child);
+        return -1;
+    }
+    if (thread_children == NULL) {
+        thread_children = thread_child;
+    } else {
+        thread_children->next = thread_child;
+    }
     return 0;
 }

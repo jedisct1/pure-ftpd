@@ -306,12 +306,14 @@ char *skip_telnet_controls(const char *str)
 
 void _EXIT(const int status)
 {
+#ifdef __IPHONE__
+    if (nb_children > 0) {
+        nb_children--;
+    }
+#endif
     delete_atomic_file();
 #ifdef FTPWHO
     ftpwho_exit();
-#endif
-#ifdef __IPHONE__
-    longjmp(jb, 1);
 #endif
     _exit(status);
 }
@@ -5357,15 +5359,39 @@ static void dodaemonize(void)
 #endif
 
 #ifdef __IPHONE__
-static void *client_thread(void * const parent_thread_local_)
+static void cleanup_client_thread(void *arg)
+{
+    close(LOCAL_clientfd); close(LOCAL_datafd); close(LOCAL_xferfd);
+    LOCAL_clientfd = LOCAL_datafd = LOCAL_xferfd = -1;
+    delete_atomic_file();
+    chroot("/");
+    LOCAL_datafd = LOCAL_xferfd = -1;
+    LOCAL_root_directory = NULL;
+    LOCAL_loggedin = 0;
+    LOCAL_chrooted = 0;
+    LOCAL_guest = 0;
+    LOCAL_type = 2;
+    LOCAL_restartat = (off_t) 0;
+# ifdef WITH_TLS
+    LOCAL_tls_cnx_handshaked = LOCAL_tls_data_cnx_handshaked = 0;
+# endif
+    if (logout_callback != NULL && suspend_client_connections == 0) {
+        (*logout_callback)(logout_callback_user_data);
+    }
+}
+
+void *client_thread(void * const parent_thread_local_)
 {
     ThreadLocal *parent_thread_local = (ThreadLocal *) parent_thread_local_;
     ThreadLocal *thread_local;
     
-    init_thread_local_storage();
+    alloc_thread_local_storage();
     thread_local = (ThreadLocal *) pthread_getspecific(thread_key);
-    *thread_local = *parent_thread_local;   
+    *thread_local = *parent_thread_local;
+    pthread_cleanup_push(cleanup_client_thread, NULL);
     doit();
+    pthread_cleanup_pop(1);
+        
     return NULL;
 }
 #endif
@@ -5445,13 +5471,12 @@ static void accept_client(const int active_listen_fd) {
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
 #ifdef __IPHONE__
-    {
-        pthread_t *thread;
-        ThreadLocal *thread_local;        
-        
-        thread = malloc(sizeof *thread);
-        thread_local = (ThreadLocal *) pthread_getspecific(thread_key);
-        pthread_create(thread, NULL, client_thread, thread_local);
+    if (spawn_client_thread() != 0) {
+        if (nb_children > 0U) {
+            nb_children--;
+        }
+        (void) close(LOCAL_clientfd);
+        LOCAL_clientfd = -1;
     }
 #else
     child = fork();    
@@ -5603,8 +5628,13 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     struct passwd *pw;
 
     (void) home_directory_;
-    
+
+#ifdef __IPHONE__
+    atomic_prefix = NULL;    
+    nb_children = 0;    
     init_thread_local_storage();
+    alloc_thread_local_storage();
+#endif
     
 #ifdef NON_ROOT_FTP
     home_directory = home_directory_;
@@ -6335,36 +6365,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     }
 #endif
     
-#ifdef __IPHONE__
-    if (setjmp(jb) != 0) {
-        close(LOCAL_clientfd); close(LOCAL_datafd); close(LOCAL_xferfd);
-        LOCAL_clientfd = LOCAL_datafd = LOCAL_xferfd = -1;        
-        delete_atomic_file();
-        chroot("/");
-        downloaded = uploaded = 0ULL;
-        LOCAL_datafd = LOCAL_xferfd = -1;
-        LOCAL_root_directory = NULL;
-        LOCAL_loggedin = 0;
-        userchroot = LOCAL_chrooted = 0;
-        LOCAL_guest = 0;
-        LOCAL_type = 2;
-        LOCAL_restartat = (off_t) 0;
-        state_needs_update = 1;
-        atomic_prefix = NULL;
-        nb_children = 0;
-# ifdef WITH_TLS
-        LOCAL_tls_cnx_handshaked = LOCAL_tls_data_cnx_handshaked = 0;
-# endif
-        if (logout_callback != NULL && suspend_client_connections == 0) {
-            (*logout_callback)(logout_callback_user_data);
-        }        
-        if (stop_server > 0) {
-            close(listenfd); close(listenfd6);
-            listenfd = listenfd6 = -1;
-            goto bye;
-        }
-    }
-#endif
 #if !defined(NO_STANDALONE) && !defined(NO_INETD)
     if (check_standalone() != 0) {
         standalone_server();
@@ -6377,10 +6377,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     doit();
 #else
 # error Configuration error
-#endif
-
-#ifdef __IPHONE__
-    bye:
 #endif
 #ifdef WITH_UPLOAD_SCRIPT
     upload_pipe_close();
@@ -6443,12 +6439,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 int pureftpd_shutdown(void)
 {
     stop_server = 1;
-    shutdown(LOCAL_clientfd, SHUT_RDWR);    
-    shutdown(LOCAL_datafd, SHUT_RDWR);
-    shutdown(LOCAL_xferfd, SHUT_RDWR);
     close(listenfd);
     close(listenfd6);
     listenfd = listenfd6 = -1;
+    free_thread_local_storage();    
     
     return 0;
 }

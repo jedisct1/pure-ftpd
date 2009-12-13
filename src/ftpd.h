@@ -317,6 +317,10 @@ typedef enum {
 int pureftpd_start(int argc, char *argv[], const char *home_directory);
 
 #ifdef __IPHONE__
+void *client_thread(void * const parent_thread_local_);
+#endif
+
+#ifdef __IPHONE__
 typedef struct PureFTPd_SiteCallback_ {
     int return_code;
     char *response;
