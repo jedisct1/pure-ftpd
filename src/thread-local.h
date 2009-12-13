@@ -12,11 +12,20 @@ typedef void *SSL;
         (((ThreadLocal *) pthread_getspecific(thread_key))->_ ## LOCAL_VAR)
 
 typedef struct ThreadLocal_ {
+#define LOCAL_passive THREAD_LOCAL(passive)
+    signed char _passive;
+
 #define LOCAL_clientfd THREAD_LOCAL(clientfd)
     int _clientfd;
     
 #define LOCAL_datafd THREAD_LOCAL(datafd)
     int _datafd;
+    
+#define LOCAL_cmd THREAD_LOCAL(cmd)
+    char _cmd[MAXPATHLEN + 32U];
+    
+#define LOCAL_ctrlconn THREAD_LOCAL(ctrlconn)
+    struct sockaddr_storage _ctrlconn;
     
 #define LOCAL_xferfd THREAD_LOCAL(xferfd)
     int _xferfd;
@@ -43,14 +52,17 @@ pthread_key_t thread_key;
 ThreadLocal thread_local;
 # define TGLOBAL0(A) A ## _LOCAL_INIT
 # define TGLOBAL(A, B) A ## _LOCAL_INIT = B
+# define TAGLOBAL0(A, S) A ## _LOCAL_INIT[S]
 #else
 extern pthread_key_t thread_key;
 extern ThreadLocal thread_local;
 # define TGLOBAL0(A) extern A ## _LOCAL_INIT
 # define TGLOBAL(A, B) extern A ## _LOCAL_INIT
+# define TAGLOBAL0(A, S) extern A ## _LOCAL_INIT[S]
 #endif
 
 #define LOCAL_INIT(A) LOCAL_ ## A = A ## _LOCAL_INIT
+#define LOCAL_AINIT(A) *(LOCAL_ ## A) = 0
 
 int init_thread_local_storage(void);
 

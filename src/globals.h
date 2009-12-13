@@ -22,14 +22,14 @@ GLOBAL0(signed char throttling);                /* 0=don't throttle 1=throttle a
 GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(unsigned long throttling_bandwidth_ul);
 GLOBAL0(signed char allowfxp);                    /* 0=no fxp 1=authenticated 2=everybody */
-GLOBAL0(signed char passive);
+TGLOBAL0(signed char passive);
 TGLOBAL(int clientfd, 0);                   /* command connection file descriptor */
 TGLOBAL(int datafd, -1);                    /* data connection file descriptor */
-GLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
+TGLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
 GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */
 GLOBAL0(signed char no_ipv4);                    /* IPv4 disabled or not */
 GLOBAL(const size_t cmdsize, MAXPATHLEN + 16U);
-GLOBAL0(char cmd[MAXPATHLEN + 32U]);        /* command line - about 30 chars for command */
+TAGLOBAL0(char cmd, MAXPATHLEN + 32U);        /* command line - about 30 chars for command */
 GLOBAL0(char wd[MAXPATHLEN + 1U]);            /* current working directory */
 GLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
 GLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
