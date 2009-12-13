@@ -6421,9 +6421,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 int pureftpd_shutdown(void)
 {
     stop_server = 1;
-    shutdown(clientfd, SHUT_RDWR);    
-    shutdown(datafd, SHUT_RDWR);
-    shutdown(xferfd, SHUT_RDWR);
+    shutdown(LOCAL_clientfd, SHUT_RDWR);    
+    shutdown(LOCAL_datafd, SHUT_RDWR);
+    shutdown(LOCAL_xferfd, SHUT_RDWR);
     close(listenfd);
     close(listenfd6);
     listenfd = listenfd6 = -1;
