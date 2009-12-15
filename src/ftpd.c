@@ -3004,7 +3004,7 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     double wanted_ts;
     off_t previous_chunk_size;
     
-    if (dlhandler->bandwidth <= 0UL || downloaded <= 0) {
+    if (dlhandler->bandwidth <= 0UL || downloaded <= (off_t) 0) {
         *required_sleep = 0.0;
         return 0;
     }
@@ -3016,8 +3016,9 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     }            
     elapsed = ts_now - ts_start;
     would_be_downloaded = dlhandler->total_downloaded + dlhandler->chunk_size;
-    if (dlhandler->bandwidth > 0.0) {
-        wanted_ts = would_be_downloaded / dlhandler->bandwidth;
+    if (dlhandler->bandwidth > 0UL) {
+        wanted_ts = (double) would_be_downloaded /
+            (double) dlhandler->bandwidth;
     } else {
         wanted_ts = elapsed;
     }
@@ -3039,8 +3040,9 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
         if (previous_chunk_size != dlhandler->default_chunk_size) {
             would_be_downloaded =
                 dlhandler->total_downloaded + dlhandler->chunk_size;
-            if (dlhandler->bandwidth > 0.0) {
-                wanted_ts = would_be_downloaded / dlhandler->bandwidth;
+            if (dlhandler->bandwidth > 0UL) {
+                wanted_ts = (double) would_be_downloaded /
+                    (double) dlhandler->bandwidth;
             } else {
                 wanted_ts = elapsed;
             }
@@ -3857,8 +3859,8 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
     }            
     elapsed = ts_now - ts_start;
     would_be_uploaded = ulhandler->total_uploaded + ulhandler->chunk_size;
-    if (ulhandler->bandwidth > 0.0) {
-        wanted_ts = would_be_uploaded / ulhandler->bandwidth;
+    if (ulhandler->bandwidth > 0UL) {
+        wanted_ts = (double) would_be_uploaded / (double) ulhandler->bandwidth;
     } else {
         wanted_ts = elapsed;
     }
@@ -3881,14 +3883,15 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
         if (previous_chunk_size != ulhandler->default_chunk_size) {
             would_be_uploaded =
                 ulhandler->total_uploaded + ulhandler->chunk_size;
-            if (ulhandler->bandwidth > 0.0) {
-                wanted_ts = would_be_uploaded / ulhandler->bandwidth;
+            if (ulhandler->bandwidth > 0UL) {
+                wanted_ts = (double) would_be_uploaded /
+                    (double) ulhandler->bandwidth;
             } else {
                 wanted_ts = elapsed;
             }
             *required_sleep = wanted_ts - elapsed;
         }
-    }    
+    }
     return 0;
 }
 
