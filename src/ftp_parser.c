@@ -68,10 +68,10 @@ int sfgets(void)
     
     if (scanned > (size_t) 0U) {       /* support pipelining */
         readnbd -= scanned;        
-        memmove(cmd, cmd + scanned, readnbd);   /* safe */
+        memmove(LOCAL_cmd, LOCAL_cmd + scanned, readnbd);   /* safe */
         scanned = (size_t) 0U;
     }
-    pfd.fd = clientfd;
+    pfd.fd = LOCAL_clientfd;
     pfd.events = POLLIN | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
         if (scanned >= readnbd) {      /* nothing left in the buffer */
@@ -92,14 +92,14 @@ int sfgets(void)
                 break;
             }
 #ifdef WITH_TLS
-            if (tls_cnx != NULL) {
+            if (LOCAL_tls_cnx != NULL) {
                 while ((readnb = SSL_read
-                        (tls_cnx, cmd + readnbd, cmdsize - readnbd))
+                        (LOCAL_tls_cnx, LOCAL_cmd + readnbd, cmdsize - readnbd))
                        < (ssize_t) 0 && errno == EINTR);
             } else
 #endif
             {
-                while ((readnb = read(clientfd, cmd + readnbd,
+                while ((readnb = read(LOCAL_clientfd, LOCAL_cmd + readnbd,
                                       cmdsize - readnbd)) < (ssize_t) 0 &&
                        errno == EINTR);
             }
@@ -114,14 +114,14 @@ int sfgets(void)
 #ifdef RFC_CONFORMANT_LINES
         if (seen_r != 0) {
 #endif
-            if (cmd[scanned] == '\n') {
+            if (LOCAL_cmd[scanned] == '\n') {
 #ifndef RFC_CONFORMANT_LINES
                 if (seen_r != 0) {
 #endif
-                    cmd[scanned - 1U] = 0;
+                    LOCAL_cmd[scanned - 1U] = 0;
 #ifndef RFC_CONFORMANT_LINES
                 } else {
-                    cmd[scanned] = 0;
+                    LOCAL_cmd[scanned] = 0;
                 }
 #endif
                 if (++scanned >= readnbd) {   /* non-pipelined command */
@@ -133,17 +133,17 @@ int sfgets(void)
 #ifdef RFC_CONFORMANT_LINES
         }
 #endif
-        if (ISCTRLCODE(cmd[scanned])) {
-            if (cmd[scanned] == '\r') {
+        if (ISCTRLCODE(LOCAL_cmd[scanned])) {
+            if (LOCAL_cmd[scanned] == '\r') {
                 seen_r = 1;
             }
 #ifdef RFC_CONFORMANT_PARSER                   /* disabled by default, intentionnaly */
-            else if (cmd[scanned] == 0) {
-                cmd[scanned] = '\n';
+            else if (LOCAL_cmd[scanned] == 0) {
+                LOCAL_cmd[scanned] = '\n';
             }
 #else
             /* replace control chars with _ */
-            cmd[scanned] = '_';                
+            LOCAL_cmd[scanned] = '_';                
 #endif
         }
         scanned++;
@@ -236,7 +236,7 @@ void parser(void)
     data_protection_level = CPL_PRIVATE;
 #endif
     for (;;) {
-        xferfd = -1;
+        LOCAL_xferfd = -1;
         if (state_needs_update != 0) {
             state_needs_update = 0;
             setprocessname("pure-ftpd (IDLE)");
@@ -263,13 +263,13 @@ void parser(void)
         }
 #ifdef DEBUG
         if (debug != 0) {
-            addreply(0, "%s", cmd);
+            addreply(0, "%s", LOCAL_cmd);
         }
 #endif
         n = (size_t) 0U;
-        while ((isalpha((unsigned char) cmd[n]) || cmd[n] == '@') &&
+        while ((isalpha((unsigned char) LOCAL_cmd[n]) || LOCAL_cmd[n] == '@') &&
                n < cmdsize) {
-            cmd[n] = (char) tolower((unsigned char) cmd[n]);
+            LOCAL_cmd[n] = (char) tolower((unsigned char) LOCAL_cmd[n]);
             n++;
         }
         if (n >= cmdsize) {            /* overparanoid, it should never happen */
@@ -281,23 +281,23 @@ void parser(void)
             continue;
         }
 #ifdef SKIP_COMMAND_TRAILING_SPACES        
-        while (isspace((unsigned char) cmd[n]) && n < cmdsize) {
-            cmd[n++] = 0;
+        while (isspace((unsigned char) LOCAL_cmd[n]) && n < cmdsize) {
+            LOCAL_cmd[n++] = 0;
         }
-        arg = cmd + n;        
-        while (cmd[n] != 0 && n < cmdsize) {
+        arg = LOCAL_cmd + n;        
+        while (LOCAL_cmd[n] != 0 && n < cmdsize) {
             n++;
         }
         n--;
-        while (isspace((unsigned char) cmd[n])) {
-            cmd[n--] = 0;
+        while (isspace((unsigned char) LOCAL_cmd[n])) {
+            LOCAL_cmd[n--] = 0;
         }
 #else
-        if (cmd[n] == 0) {
-            arg = cmd + n;
-        } else if (isspace((unsigned char) cmd[n])) {
-            cmd[n] = 0;
-            arg = cmd + n + 1;
+        if (LOCAL_cmd[n] == 0) {
+            arg = LOCAL_cmd + n;
+        } else if (isspace((unsigned char) LOCAL_cmd[n])) {
+            LOCAL_cmd[n] = 0;
+            arg = LOCAL_cmd + n + 1;
         } else {
             goto nop;
         }
@@ -305,10 +305,10 @@ void parser(void)
         if (logging != 0) {
 #ifdef DEBUG
             logfile(LOG_DEBUG, MSG_DEBUG_COMMAND " [%s] [%s]",
-                   cmd, arg);
+                   LOCAL_cmd, arg);
 #else
             logfile(LOG_DEBUG, MSG_DEBUG_COMMAND " [%s] [%s]",
-                   cmd, strcmp(cmd, "pass") ? arg : "<*>");
+                   LOCAL_cmd, strcmp(LOCAL_cmd, "pass") ? arg : "<*>");
 #endif
         }
 #ifdef WITH_RFC2640
@@ -323,48 +323,48 @@ void parser(void)
          */
         
 #ifndef MINIMAL
-        if (!strcmp(cmd, "noop")) {
+        if (!strcmp(LOCAL_cmd, "noop")) {
             antiidle();
             donoop();
             goto wayout;
         }
 #endif
-        if (!strcmp(cmd, "user")) {
+        if (!strcmp(LOCAL_cmd, "user")) {
 #ifdef WITH_TLS
-            if (enforce_tls_auth > 1 && tls_cnx == NULL) {
+            if (enforce_tls_auth > 1 && LOCAL_tls_cnx == NULL) {
                 die(421, LOG_WARNING, MSG_TLS_NEEDED);
             }
 #endif
             douser(arg);
-        } else if (!strcmp(cmd, "acct")) {
+        } else if (!strcmp(LOCAL_cmd, "acct")) {
             addreply(202, MSG_WHOAREYOU);
-        } else if (!strcmp(cmd, "pass")) {
-            if (guest == 0) {
+        } else if (!strcmp(LOCAL_cmd, "pass")) {
+            if (LOCAL_guest == 0) {
                 randomdelay();
             }
             dopass(arg);
-        } else if (!strcmp(cmd, "quit")) {
+        } else if (!strcmp(LOCAL_cmd, "quit")) {
             addreply(221, MSG_GOODBYE,
                      (unsigned long long) ((uploaded + 1023ULL) / 1024ULL),
                      (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
             return;
-        } else if (!strcmp(cmd, "syst")) {
+        } else if (!strcmp(LOCAL_cmd, "syst")) {
             antiidle();
             addreply_noformat(215, "UNIX Type: L8");
             goto wayout;
 #ifdef WITH_TLS
         } else if (enforce_tls_auth > 0 &&
-                   !strcmp(cmd, "auth") && !strcasecmp(arg, "tls")) {
+                   !strcmp(LOCAL_cmd, "auth") && !strcasecmp(arg, "tls")) {
             addreply_noformat(234, "AUTH TLS OK.");
             doreply();
-            if (tls_cnx == NULL) {
+            if (LOCAL_tls_cnx == NULL) {
                 (void) tls_init_new_session();
             }
             goto wayout;
-        } else if (!strcmp(cmd, "pbsz")) {
-            addreply_noformat(tls_cnx == NULL ? 503 : 200, "PBSZ=0");
-        } else if (!strcmp(cmd, "prot")) {
-            if (tls_cnx == NULL) {
+        } else if (!strcmp(LOCAL_cmd, "pbsz")) {
+            addreply_noformat(LOCAL_tls_cnx == NULL ? 503 : 200, "PBSZ=0");
+        } else if (!strcmp(LOCAL_cmd, "prot")) {
+            if (LOCAL_tls_cnx == NULL) {
                 addreply_noformat(503, MSG_PROT_BEFORE_PBSZ);
                 goto wayout;
             }
@@ -398,65 +398,65 @@ void parser(void)
                 break;
             }
 #endif
-        } else if (!strcmp(cmd, "auth") || !strcmp(cmd, "adat")) {
+        } else if (!strcmp(LOCAL_cmd, "auth") || !strcmp(LOCAL_cmd, "adat")) {
             addreply_noformat(500, MSG_AUTH_UNIMPLEMENTED);
-        } else if (!strcmp(cmd, "type")) {
+        } else if (!strcmp(LOCAL_cmd, "type")) {
             antiidle();
             dotype(arg);
             goto wayout;
-        } else if (!strcmp(cmd, "mode")) {
+        } else if (!strcmp(LOCAL_cmd, "mode")) {
             antiidle();                
             domode(arg);
             goto wayout;
 #ifndef MINIMAL
-        } else if (!strcmp(cmd, "feat")) {
+        } else if (!strcmp(LOCAL_cmd, "feat")) {
             dofeat();
             goto wayout;
-	} else if (!strcmp(cmd, "opts")) {
+	} else if (!strcmp(LOCAL_cmd, "opts")) {
 	    doopts(arg);
 	    goto wayout;
 #endif
-        } else if (!strcmp(cmd, "stru")) {
+        } else if (!strcmp(LOCAL_cmd, "stru")) {
             dostru(arg);
             goto wayout;
 #ifndef MINIMAL
-        } else if (!strcmp(cmd, "help")) {
+        } else if (!strcmp(LOCAL_cmd, "help")) {
             goto help_site;
 #endif
 #ifdef DEBUG
-        } else if (!strcmp(cmd, "xdbg")) {
+        } else if (!strcmp(LOCAL_cmd, "xdbg")) {
             debug++;
             addreply(200, MSG_XDBG_OK, debug);
             goto wayout;
 #endif            
-        } else if (loggedin == 0) {            
+        } else if (LOCAL_loggedin == 0) {            
             /* from this point, all commands need authentication */
             addreply_noformat(530, MSG_NOT_LOGGED_IN);
             goto wayout;
         } else {
-            if (!strcmp(cmd, "cwd") || !strcmp(cmd, "xcwd")) {
+            if (!strcmp(LOCAL_cmd, "cwd") || !strcmp(LOCAL_cmd, "xcwd")) {
                 antiidle();
                 docwd(arg);
                 goto wayout;
-            } else if (!strcmp(cmd, "port")) {
+            } else if (!strcmp(LOCAL_cmd, "port")) {
                 doport(arg);
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "eprt")) {
+            } else if (!strcmp(LOCAL_cmd, "eprt")) {
                 doeprt(arg);
-            } else if (!strcmp(cmd, "esta") &&
+            } else if (!strcmp(LOCAL_cmd, "esta") &&
                        disallow_passive == 0 &&
                        STORAGE_FAMILY(force_passive_ip) == 0) {
                 doesta();
-            } else if (!strcmp(cmd, "estp")) {
+            } else if (!strcmp(LOCAL_cmd, "estp")) {
                 doestp();
 #endif
             } else if (disallow_passive == 0 && 
-                       (!strcmp(cmd, "pasv") || !strcmp(cmd, "p@sw"))) {
+                       (!strcmp(LOCAL_cmd, "pasv") || !strcmp(LOCAL_cmd, "p@sw"))) {
                 dopasv(0);
             } else if (disallow_passive == 0 && 
-                       (!strcmp(cmd, "epsv") && 
+                       (!strcmp(LOCAL_cmd, "epsv") && 
                        (broken_client_compat == 0 ||
-                        STORAGE_FAMILY(ctrlconn) == AF_INET6))) {
+                        STORAGE_FAMILY(LOCAL_ctrlconn) == AF_INET6))) {
                 if (!strcasecmp(arg, "all")) {
                     epsv_all = 1;
                     addreply_noformat(220, MSG_ACTIVE_DISABLED);
@@ -466,9 +466,9 @@ void parser(void)
                     dopasv(1);
                 }
 #ifndef MINIMAL            
-            } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
+            } else if (disallow_passive == 0 && !strcmp(LOCAL_cmd, "spsv")) {
                 dopasv(2);
-            } else if (!strcmp(cmd, "allo")) {
+            } else if (!strcmp(LOCAL_cmd, "allo")) {
                 if (*arg == 0) {
                     addreply_noformat(501, MSG_STAT_FAILURE);
                 } else {
@@ -476,22 +476,22 @@ void parser(void)
                     doallo(size);
                 }
 #endif
-            } else if (!strcmp(cmd, "pwd") || !strcmp(cmd, "xpwd")) {
+            } else if (!strcmp(LOCAL_cmd, "pwd") || !strcmp(LOCAL_cmd, "xpwd")) {
 #ifdef WITH_RFC2640
 		char *nwd;
 #endif
                 antiidle();
 #ifdef WITH_RFC2640
-		nwd = charset_fs2client(wd);
+		nwd = charset_fs2client(LOCAL_wd);
 		addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, nwd);
 		free(nwd);
 #else
-                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, wd);
+                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, LOCAL_wd);
 #endif
                 goto wayout;                
-            } else if (!strcmp(cmd, "cdup") || !strcmp(cmd, "xcup")) {
+            } else if (!strcmp(LOCAL_cmd, "cdup") || !strcmp(LOCAL_cmd, "xcup")) {
                 docwd("..");
-            } else if (!strcmp(cmd, "retr")) {
+            } else if (!strcmp(LOCAL_cmd, "retr")) {
                 if (*arg != 0) {
 #ifdef WITH_TLS
                     if (enforce_tls_auth == 3 &&
@@ -506,22 +506,22 @@ void parser(void)
                 } else {
                     addreply_noformat(501, MSG_NO_FILE_NAME);
                 }
-            } else if (!strcmp(cmd, "rest")) {
+            } else if (!strcmp(LOCAL_cmd, "rest")) {
                 antiidle();
                 if (*arg != 0) {
                     dorest(arg);
                 } else {
                     addreply_noformat(501, MSG_NO_RESTART_POINT);
-                    restartat = (off_t) 0;
+                    LOCAL_restartat = (off_t) 0;
                 }
                 goto wayout;
-            } else if (!strcmp(cmd, "dele")) {
+            } else if (!strcmp(LOCAL_cmd, "dele")) {
                 if (*arg != 0) {
                     dodele(arg);
                 } else {
                     addreply_noformat(501, MSG_NO_FILE_NAME);
                 }
-            } else if (!strcmp(cmd, "stor")) {
+            } else if (!strcmp(LOCAL_cmd, "stor")) {
                 arg = revealextraspc(arg);
                 if (*arg != 0) {
 #ifdef WITH_TLS
@@ -536,7 +536,7 @@ void parser(void)
                 } else {
                     addreply_noformat(501, MSG_NO_FILE_NAME);
                 }
-            } else if (!strcmp(cmd, "appe")) {
+            } else if (!strcmp(LOCAL_cmd, "appe")) {
                 arg = revealextraspc(arg);
                 if (*arg != 0) {
 #ifdef WITH_TLS
@@ -552,7 +552,7 @@ void parser(void)
                     addreply_noformat(501, MSG_NO_FILE_NAME);
                 }
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "stou")) {
+            } else if (!strcmp(LOCAL_cmd, "stou")) {
 #ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
@@ -564,14 +564,14 @@ void parser(void)
                 }
 #endif
 #ifndef DISABLE_MKD_RMD
-            } else if (!strcmp(cmd, "mkd") || !strcmp(cmd, "xmkd")) {
+            } else if (!strcmp(LOCAL_cmd, "mkd") || !strcmp(LOCAL_cmd, "xmkd")) {
                 arg = revealextraspc(arg);
                 if (*arg != 0) {
                     domkd(arg);
                 } else {
                     addreply_noformat(501, MSG_NO_DIRECTORY_NAME);
                 }
-            } else if (!strcmp(cmd, "rmd") || !strcmp(cmd, "xrmd")) {
+            } else if (!strcmp(LOCAL_cmd, "rmd") || !strcmp(LOCAL_cmd, "xrmd")) {
                 if (*arg != 0) {
                     dormd(arg);
                 } else {
@@ -579,7 +579,7 @@ void parser(void)
                 }
 #endif
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "stat")) {
+            } else if (!strcmp(LOCAL_cmd, "stat")) {
                 if (*arg != 0) {
                     modern_listings = 0;
                     donlist(arg, 1, 1, 1, 1);
@@ -587,7 +587,7 @@ void parser(void)
                     addreply_noformat(211, "http://www.pureftpd.org/");
                 }
 #endif
-            } else if (!strcmp(cmd, "list")) {
+            } else if (!strcmp(LOCAL_cmd, "list")) {
 #ifndef MINIMAL
                 modern_listings = 0;
 #endif
@@ -600,7 +600,7 @@ void parser(void)
                 {
                     donlist(arg, 0, 1, 0, 1);
                 }
-            } else if (!strcmp(cmd, "nlst")) {
+            } else if (!strcmp(LOCAL_cmd, "nlst")) {
 #ifndef MINIMAL                
                 modern_listings = 0;
 #endif
@@ -614,7 +614,7 @@ void parser(void)
                     donlist(arg, 0, 0, 0, broken_client_compat);
                 }
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "mlst")) {
+            } else if (!strcmp(LOCAL_cmd, "mlst")) {
 #ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
@@ -624,7 +624,7 @@ void parser(void)
                 {
                     domlst(*arg != 0 ? arg : ".");
                 }
-            } else if (!strcmp(cmd, "mlsd")) {
+            } else if (!strcmp(LOCAL_cmd, "mlsd")) {
                 modern_listings = 1;
 #ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
@@ -636,10 +636,10 @@ void parser(void)
                     donlist(arg, 0, 1, 1, 0);
                 }
 #endif
-            } else if (!strcmp(cmd, "abor")) {
+            } else if (!strcmp(LOCAL_cmd, "abor")) {
                 addreply_noformat(226, MSG_ABOR_SUCCESS);
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "site")) {
+            } else if (!strcmp(LOCAL_cmd, "site")) {
                 if ((sitearg = arg) != NULL) {
                     while (*sitearg != 0 && !isspace((unsigned char) *sitearg)) {
                         sitearg++;
@@ -779,22 +779,22 @@ void parser(void)
                     addreply_noformat(500, "SITE: " MSG_MISSING_ARG);
                 }
 #endif
-            } else if (!strcmp(cmd, "mdtm")) {
+            } else if (!strcmp(LOCAL_cmd, "mdtm")) {
                 domdtm(arg);
-            } else if (!strcmp(cmd, "size")) {
+            } else if (!strcmp(LOCAL_cmd, "size")) {
                 dosize(arg);
 #ifndef MINIMAL
-            } else if (!strcmp(cmd, "chmod")) {
+            } else if (!strcmp(LOCAL_cmd, "chmod")) {
                 sitearg = arg;
                 goto parsechmod;
 #endif
-            } else if (!strcmp(cmd, "rnfr")) {
+            } else if (!strcmp(LOCAL_cmd, "rnfr")) {
                 if (*arg != 0) {
                     dornfr(arg);
                 } else {
                     addreply_noformat(550, MSG_NO_FILE_NAME);
                 }
-            } else if (!strcmp(cmd, "rnto")) {
+            } else if (!strcmp(LOCAL_cmd, "rnto")) {
                 arg = revealextraspc(arg);
                 if (*arg != 0) {
                     dornto(arg);

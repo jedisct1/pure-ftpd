@@ -14,7 +14,7 @@
 
 int hasquota(void)
 {
-    if (guest != 0 ||
+    if (LOCAL_guest != 0 ||
         (user_quota_files >= ULONG_LONG_MAX &&
          user_quota_size >= ULONG_LONG_MAX)) {
         return -1;
@@ -38,7 +38,7 @@ int quota_update(Quota *quota,
     int dummy_overflow;
     ssize_t left = (ssize_t) (sizeof buf - 1U);
     
-    if (hasquota() != 0 || chrooted == 0) {
+    if (hasquota() != 0 || LOCAL_chrooted == 0) {
         return -2;
     }    
     if (overflow == NULL) {

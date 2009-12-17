@@ -22,29 +22,29 @@ GLOBAL0(signed char throttling);                /* 0=don't throttle 1=throttle a
 GLOBAL0(unsigned long throttling_bandwidth_dl);
 GLOBAL0(unsigned long throttling_bandwidth_ul);
 GLOBAL0(signed char allowfxp);                    /* 0=no fxp 1=authenticated 2=everybody */
-GLOBAL0(signed char passive);
-GLOBAL(int clientfd, 0);                   /* command connection file descriptor */
-GLOBAL(int datafd, -1);                    /* data connection file descriptor */
-GLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
+TGLOBAL0(signed char passive);
+TGLOBAL(int clientfd, 0);                   /* command connection file descriptor */
+TGLOBAL(int datafd, -1);                    /* data connection file descriptor */
+TGLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
 GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */
 GLOBAL0(signed char no_ipv4);                    /* IPv4 disabled or not */
 GLOBAL(const size_t cmdsize, MAXPATHLEN + 16U);
-GLOBAL0(char cmd[MAXPATHLEN + 32U]);        /* command line - about 30 chars for command */
-GLOBAL0(char wd[MAXPATHLEN + 1U]);            /* current working directory */
-GLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
-GLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
-GLOBAL0(char account[MAX_USER_LENGTH + 1U]);      /* user login */
-GLOBAL0(char *renamefrom);
+TAGLOBAL0(char cmd, MAXPATHLEN + 32U);        /* command line - about 30 chars for command */
+TAGLOBAL0(char wd, MAXPATHLEN + 1U);            /* current working directory */
+TGLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
+TGLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
+TAGLOBAL0(char account, MAX_USER_LENGTH + 1U);      /* user login */
+TGLOBAL0(char *renamefrom);
 GLOBAL0(in_port_t serverport);    /* local server port */
 GLOBAL0(signed char userchroot);                /* 0=don't chroot() by default for regular users 1=chroot except members of the trusted group 2=chroot everyone */
-GLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
+TGLOBAL0(signed char chrooted);                     /* if we already chroot()ed */
 GLOBAL0(uid_t chroot_trustedgid);
 GLOBAL0(signed char broken_client_compat);         /* don't enable workarounds by default */
 GLOBAL0(uid_t warez);                    /* don't guard against warez */
 GLOBAL0(signed char debug);                        /* don't give debug output */
-GLOBAL0(signed char guest);                        /* if non-zero, it's a guest user */
+TGLOBAL0(signed char guest);                        /* if non-zero, it's a guest user */
 GLOBAL0(uid_t useruid);                    /* smallest uid which can ftp */
-GLOBAL0(signed char candownload);                /* if non-zero, don't let the user download */
+TGLOBAL0(signed char candownload);                /* if non-zero, don't let the user download */
 GLOBAL0(double load);                    /* for reporting what the load was */
 GLOBAL(time_t noopidle, (time_t) - 1);    /* when we started to receive NOOP */
 GLOBAL(unsigned int firstport, 1024U);        /* first and last ports to use, if we're */
@@ -53,16 +53,16 @@ GLOBAL(signed char dot_write_ok, 1);           /* -x option */
 GLOBAL(signed char dot_read_ok, 1);            /* -X option */
 GLOBAL0(signed char dot_read_anon_ok);            /* -z option */
 #ifndef DEFAULT_TO_BINARY_TYPE
-GLOBAL(signed char type, 1);                    /* type - 0 = error, 1 = ascii, 2 = binary */
+TGLOBAL(signed char type, 1);                    /* type - 0 = error, 1 = ascii, 2 = binary */
 #else
-GLOBAL(signed char type, 2);
+TGLOBAL(signed char type, 2);
 #endif
 #ifdef RATIOS
 GLOBAL0(unsigned int ratio_upload);
 GLOBAL0(unsigned int ratio_download);
 GLOBAL0(signed char ratio_for_non_anon);
 #endif
-GLOBAL0(off_t restartat);
+TGLOBAL0(off_t restartat);
 GLOBAL(unsigned long int idletime, DEFAULT_IDLE);
 GLOBAL0(double idletime_noop);
 GLOBAL(signed char resolve_hostnames, 1);
@@ -70,13 +70,13 @@ GLOBAL0(int allow_anon_mkdir);
 GLOBAL(unsigned int max_ls_files, DEFAULT_MAX_LS_FILES);
 GLOBAL(unsigned int max_ls_depth, DEFAULT_MAX_LS_DEPTH);
 GLOBAL0(char *fortunes_file);
-GLOBAL0(char host[NI_MAXHOST]);
-GLOBAL0(int replycode);
+TAGLOBAL0(char host, NI_MAXHOST);
+TGLOBAL0(int replycode);
 GLOBAL0(signed char force_ls_a);
-GLOBAL0(struct sockaddr_storage peer);
+TGLOBAL0(struct sockaddr_storage peer);
 GLOBAL0(struct sockaddr_storage force_passive_ip);
 GLOBAL0(const char *force_passive_ip_s);
-GLOBAL0(in_port_t peerdataport);
+TGLOBAL0(in_port_t peerdataport);
 GLOBAL0(double maxload);
 GLOBAL(unsigned int maxusers, DEFAULT_MAX_USERS);
 #ifdef PER_USER_LIMITS
@@ -84,7 +84,7 @@ GLOBAL0(unsigned int per_user_max);
 GLOBAL0(unsigned int per_anon_max);
 #endif
 GLOBAL0(int iptropy);
-GLOBAL(volatile int xferfd, -1);
+TGLOBAL(volatile int xferfd, -1);
 #ifndef NO_STANDALONE
 GLOBAL0(unsigned int maxip);
 #endif
@@ -152,8 +152,8 @@ GLOBAL(const char *months[12], { MONTHS_NAMES });
 GLOBAL(const char *week_days[7], { WEEK_DAYS_NAMES });
 #endif
 
-GLOBAL0(AuthResult authresult);
-GLOBAL0(time_t session_start_time);
+TGLOBAL0(AuthResult authresult);
+TGLOBAL0(time_t session_start_time);
 
 #ifndef NO_STANDALONE
 GLOBAL(const char *pid_file, PID_FILE);
@@ -181,8 +181,8 @@ GLOBAL(iconv_t iconv_fd_utf82fs, NULL);
 #endif
 
 #ifndef WITH_TLS
-GLOBAL0(void * tls_cnx);
-GLOBAL0(void * tls_data_cnx);
+TGLOBAL0(void * tls_cnx);
+TGLOBAL0(void * tls_data_cnx);
 #endif
 
 #ifdef NON_ROOT_FTP
@@ -193,3 +193,10 @@ GLOBAL0(const char *home_directory);
 GLOBAL0(Registered_SiteCallback *registered_site_callbacks);
 #endif
 
+#ifdef __IPHONE__
+# ifdef WITH_VIRTUAL_CHROOT
+TAGLOBAL0(char curdir, MAXPATHLEN);
+TGLOBAL0(char *chroot_base);
+TGLOBAL0(size_t chroot_len);
+# endif
+#endif

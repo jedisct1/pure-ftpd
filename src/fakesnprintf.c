@@ -329,5 +329,6 @@ int fakesnprintf_snprintf(char * const str, const size_t size,
     
     return ret;
 }
-
+#else
+extern signed char v6ready;
 #endif                          /* !HAVE_SNPRINTF */

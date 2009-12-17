@@ -317,6 +317,10 @@ typedef enum {
 int pureftpd_start(int argc, char *argv[], const char *home_directory);
 
 #ifdef __IPHONE__
+void *client_thread(void * const parent_thread_local_);
+#endif
+
+#ifdef __IPHONE__
 typedef struct PureFTPd_SiteCallback_ {
     int return_code;
     char *response;
@@ -533,7 +537,7 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #endif
 
 #ifdef __IPHONE__
-# define DEFAULT_MAX_USERS 1
+# define DEFAULT_MAX_USERS 10
 #endif
 #ifndef DEFAULT_MAX_USERS    
 # define DEFAULT_MAX_USERS 50
@@ -810,8 +814,9 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #ifndef offsetof
 # define offsetof(type, member) ((size_t) &((type*) NULL)->member)
 #endif    
-    
+
+#include "thread-local.h"          
 #include "bsd-realpath.h"    
 #include "fakechroot.h"
-        
+                
 #endif

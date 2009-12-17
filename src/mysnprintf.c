@@ -39,4 +39,6 @@ int workaround_snprintf(char *str, size_t size, const char *format, ...)
     
     return r;
 }
+#else
+extern signed char v6ready;
 #endif

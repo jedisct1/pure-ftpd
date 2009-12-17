@@ -17,6 +17,7 @@ EXTRA_DIST = \
 	README.Windows \
 	README.TLS \
 	README.MacOS-X \
+	README.Threaded \
 	README.iPhone \
 	README.Donations \
 	pureftpd.schema \

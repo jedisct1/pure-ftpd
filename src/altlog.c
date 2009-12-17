@@ -71,7 +71,7 @@ static int altlog_writexfer_stats(const int upload,
     if (!SNCHECK(snprintf(alloca_line, line_size,
                           "%llu %llx.%lx %s %s %c %llu %lu %s\n",
                           (unsigned long long) time(NULL),
-                          (unsigned long long) session_start_time,
+                          (unsigned long long) LOCAL_session_start_time,
                           (unsigned long) getpid(),
                           account_, host_,
                           upload != 0 ? 'U' : 'D',
@@ -295,7 +295,7 @@ static int altlog_writexfer_xferlog(const int upload,
                           quoted_filename,
                           type == 1 ? 'a' : 'b',
                           upload != 0 ? 'i' : 'o',
-                          loggedin != 0 ? 'r' : 'a',
+                          LOCAL_loggedin != 0 ? 'r' : 'a',
                           account_), line_size)) {
         altlog_write(alloca_line);
     }

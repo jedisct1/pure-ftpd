@@ -123,9 +123,9 @@ const char *getname(const uid_t uid)
     }
     if (
 # ifndef ALWAYS_RESOLVE_IDS
-        chrooted == 0 && 
+        LOCAL_chrooted == 0 && 
 # endif
-        authresult.slow_tilde_expansion == 0) {
+        LOCAL_authresult.slow_tilde_expansion == 0) {
         pwd = getpwuid(uid);
     }
     if ((p = malloc(sizeof *p)) == NULL) {
@@ -164,7 +164,7 @@ const char *getgroup(const gid_t gid)
         }
     } 
 # ifndef ALWAYS_RESOLVE_IDS   
-    if (chrooted == 0) 
+    if (LOCAL_chrooted == 0) 
 # endif
     {
         pwd = getgrgid(gid);
@@ -753,7 +753,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                 goto toomany;
             }                
             if (chdir("..")) {    /* defensive in the extreme... */
-                chdir(wd);
+                chdir(LOCAL_wd);
                 if (chdir(name)) {    /* someone rmdir()'d it? */
                     die(421, LOG_ERR, "chdir: %s" ,
                         strerror(errno));
@@ -834,23 +834,23 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     }
     if (on_ctrl_conn == 0) {
         opendata();
-        if ((c = xferfd) == -1) {
+        if ((c = LOCAL_xferfd) == -1) {
             return;
         }
         doreply();
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
-            tls_init_data_session(xferfd, passive);
-            tls_fd = tls_data_cnx;
+            tls_init_data_session(LOCAL_xferfd, passive);
+            tls_fd = LOCAL_tls_data_cnx;
         }
 #endif
     } else {                           /* STAT command */
-        c = clientfd;
+        c = LOCAL_clientfd;
 #ifdef WITH_TLS
         if (data_protection_level == CPL_PRIVATE) {
-            secure_safe_write(tls_cnx, "213-STAT" CRLF,
+            secure_safe_write(LOCAL_tls_cnx, "213-STAT" CRLF,
                               sizeof "213-STAT" CRLF - 1U);
-            tls_fd = tls_cnx;
+            tls_fd = LOCAL_tls_cnx;
         }
         else
 #endif
@@ -935,7 +935,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                         }
                         if (!chdir(*path)) {
                             listdir(0U, c, tls_fd, *path);
-                            chdir(wd);
+                            chdir(LOCAL_wd);
                         }
                     }
                     path++;
@@ -989,5 +989,5 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
         addreply(226, MSG_LS_SUCCESS, matches);
     }
     end:
-    chdir(wd);
+    chdir(LOCAL_wd);
 }
