@@ -70,8 +70,11 @@ int alloc_thread_local_storage(void)
     LOCAL_INIT(tls_ctx);
     LOCAL_INIT(tls_cnx);
     LOCAL_INIT(tls_cnx_handshaked);
-    LOCAL_INIT(tls_data_cnx);    
+    LOCAL_INIT(tls_data_cnx);
     LOCAL_INIT(tls_data_cnx_handshaked);
+#else
+    LOCAL_INIT(tls_cnx);
+    LOCAL_INIT(tls_data_cnx);
 #endif
 #ifdef WITH_VIRTUAL_CHROOT
     LOCAL_AINIT(curdir);

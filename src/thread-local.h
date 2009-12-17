@@ -8,6 +8,8 @@ typedef void *SSL_CTX;
 typedef void *SSL;
 #endif
 
+#include <pthread.h>
+
 typedef struct ThreadChild_ {
     struct ThreadChild_ *next;
     pthread_t child;
