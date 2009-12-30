@@ -46,6 +46,7 @@ External contributors and people who helped in any way, shape or form:
 * Florin Andrei <elf_too at yahoo.com> - SGI Irix fixes.
 * Francis Little aka dj_oggy <oggy at hayesbrook.kent.sch.uk> - For his valuable help on Sourceforge forums, his testing of snapshot and his helpful advices. Thanks a lot, dude.
 * François SIMOND.
+* Frank de Brabander - better accuracy for throttling.
 * Frederico Gendorf - reported that on-demand directory creation didn't work with paths containing a /./ mark.
 * Gareth Blades <info2 at gbnetwork.co.uk> - Provided a fix for SMC Barricade routers.
 * Gareth Woolrdige - Fixed compilation on Corel Netwinder devices.
