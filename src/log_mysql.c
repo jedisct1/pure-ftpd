@@ -50,7 +50,7 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
     }
     from_len = strlen(from);
     to_len = from_len * 2U + (size_t) 1U;
-    if ((to = malloc(to_len + 2U)) == NULL) {
+    if ((to = malloc(to_len + (size_t) 2U)) == NULL) {
         return NULL;
     }
     t = zrand();
