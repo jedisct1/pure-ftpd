@@ -32,11 +32,6 @@
 # include <sys/wait.h>
 #endif
 
-#ifdef __IPHONE__
-# include <setjmp.h>
-static jmp_buf jb;
-#endif
-
 #define DEFAULT_BACKLOG 42
 #define DEFAULT_BACKLOG_DATA 8
 #define NICE_VALUE 10
@@ -57,19 +52,6 @@ static const char *standalone_ip;
 static volatile unsigned int nb_children;
 static volatile int listenfd = -1;
 static volatile int listenfd6 = -1;
-#endif
-#ifdef __IPHONE__
-static volatile sig_atomic_t suspend_client_connections;
-static AuthResult embedded_simple_pw_check(const char *account, const char *password);
-static void (*logout_callback)(void *user_data);
-static void *logout_callback_user_data;
-static void (*login_callback)(void *user_data);
-static void *login_callback_user_data;
-static void (*log_callback)(int crit, const char *message, void *user_data);
-static void *log_callback_user_data;
-static int  (*simple_auth_callback)(const char *account, const char *password, void *user_data);
-static void *simple_auth_callback_user_data;
-static void pureftpd_unregister_site_callbacks(void);
 #endif
 
 struct reply {

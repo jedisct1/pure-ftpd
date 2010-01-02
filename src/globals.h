@@ -189,7 +189,3 @@ GLOBAL0(void * tls_data_cnx);
 GLOBAL0(const char *home_directory);
 #endif
     
-#ifdef __IPHONE__
-GLOBAL0(Registered_SiteCallback *registered_site_callbacks);
-#endif
-

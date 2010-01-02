@@ -310,9 +310,6 @@ void _EXIT(const int status)
 #ifdef FTPWHO
     ftpwho_exit();
 #endif
-#ifdef __IPHONE__
-    longjmp(jb, 1);
-#endif
     _exit(status);
 }
 
@@ -634,7 +631,7 @@ static int generic_aton(const char *src, struct sockaddr_storage *a)
 
 void logfile(const int crit, const char *format, ...)
 {
-#if defined(NON_ROOT_FTP) && !defined(__IPHONE__)
+#if defined(NON_ROOT_FTP)
     (void) crit;
     (void) format;
 #else
@@ -642,11 +639,9 @@ void logfile(const int crit, const char *format, ...)
     va_list va;
     char line[MAX_SYSLOG_LINE];
     
-# ifndef __IPHONE__
     if (no_syslog != 0) {
         return;
     }
-# endif
     va_start(va, format);
     vsnprintf(line, sizeof line, format, va);
     va_end(va);    
@@ -669,12 +664,6 @@ void logfile(const int crit, const char *format, ...)
     default:
         urgency = "";
     }
-# ifdef __IPHONE__
-    if (log_callback != NULL) {
-        (*log_callback)(crit, line, log_callback_user_data);
-    }
-    return;
-# endif
 # ifdef SAVE_DESCRIPTORS
     openlog("pure-ftpd", log_pid, syslog_facility);
 # endif
@@ -1542,7 +1531,6 @@ void douser(const char *username)
 #endif
 }
 
-#ifndef __IPHONE__
 static AuthResult pw_check(const char *account, const char *password,
                            const struct sockaddr_storage * const sa,
                            const struct sockaddr_storage * const peer)
@@ -1624,7 +1612,6 @@ static AuthResult pw_check(const char *account, const char *password,
     
     return result;
 }
-#endif
 
 /*
  * Check if an user belongs to the trusted group, either in his
@@ -1765,11 +1752,7 @@ void dopass(char *password)
         addreply_noformat(530, MSG_WHOAREYOU);
         return;
     }
-#ifdef __IPHONE__
-    authresult = embedded_simple_pw_check(account, password);
-#else
     authresult = pw_check(account, password, &ctrlconn, &peer);
-#endif
     {
         /* Clear password from memory, paranoia */        
         volatile char *password_ = (volatile char *) password;
@@ -4747,9 +4730,6 @@ void error(int n, const char *msg)
 
 static void fixlimits(void)
 {
-#ifdef __IPHONE__
-    return;
-#endif
 #ifdef HAVE_SETRLIMIT
     static struct rlimit lim;
 
@@ -5171,12 +5151,6 @@ static void doit(void)
         display_banner = 0;
     }
 #endif
-#ifdef __IPHONE__
-    if (display_banner) {
-        addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd (iPhone)");
-        display_banner = 0;
-    }
-#endif    
     if (display_banner) {
 #ifdef BORING_MODE
         addreply_noformat(0, MSG_WELCOME_TO " Pure-FTPd.");
@@ -5374,16 +5348,6 @@ static void accept_client(const int active_listen_fd) {
          (active_listen_fd, (struct sockaddr *) &sa, &dummy)) == -1) {
         return;
     }
-#ifdef __IPHONE__
-    if (suspend_client_connections != 0) {
-        (void) close(clientfd);
-        clientfd = -1;
-        return;
-    }
-    if (login_callback != NULL) {
-        (*login_callback)(login_callback_user_data);
-    }
-#endif
     if (STORAGE_FAMILY(sa) != AF_INET && STORAGE_FAMILY(sa) != AF_INET6) {
         (void) close(clientfd);
         clientfd = -1;
@@ -5433,17 +5397,11 @@ static void accept_client(const int active_listen_fd) {
     sigaddset(&set, SIGCHLD);
     sigprocmask(SIG_BLOCK, &set, NULL);
     nb_children++;
-#ifdef __IPHONE__
-    child = (pid_t) 0;
-#else
     child = fork();
-#endif
     if (child == (pid_t) 0) {
-#ifndef __IPHONE__
         if (isatty(2)) {
             (void) close(2);
         }
-#endif
 #ifndef SAVE_DESCRIPTORS
         if (no_syslog == 0) {
             closelog();
@@ -6315,37 +6273,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         (void) tls_init_library();
     }
 #endif
-    
-#ifdef __IPHONE__
-    if (setjmp(jb) != 0) {
-        close(clientfd); close(datafd); close(xferfd);
-        clientfd = datafd = xferfd = -1;        
-        delete_atomic_file();
-        chroot("/");
-        downloaded = uploaded = 0ULL;
-        datafd = xferfd = -1;
-        root_directory = NULL;
-        loggedin = 0;
-        userchroot = chrooted = 0;
-        guest = 0;
-        type = 2;
-        restartat = (off_t) 0;
-        state_needs_update = 1;
-        atomic_prefix = NULL;
-        nb_children = 0;
-# ifdef WITH_TLS
-        tls_cnx_handshaked = tls_data_cnx_handshaked = 0;
-# endif
-        if (logout_callback != NULL && suspend_client_connections == 0) {
-            (*logout_callback)(logout_callback_user_data);
-        }        
-        if (stop_server > 0) {
-            close(listenfd); close(listenfd6);
-            listenfd = listenfd6 = -1;
-            goto bye;
-        }
-    }
-#endif
 #if !defined(NO_STANDALONE) && !defined(NO_INETD)
     if (check_standalone() != 0) {
         standalone_server();
@@ -6360,9 +6287,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 # error Configuration error
 #endif
 
-#ifdef __IPHONE__
-    bye:
-#endif
 #ifdef WITH_UPLOAD_SCRIPT
     upload_pipe_close();
 #endif
@@ -6405,147 +6329,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     tls_free_library();
 #endif
     
-#ifdef __IPHONE__    
-    /* We need to duplicate what is in _EXIT(), minus the jump */
-    delete_atomic_file();
-# ifdef FTPWHO
-    ftpwho_exit();
-# endif
-    pureftpd_unregister_site_callbacks();
-    stop_server = 0;
-    return 0;
-#endif
     _EXIT(EXIT_SUCCESS);
 
     return 0;
 }
-
-#ifdef __IPHONE__
-int pureftpd_shutdown(void)
-{
-    stop_server = 1;
-    shutdown(clientfd, SHUT_RDWR);    
-    shutdown(datafd, SHUT_RDWR);
-    shutdown(xferfd, SHUT_RDWR);
-    close(listenfd);
-    close(listenfd6);
-    listenfd = listenfd6 = -1;
-    
-    return 0;
-}
-
-int pureftpd_enable(void)
-{
-    suspend_client_connections = 0;
-    
-    return 0;
-}
-
-int pureftpd_disable(void)
-{
-    suspend_client_connections = 1;
-    
-    return 0;
-}
-
-void pureftpd_register_login_callback(void (*callback)(void *user_data),
-                                      void *user_data)
-{
-    login_callback = callback;
-    login_callback_user_data = user_data;
-}
-
-void pureftpd_register_logout_callback(void (*callback)(void *user_data),
-                                       void *user_data)
-{
-    logout_callback = callback;
-    logout_callback_user_data = user_data;
-}
-
-void pureftpd_register_log_callback(void (*callback)(int crit,
-                                                     const char *message,
-                                                     void *user_data),
-                                    void *user_data)
-{
-    log_callback = callback;
-    log_callback_user_data = user_data;
-}
-
-void pureftpd_register_simple_auth_callback(int (*callback)(const char *account,
-                                                            const char *password,
-                                                            void *user_data),
-                                            void *user_data)
-{
-    simple_auth_callback = callback;
-    simple_auth_callback_user_data = user_data;
-}
-
-static AuthResult embedded_simple_pw_check(const char *account, const char *password)
-{
-    AuthResult authresult;
-    
-    memset(&authresult, 0, sizeof authresult);
-    if (simple_auth_callback == NULL ||
-        account == NULL || *account == 0 || password == NULL) {
-        authresult.auth_ok = 0;
-        return authresult;
-    }
-    if ((*simple_auth_callback)(account, password, simple_auth_callback_user_data) <= 0) {
-        authresult.auth_ok = -1;
-        return authresult;
-    }
-    if ((authresult.dir = strdup(home_directory)) == NULL) {
-        die_mem();
-    }
-    authresult.uid = geteuid();
-    authresult.gid = getegid();
-    authresult.auth_ok = 1;
-    authresult.slow_tilde_expansion = 0;
-    userchroot = 2;
-    
-    return authresult;
-}
-
-void pureftpd_register_site_callback
-    (const char *site_command,
-     PureFTPd_SiteCallback *(*callback)(const char *arg, void *user_data),
-     void (*free_callback)(PureFTPd_SiteCallback *site_callback,
-                           void *user_data),
-     void *user_data)
-{
-    Registered_SiteCallback *new_registered_site_callback;
-    
-    if ((new_registered_site_callback =
-         malloc(sizeof *new_registered_site_callback)) == NULL) {
-        die_mem();
-    }
-    new_registered_site_callback->site_command = strdup(site_command);
-    if (new_registered_site_callback->site_command == NULL) {
-        die_mem();
-    }
-    new_registered_site_callback->callback = callback;
-    new_registered_site_callback->free_callback = free_callback;
-    new_registered_site_callback->user_data = user_data;
-    new_registered_site_callback->next = NULL;
-    if (registered_site_callbacks != NULL) {
-        registered_site_callbacks->next = new_registered_site_callback;
-    } else {
-        registered_site_callbacks = new_registered_site_callback;
-    }
-    logfile(LOG_INFO, "Registered site callback: [%s]", site_command);
-}
-
-static void pureftpd_unregister_site_callbacks(void)
-{
-    Registered_SiteCallback *next;
-    
-    while (registered_site_callbacks != NULL) {
-        next = registered_site_callbacks->next;
-        free(registered_site_callbacks->site_command);
-        free(registered_site_callbacks);
-        registered_site_callbacks = next;
-    }
-    registered_site_callbacks = NULL;
-}
-
-#endif
