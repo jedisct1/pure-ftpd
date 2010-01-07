@@ -82,7 +82,7 @@ int alloc_thread_local_storage(void)
     LOCAL_INIT(chroot_len);    
 #endif
     LOCAL_AINIT(replybuf);
-    LOCAL_INIT(replybuf_pos);
+    LOCAL_replybuf_pos = LOCAL_replybuf;
     LOCAL_INIT(replybuf_left);    
     
     return 0;
