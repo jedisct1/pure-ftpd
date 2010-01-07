@@ -318,22 +318,19 @@ void _EXIT(const int status)
     _exit(status);
 }
 
-static char replybuf[MAX_SERVER_REPLY_LEN * 4U];
-static char *replybuf_pos = replybuf;
-static size_t replybuf_left;
-
 static void client_init_reply_buf(void)
 {
-    replybuf_pos = replybuf;
-    replybuf_left = sizeof replybuf - 1U;
+    LOCAL_replybuf_pos = LOCAL_replybuf;
+    LOCAL_replybuf_left = sizeof LOCAL_replybuf - 1U;
 }
 
 void client_fflush(void)
 {
-    if (replybuf_pos == replybuf) {
+    if (LOCAL_replybuf_pos == LOCAL_replybuf) {
         return;
     }
-    safe_write(LOCAL_clientfd, replybuf, (size_t) (replybuf_pos - replybuf));
+    safe_write(LOCAL_clientfd, LOCAL_replybuf,
+               (size_t) (LOCAL_replybuf_pos - LOCAL_replybuf));
     client_init_reply_buf();
 }
 
@@ -352,15 +349,15 @@ void client_printf(const char * const format, ...)
     } else {
         len = (size_t) vlen;
     }
-    if (len >= replybuf_left) {
+    if (len >= LOCAL_replybuf_left) {
         client_fflush();
     }
-    if (len > replybuf_left) {
+    if (len > LOCAL_replybuf_left) {
         abort();
     }
-    memcpy(replybuf_pos, buf, len);
-    replybuf_pos += len;
-    replybuf_left -= len;
+    memcpy(LOCAL_replybuf_pos, buf, len);
+    LOCAL_replybuf_pos += len;
+    LOCAL_replybuf_left -= len;
     
     va_end(va);
 }
@@ -651,7 +648,8 @@ void logfile(const int crit, const char *format, ...)
 # endif
     va_start(va, format);
     vsnprintf(line, sizeof line, format, va);
-    va_end(va);    
+    va_end(va);
+    
     switch (crit) {
     case LOG_INFO:
         urgency = "[INFO] ";

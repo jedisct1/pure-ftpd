@@ -639,6 +639,8 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 
 #define VHOST_PREFIX_MAX_LEN 64    
 
+#define MAX_SERVER_REPLY_LEN (MAXPATHLEN + (size_t) 50U)    
+    
 #define PUREFTPD_TMPFILE_PREFIX ".pureftpd-"    
 #define ATOMIC_PREFIX_PREFIX PUREFTPD_TMPFILE_PREFIX "upload."
 

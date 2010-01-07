@@ -111,6 +111,15 @@ typedef struct ThreadLocal_ {
 #define LOCAL_chroot_len THREAD_LOCAL(chroot_len)
     size_t _chroot_len;
     
+#define LOCAL_replybuf THREAD_LOCAL(replybuf)
+    char _replybuf[MAX_SERVER_REPLY_LEN * 4U];
+    
+#define LOCAL_replybuf_pos THREAD_LOCAL(replybuf_pos)
+    char *_replybuf_pos;
+    
+#define LOCAL_replybuf_left THREAD_LOCAL(replybuf_left)
+    size_t _replybuf_left;
+    
 } ThreadLocal;
 
 #include <pthread.h>

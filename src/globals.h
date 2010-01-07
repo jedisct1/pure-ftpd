@@ -200,3 +200,7 @@ TGLOBAL0(char *chroot_base);
 TGLOBAL0(size_t chroot_len);
 # endif
 #endif
+
+TAGLOBAL0(char replybuf, MAX_SERVER_REPLY_LEN * 4U);
+TGLOBAL(char *replybuf_pos, TGLOBAL0(replybuf));
+TGLOBAL0(size_t replybuf_left);
