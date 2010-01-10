@@ -87,7 +87,7 @@ You just have to have fields with the following info:
 accepts the "any" value for the PGSQLCrypt field. With "any", all hashing
 functions (not plaintext) are tried.
 
-- The system uid to map the user to. This can be a numeric id or an user
+- The system uid to map the user to. This can be a numeric id or a user
 name, looked up at run-time.
 
 - The system gid (numeric or not) .
@@ -120,7 +120,7 @@ PGSQLGetDir     SELECT "Dir" FROM "users" WHERE "User"='\L'
 
 For each query:
 
-\L is replaced by the login of an user trying to authenticate.
+\L is replaced by the login of a user trying to authenticate.
 \I is replaced by the IP address the client connected to.
 \P is replaced by the port number the client connected to.
 \R is replaced by the remote IP address the client connected from.
@@ -152,7 +152,7 @@ Using these directives overrides PGSQLGetUID and PGSQLGetGID.
 
 Individual settings can be set for every user, using optional queries.
 
-- PGSQLGetQTAFS is the maximal number of files an user can store in his home
+- PGSQLGetQTAFS is the maximal number of files a user can store in his home
 directory.
 
 Example:

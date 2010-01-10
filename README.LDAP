@@ -127,7 +127,7 @@ Pure-FTPd uses the standard 'posixAccount' class to locate accounts. With
 OpenLDAP, that class is defined in the 'nis' schema.
 
 FTP login names should match 'uid' attributes of 'posixAccount' instances.
-When an user logs in as 'joe', the following filter is used to locate Joe's
+When a user logs in as 'joe', the following filter is used to locate Joe's
 account:
 
 

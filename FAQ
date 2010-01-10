@@ -462,7 +462,7 @@ order to have it work as any user:
 
 * Changing bandwidth throttling on-the-fly.
 
--> Is it possible to change the bandwidth allocated to an user during a
+-> Is it possible to change the bandwidth allocated to a user during a
 transfer, so that the change takes place immediately?
 
 Unfortunately, no. Or at least not at pure-ftpd level. Doing so would need
@@ -503,7 +503,7 @@ errors), but you just have to deinstall Kerberos on your client host to have
 
 * Wrong group ownership.
 
--> I have an user called 'john' whoose group is 'johngroup'. When John
+-> I have a user called 'john' whoose group is 'johngroup'. When John
 uploads a file, that one belongs to 'john', but to another group like
 'wheel' (whoose John isn't a member of). What's wrong?
 
@@ -534,7 +534,7 @@ For instance, on a GNU/Linux system, add the path to libmysqlclient.so file
 
 * "Sorry, I can't trust you".
 
--> When an user tries to log in, he gets "Sorry, I can't trust you". But his
+-> When a user tries to log in, he gets "Sorry, I can't trust you". But his
 login/password pair is right. What wrong?
 
 That message can means two things:

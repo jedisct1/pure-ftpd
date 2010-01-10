@@ -19,7 +19,7 @@ It's recommended to periodically run pure\-quotacheck for every user, in crontab
 Scans the specified <\fIdirectory\fP>.
 .TP 
 \fB\-g\fR <\fIgroup or gid\fP>
-Sets the group files will be scanned as. This is optional : if an user name is passed to \fB\-u</fR>, group are automatically retrieved.
+Sets the group files will be scanned as. This is optional : if a user name is passed to \fB\-u</fR>, group are automatically retrieved.
 .TP 
 \fB\-u\fR <\fIuser or uid\fP>
 Set the user name files will be scanned as. This is mandatory, and it can't be "root".

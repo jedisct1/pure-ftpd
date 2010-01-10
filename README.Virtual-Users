@@ -85,9 +85,9 @@ You don't need to create /home/ftpusers/joe if you run pure-ftpd with the
 -j (--createhome) switch. With that switch, home directories will
 automatically be created when users will log in for the first time.
 
-The "-z" option allow an user to connect only during a range of day time.
+The "-z" option allow a user to connect only during a range of day time.
 For instance, with -z 0900-1800, joe will only be able to connect from 9 am
-to 18 pm. Warning: an user that connected during authorized hours can
+to 18 pm. Warning: a user that connected during authorized hours can
 finish his session after these authorized hours.
 
 -r and -R are handy to restrict where the user can connect from. They can be
@@ -96,7 +96,7 @@ separated by a coma (-r 192.168.1.0/24,10.1.0.0/16,127.0.0.1/32), single IPs
 (-r 192.168.1.4,10.1.1.5), host names (-r bla.bla.net,yopcitron.com), or any
 combination of those.
 
--y is to restrict the number of concurrent sessions an user can have
+-y is to restrict the number of concurrent sessions a user can have
 at the same time. '' or 0 mean unlimited. Avoid this feature on very loaded
 servers. Use per-ip limits instead.
 
@@ -165,7 +165,7 @@ The content of his home directory is kept. Delete it by hand if you want.
     ------------------------ CHANGING PASSWORDS ------------------------
 
 
-To change the password of an user, use "pure-pw passwd":
+To change the password of a user, use "pure-pw passwd":
 
          pure-pw passwd <login> [-f <passwd file>] [-m]
 
