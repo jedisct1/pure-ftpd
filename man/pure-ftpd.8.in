@@ -271,7 +271,7 @@ users create warez sites in their account.
 Change the maximum idle time. The timeout is in minutes, and defaults to 15.
 .TP
 .B \-j
-If the home directory of an user doesn't exist, automatically
+If the home directory of a user doesn't exist, automatically
 create it. The newly created home directory belongs to the user, and
 permissions are set according to the current directory mask. To avoid local
 attacks, the parent directory should never belong to an untrusted user.
@@ -338,7 +338,7 @@ Allow anonymous users to create directories.
 Enable
 .B virtual quotas
 When virtual quotas are enabled, .ftpquota files are created, and the
-number of files for an user is restricted to 'maxfiles'. The max total size
+number of files for a user is restricted to 'maxfiles'. The max total size
 of his directory is also restricted to 'maxsize' Megabytes. Members of the
 trusted group aren't subject to quotas.
 .TP

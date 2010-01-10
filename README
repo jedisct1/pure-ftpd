@@ -140,7 +140,7 @@ properly on your system, try to recompile with this switch.
 --with-certfile=<file>: the file with the SSL certificate (see README.TLS). The
 default is /etc/ssl/private/pure-ftpd.pem .
 
---with-cookie: display a fortune or a customized banner when an user logs
+--with-cookie: display a fortune or a customized banner when a user logs
 in (see the '-F' option) .
 
 --with-diraliases: support directory aliases ("shortcuts" for the "cd"
@@ -255,7 +255,7 @@ independent of your system accounts. Please read the README.Virtual-Users
 file for more info about virtual users.
 
 --with-quotas: enable virtual quotas. With virtual quotas, you can restrict
-the maximal number of files an user can store in his account. You can also
+the maximal number of files a user can store in his account. You can also
 of course restrict the total size. See the "quotas" section later in this
 document.
 
@@ -271,7 +271,7 @@ successful upload. It needs another program installed by the Pure-FTPd
 package, called 'pure-uploadscript'. Check the man page for more info about
 this.
 
---with-virtualchroot: usually, when an user is chrooted (-A and -a
+--with-virtualchroot: usually, when a user is chrooted (-A and -a
 options), it's impossible to go out of his home directory. Enabling that
 feature makes it possible: symbolic links are always followed, even if they
 are pointing to directories not located in the user's home directory. This
@@ -1696,7 +1696,7 @@ user will type "cd pictures" and if no real "pictures" directory exists, he
 will be automatically redirected to "/usr/misc/pictures". Unlike symbolic
 links, "cd pictures" will work from any directory. Tildes are *not* expanded.
 
-An user can get the list of available aliases with the following command:
+a user can get the list of available aliases with the following command:
 
 SITE ALIAS
 
