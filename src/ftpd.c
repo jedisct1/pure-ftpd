@@ -2298,7 +2298,9 @@ void dopasv(int psvtype)
             return;
         }
     }
+#ifndef __IPHONE__
     alarm(idletime);
+#endif
     if (listen(LOCAL_datafd, DEFAULT_BACKLOG_DATA) < 0) {
         (void) close(LOCAL_datafd);
         LOCAL_datafd = -1;
@@ -2539,7 +2541,9 @@ void opendata(void)
         pfd->events = POLLIN | POLLERR | POLLHUP;
         pfd->revents = 0;
 
+#ifndef __IPHONE__
         alarm(idletime);
+#endif
         for (;;) {
             pfds[0].revents = pfds[1].revents = 0;
             pollret = poll(pfds, sizeof pfds / sizeof pfds[0], idletime * 1000UL);
@@ -2624,7 +2628,9 @@ void opendata(void)
 #endif
     }
     LOCAL_xferfd = fd;
+#ifndef __IPHONE__
     alarm(MAX_SESSION_XFER_IDLE);
+#endif
 }
 
 #ifndef MINIMAL
@@ -4322,9 +4328,11 @@ void dostor(char *name, const int append, const int autorename)
     if (!S_ISREG(st.st_mode)) {
         (void) close(f);
         addreply_noformat(550, MSG_NOT_REGULAR_FILE);
-        goto end;
+        goto end;    
     }
+#ifndef __IPHONE__
     alarm(MAX_SESSION_XFER_IDLE);
+#endif
     
     /* Anonymous users *CAN* overwrite 0-bytes files - This is the right behavior */
     if (st.st_size > (off_t) 0) {

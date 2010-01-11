@@ -882,7 +882,9 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
 
             /* Expand ~ here if needed */
             
+#ifndef __IPHONE__
             alarm(GLOB_TIMEOUT);
+#endif
             a = sglob(arg,
                       GLOB_BRACE | (opt_a ? GLOB_PERIOD : 0),
                      NULL, &g, max_ls_files + 2, max_ls_depth * 2);
