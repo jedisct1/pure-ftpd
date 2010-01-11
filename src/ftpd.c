@@ -315,7 +315,9 @@ void _EXIT(const int status)
 #ifdef FTPWHO
     ftpwho_exit();
 #endif
+#ifndef __IPHONE__    
     _exit(status);
+#endif
 }
 
 static void client_init_reply_buf(void)
