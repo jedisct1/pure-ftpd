@@ -552,6 +552,10 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #ifndef MAX_SYSLOG_LINE
 # define MAX_SYSLOG_LINE (MAXPATHLEN + 512U)
 #endif
+#ifdef __IPHONE__
+# define DEFAULT_IDLE (8UL * 60UL * 60UL)
+# define MAX_SITE_IDLE DEFAULT_IDLE
+#endif
 #ifndef DEFAULT_IDLE
 # define DEFAULT_IDLE (15UL * 60UL)
 #endif
