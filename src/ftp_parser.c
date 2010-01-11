@@ -250,11 +250,13 @@ void parser(void)
 #endif
         }
         doreply();
+#ifndef __IPHONE__
         alarm(idletime * 2);
+#endif
         switch (sfgets()) {
         case -1:
 #ifdef BORING_MODE
-            die(421, LOG_INFO, MSG_TIMEOUT);
+            die(421, LOG_INFO, MSG_TIMEOUT " (parser)");
 #else
             die(421, LOG_INFO, MSG_TIMEOUT_PARSER);
 #endif

@@ -395,7 +395,7 @@ static RETSIGTYPE sigalarm(int sig)
 {
     (void) sig;
     disablesignals();
-    die(421, LOG_INFO, MSG_TIMEOUT);
+    die(421, LOG_INFO, MSG_TIMEOUT " (ALRM)");
 }
 
 #ifndef NO_STANDALONE
@@ -4159,7 +4159,7 @@ int ul_send(ULHandler * const ulhandler)
             return -1;            
         }
         if (pollret == 0) {
-            addreply_noformat(421, MSG_TIMEOUT);
+            addreply_noformat(421, MSG_TIMEOUT " (poll)");
             return -1;
         }
         if ((ulhandler->pfds[PFD_DATA].revents & (POLLIN | POLLPRI)) != 0) {
