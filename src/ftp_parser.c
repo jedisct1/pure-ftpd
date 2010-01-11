@@ -255,7 +255,7 @@ void parser(void)
 #endif
         switch (sfgets()) {
 #ifndef __IPHONE__
-        case -1:
+        case -1:            
 # ifdef BORING_MODE
             die(421, LOG_INFO, MSG_TIMEOUT " (parser)");
 # else

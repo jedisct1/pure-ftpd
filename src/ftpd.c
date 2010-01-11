@@ -305,17 +305,20 @@ char *skip_telnet_controls(const char *str)
 }
 
 void _EXIT(const int status)
-{
+{  
 #ifdef __IPHONE__
     if (nb_children > 0) {
         nb_children--;
     }
+    logfile(LOG_INFO, "_EXIT()ing (%d)", nb_children);
 #endif
     delete_atomic_file();
 #ifdef FTPWHO
     ftpwho_exit();
 #endif
-#ifndef __IPHONE__    
+#ifdef __IPHONE__
+    pthread_exit(NULL);
+#else
     _exit(status);
 #endif
 }
