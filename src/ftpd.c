@@ -2046,9 +2046,6 @@ void dopass(char *password)
 
 void docwd(const char *dir)
 {
-#ifndef MINIMAL
-    static unsigned long failures = 0UL;
-#endif
     const char *where;
     char buffer[MAXPATHLEN + 256U];
 #ifdef WITH_RFC2640
@@ -2130,11 +2127,11 @@ void docwd(const char *dir)
         
 #ifndef MINIMAL
 # ifndef NO_DIRSCAN_DELAY
-        if (failures >= MAX_DIRSCAN_TRIES) {
+        if (cwd_failures >= MAX_DIRSCAN_TRIES) {
             _EXIT(EXIT_FAILURE);
         }
-        usleep2(failures * DIRSCAN_FAILURE_DELAY);  
-        failures++;
+        usleep2(cwd_failures * DIRSCAN_FAILURE_DELAY);  
+        cwd_failures++;
 # endif
 #endif
         
@@ -2146,7 +2143,7 @@ void docwd(const char *dir)
 #endif
     
 #ifndef MINIMAL
-    failures = 0UL;
+    cwd_failures = 0UL;
     dobanner(1);
 #endif
     if (getcwd(LOCAL_wd, sizeof LOCAL_wd - (size_t) 1U) == NULL) {
@@ -3596,6 +3593,9 @@ void domkd(char *name)
         error(550, MSG_MKD_FAILURE);
     } else {
         addreply(257, "\"%s\" : " MSG_MKD_SUCCESS, name);
+#ifndef MINIMAL
+        cwd_failures = 0UL;
+#endif
     }
 #ifdef QUOTAS
     end:
