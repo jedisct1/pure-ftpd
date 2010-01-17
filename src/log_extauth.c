@@ -8,6 +8,9 @@
 #include "globals.h"
 #include "log_extauth.h"
 #include "log_extauth_p.h"
+#ifdef WITH_TLS
+# include "tls.h"
+#endif
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -183,9 +186,6 @@ void pw_extauth_check(AuthResult * const result,
     char sa_port[NI_MAXSERV];
     char peer_hbuf[NI_MAXHOST];
     char line[4096];
-#ifndef WITH_TLS
-    int data_protection_level = 0;
-#endif    
     
     result->auth_ok = 0;
     if (getnameinfo((struct sockaddr *) sa, STORAGE_LEN(*sa),
@@ -223,7 +223,7 @@ void pw_extauth_check(AuthResult * const result,
                          EXTAUTH_CLIENT_ENCRYPTED "%d\n"
                          EXTAUTH_CLIENT_END "\n",
                          account, password, sa_hbuf, sa_port, peer_hbuf,
-                         data_protection_level),
+                         tls_cnx != NULL),
                 sizeof line)) {
         goto bye;
     }
