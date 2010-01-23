@@ -4411,7 +4411,6 @@ void dostor(char *name, const int append, const int autorename)
     }
     (void) close(f);
     closedata();
-    restartat = (off_t) 0U;    
     
     /* Here ends the real upload code */
 
