@@ -34,7 +34,7 @@ void doregistration(const char *name, unsigned long port)
                        NULL);
 }
 
-# ifdef __OSX__
+# ifdef __APPLE_CC__
 void refreshManager(void)
 {
     CFStringRef observedObject = CFSTR("org.pureftpd.osx");
