@@ -4698,11 +4698,12 @@ void doopts(char *args)
         } else if (strncasecmp(cmdopts, "on", sizeof "on" - 1U) == 0) {
             utf8 = 1;       
             addreply_noformat(200, "OK, UTF-8 enabled");
-        } else if (strncasecmp(cmdopts, "off", sizeof "off" - 1U) == 0)  {
+        } else if (strncasecmp(cmdopts, "off", sizeof "off" - 1U) == 0 &&
+                   strcasecmp(charset_client, "utf-8") != 0)  {
             utf8 = 0;
             addreply_noformat(200, "OK, UTF-8 disabled");
         } else {
-            addreply_noformat(504, MSG_UNKNOWN_COMMAND);
+            addreply_noformat(502, MSG_UNKNOWN_COMMAND);
         }
         return; 
     }
