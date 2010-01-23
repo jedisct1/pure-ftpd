@@ -85,7 +85,7 @@ int sfgets(void)
                 (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
                 return -2;
             }
-            if ((pfd.revents & POLLIN) == 0) {
+            if ((pfd.revents & (POLLIN | POLLRDNORM)) == 0) {
                 continue;
             }
             if (readnbd >= cmdsize) {
