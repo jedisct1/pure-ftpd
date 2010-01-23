@@ -2556,7 +2556,7 @@ void opendata(void)
                 (pfds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
                 die(221, LOG_INFO, MSG_LOGOUT);
             }
-            if ((pfds[1].revents & (POLLIN | POLLRDNORM)) == 0) {
+            if ((pfds[1].revents & POLLIN) == 0) {
                 continue;
             }
             socksize = (socklen_t) sizeof(dataconn);
@@ -3304,8 +3304,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     if (pollret <= 0) {
         return pollret;
     }
-    if ((dlhandler->pfds_f_in.revents &
-         (POLLIN | POLLPRI | POLLRDBAND | POLLRDNORM)) != 0) {
+    if ((dlhandler->pfds_f_in.revents & (POLLIN | POLLPRI)) != 0) {
         if (dlhandler->tls_clientfd != NULL) {
 #ifdef WITH_TLS            
             readnb = SSL_read(dlhandler->tls_clientfd, buf,
@@ -4125,8 +4124,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
                  (POLLERR | POLLHUP | POLLNVAL)) != 0) {
                 return -1;
             }
-            if ((ulhandler->pfds_command.revents &
-                 (POLLIN | POLLPRI | POLLRDBAND | POLLRDNORM)) != 0) {
+            if ((ulhandler->pfds_command.revents & (POLLIN | POLLPRI)) != 0) {
                 ret = ulhandler_handle_commands(ulhandler);
                 if (ret != 0) {
                     return ret;
@@ -4169,7 +4167,7 @@ int ul_send(ULHandler * const ulhandler)
             addreply_noformat(421, MSG_TIMEOUT " (poll)");
             return -1;
         }
-        if ((ulhandler->pfds[PFD_DATA].revents & (POLLIN | POLLRDNORM)) != 0) {
+        if ((ulhandler->pfds[PFD_DATA].revents & POLLIN) != 0) {
             ret = ul_handle_data(ulhandler, &uploaded, ts_start);
             switch (ret) {
             case 1:
@@ -4185,8 +4183,7 @@ int ul_send(ULHandler * const ulhandler)
                 return ret;
             }
         }
-        if ((ulhandler->pfds[PFD_COMMANDS].revents &
-             (POLLIN | POLLPRI | POLLRDBAND | POLLRDNORM)) != 0) {
+        if ((ulhandler->pfds[PFD_COMMANDS].revents & (POLLIN | POLLPRI)) != 0) {
             ret = ulhandler_handle_commands(ulhandler);
             if (ret != 0) {
                 return ret;
@@ -4194,8 +4191,7 @@ int ul_send(ULHandler * const ulhandler)
         }
         if ((ulhandler->pfds[PFD_DATA].revents & (POLLERR | POLLNVAL)) != 0 ||
             ((ulhandler->pfds[PFD_DATA].revents & POLLHUP) != 0 &&
-             (ulhandler->pfds[PFD_DATA].revents &
-              (POLLIN | POLLRDNORM)) == 0)) {
+             (ulhandler->pfds[PFD_DATA].revents & POLLIN) == 0)) {
             return -1;
         }
         if ((ulhandler->pfds[PFD_COMMANDS].revents &
