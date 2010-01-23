@@ -72,7 +72,7 @@ int sfgets(void)
         scanned = (size_t) 0U;
     }
     pfd.fd = clientfd;
-    pfd.events = POLLIN | POLLERR | POLLHUP;
+    pfd.events = POLLIN | POLLPRI | POLLERR | POLLHUP;
     while (scanned < cmdsize) {
         if (scanned >= readnbd) {      /* nothing left in the buffer */
             pfd.revents = 0;
@@ -85,7 +85,7 @@ int sfgets(void)
                 (pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
                 return -2;
             }
-            if ((pfd.revents & (POLLIN | POLLRDNORM)) == 0) {
+            if ((pfd.revents & (POLLIN | POLLPRI)) == 0) {
                 continue;
             }
             if (readnbd >= cmdsize) {
