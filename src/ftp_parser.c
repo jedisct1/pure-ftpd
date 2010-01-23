@@ -72,7 +72,11 @@ int sfgets(void)
         scanned = (size_t) 0U;
     }
     pfd.fd = LOCAL_clientfd;
+#ifdef __APPLE_CC__
+    pfd.events = POLLRDBAND | POLLPRI | POLLERR | POLLHUP;
+#else
     pfd.events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+#endif
     while (scanned < cmdsize) {
         if (scanned >= readnbd) {      /* nothing left in the buffer */
             pfd.revents = 0;

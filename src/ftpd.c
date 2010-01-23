@@ -3091,7 +3091,11 @@ int dlhandler_init(DLHandler * const dlhandler,
     dlhandler->bandwidth = bandwidth;
     pfd = &dlhandler->pfds_f_in;
     pfd->fd = clientfd;
+#ifdef __APPLE_CC__    
+    pfd->events = POLLRDBAND | POLLPRI | POLLERR | POLLHUP;
+#else
     pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+#endif
     pfd->revents = 0;
     
     if (restartat > (off_t) 0) {
@@ -3941,11 +3945,19 @@ int ul_init(ULHandler * const ulhandler,
     pfd->revents = 0;    
     pfd = &ulhandler->pfds[PFD_COMMANDS];
     pfd->fd = clientfd;
-    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+#ifdef __APPLE_CC__
+    pfd->events = POLLRDBAND | POLLPRI | POLLERR | POLLHUP;
+#else
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;    
+#endif
     pfd->revents = 0;
     pfd = &ulhandler->pfds_command;
     pfd->fd = clientfd;
-    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;
+#ifdef __APPLE_CC__
+    pfd->events = POLLRDBAND | POLLPRI | POLLERR | POLLHUP;
+#else
+    pfd->events = POLLIN | POLLPRI | POLLERR | POLLHUP;    
+#endif
     pfd->revents = 0;
     ulhandler->min_chunk_size = UL_MIN_CHUNK_SIZE;
     if (ascii_mode > 0) {
