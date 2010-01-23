@@ -4496,8 +4496,8 @@ void dostor(char *name, const int append, const int autorename)
                 goto afterquota;
             }
             if ((original_file_size = get_file_size(name)) < (off_t) 0 ||
-                restartat > original_file_size) {
-                original_file_size = restartat;
+                LOCAL_restartat > original_file_size) {
+                original_file_size = LOCAL_restartat;
             }
             if (rename(atomic_file, name) != 0) {
                 error(553, MSG_RENAME_FAILURE);
