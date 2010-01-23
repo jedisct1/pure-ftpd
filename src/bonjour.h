@@ -3,7 +3,7 @@
 
 #ifdef WITH_BONJOUR
 
-# ifdef __OSX__
+# ifdef __APPLE_CC__
 #  include <CoreFoundation/CoreFoundation.h>
 # endif
 
