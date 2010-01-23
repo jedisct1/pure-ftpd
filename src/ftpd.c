@@ -4695,9 +4695,6 @@ void doopts(char *args)
     if (strncasecmp("utf8 ", args, 5) == 0) {
         if (cmdopts == NULL) {
             addreply_noformat(501, "OPTS UTF8: " MSG_MISSING_ARG);          
-        } else if ((iconv_fd_fs2utf8 == NULL || iconv_fd_utf82fs == NULL)
-                   && strcasecmp(charset_fs, "utf-8") != 0) {
-            addreply_noformat(504, "Disabled");
         } else if (strncasecmp(cmdopts, "on", sizeof "on" - 1U) == 0) {
             utf8 = 1;       
             addreply_noformat(200, "OK, UTF-8 enabled");
@@ -6307,16 +6304,16 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     first_authentications = last_authentications = NULL;
     free(trustedip);
 #ifdef WITH_RFC2640
-    if (iconv_fd_fs2client != NULL) {
+    if (iconv_fd_fs2client != (iconv_t) -1) {
         iconv_close(iconv_fd_fs2client);
     }
-    if (iconv_fd_fs2utf8 != NULL) {
+    if (iconv_fd_fs2utf8 != (iconv_t) -1) {
         iconv_close(iconv_fd_fs2utf8);
     }
-    if (iconv_fd_client2fs != NULL) {
+    if (iconv_fd_client2fs != (iconv_t) -1) {
         iconv_close(iconv_fd_client2fs);
     }
-    if (iconv_fd_utf82fs != NULL) {
+    if (iconv_fd_utf82fs != (iconv_t) -1) {
         iconv_close(iconv_fd_utf82fs);
     }
 #endif
