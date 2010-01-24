@@ -73,7 +73,7 @@ int sfgets(void)
     }
     pfd.fd = LOCAL_clientfd;
 #ifdef __APPLE_CC__
-    pfd.events = POLLRDBAND | POLLPRI | POLLERR | POLLHUP;
+    pfd.events = POLLIN | POLLERR | POLLHUP;
 #else
     pfd.events = POLLIN | POLLPRI | POLLERR | POLLHUP;
 #endif
