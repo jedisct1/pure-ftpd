@@ -1267,7 +1267,7 @@ void doallo(const off_t size)
     
     if (size <= 0) {
         ret = 0;
-    } else if (ul_check_free_space(LOCAL_wd, (double) size) == 1) {
+    } else if (ul_check_free_space(LOCAL_wd, (double) size) == 0) {
         ret = 0;
     }
 #ifdef QUOTAS
@@ -4233,9 +4233,9 @@ int ul_check_free_space(const char *name, const double min_space)
     double jam;
     double space;
     
-    if (maxdiskusagepct <= 0.0) {
+    if (maxdiskusagepct <= 0.0 && min_space <= 0.0) {
         return 1;
-    }    
+    }
 #ifdef CHECK_SYMLINKS_DISK_SPACE
     if (STATFS(name, &statfsbuf) == 0) {
         goto okcheckspace;
@@ -4272,14 +4272,14 @@ int ul_check_free_space(const char *name, const double min_space)
         space = (double) STATFS_BAVAIL(statfsbuf) *
             (double) STATFS_FRSIZE(statfsbuf);
         if (space < min_space) {
-            return 1;
+            return 0;
         }
     }    
     jam = (double) STATFS_BAVAIL(statfsbuf) /
         (double) STATFS_BLOCKS(statfsbuf);
     if (jam >= maxdiskusagepct) {
         return 1;
-    }    
+    }
     return 0;
 }
 
