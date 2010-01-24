@@ -477,7 +477,12 @@ void parser(void)
                     addreply_noformat(501, MSG_STAT_FAILURE);
                 } else {
                     const off_t size = (off_t) strtoull(arg, NULL, 10);
-                    doallo(size);
+                    
+                    if (size < (off_t) 0) {
+                        addreply_noformat(501, MSG_STAT_FAILURE);                        
+                    } else {
+                        doallo(size);
+                    }
                 }
 #endif
             } else if (!strcmp(cmd, "pwd") || !strcmp(cmd, "xpwd")) {
