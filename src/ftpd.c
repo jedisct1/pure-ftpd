@@ -1267,7 +1267,7 @@ void doallo(const off_t size)
     
     if (size <= 0) {
         ret = 0;
-    } else if (ul_check_free_space(LOCAL_wd) == 1) {
+    } else if (ul_check_free_space(LOCAL_wd, (double) size) == 1) {
         ret = 0;
     }
 #ifdef QUOTAS
@@ -4224,12 +4224,14 @@ int ul_exit(ULHandler * const ulhandler)
     return 0;
 }
 
-int ul_check_free_space(const char *name)
+int ul_check_free_space(const char *name, const double min_space)
 {
     STATFS_STRUCT statfsbuf;
     char *z;
     char *alloca_namedir;
     size_t name_len;
+    double jam;
+    double space;
     
     if (maxdiskusagepct <= 0.0) {
         return 1;
@@ -4263,15 +4265,22 @@ int ul_check_free_space(const char *name)
 #ifdef CHECK_SYMLINKS_DISK_SPACE        
     okcheckspace:
 #endif
-    if ((double) STATFS_BLOCKS(statfsbuf) > 0.0) {
-        const double jam = (double) STATFS_BAVAIL(statfsbuf) /
-            (double) STATFS_BLOCKS(statfsbuf);
-        
-        if (jam < maxdiskusagepct) {
-            return 0;
-        }
+    if ((double) STATFS_BLOCKS(statfsbuf) <= 0.0) {
+        return 1;
     }
-    return 1;
+    if (min_space >= 0.0) {
+        space = (double) STATFS_BAVAIL(statfsbuf) *
+            (double) STATFS_FRSIZE(statfsbuf);
+        if (space < min_space) {
+            return 1;
+        }
+    }    
+    jam = (double) STATFS_BAVAIL(statfsbuf) /
+        (double) STATFS_BLOCKS(statfsbuf);
+    if (jam >= maxdiskusagepct) {
+        return 1;
+    }    
+    return 0;
 }
 
 void dostor(char *name, const int append, const int autorename)
@@ -4301,7 +4310,7 @@ void dostor(char *name, const int append, const int autorename)
         goto end;
     }
 #endif
-    if (ul_check_free_space(name) == 0) {
+    if (ul_check_free_space(name, -1.0) == 0) {
         addreply_noformat(552, MSG_NO_DISK_SPACE);
         goto end;
     }
@@ -4457,8 +4466,8 @@ void dostor(char *name, const int append, const int autorename)
     if (FSTATFS(f, &statfsbuf) == 0) {
         double space;
         
-        space = (double) STATFS_FRSIZE(statfsbuf) *
-            (double) STATFS_BAVAIL(statfsbuf);
+        space = (double) STATFS_BAVAIL(statfsbuf) *
+            (double) STATFS_FRSIZE(statfsbuf);            
         if (space > 524288.0) {
             addreply(0, MSG_SPACE_FREE_M, space / 1048576.0);
         } else {
