@@ -4249,7 +4249,7 @@ int ul_check_free_space(const char *name, const double min_space)
         if (space < min_space) {
             return 0;
         }
-    }    
+    }
     jam = (double) STATFS_BAVAIL(statfsbuf) /
         (double) STATFS_BLOCKS(statfsbuf);
     if (jam >= maxdiskusagepct) {
