@@ -3690,17 +3690,18 @@ void dostou(void)
 }
 #endif
 
-static int tryautorename(const char * const atomic_file, char * const name)
+static int tryautorename(const char * const atomic_file, char * const name,
+                         const char ** const name2_)
 {
-    char name2[MAXPATHLEN];    
+    static char name2[MAXPATHLEN];
     unsigned int gc = 0U;
     
     if (link(atomic_file, name) == 0) {
-        if (unlink(atomic_file) != 0) {
-            unlink(name);
-        }
+        *name2_ = NULL;
+        (void) unlink(atomic_file);
         return 0;
     }
+    *name2_ = name2;
     for (;;) {
         gc++;
         if (gc == 0U ||
@@ -3715,9 +3716,7 @@ static int tryautorename(const char * const atomic_file, char * const name)
             break;
         }
         if (link(atomic_file, name2) == 0) {
-            if (unlink(atomic_file) != 0) {
-                unlink(name2);
-            }
+            (void) unlink(atomic_file);
             return 0;
         }
         switch (errno) {
@@ -3734,6 +3733,8 @@ static int tryautorename(const char * const atomic_file, char * const name)
         }
         break;
     }
+    *name2_ = NULL;
+    
     return -1;
 }
 
@@ -4274,6 +4275,7 @@ void dostor(char *name, const int append, const int autorename)
 #ifdef QUOTAS
     Quota quota;
 #endif
+    const char *name2 = NULL;
     
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
@@ -4464,12 +4466,12 @@ void dostor(char *name, const int append, const int autorename)
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;
             }
-            if (tryautorename(atomic_file, name) != 0) {
+            if (tryautorename(atomic_file, name, &name2) != 0) {
                 error(553, MSG_RENAME_FAILURE);
                 goto afterquota;
             } else {
 #ifdef QUOTAS
-                ul_quota_update(name, 1, atomic_file_size);
+                ul_quota_update(name2 ? name2 : name, 1, atomic_file_size);
 #endif
                 atomic_file = NULL;
             }
@@ -4507,8 +4509,9 @@ void dostor(char *name, const int append, const int autorename)
         } else {
             addreply_noformat(226, MSG_ABORTED);            
         }
-        displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started, name, 1);
-    }    
+        displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started,
+                    name2 ? name2 : name, 1);
+    }
     end:
     restartat = (off_t) 0;
     if (atomic_file != NULL) {
