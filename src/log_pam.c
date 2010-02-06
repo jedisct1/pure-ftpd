@@ -48,6 +48,10 @@
 #  include <dmalloc.h>
 # endif
 
+#ifndef FTPD_PAM_SERVICE_NAME
+# define FTPD_PAM_SERVICE_NAME "pure-ftpd"
+#endif
+
 /* Static variables used to communicate between the conversation function
  * and the server_login function
  */
@@ -156,7 +160,8 @@ void pw_pam_check(AuthResult * const result,
     result->auth_ok = 0;
     PAM_password = pass;
     PAM_username = user;
-    pam_error = pam_start("pure-ftpd", user, &PAM_conversation, &pamh);
+    pam_error = pam_start(FTPD_PAM_SERVICE_NAME, user,
+                          &PAM_conversation, &pamh);
     PAM_BAIL;
 # ifdef PAM_TTY
     (void) pam_set_item(pamh, PAM_TTY, "pure-ftpd");
