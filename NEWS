@@ -3,7 +3,7 @@
  - When --autorename is enabled, an upload script will now get the final
 file name instead of the original one.
  - The ALLO command now checks for the actual disk space in addition to the
-virtal quota.
+virtual quota.
  - ABOR on OSX has been fixed.
  - Fixed the virtual quota computation after an atomic upload has been
 resumed.
