@@ -1,5 +1,20 @@
 
 * Version 1.0.28:
+ - FTPD_PAM_SERVICE_NAME can be defined in order to change the PAM service
+name.
+ - When an upload gets renamed (--autorename), send the new name to the
+uploadscript instead of the original one.
+ - The ALLO command now checks for the actual disk space in addition to the
+virtal quota.
+ - Work around OSX broken poll()
+ - After an atomic resumed upload, don't append the previous file size to the 
+quota.
+ - Always accept OPTS UTF8 ON, but refuse OPTS UTF8 OFF if client_charset is 
+ UTF8.
+ - Fix AUTHD_ENCRYPTED 
+ - Reset the CWD failures counter after a successful directory has been
+created. It avoids spurious disconnections with ncftp.
+ - Support for iPhone has been moved to another branch.
 
 * Version 1.0.27:
  - Have pureftpd_shutdown() shut the server down even if a client is
