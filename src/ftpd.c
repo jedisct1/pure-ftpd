@@ -2152,11 +2152,13 @@ void docwd(const char *dir)
                 _EXIT(EXIT_FAILURE);
             }
         } else {
-            if (SNCHECK(snprintf(LOCAL_wd, sizeof LOCAL_wd, "%s/%s", LOCAL_wd, dir),
-                        sizeof LOCAL_wd)) {
+            const size_t dir_len = strlen(dir);
+            const size_t wd_len = strlen(LOCAL_wd);
+            if (sizeof LOCAL_wd < dir_len + sizeof "/" - 1U + wd_len + 1U) {
                 kaboom:
-                die(421, LOG_ERR, MSG_PATH_TOO_LONG);
+                die(421, LOG_ERR, MSG_PATH_TOO_LONG);                
             }
+            strcat(strcat(LOCAL_wd, "/"), dir); /* safe, see above */
         }
     }
 #ifdef WITH_RFC2640
