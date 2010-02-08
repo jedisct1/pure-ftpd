@@ -15,6 +15,7 @@ quota.
  - Reset the CWD failures counter after a successful directory has been
 created. It avoids spurious disconnections with ncftp.
  - Support for iPhone has been moved to another branch.
+ - Fix crash with PostgreSQL.
 
 * Version 1.0.27:
  - Have pureftpd_shutdown() shut the server down even if a client is
