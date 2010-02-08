@@ -51,6 +51,7 @@ static const char *uptime(void)
     }
     while ((r = read(f, buf, sizeof buf - 1U)) < (ssize_t) 0 && errno == EINTR);
     if (r <= (ssize_t) 0) {
+        close(f);        
         return "?";
     }
     close(f);

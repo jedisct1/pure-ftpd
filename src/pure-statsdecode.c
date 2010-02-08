@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
             instamp = 0;
         }        
     }
+    fclose(fp);
     
     return 0;
 }
