@@ -1,5 +1,15 @@
 
 * Version 1.0.28:
+ - When --autorename is enabled, an upload script will now get the final
+file name instead of the original one.
+ - The ALLO command now checks for the actual disk space in addition to the
+virtual quota.
+ - ABOR on OSX has been fixed.
+ - Fixed the virtual quota computation after an atomic upload has been
+resumed.
+ - Fixed AUTH_ENCRYPTED.
+ - A workaround against spurious disconnections with ncftp has been
+implemented.
 
 * Version 1.0.27:
  - IPv6 connections are accepted again (regression from version 1.0.26)
