@@ -489,7 +489,7 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # endif
 #endif
 
-#ifndef NON_ROOT_FTP
+#if !defined(NON_ROOT_FTP) || defined(__IPHONE__)
 # ifdef IMPLICIT_TLS
 #  define DEFAULT_FTP_PORT_S "990"
 # else

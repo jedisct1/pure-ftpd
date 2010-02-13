@@ -5575,7 +5575,8 @@ static void standalone_server(void)
                     strerror(old_errno));
             return;
         }
-        if (bind(listenfd, res->ai_addr, (socklen_t) res->ai_addrlen) != 0 ||
+        if (bind(listenfd, res->ai_addr,
+                 (socklen_t) res->ai_addrlen) != 0 ||
             listen(listenfd, maxusers > 0U ? 
                    3U + maxusers / 8U : DEFAULT_BACKLOG) != 0) {
             goto cant_bind;

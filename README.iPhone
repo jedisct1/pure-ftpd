@@ -108,7 +108,7 @@ There's no need to use puredb nor any other authentication module.
 
 int pureftpd_start(int argc, char *argv[], const char *home_directory);
 
--> Starts the server on port 2121, with home_directory as the base directory.
+-> Starts the server on port 21, with home_directory as the base directory.
 People won't be able to go up the base directory.
 
 argv[] is a dummy application name followed by a list of switch you would
@@ -154,11 +154,6 @@ Grab it from: http://github.com/jedisct1/pure-ftpd/tree/master/iphone/Test/
        ------------------------ SHORTCOMINGS ------------------------
        
        
-The FTP server listens on port 2121. There's no way to listen to the regular
-FTP port because iPhone applications have no root privileges.
-
-So you will need to ask your users to connect to ftp://<wifi IP address>:2121
-
 iPhone applications can't fork(). For this reason, the library only accepts
 one client connection at a time.
         
