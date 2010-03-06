@@ -83,6 +83,18 @@ more easily. New uploads are logged in a MySQL database, and duplicate files
 are tracked using MD5 checksums.
 
 
+* MySQmail Pure-FTPd logger
+http://www.gplhost.com/software-mysqmail.html
+http://packages.debian.org/en/squeeze/mail/mysqmail-pure-ftpd-logger
+
+MySQMail is a set of tiny daemon loggers for mail and FTP servers that save
+traffic information in a MySQL database. The information is split by domain
+and by user so that it's easy to measure all the traffic for a given domain
+name in real time.
+
+This package provides a logger for FTP traffic handled by Pure-FTPd.
+
+
 
                                  ----------
 
