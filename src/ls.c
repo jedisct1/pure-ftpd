@@ -885,16 +885,20 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             alarm(GLOB_TIMEOUT);
             a = sglob(arg,
                       GLOB_BRACE | (opt_a ? GLOB_PERIOD : 0),
-                     NULL, &g, max_ls_files + 2, max_ls_depth * 2);
+                      NULL, &g, max_ls_files + 2, max_ls_depth * 2);
             alarm(0);
             if (a == 0) {
                 char **path;
 
-                path = g.gl_pathv;
-                if (path && path[0] && path[1]) {
+                if (g.gl_pathc <= 0) {
+                    path = NULL;
+                } else {
+                    path = g.gl_pathv;
+                }
+                if (path != NULL && path[0] != NULL && path[1] != NULL) {
                     justone = 0;
                 }
-                while (path && *path) {
+                while (path != NULL && *path != NULL) {
                     struct stat st;
 
                     if (stat(*path, &st) == 0) {
@@ -909,11 +913,11 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                 }
                 outputfiles(c, tls_fd);    /* in case of opt_C */
                 path = g.gl_pathv;
-                while (path && *path) {
+                while (path != NULL && *path != NULL) {
                     if (matches >= max_ls_files) {
                         break;
                     }
-                    if (**path) {
+                    if (**path != 0) {
                         if (!justone) {
 #ifdef WITH_RFC2640                            
                             c_buf = charset_fs2client(*path);
