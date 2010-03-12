@@ -3006,31 +3006,32 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     }
     *required_sleep = wanted_ts - elapsed;
     previous_chunk_size = dlhandler->chunk_size;
-    if (dlhandler->total_downloaded > dlhandler->chunk_size) {
-        if (*required_sleep < dlhandler->min_sleep) {
-            dlhandler->chunk_size =
-                (dlhandler->max_chunk_size + dlhandler->chunk_size) / 2;
-        } else if (*required_sleep > dlhandler->max_sleep) {
-            dlhandler->chunk_size =
-                (dlhandler->min_chunk_size + dlhandler->chunk_size) / 2;
-        } else {
-            dlhandler->chunk_size = dlhandler->default_chunk_size;
-        }
-        if (dlhandler->chunk_size <= 0 || dlhandler->chunk_size > INT_MAX) {
-            dlhandler->chunk_size = dlhandler->default_chunk_size;
-        }
-        if (previous_chunk_size != dlhandler->default_chunk_size) {
-            would_be_downloaded =
-                dlhandler->total_downloaded + dlhandler->chunk_size;
-            if (dlhandler->bandwidth > 0UL) {
-                wanted_ts = (double) would_be_downloaded /
-                    (double) dlhandler->bandwidth;
-            } else {
-                wanted_ts = elapsed;
-            }
-            *required_sleep = wanted_ts - elapsed;
-        }        
+    if (dlhandler->total_downloaded <= dlhandler->chunk_size) {
+        return 0;
     }
+    if (*required_sleep < dlhandler->min_sleep) {
+        dlhandler->chunk_size =
+            (dlhandler->max_chunk_size + dlhandler->chunk_size) / 2;
+    } else if (*required_sleep > dlhandler->max_sleep) {
+        dlhandler->chunk_size =
+            (dlhandler->min_chunk_size + dlhandler->chunk_size) / 2;
+    } else {
+        dlhandler->chunk_size = dlhandler->default_chunk_size;
+    }
+    if (dlhandler->chunk_size <= 0 || dlhandler->chunk_size > INT_MAX) {
+        dlhandler->chunk_size = dlhandler->default_chunk_size;
+    }
+    if (previous_chunk_size != dlhandler->default_chunk_size) {
+        would_be_downloaded =
+            dlhandler->total_downloaded + dlhandler->chunk_size;
+        if (dlhandler->bandwidth > 0UL) {
+            wanted_ts = (double) would_be_downloaded /
+                (double) dlhandler->bandwidth;
+        } else {
+            wanted_ts = elapsed;
+        }
+        *required_sleep = wanted_ts - elapsed;
+    }        
     return 0;
 }
 
