@@ -4743,9 +4743,9 @@ void doopts(char *args)
         
     if ((cmdopts = strchr(args, ' ')) != NULL) {
         cmdopts++;
+        (void) cmdopts;
     }
-
-#ifdef WITH_RFC2640
+# ifdef WITH_RFC2640
     if (strncasecmp("utf8 ", args, 5) == 0) {
         if (cmdopts == NULL || *cmdopts == 0) {
             addreply_noformat(501, "OPTS UTF8: " MSG_MISSING_ARG);          
@@ -4761,7 +4761,7 @@ void doopts(char *args)
         }
         return; 
     }
-#endif
+# endif
     if (strncasecmp("mlst ", args, 5) == 0) {
         addreply_noformat(200, " MLST OPTS "
                           "type;size;sizd;modify;UNIX.mode;UNIX.uid;"
