@@ -4747,7 +4747,7 @@ void doopts(char *args)
 
 #ifdef WITH_RFC2640
     if (strncasecmp("utf8 ", args, 5) == 0) {
-        if (cmdopts == NULL) {
+        if (cmdopts == NULL || *cmdopts == 0) {
             addreply_noformat(501, "OPTS UTF8: " MSG_MISSING_ARG);          
         } else if (strncasecmp(cmdopts, "on", sizeof "on" - 1U) == 0) {
             utf8 = 1;       
