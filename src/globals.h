@@ -171,13 +171,13 @@ GLOBAL0(char *atomic_prefix);
 #endif
 
 #ifdef WITH_RFC2640
-GLOBAL(char utf8, 0);	/* 0: ascii 1: utf-8 */
+GLOBAL(signed char utf8, 0);	/* 0: ascii 1: utf-8 */
 GLOBAL(char *charset_fs, NULL);
 GLOBAL(char *charset_client, NULL);
-GLOBAL(iconv_t iconv_fd_fs2client, NULL);
-GLOBAL(iconv_t iconv_fd_fs2utf8, NULL);
-GLOBAL(iconv_t iconv_fd_client2fs, NULL);
-GLOBAL(iconv_t iconv_fd_utf82fs, NULL);
+GLOBAL(iconv_t iconv_fd_fs2client, (iconv_t) -1);
+GLOBAL(iconv_t iconv_fd_fs2utf8, (iconv_t) -1);
+GLOBAL(iconv_t iconv_fd_client2fs, (iconv_t) -1);
+GLOBAL(iconv_t iconv_fd_utf82fs, (iconv_t) -1);
 #endif
 
 #ifndef WITH_TLS
