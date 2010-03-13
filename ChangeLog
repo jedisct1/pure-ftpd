@@ -1,4 +1,7 @@
 
+* Version 1.0.29:
+ - More thread safety, thanks to YoungJoon Chun.
+
 * Version 1.0.28:
  - FTPD_PAM_SERVICE_NAME can be defined in order to change the PAM service
 name.

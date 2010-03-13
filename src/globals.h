@@ -208,3 +208,6 @@ TGLOBAL0(size_t replybuf_left);
 #ifndef MINIMAL
 GLOBAL0(unsigned long cwd_failures);
 #endif
+
+TGLOBAL0(struct reply *firstreply);
+TGLOBAL0(struct reply *lastreply);

@@ -120,6 +120,12 @@ typedef struct ThreadLocal_ {
 #define LOCAL_replybuf_left THREAD_LOCAL(replybuf_left)
     size_t _replybuf_left;
     
+#define LOCAL_firstreply THREAD_LOCAL(firstreply)
+    struct reply *_firstreply;
+    
+#define LOCAL_lastreply THREAD_LOCAL(lastreply)
+    struct reply *_lastreply;
+    
 } ThreadLocal;
 
 #include <pthread.h>

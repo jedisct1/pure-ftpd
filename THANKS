@@ -156,6 +156,7 @@ External contributors and people who helped in any way, shape or form:
 * Xianghu Zhao - spotted the fact that charset conversion was needed on directory names in traditional listings.
 * Yann Bizeul (projects.tynsoe.org) - Reported a Panther specific issue with getnameinfo(). Thanks a lot for providing a temporary account on a Panther machine in order to implement a workaround.
 * Ying-Chieh Liao <ijliao at csie.nctu.edu.tw> for the FreeBSD port updates and for reporting that simplified and traditional chinese settings were swapped in 1.0.12 .
+* YoungJoon Chun <yjchun at mac.com>
 * Youssef El Fathi
 * ahodgson at simkin.ca (thanks for your opinion on config files and your help for CVS repositories)
 * bernard.lheureux at bbsoft4.org

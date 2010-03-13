@@ -370,7 +370,4 @@ static struct passwd *fakegetpwnam(const char * const name);
 static const char *random_device;
 #endif
 
-static struct reply *firstreply;
-static struct reply *lastreply;
-
 #endif

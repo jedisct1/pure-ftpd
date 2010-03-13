@@ -752,13 +752,13 @@ static void addreply_newline(const char * const str, const size_t size)
                                            size)) == NULL) {
         die_mem();
     }
-    if (firstreply == NULL) {
-        firstreply = newline;
+    if (LOCAL_firstreply == NULL) {
+        LOCAL_firstreply = newline;
     } else {
-        lastreply->next = newline;
+        LOCAL_lastreply->next = newline;
     }
     newline->next = NULL;
-    lastreply = newline;
+    LOCAL_lastreply = newline;
     memcpy(newline->line, str, size);    
 }
 
@@ -810,7 +810,7 @@ void doreply(void)
     struct reply *scannedentry;
     struct reply *nextentry;
 
-    if ((scannedentry = firstreply) == NULL) {
+    if ((scannedentry = LOCAL_firstreply) == NULL) {
         return;
     }
     do {
@@ -835,12 +835,12 @@ void doreply(void)
         }       
     } while ((scannedentry = nextentry) != NULL);
     client_fflush();
-    scannedentry = firstreply;
+    scannedentry = LOCAL_firstreply;
     do {
         nextentry = scannedentry->next;
         free(scannedentry);
     } while ((scannedentry = nextentry) != NULL);
-    firstreply = lastreply = NULL;
+    LOCAL_firstreply = LOCAL_lastreply = NULL;
 }
 
 /* Check whether a file name is valid. Files names starting

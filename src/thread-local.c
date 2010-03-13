@@ -83,7 +83,9 @@ int alloc_thread_local_storage(void)
 #endif
     LOCAL_AINIT(replybuf);
     LOCAL_replybuf_pos = LOCAL_replybuf;
-    LOCAL_INIT(replybuf_left);    
+    LOCAL_INIT(replybuf_left);
+    LOCAL_INIT(firstreply);
+    LOCAL_INIT(lastreply);
     
     return 0;
 }
