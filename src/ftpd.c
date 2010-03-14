@@ -3158,6 +3158,7 @@ static int _dlmap_read(DLHandler * const dlhandler)
             }
             readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
 #endif
+            dlhandler->dlmap_fdpos = dlhandler->dlmap_pos;
         } while (readnb == (ssize_t) -1 && errno == EINTR);
     } else {
         do {
