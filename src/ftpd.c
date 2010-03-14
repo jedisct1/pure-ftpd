@@ -3178,8 +3178,8 @@ static int _dlmap_read(DLHandler * const dlhandler)
 
 static int _dlmap_remap(DLHandler * const dlhandler)
 {
-    size_t min_dlmap_size;
-    size_t max_dlmap_size;
+    off_t min_dlmap_size;
+    off_t max_dlmap_size;
     
     if (dlhandler->map_data != NULL) {
         if (dlhandler->cur_pos >= dlhandler->dlmap_pos &&
