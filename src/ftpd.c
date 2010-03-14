@@ -3147,18 +3147,13 @@ static int _dlmap_read(DLHandler * const dlhandler)
     }
     if (dlhandler->dlmap_pos != dlhandler->dlmap_fdpos) {
         do {
-#ifdef HAVE_PREAD
-            readnb = pread(dlhandler->f, dlhandler->map, dlhandler->dlmap_size,
-                           dlhandler->dlmap_pos);
-#else
             if (lseek(dlhandler->f, dlhandler->dlmap_pos,
                       SEEK_SET) == (off_t) -1) {
                 dlhandler->dlmap_fdpos = (off_t) -1;
                 return -1;
             }
-            readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
-#endif
             dlhandler->dlmap_fdpos = dlhandler->dlmap_pos;
+            readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
         } while (readnb == (ssize_t) -1 && errno == EINTR);
     } else {
         do {
