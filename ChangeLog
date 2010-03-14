@@ -1,4 +1,13 @@
 
+* Version 1.0.29:
+ - max_dlmap_size was size_t instead off_t, causing misalignment while
+downloading > 4 Gb files on a 32-bits arch.
+ - pread() vs lseek()+read() was a useless optimization, since pread()
+doesn't change the file position and further reads weren't going through
+plain read() calls.
+ - iconv_fd_* should be initialized by (iconv_t) -1 as we test them upon
+exit. Fixes segfaults on glibc.
+
 * Version 1.0.28:
  - FTPD_PAM_SERVICE_NAME can be defined in order to change the PAM service
 name.

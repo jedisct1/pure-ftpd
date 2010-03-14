@@ -1,4 +1,9 @@
 
+* Version 1.0.29:
+ - Fixed corruption when downloading > 4 Gb files on a 32-bits arch.
+ - Fixed error on exit on Linux.
+ - Downloading should be slightly faster.
+
 * Version 1.0.28:
  - When --autorename is enabled, an upload script will now get the final
 file name instead of the original one.
