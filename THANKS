@@ -115,6 +115,7 @@ External contributors and people who helped in any way, shape or form:
 * Ned Holdbrook - reported that MLSD should display dot files.
 * Nicklas Uvelöv.
 * Nicolas (for all his questions)
+* Olivier Sannier
 * Oliver Soell <oliver at fusionit.com> - RPM fixes.
 * Olivier Soell.
 * Olivier Tharan <olive at zehc.net> (pointed out that Xinetd needs -USR2 not -HUP) .
