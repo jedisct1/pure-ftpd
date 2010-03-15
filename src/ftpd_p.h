@@ -295,7 +295,6 @@ typedef struct DLHandler_ {
     int f;
     void *tls_fd;
     off_t file_size;
-    size_t min_dlmap_size;
     size_t dlmap_size;
     off_t cur_pos;
     off_t chunk_size;    

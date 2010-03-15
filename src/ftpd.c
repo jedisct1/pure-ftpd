@@ -3174,8 +3174,8 @@ static int _dlmap_read(DLHandler * const dlhandler)
 
 static int _dlmap_remap(DLHandler * const dlhandler)
 {
-    off_t min_dlmap_size;
-    off_t max_dlmap_size;
+    size_t min_dlmap_size;
+    off_t remaining;
     
     if (dlhandler->map_data != NULL) {
         if (dlhandler->cur_pos >= dlhandler->dlmap_pos &&
@@ -3208,9 +3208,9 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     if (dlhandler->dlmap_size < page_size) {
         dlhandler->dlmap_size = page_size;
     }
-    max_dlmap_size = dlhandler->file_size - dlhandler->dlmap_pos;
-    if (dlhandler->dlmap_size > max_dlmap_size) {
-        dlhandler->dlmap_size = max_dlmap_size;
+    remaining = dlhandler->file_size - dlhandler->dlmap_pos;
+    if ((off_t) dlhandler->dlmap_size > remaining) {
+        dlhandler->dlmap_size = remaining;
     }
     if (_dlmap_read(dlhandler) != 0) {
         error(451, MSG_DATA_READ_FAILED);
