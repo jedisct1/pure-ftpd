@@ -3210,7 +3210,7 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     }
     remaining = dlhandler->file_size - dlhandler->dlmap_pos;
     if ((off_t) dlhandler->dlmap_size > remaining) {
-        dlhandler->dlmap_size = remaining;
+        dlhandler->dlmap_size = (off_t) remaining;
     }
     if (_dlmap_read(dlhandler) != 0) {
         error(451, MSG_DATA_READ_FAILED);
