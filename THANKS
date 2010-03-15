@@ -152,6 +152,7 @@ External contributors and people who helped in any way, shape or form:
 * Tomonori Kamitaki - Helped pure-ftpd to work on Playstation 2.
 * Trilucid - Initial web design of pureftpd.org
 * Ulrich Zehl - Found a documentation error in the sample LDAP schema.
+* Viktor Butskih - Reported that > 4Gb files were corrupted on a 32-bits arch.
 * William Kern(el panic) (thanks for your wish list)
 * Wouter de Jong <wouter at widexs.nl>
 * Xianghu Zhao - spotted the fact that charset conversion was needed on directory names in traditional listings.
@@ -162,7 +163,6 @@ External contributors and people who helped in any way, shape or form:
 * ahodgson at simkin.ca (thanks for your opinion on config files and your help for CVS repositories)
 * bernard.lheureux at bbsoft4.org
 * bkeil at indiana.edu
-* brainvictor at rambler.ru
 * brett at ekit-inc.com 
 * chris at widexs.nl (suggested authenticating users on virtual hosts)
 * claudiuc at kde.org (romanian translator and great tester)

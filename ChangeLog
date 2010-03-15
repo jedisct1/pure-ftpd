@@ -2,7 +2,7 @@
 * Version 1.0.29:
  - iPhone: more thread safety, thanks to YoungJoon Chun.
  - max_dlmap_size was size_t instead off_t, causing misalignment while
-downloading > 4 Gb files on a 32-bits arch.
+downloading > 4 Gb files on a 32-bits arch. Reported by Viktor Butskih.
  - pread() vs lseek()+read() was a useless optimization, since pread()
 doesn't change the file position and further reads weren't going through
 plain read() calls.
