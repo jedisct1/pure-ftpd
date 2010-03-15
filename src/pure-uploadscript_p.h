@@ -38,7 +38,7 @@ static uid_t uid;
 static gid_t gid;
 static const char *script;
 
-#define OPEN_TRIES 10U
+#define OPEN_TRIES 30U
 #define OPEN_DELAY 1U
 
 #endif
