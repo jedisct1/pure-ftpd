@@ -63,13 +63,11 @@ int sfgets(void)
     int pollret;
     ssize_t readnb;
     signed char seen_r = 0;
-    static size_t scanned;
-    static size_t readnbd;
     
-    if (scanned > (size_t) 0U) {       /* support pipelining */
-        readnbd -= scanned;        
-        memmove(LOCAL_cmd, LOCAL_cmd + scanned, readnbd);   /* safe */
-        scanned = (size_t) 0U;
+    if (LOCAL_sfgets_scanned > (size_t) 0U) {       /* support pipelining */
+        LOCAL_readnbd -= LOCAL_sfgets_scanned;        
+        memmove(LOCAL_cmd, LOCAL_cmd + LOCAL_sfgets_scanned, LOCAL_readnbd);   /* safe */
+        LOCAL_sfgets_scanned = (size_t) 0U;
     }
     pfd.fd = LOCAL_clientfd;
 #ifdef __APPLE_CC__
@@ -77,8 +75,8 @@ int sfgets(void)
 #else
     pfd.events = POLLIN | POLLPRI | POLLERR | POLLHUP;
 #endif
-    while (scanned < cmdsize) {
-        if (scanned >= readnbd) {      /* nothing left in the buffer */
+    while (LOCAL_sfgets_scanned < cmdsize) {
+        if (LOCAL_sfgets_scanned >= LOCAL_readnbd) {      /* nothing left in the buffer */
             pfd.revents = 0;
             while ((pollret = poll(&pfd, 1U, idletime * 1000UL)) < 0 &&
                    errno == EINTR);
@@ -92,44 +90,44 @@ int sfgets(void)
             if ((pfd.revents & (POLLIN | POLLPRI)) == 0) {
                 continue;
             }
-            if (readnbd >= cmdsize) {
+            if (LOCAL_readnbd >= cmdsize) {
                 break;
             }
 #ifdef WITH_TLS
             if (LOCAL_tls_cnx != NULL) {
                 while ((readnb = SSL_read
-                        (LOCAL_tls_cnx, LOCAL_cmd + readnbd, cmdsize - readnbd))
+                        (LOCAL_tls_cnx, LOCAL_cmd + LOCAL_readnbd, cmdsize - LOCAL_readnbd))
                        < (ssize_t) 0 && errno == EINTR);
             } else
 #endif
             {
-                while ((readnb = read(LOCAL_clientfd, LOCAL_cmd + readnbd,
-                                      cmdsize - readnbd)) < (ssize_t) 0 &&
+                while ((readnb = read(LOCAL_clientfd, LOCAL_cmd + LOCAL_readnbd,
+                                      cmdsize - LOCAL_readnbd)) < (ssize_t) 0 &&
                        errno == EINTR);
             }
             if (readnb <= (ssize_t) 0) {
                 return -2;
             }
-            readnbd += readnb;
-            if (readnbd > cmdsize) {
+            LOCAL_readnbd += readnb;
+            if (LOCAL_readnbd > cmdsize) {
                 return -2;
             }
         }
 #ifdef RFC_CONFORMANT_LINES
         if (seen_r != 0) {
 #endif
-            if (LOCAL_cmd[scanned] == '\n') {
+            if (LOCAL_cmd[LOCAL_sfgets_scanned] == '\n') {
 #ifndef RFC_CONFORMANT_LINES
                 if (seen_r != 0) {
 #endif
-                    LOCAL_cmd[scanned - 1U] = 0;
+                    LOCAL_cmd[LOCAL_sfgets_scanned - 1U] = 0;
 #ifndef RFC_CONFORMANT_LINES
                 } else {
-                    LOCAL_cmd[scanned] = 0;
+                    LOCAL_cmd[LOCAL_sfgets_scanned] = 0;
                 }
 #endif
-                if (++scanned >= readnbd) {   /* non-pipelined command */
-                    scanned = readnbd = (size_t) 0U;
+                if (++LOCAL_sfgets_scanned >= LOCAL_readnbd) {   /* non-pipelined command */
+                    LOCAL_sfgets_scanned = LOCAL_readnbd = (size_t) 0U;
                 }
                 return 0;
             }
@@ -137,20 +135,20 @@ int sfgets(void)
 #ifdef RFC_CONFORMANT_LINES
         }
 #endif
-        if (ISCTRLCODE(LOCAL_cmd[scanned])) {
-            if (LOCAL_cmd[scanned] == '\r') {
+        if (ISCTRLCODE(LOCAL_cmd[LOCAL_sfgets_scanned])) {
+            if (LOCAL_cmd[LOCAL_sfgets_scanned] == '\r') {
                 seen_r = 1;
             }
 #ifdef RFC_CONFORMANT_PARSER                   /* disabled by default, intentionnaly */
-            else if (LOCAL_cmd[scanned] == 0) {
-                LOCAL_cmd[scanned] = '\n';
+            else if (LOCAL_cmd[LOCAL_sfgets_scanned] == 0) {
+                LOCAL_cmd[LOCAL_sfgets_scanned] = '\n';
             }
 #else
             /* replace control chars with _ */
-            LOCAL_cmd[scanned] = '_';                
+            LOCAL_cmd[LOCAL_sfgets_scanned] = '_';                
 #endif
         }
-        scanned++;
+        LOCAL_sfgets_scanned++;
     }
     die(421, LOG_WARNING, MSG_LINE_TOO_LONG);   /* don't remove this */
     
@@ -859,7 +857,7 @@ void dositecall(const char * const site_command, const char *arg)
     if ((return_code = cbret->return_code) <= 0) {
         return_code = 200;
     }
-    addreply(return_code, cbret->response);
+    addreply_noformat(return_code, cbret->response);
     if (registered_site_callback->free_callback != NULL) {
         registered_site_callback->free_callback
             (cbret, registered_site_callback->user_data);

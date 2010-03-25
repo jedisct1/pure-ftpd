@@ -211,3 +211,5 @@ GLOBAL0(unsigned long cwd_failures);
 
 TGLOBAL0(struct reply *firstreply);
 TGLOBAL0(struct reply *lastreply);
+TGLOBAL0(size_t sfgets_scanned);
+TGLOBAL0(size_t readnbd);

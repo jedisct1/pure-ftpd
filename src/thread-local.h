@@ -126,6 +126,12 @@ typedef struct ThreadLocal_ {
 #define LOCAL_lastreply THREAD_LOCAL(lastreply)
     struct reply *_lastreply;
     
+#define LOCAL_sfgets_scanned THREAD_LOCAL(sfgets_scanned)
+    size_t _sfgets_scanned;
+    
+#define LOCAL_readnbd THREAD_LOCAL(readnbd)
+    size_t _readnbd;
+    
 } ThreadLocal;
 
 #include <pthread.h>

@@ -86,6 +86,8 @@ int alloc_thread_local_storage(void)
     LOCAL_INIT(replybuf_left);
     LOCAL_INIT(firstreply);
     LOCAL_INIT(lastreply);
+    LOCAL_INIT(sfgets_scanned);
+    LOCAL_INIT(readnbd);
     
     return 0;
 }
