@@ -48,7 +48,7 @@ GLOBAL0(signed char candownload);                /* if non-zero, don't let the u
 GLOBAL0(double load);                    /* for reporting what the load was */
 GLOBAL(time_t noopidle, (time_t) - 1);    /* when we started to receive NOOP */
 GLOBAL(unsigned int firstport, 1024U);        /* first and last ports to use, if we're */
-GLOBAL(unsigned int lastport, 65534U);            /* packet filter friendly. */
+GLOBAL(unsigned int lastport, 65535U);
 GLOBAL(signed char dot_write_ok, 1);           /* -x option */
 GLOBAL(signed char dot_read_ok, 1);            /* -X option */
 GLOBAL0(signed char dot_read_anon_ok);            /* -z option */
