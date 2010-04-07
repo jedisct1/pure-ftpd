@@ -1115,7 +1115,7 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
            "Allowed client IPs : %s\n"
            "Denied  client IPs : %s\n"           
            "Time restrictions  : %04u-%04u (%s)\n"
-       "Max sim sessions   : %u (%s)\n"
+           "Max sim sessions   : %u (%s)\n"
            "\n",
            fetched_info.login,
            fetched_info.pwd,
@@ -1142,7 +1142,7 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
            SHOW_IFEN(fetched_info.has_time, fetched_info.time_begin),
            SHOW_IFEN(fetched_info.has_time, fetched_info.time_end),
            SHOW_STATE(fetched_info.has_time),
-       SHOW_IFEN(fetched_info.has_per_user_max, fetched_info.per_user_max),
+           SHOW_IFEN(fetched_info.has_per_user_max, fetched_info.per_user_max),
            SHOW_STATE(fetched_info.per_user_max));
     
     return 0;
@@ -1163,9 +1163,7 @@ static int do_passwd(const char * const file,
         fprintf(stderr, "Error with entering password - aborting\n");        
         return PW_ERROR_ENTER_PASSWD_PW_ERROR;
     }    
-    do_usermod(file, pwinfo);
-    
-    return 0;
+    return do_usermod(file, pwinfo);
 }
 
 static int do_mkdb(const char *dbfile, const char * const file)
@@ -1326,8 +1324,8 @@ int main(int argc, char *argv[])
     }
     filter_pw_line_sep(pwinfo.login);
     while ((fodder =
-	    getopt(argc, argv, 
-		   "c:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
+            getopt(argc, argv, 
+                   "c:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
         switch(fodder) {
         case 'c' : {
             if ((pwinfo.gecos = strdup(optarg)) == NULL) {
@@ -1562,9 +1560,9 @@ int main(int argc, char *argv[])
             ret |= do_mkdb(dbfile, file);
         }        
     } else if (strcasecmp(action, "passwd") == 0) {
-        do_passwd(file, &pwinfo);
+        ret = do_passwd(file, &pwinfo);
         if (with_mkdb != 0) {
-            do_mkdb(dbfile, file);
+            ret |= do_mkdb(dbfile, file);
         }        
     } else if (strcasecmp(action, "show") == 0) {
         ret = do_show(file, &pwinfo);
