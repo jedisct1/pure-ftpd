@@ -2,14 +2,6 @@
 
 #ifndef NO_STANDALONE
 
-/* Yes, I know, I could have used multi-hashed linked lists, 
- * binary trees and other funny stuff. It'd have been better, cleaner,
- * faster. Yeah, it'd have added many lines of complicated source code
- * to win 1/100000 sec on system with more than 500 sim users.
- * Great win, but sorry, I won't do that just to please theorical
- * algorithms wizards. -Jedi.
- */
-
 # include "ftpd.h"
 # include "dynamic.h"
 # include "ftpwho-update.h"
