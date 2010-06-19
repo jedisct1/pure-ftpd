@@ -113,7 +113,7 @@ option_tuple = (
     ["NoTruncate\s+yes",                   "-0"                  ],    
     ["PIDFile\s+(\S+)",                    "-g", None            ],
     ["PerUserLimits\s+([:0-9]+)",          "-y", None            ],
-    ["TLS\s+yes",                          "-Y", None            ])
+    ["TLS\s+(\d)",                         "-Y", None            ])
 
 for option in option_tuple:
     option[0] = re.compile(option[0], re.IGNORECASE)
