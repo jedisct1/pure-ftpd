@@ -88,6 +88,7 @@ External contributors and people who helped in any way, shape or form:
 * Kelton.
 * Kittiwat Manosuthi <kittiwat at hostpacific.com> - Help with Virtuozzo.
 * Koczka Ferenc - suggested AUTHD_ENCRYPTED.
+* Kulkarni Shantanu - reported a bogus regex in pure-config.py.
 * Kyle Herbert (http://www.firstnetimpressions.com/) for reporting a typo in the example configuration file.
 * Lan Yufeng - Reported a --createhome bug.
 * Leszek Reimus - Suggested that /./ mix with -a to get chrooted useres with no ratio.
