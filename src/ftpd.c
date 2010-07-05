@@ -1903,7 +1903,7 @@ void dopass(char *password)
             throttling_bandwidth_ul = 0UL;
     }
 #endif
-#if !defined(MINIMAL) && defined(HAVE_GETGROUPS)
+#if !defined(MINIMAL) && defined(HAVE_GETGROUPS) && defined(DISPLAY_GROUPS)
 # ifdef SAFE_GETGROUPS_0
     ngroups = getgroups(0, NULL);
     if (ngroups > ngroups_max) {
