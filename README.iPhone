@@ -148,7 +148,7 @@ int pureftpd_disable(void);
         
 The Git tree contains a very simple demo project embedding the FTP server.
 
-Grab it from: http://github.com/jedisct1/pure-ftpd/tree/master/iphone/Test/
+Grab it from: http://github.com/jedisct1/pure-ftpd/tree/threaded/iphone/Test/
 
 
        ------------------------ SHORTCOMINGS ------------------------
