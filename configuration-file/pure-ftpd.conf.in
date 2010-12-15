@@ -356,6 +356,7 @@ AnonymousCantUpload         no
 # this will make pure-ftpd write info about new uploads to
 # /var/run/pure-ftpd.upload.pipe so pure-uploadscript can read it and
 # spawn a script to handle the upload.
+# Don't enable this option if you don't actually use pure-uploadscript.
 
 #CallUploadScript yes
 
