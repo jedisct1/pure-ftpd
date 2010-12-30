@@ -128,7 +128,7 @@ static int traversal(const char * const s)
     }
     slen = strlen(s) + (size_t) 2U;
     while ((de = readdir(d)) != NULL) {
-        char *alloca_buf;
+        char *buf;
         size_t sizeof_buf;
 
         if ((de->d_name[0] == '.' && de->d_name[1] == 0) ||
@@ -140,13 +140,13 @@ static int traversal(const char * const s)
             continue;
         }
         sizeof_buf = slen + strlen(de->d_name);
-        if ((alloca_buf = ALLOCA(sizeof_buf)) == NULL) {
+        if ((buf = malloc(sizeof_buf)) == NULL) {
             continue;
         }
-        snprintf(alloca_buf, sizeof_buf, "%s/%s", s, de->d_name);
-        if (stat(alloca_buf, &st) == 0) {
+        snprintf(buf, sizeof_buf, "%s/%s", s, de->d_name);
+        if (stat(buf, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {
-                if (traversal(alloca_buf) == 0) {
+                if (traversal(buf) == 0) {
                     total_files++;
                 }
             } else if (S_ISREG(st.st_mode)) {
@@ -154,7 +154,7 @@ static int traversal(const char * const s)
                 total_files++;
             }
         }
-        ALLOCA_FREE(alloca_buf);
+        free(buf);
     }
     closedir(d);
 
