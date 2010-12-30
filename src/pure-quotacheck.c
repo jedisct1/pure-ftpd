@@ -73,6 +73,8 @@ static int traversal(const char * const s)
     Node *nodes_pnt = nodes;
     size_t nodes_cnt = nodes_size;
     int fd;
+    char *buf = NULL;
+    size_t sizeof_buf = (size_t) 0U;
 
     if ((fd = open(s, O_RDONLY | O_DIRECTORY)) == -1) {
         if (errno != EACCES) {
@@ -128,9 +130,8 @@ static int traversal(const char * const s)
     }
     slen = strlen(s) + (size_t) 2U;
     while ((de = readdir(d)) != NULL) {
-        char *buf;
-        size_t sizeof_buf;
-
+        size_t wanted_sizeof_buf;
+        
         if ((de->d_name[0] == '.' && de->d_name[1] == 0) ||
             (de->d_name[0] == '.' && de->d_name[1] == '.' &&
              de->d_name[2] == 0)) {
@@ -138,10 +139,13 @@ static int traversal(const char * const s)
         }
         if (strcmp(de->d_name, QUOTA_FILE) == 0) {
             continue;
-        }
-        sizeof_buf = slen + strlen(de->d_name);
-        if ((buf = malloc(sizeof_buf)) == NULL) {
-            continue;
+        }        
+        wanted_sizeof_buf = slen + strlen(de->d_name);
+        if (wanted_sizeof_buf > sizeof_buf) {
+            if ((buf = realloc(buf, wanted_sizeof_buf)) == NULL) {
+                oom();
+            }
+            sizeof_buf = wanted_sizeof_buf;
         }
         snprintf(buf, sizeof_buf, "%s/%s", s, de->d_name);
         if (stat(buf, &st) == 0) {
@@ -154,8 +158,8 @@ static int traversal(const char * const s)
                 total_files++;
             }
         }
-        free(buf);
     }
+    free(buf);    
     closedir(d);
 
     return 0;
