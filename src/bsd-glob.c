@@ -156,7 +156,7 @@ static int glob_(const char *pattern,
     if (flags & GLOB_NOESCAPE) {
         while (bufnext < bufend && (c = *patnext++) != EOS) {
             *bufnext++ = (Char) c;
-	}
+        }
     } else {
         /* Protect the quoted characters. */
         while (bufnext < bufend && (c = *patnext++) != EOS) {
