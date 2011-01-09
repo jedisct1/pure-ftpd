@@ -204,7 +204,6 @@ sglob(char *pattern,
 static int globexp1(const Char * pattern, glob_t * pglob, int recursion)
 {
     const Char *ptr = pattern;
-    int rv = 0;
 
     if (pglob->gl_maxdepth > 0 && recursion > pglob->gl_maxdepth) {
         errno = 0;
@@ -216,8 +215,9 @@ static int globexp1(const Char * pattern, glob_t * pglob, int recursion)
 
     while ((ptr =
             (const Char *) g_strchr((const Char *) ptr, LBRACE)) != NULL) {
-        if (!globexp2(ptr, pattern, pglob, recursion + 1))
-            return rv;
+        if (!globexp2(ptr, pattern, pglob, recursion + 1)) {
+            return 0;
+        }
     }
 
     return glob0(pattern, pglob);
