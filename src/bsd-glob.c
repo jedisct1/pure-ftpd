@@ -151,6 +151,11 @@ static int glob_(const char *pattern,
     pglob->gl_pathc = 0;
     pglob->gl_pathv = NULL;
 
+    if (pglob->gl_offs < 0 || pglob->gl_pathc < 0 ||
+        pglob->gl_offs >= INT_MAX || pglob->gl_pathc >= INT_MAX ||
+        pglob->gl_pathc >= INT_MAX - pglob->gl_offs - 1) {
+        return (GLOB_NOSPACE);
+    }
     bufnext = patbuf;
     bufend = bufnext + MAXPATHLEN;
     if (flags & GLOB_NOESCAPE) {
