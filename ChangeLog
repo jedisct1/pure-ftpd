@@ -3,6 +3,8 @@
  - Use malloc() instead of an ever-growing stack in pure-quotacheck.
 Fixes quota computation on a large number of files. Problem initially
 reported by jeff at cpanel dot net.
+ - Tread OPTS UTF-8 like OPTS UTF8. Suggested by yjfan at longtop dot
+com.
 
 * Version 1.0.29:
  - iPhone: more thread safety, thanks to YoungJoon Chun.
