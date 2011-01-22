@@ -513,7 +513,7 @@ beginning with a dot ('.'). Anonymous users can't, for security reasons
 (like changing banners or a forgotten .rhosts). When '\-x' is used,
 authenticated users can download dot\-files, but not overwrite/create them,
 even if they own them. That way, you can prevent hosted users from messing
-.qmail files.
+\&.qmail files.
 .TP
 .B \-X
 This flag is identical to the previous one (writing dot\-files is

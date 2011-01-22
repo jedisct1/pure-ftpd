@@ -14,7 +14,6 @@ The server has to be compiled with
 .B \-\-with\-ftpwho
 to support this command.
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-c\fR
 the program is called via a web server (CGI interface) . Output is a
@@ -38,7 +37,7 @@ Output Mac OSX / GNUStep plist data.
 \fB\-s\fR
 Output only one line per client, with only numeric data, delimited by a | character.
 It's not very human-readable, but it's designed for easy parsing by shell scripts (cut/sed) .
-'|' characters in user names or file names are quoted (\\|) .
+\&'|' characters in user names or file names are quoted (\e|) .
 .TP 
 \fB\-v\fR
 Output an ASCII table (just like the default mode), with more info.
@@ -62,7 +61,6 @@ Scoreboard directory. Should always owned by root and on a lockable
 filesystem.
 
 .SH "ENVIRONMENT VARIABLES"
-.LP 
 .TP 
 \fBGATEWAY_INTERFACE\fP
 If found, automatically run in CGI mode and output HTML data.
