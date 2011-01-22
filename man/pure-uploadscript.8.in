@@ -13,7 +13,6 @@ After a successful upload, the file name is written to the pipe.
 .br
 \fBpure\-uploadscript\fR reads this pipe to automatically run any program or script to process the newly uploaded file.
 .SH "OPTIONS"
-.LP 
 .TP
 \fB\-B\fR
 Daemonize the process and fork it in background.
@@ -70,7 +69,6 @@ The full user name, or the virtual user name (127 chars max) .
 \- Only regular files are processed, control characters are rejected, and a header+footer avoid partial file names.
 .TP 
 \- Two external programs/scripts can't run at the same time. Uploads are always processed sequentially, in chronological order. This is to avoid denial\-of\-services by issuing a lot of simultaneous STOR commands in order to launch a fork bomb on the server. For this reason, your programs shouldn't take a long time to complete (but they can run themselves in background) .
-.TP 
 .SH "EXAMPLES"
 .LP 
 A sample script could be :
