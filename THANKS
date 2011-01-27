@@ -22,6 +22,7 @@ External contributors and people who helped in any way, shape or form:
 * Anthony DeRobertis - Fixed the on-demand creation of home directories.
 * Avi Brender - Better support for error reporting in pure-pw.
 * Axel Apitz <a_apitz at pixelpark.com> - Support for Solaris shadow/NIS.
+* Balazs Toth - Suggested pureftpd-mysql.conf improvement.
 * Ben <ben at zaeon.com> - RPM improvements to build with SQL or LDAP.
 * Ben Gertzfield (che_fox) - Fixed Solaris compilation and LDAP SSL dependencies.
 * Ben Weir - Reported and straced a bug in pure-pw.
