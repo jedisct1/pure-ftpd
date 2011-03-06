@@ -1,5 +1,3 @@
-/*      $OpenBSD: getopt_long.c,v 1.20 2005/10/25 15:49:37 jmc Exp $    */
-
 /*
  * Copyright (c) 2002 Todd C. Miller <Todd.Miller@courtesan.com>
  *
@@ -285,25 +283,25 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
         return -1;
     
     /*
-     * Disable GNU extensions if POSIXLY_CORRECT is set or options
-     * string begins with a '+'.
-     */
-    if (posixly_correct == -1)
-        posixly_correct = (getenv("POSIXLY_CORRECT") != NULL);
-    if (posixly_correct || *options == '+')
-        flags &= ~FLAG_PERMUTE;
-    else if (*options == '-')
-        flags |= FLAG_ALLARGS;
-    if (*options == '+' || *options == '-')
-        options++;
-    
-    /*
      * XXX Some GNU programs (like cvs) set pure_optind to 0 instead of
      * XXX using pure_optreset.  Work around this braindamage.
      */
     if (pure_optind == 0)
-        pure_optind = pure_optreset = 1;
+        pure_optind = pure_optreset = 1;    
     
+    /*
+     * Disable GNU extensions if POSIXLY_CORRECT is set or options
+     * string begins with a '+'.
+     */
+    if (posixly_correct == -1 || pure_optreset)
+        posixly_correct = (getenv("POSIXLY_CORRECT") != NULL);
+    if (*options == '-')
+        flags |= FLAG_ALLARGS;    
+    else if (posixly_correct || *options == '+')
+        flags &= ~FLAG_PERMUTE;
+    if (*options == '+' || *options == '-')
+        options++;
+        
     pure_optarg = NULL;
     if (pure_optreset)
         nonopt_start = nonopt_end = -1;
