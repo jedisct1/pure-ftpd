@@ -2,7 +2,7 @@
 * Version 1.0.30:
  - pure-quotacheck can now work with a large number of files.
  - OPTS UTF-8 is now an alias to OPTS UTF8.
- - Fix a STARTTLS flaw similar to Postfix's CVS-2011-0411.
+ - Fix a STARTTLS flaw similar to Postfix's CVE-2011-0411.
 
 * Version 1.0.29:
  - Fixed corruption when downloading > 4 Gb files on a 32-bits arch.
