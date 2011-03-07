@@ -57,14 +57,20 @@ static void randomdelay(void)
  * -Frank.
  */
 
+static size_t scanned;
+static size_t readnbd;
+
+static void flush_cmd(void)
+{
+    scanned = readnbd = (size_t) 0U;
+}
+
 int sfgets(void)
 {
     struct pollfd pfd;
     int pollret;
     ssize_t readnb;
     signed char seen_r = 0;
-    static size_t scanned;
-    static size_t readnbd;
     
     if (scanned > (size_t) 0U) {       /* support pipelining */
         readnbd -= scanned;        
@@ -362,6 +368,7 @@ void parser(void)
             addreply_noformat(234, "AUTH TLS OK.");
             doreply();
             if (tls_cnx == NULL) {
+                flush_cmd();
                 (void) tls_init_new_session();
             }
             goto wayout;
