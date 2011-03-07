@@ -7,6 +7,8 @@ reported by jeff at cpanel dot net.
 com.
  - Empty the command-line buffer after switching to TLS. Fixes a flaw
 similar to Postfix's CVE-2011-0411.
+ - Provide ANSI-compliant MySQL configuration example.
+ - Fix some issues with man pages.
 
 * Version 1.0.29:
  - iPhone: more thread safety, thanks to YoungJoon Chun.
