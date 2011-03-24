@@ -771,7 +771,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 static char *unescape_and_return_next_file(char * const str) {
     char *pnt = str;
     char *backslash_pnt = NULL;
-    char *endptr;
+    char *endarg;
     
     while (*pnt != 0) {
         if (backslash_pnt == NULL) {
@@ -786,12 +786,10 @@ static char *unescape_and_return_next_file(char * const str) {
             }
         }
     }           
-    if ((endptr = strchr(pnt, ' ')) != NULL) {
-        *endptr++ = 0;                    
-    } else {
-        endptr = str + strlen(str);
+    if ((endarg = strchr(pnt, ' ')) != NULL) {
+        *endarg++ = 0;
     }
-    return endptr;    
+    return endarg;    
 }
 
 void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
@@ -896,7 +894,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
 
             if (split_args == 0) {
                 endarg = NULL;
-            } else if ((endarg = strchr(arg, ' ')) != NULL) {
+            } else if ((endarg = unescape_and_return_next_file(arg)) != NULL) {
                 *endarg++ = 0;
                 justone = 0;
             }
