@@ -770,30 +770,28 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 
 static char *unescape_and_return_next_file(char * const str) {
     char *pnt = str;
-    char *endptr;    
-    signed char seen_backslash = 0;
+    char *backslash_pnt = NULL;
+    char *endptr;
     
     while (*pnt != 0) {
-        if (seen_backslash == 0) {
-            if ((pnt = strchr(pnt, '\\')) == NULL) {
+        if (backslash_pnt == NULL) {
+            if ((backslash_pnt = strchr(pnt, '\\')) == NULL) {
                 break;
             }
-            pnt++;
-            seen_backslash = 1;
+            pnt = backslash_pnt + 1;
         } else {
-            seen_backslash = 0;            
+            backslash_pnt = NULL;
             if (*pnt == ' ' || *pnt == '\\') {
-                (void) memmove(pnt - 1, pnt, strlen(pnt) + (size_t) 1U);
-                pnt++;
+                memmove(pnt - 1, pnt, strlen(pnt) + (size_t) 1U);
             }
         }
     }           
-    if (pnt != NULL && (endptr = strchr(pnt, ' ')) != NULL) {
-        *endptr++ = 0;
+    if ((endptr = strchr(pnt, ' ')) != NULL) {
+        *endptr++ = 0;                    
     } else {
         endptr = str + strlen(str);
     }
-    return endptr;
+    return endptr;    
 }
 
 void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
