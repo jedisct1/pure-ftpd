@@ -226,7 +226,7 @@ static void addfile(const char *name, const char *suffix)
 }
 
 /* listfile returns non-zero if the file is a directory */
-static int listfile(const PureFileInfo * const fi,  const char *name)
+static int listfile(const PureFileInfo * const fi, const char *name)
 {
     int rval = 0;
     struct stat st;
@@ -766,6 +766,34 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     free(names);
     free(dir);
     names = NULL;
+}
+
+static char *unescape_and_return_next_file(char * const str) {
+    char *pnt = str;
+    char *endptr;    
+    signed char seen_backslash = 0;
+    
+    while (*pnt != 0) {
+        if (seen_backslash == 0) {
+            if ((pnt = strchr(pnt, '\\')) == NULL) {
+                break;
+            }
+            pnt++;
+            seen_backslash = 1;
+        } else {
+            seen_backslash = 0;            
+            if (*pnt == ' ' || *pnt == '\\') {
+                (void) memmove(pnt - 1, pnt, strlen(pnt) + (size_t) 1U);
+                pnt++;
+            }
+        }
+    }           
+    if ((endptr = strchr(str, ' ')) != NULL) {
+        *endptr++ = 0;                    
+    } else {
+        endptr = str + strlen(str);
+    }
+    return endptr;
 }
 
 void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
