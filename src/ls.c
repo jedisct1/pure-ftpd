@@ -788,8 +788,8 @@ static char *unescape_and_return_next_file(char * const str) {
             }
         }
     }           
-    if ((endptr = strchr(str, ' ')) != NULL) {
-        *endptr++ = 0;                    
+    if (pnt != NULL && (endptr = strchr(pnt, ' ')) != NULL) {
+        *endptr++ = 0;
     } else {
         endptr = str + strlen(str);
     }
