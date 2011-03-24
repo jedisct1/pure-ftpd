@@ -60,10 +60,12 @@ static void randomdelay(void)
 static size_t scanned;
 static size_t readnbd;
 
+#ifdef WITH_TLS
 static void flush_cmd(void)
 {
     scanned = readnbd = (size_t) 0U;
 }
+#endif
 
 int sfgets(void)
 {
