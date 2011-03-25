@@ -1,4 +1,6 @@
 
+* Version 1.0.31:
+
 * Version 1.0.30:
  - Use malloc() instead of an ever-growing stack in pure-quotacheck.
 Fixes quota computation on a large number of files. Problem initially
