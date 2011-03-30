@@ -1,4 +1,6 @@
 
+* Version 1.0.31:
+
 * Version 1.0.30:
  - pure-quotacheck can now work with a large number of files.
  - OPTS UTF-8 is now an alias to OPTS UTF8.
