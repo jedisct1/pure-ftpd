@@ -1216,10 +1216,10 @@ AC_ARG_WITH(mysql,
       }
       ]])],[],[
         AC_MSG_RESULT(no)
-        AC_MSG_ERROR(Your MySQL client libraries aren't properly installed)      
+        AC_MSG_ERROR(Your MySQL client libraries aren't properly installed)
     ],[])
     AC_MSG_RESULT(yes)
-    AC_CHECK_FUNCS(mysql_real_escape_string)
+    AC_CHECK_FUNCS(mysql_real_escape_string my_make_scrambled_password)
   fi ])
 
 AC_ARG_WITH(pgsql,
