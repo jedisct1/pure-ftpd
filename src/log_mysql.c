@@ -451,7 +451,12 @@ void pw_mysql_check(AuthResult * const result,
 # if MYSQL_VERSION_ID >= 40100 && MYSQL_VERSION_ID < 40101
         make_scrambled_password(scrambled_password, password, 1, NULL);
 # else
+#  ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
+        my_make_scrambled_password(scrambled_password, password,
+                                   strlen(password));
+#  else
         make_scrambled_password(scrambled_password, password);
+#  endif
 # endif
 #endif
         if (strcmp(scrambled_password, spwd) == 0) {
