@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Timeout"
 #define MSG_CAPABILITIES "Oförmögen att ändra möjligheter"
 #define MSG_CLIENT_CLOSED_CNX "Klienten avbröt anslutningen"

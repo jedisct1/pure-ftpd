@@ -112,6 +112,7 @@ option_tuple = (
     ["CustomerProof\s+yes",                "-Z"                  ],
     ["NoTruncate\s+yes",                   "-0"                  ],    
     ["PIDFile\s+(\S+)",                    "-g", None            ],
+    ["TLSCipherSuite\s+(\S+)",             "-J", None            ],
     ["PerUserLimits\s+([:0-9]+)",          "-y", None            ],
     ["TLS\s+(\d)",                         "-Y", None            ])
 

@@ -151,7 +151,7 @@ External contributors and people who helped in any way, shape or form:
 * Thomas Ericsson - Reported documentation glitches.
 * Thomas Maschutznig.
 * Thomas Min - Reported an endless loop.
-* Todd Rinaldo - sent two compatibility fixes for GCC 2.95
+* Todd Rinaldo - sent two compatibility fixes for GCC 2.95 and provided support for the -J option.
 * Tomonori Kamitaki - Helped pure-ftpd to work on Playstation 2.
 * Trilucid - Initial web design of pureftpd.org
 * Ulrich Zehl - Found a documentation error in the sample LDAP schema.

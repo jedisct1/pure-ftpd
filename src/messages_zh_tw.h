@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "逾時"
 #define MSG_CAPABILITIES "無法切換性能"
 #define MSG_CLIENT_CLOSED_CNX "用戶端關閉連線"

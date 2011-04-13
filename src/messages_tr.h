@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Zaman Aþýmý"
 #define MSG_CAPABILITIES "Anahtar destekleri yapýlamýyor"
 #define MSG_CLIENT_CLOSED_CNX "Kullanýcý baðlantýyý kapattý"

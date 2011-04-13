@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Cas vyprsal"
 #define MSG_CAPABILITIES "Nemozem zmenit privilegia"
 #define MSG_CLIENT_CLOSED_CNX "Klient zavrel spojenie"

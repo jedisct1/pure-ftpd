@@ -423,6 +423,11 @@ CustomerProof              yes
 # TLS                      1
 
 
+# List of ciphers that will be accepted for SSL/TLS connections
+
+# TLSCipherSuite           HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3
+
+
 
 # Listen only to IPv4 addresses in standalone mode (ie. disable IPv6)
 # By default, both IPv4 and IPv6 are enabled.

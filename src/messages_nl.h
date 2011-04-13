@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Onderbreking"
 #define MSG_CAPABILITIES "Onmogelijk om de instelling te wisselen"
 #define MSG_CLIENT_CLOSED_CNX "Client sloot de verbinding"

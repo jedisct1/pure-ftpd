@@ -5841,6 +5841,12 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             }
             break;
         }            
+        case 'J': {
+            if ((tlsciphersuite = strdup(optarg)) == NULL) {
+                die_mem();
+            }
+            break;
+        }
 #endif
         case 'e': {
             anon_only = 1;
