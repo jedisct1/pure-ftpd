@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "시간 초과"
 #define MSG_CAPABILITIES "기능 전환 불가"
 #define MSG_CLIENT_CLOSED_CNX "클라이언트가 접속을 닫음"

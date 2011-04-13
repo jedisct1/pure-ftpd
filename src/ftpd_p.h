@@ -121,7 +121,7 @@ static const char *GETOPT_OPTIONS =
     "y:"
 #endif
 #ifdef WITH_TLS
-    "Y:"
+    "Y:J:"
 #endif    
     "zZ";
 
@@ -205,6 +205,7 @@ static struct option long_options[] = {
 # endif
 # ifdef WITH_TLS
     { "tls", 1, NULL, 'Y' },
+    { "tlsciphersuite", 1, NULL, 'J' },
 # endif
     { "allowdotfiles", 0, NULL, 'z' },
     { "customerproof", 0, NULL, 'Z' },

@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Temps de reponse depasse"
 #define MSG_CAPABILITIES "Impossible d'acceder a cette fonctionnalite"
 #define MSG_CLIENT_CLOSED_CNX "Le client a ferme la connexion"

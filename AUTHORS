@@ -319,6 +319,10 @@ enabled.
 
     LDAP authentication through binding.
 
+* Todd E Rinaldino / Cpanel
+
+    -J option (set allowed ciphers for SSL/TLS).
+
 * Frank DENIS aka Jedi/Sector One <j <at> pureftpd.org> :
 
     Pure-FTPd project initiator and maintainer.

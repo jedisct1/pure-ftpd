@@ -9,7 +9,7 @@
 pure\-ftpd \- simple File Transfer Protocol server
 
 .SH "SYNOPSIS"
-.B pure\-ftpd [\-0] [\-1] [\-4] [\-6] [\-a gid] [\-A] [\-b] [\-B] [\-c clients] [\-C cnx/ip] [\-d [\-d]] [\-D] [\-e] [\-E] [\-f facility] [\-F fortunes file] [\-g pidfile] [\-G] [\-H] [\-i] [\-I] [\-j] [\-k percentage] [\-K] [\-l authentication[:config file]] [\-L max files:max depth] [\-m maxload] [\-M] [\-n maxfiles:maxsize] [\-N] [\-o] [\-O format:log file] [\-p first:last] [\-P ip address or host name] [\-q upload:download ratio] [\-Q upload:download ratio] [\-r] [\-R] [\-s] [\-S [address,][port]] [\-t upload bandwidth:download bandwidth] [\-T upload bandwidth:download bandwidth] [\-u uid] [\-U umask files:umask dirs] [\-v bonjour name] [\-V ip address] [\-w] [\-W] [\-x] [\-X] [\-y max user sessions:max anon sessions] [\-Y tls behavior] [\-z] [\-Z]
+.B pure\-ftpd [\-0] [\-1] [\-4] [\-6] [\-a gid] [\-A] [\-b] [\-B] [\-c clients] [\-C cnx/ip] [\-d [\-d]] [\-D] [\-e] [\-E] [\-f facility] [\-F fortunes file] [\-g pidfile] [\-G] [\-H] [\-i] [\-I] [\-j] [\-J ciphers] [\-k percentage] [\-K] [\-l authentication[:config file]] [\-L max files:max depth] [\-m maxload] [\-M] [\-n maxfiles:maxsize] [\-N] [\-o] [\-O format:log file] [\-p first:last] [\-P ip address or host name] [\-q upload:download ratio] [\-Q upload:download ratio] [\-r] [\-R] [\-s] [\-S [address,][port]] [\-t upload bandwidth:download bandwidth] [\-T upload bandwidth:download bandwidth] [\-u uid] [\-U umask files:umask dirs] [\-v bonjour name] [\-V ip address] [\-w] [\-W] [\-x] [\-X] [\-y max user sessions:max anon sessions] [\-Y tls behavior] [\-z] [\-Z]
 
 .br
 Alternative style :
@@ -59,6 +59,8 @@ Alternative style :
 \-I \-\-maxidletime
 .br
 \-j \-\-createhomedir
+.br
+\-J \-\-tlsciphersuite
 .br
 \-k \-\-maxdiskusagepct
 .br
@@ -275,6 +277,9 @@ If the home directory of a user doesn't exist, automatically
 create it. The newly created home directory belongs to the user, and
 permissions are set according to the current directory mask. To avoid local
 attacks, the parent directory should never belong to an untrusted user.
+.TP
+.B \-J ciphers
+Set the list of ciphers that will be accepted for SSL/TLS connections.
 .TP
 .B \-k percentage
 Disallow upload if the partition is more than

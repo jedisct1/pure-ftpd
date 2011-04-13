@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Temporizare expirata"
 #define MSG_CAPABILITIES "Nu pot comuta capabilitatile"
 #define MSG_CLIENT_CLOSED_CNX "Clientul a inchis conexiunea"

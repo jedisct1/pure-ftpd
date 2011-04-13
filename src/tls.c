@@ -10,6 +10,7 @@
 # include "ftpwho-update.h"
 # include "globals.h"
 # include "messages.h"
+# include "globals.h"
 
 # ifndef DISABLE_SSL_RENEGOTIATION
 #  ifndef SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
@@ -251,6 +252,12 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
 # endif        
+    if (tlsciphersuite != NULL) {
+        if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
+            logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
+            _EXIT(EXIT_FAILURE);
+        }
+    }
     return 0;
 }
 

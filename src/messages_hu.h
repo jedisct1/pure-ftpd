@@ -1,3 +1,4 @@
+#define MSG_TLS_CIPHER_FAILED "SSL/TLS: Invalid TLSCipherSuite specified '%s'"
 #define MSG_TIMEOUT "Id?túllépés"
 #define MSG_CAPABILITIES "Képesség váltás sikertelen"
 #define MSG_CLIENT_CLOSED_CNX "A Kliens bontotta a kapcsolatot"

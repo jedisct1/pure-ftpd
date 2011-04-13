@@ -751,6 +751,10 @@ user. Also note that you must trust whoever manages the users databases,
 because with that feature, he'll be able to create/chown directories anywhere
 on the server's filesystem.
 
+- '-J <ciphers>': Sets the list of ciphers that will be accepted for
+SSL/TLS connections.
+For example: -J HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3
+
 - '-k <percentage>': Don't allow uploads if the partition is more than
 <percentage>% full. For instance, "-k 95" will ensure your disks will never
 get filled more than 95% by FTP. No need for the "percent" sign after the
@@ -1008,6 +1012,7 @@ aliases are available. You can get this list at any time by typing
 -i  --anonymouscantupload
 -I  --maxidletime           <time (min)>
 -j  --createhomedir
+-J  --tlsciphersuite        <ciphers>
 -k  --maxdiskusagepct       <percentage>
 -K  --keepallfiles
 -l  --login                 <auth> or <auth>:<config file>
@@ -1110,6 +1115,7 @@ aliases are available. You can get this list at any time by typing
 
 -f  --syslogfacility        <facility>
 
+-J  --tlsciphersuite        <ciphers>
 -a  --trustedgid            <gid>
 -V  --trustedip             <ip address>
 
