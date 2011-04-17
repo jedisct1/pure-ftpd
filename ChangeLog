@@ -1,5 +1,10 @@
 
 * Version 1.0.31:
+ - Introduce --tlsciphersuite (-J) to set the list of allowed ciphers,
+thanks to Todd Rinaldo.
+ - The -F switch has been documented in the built-in help.
+ - Shell-like escaping is now partially handled when emulating the "ls"
+command.
 
 * Version 1.0.30:
  - Use malloc() instead of an ever-growing stack in pure-quotacheck.
