@@ -1727,11 +1727,13 @@ void dopass(char *password)
     static unsigned int tapping;    
     gid_t *groups = NULL;
     char *hd;
+#if !defined(MINIMAL) && defined(HAVE_GETGROUPS) && defined(DISPLAY_GROUPS)    
     int ngroups;
-#if defined(NGROUPS_MAX) && NGROUPS_MAX > 0
+# if defined(NGROUPS_MAX) && NGROUPS_MAX > 0
     int ngroups_max = NGROUPS_MAX; /* Use the compile time value */
-#else
+# else
     int ngroups_max = 1; /* use a sane default */
+# endif
 #endif
 #ifdef WITH_RFC2640
     char *nwd = NULL;
