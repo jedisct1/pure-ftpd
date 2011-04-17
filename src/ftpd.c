@@ -1740,9 +1740,9 @@ static void randomsleep(unsigned int t) {
 void dopass(char *password)
 {
     static unsigned int tapping;    
-    gid_t *groups = NULL;
     char *hd;
-#if !defined(MINIMAL) && defined(HAVE_GETGROUPS) && defined(DISPLAY_GROUPS)    
+#if !defined(MINIMAL) && defined(HAVE_GETGROUPS) && defined(DISPLAY_GROUPS)
+    gid_t *groups = NULL;    
     int ngroups;
 # if defined(NGROUPS_MAX) && NGROUPS_MAX > 0
     int ngroups_max = NGROUPS_MAX; /* Use the compile time value */
