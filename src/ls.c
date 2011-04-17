@@ -770,7 +770,6 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 
 static char *unescape_and_return_next_file(char * const str) {
     char *pnt = str;
-    char *endarg = NULL;
     signed char seen_backslash = 0;    
     
     while (*pnt != 0) {
