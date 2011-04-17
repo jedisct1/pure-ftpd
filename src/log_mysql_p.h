@@ -71,4 +71,9 @@ static ConfigKeywords mysql_config_keywords[] = {
     { NULL, NULL }
 };
 
+#ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
+extern void my_make_scrambled_password(char *to, const char *password,
+                                       size_t pass_len);
+#endif
+
 #endif
