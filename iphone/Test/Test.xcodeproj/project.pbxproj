@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		093C445310CBFADE0034A32C /* libpureftpd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 093C445210CBFADE0034A32C /* libpureftpd.a */; };
 		093FBEF410A8D02800FE8BD1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 093FBEF310A8D02800FE8BD1 /* icon.png */; };
 		09872F6C10AB0F370026A466 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 09872F6B10AB0F370026A466 /* libiconv.dylib */; };
+		09CE3E0D135E05ED00D1D5E8 /* libpureftpd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CE3E0C135E05ED00D1D5E8 /* libpureftpd.a */; };
 		1D3623260D0F684500981E51 /* TestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* TestAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -21,9 +21,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		093C445210CBFADE0034A32C /* libpureftpd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpureftpd.a; path = ../libpureftpd.a; sourceTree = SOURCE_ROOT; };
 		093FBEF310A8D02800FE8BD1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		09872F6B10AB0F370026A466 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		09CE3E0C135E05ED00D1D5E8 /* libpureftpd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpureftpd.a; path = Lib/libpureftpd.a; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* TestAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* TestAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAppDelegate.m; sourceTree = "<group>"; };
@@ -48,7 +48,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
 				09872F6C10AB0F370026A466 /* libiconv.dylib in Frameworks */,
-				093C445310CBFADE0034A32C /* libpureftpd.a in Frameworks */,
+				09CE3E0D135E05ED00D1D5E8 /* libpureftpd.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +109,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				093C445210CBFADE0034A32C /* libpureftpd.a */,
+				09CE3E0C135E05ED00D1D5E8 /* libpureftpd.a */,
 				09872F6B10AB0F370026A466 /* libiconv.dylib */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -148,7 +148,11 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Test" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -195,16 +199,16 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Test_Prefix.pch;
 				INFOPLIST_FILE = "Test-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../pure-ftpd/iphone\"",
-					"\"/Users/j/src/pure-ftpd/iphone\"",
+					"\"$(SRCROOT)/Lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = Test;
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -216,16 +220,18 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Test_Prefix.pch;
 				INFOPLIST_FILE = "Test-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../../pure-ftpd/iphone\"",
 					"\"/Users/j/src/pure-ftpd/iphone\"",
+					"\"$(SRCROOT)/Lib\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = Test;
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -237,6 +243,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PREBINDING = NO;
 				SDKROOT = iphoneos3.1.2;
 			};
@@ -250,6 +257,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PREBINDING = NO;
 				SDKROOT = iphoneos3.1.2;
 			};
