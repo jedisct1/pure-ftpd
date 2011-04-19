@@ -8,7 +8,7 @@ export TARGET_PATH="$PLATFORM_PATH/Developer/SDKs/iPhoneOS4.3.sdk"
 export CC="$PLATFORM_PATH/Developer/usr/bin/gcc"
 export CPPFLAGS="-D__IPHONE__=1 -DALLOW_DELETION_OF_TEMPORARY_FILES=1 -DNO_PROCNAME_CHANGE -DANON_CAN_CHANGE_PERMS=1 -DANON_CAN_CHANGE_UTIME=1 -DANON_CAN_DELETE=1 -DANON_CAN_RESUME=1 -DANON_CAN_RENAME=1 -I$TARGET_PATH/usr/include -I$TARGET_PATH/usr/lib/gcc/arm-apple-darwin10/4.2.1/include"
 export CFLAGS="-pthread -Oz -arch $arch"
-export LDFLAGS="-pthread -L$TARGET_PATH/usr/lib -arch $arch"
+export LDFLAGS="-pthread -L$TARGET_PATH/usr/lib -L$TARGET_PATH/usr/lib/system -arch $arch"
 export CPP="$PLATFORM_PATH/Developer/usr/bin/cpp"
 
 rm -fr "obj-$arch" 2>/dev/null
