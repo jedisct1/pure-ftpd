@@ -5,6 +5,7 @@
 #define PASSWD_SQL_CLEARTEXT "cleartext"
 #define PASSWD_SQL_MYSQL "password"
 #define PASSWD_SQL_MD5 "md5"
+#define PASSWD_SQL_SHA1 "sha1"
 #define PASSWD_SQL_ANY "any"
 #define MYSQL_DEFAULT_SERVER "localhost"
 #define MYSQL_DEFAULT_PORT 3306
