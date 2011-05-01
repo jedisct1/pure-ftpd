@@ -5,6 +5,7 @@
 #define PASSWD_SQL_CLEARTEXT "cleartext"
 #define PASSWD_SQL_PGSQL "password"
 #define PASSWD_SQL_MD5 "md5"
+#define PASSWD_SQL_SHA1 "sha1"
 #define PASSWD_SQL_ANY "any"
 #define PGSQL_DEFAULT_SERVER "localhost"
 #define PGSQL_DEFAULT_PORT 5432

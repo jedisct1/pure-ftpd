@@ -83,9 +83,9 @@ You just have to have fields with the following info:
 
 - The user's login.
 
-- The user's password, in plaintext, crypt()ed format or MD5. Pure-FTPd also
-accepts the "any" value for the PGSQLCrypt field. With "any", all hashing
-functions (not plaintext) are tried.
+- The user's password, in plaintext, crypt()ed format, MD5 or SHA1.
+Pure-FTPd also accepts the "any" value for the PGSQLCrypt field.
+With "any", all hashing functions (not plaintext) are tried.
 
 - The system uid to map the user to. This can be a numeric id or a user
 name, looked up at run-time.
