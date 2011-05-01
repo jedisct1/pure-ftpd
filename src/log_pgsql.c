@@ -1,6 +1,6 @@
 #include <config.h>
 
-/* PostgreSQL backend, by Cindy Marasco <cindy@getaclue.org> */
+/* PostgreSQL backend, by Cindy Marasco <cindy at getaclue.org> */
 
 #ifdef WITH_PGSQL
 
