@@ -91,7 +91,7 @@ You just have to have fields with the following info:
 
 - The user's login.
 
-- The user's password, in plaintext, MD5, crypt()ed or MySQL's password()
+- The user's password, in plaintext, SHA1, MD5, crypt()ed or MySQL's password()
 format. Pure-FTPd also accepts the "any" value for the MySQLCrypt field.
 With "any", all hashing functions (not plaintext) are tried.
 
