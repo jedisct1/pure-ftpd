@@ -786,7 +786,7 @@ static char *unescape_and_return_next_file(char * const str) {
             pnt++;            
         } else {
             seen_backslash = 0;
-            if (*pnt == ' ' || *pnt == '\\') {
+            if (*pnt == ' ' || *pnt == '\\' || *pnt == '{' || *pnt == '}') {
                 memmove(pnt - 1, pnt, strlen(pnt) + (size_t) 1U);
             }
         }
