@@ -909,7 +909,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             
             alarm(GLOB_TIMEOUT);
             a = sglob(arg,
-                      GLOB_BRACE | (opt_a ? GLOB_PERIOD : 0),
+                      opt_a ? GLOB_PERIOD : 0,
                       NULL, &g, max_ls_files + 2, max_ls_depth * 2);
             alarm(0);
             if (a == 0) {
