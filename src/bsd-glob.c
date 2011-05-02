@@ -50,8 +50,6 @@
  *    not contain any magic characters.  [Used in csh style globbing]
  * GLOB_BRACE:
  *    expand {1,2}{a,b} to 1a 1b 2a 2b
- * GLOB_ONE_BRACE:
- *    expand only one pair of braces
  * gl_matchc:
  *    Number of matches in the current invocation of glob.
  */
@@ -123,7 +121,7 @@ static int glob2(Char *, Char *, Char *, Char *, Char *, Char *,
                  glob_t *, size_t *, int);
 static int glob3(Char *, Char *, Char *, Char *, Char *,
                  Char *, Char *, glob_t *, size_t *, int);
-static int globextend(const Char *, glob_t *, size_t *, int);
+static int globextend(const Char *, glob_t *, size_t *);
 #ifdef USELESS_FOR_PUREFTPD
 static const Char *globtilde(const Char *, Char *, size_t, glob_t *);
 #endif
@@ -151,7 +149,6 @@ static int glob_(const char *pattern,
     pglob->gl_errfunc = errfunc;
     pglob->gl_matchc = 0;
     pglob->gl_pathc = 0;
-    pglob->gl_bracesc = 0;    
     pglob->gl_pathv = NULL;
 
     if (pglob->gl_offs < 0 || pglob->gl_pathc < 0 ||
@@ -181,7 +178,7 @@ static int glob_(const char *pattern,
     }
     *bufnext = EOS;
 
-    if (flags & (GLOB_BRACE | GLOB_ONE_BRACE)) {
+    if (flags & GLOB_BRACE) {
         return globexp1(patbuf, pglob, 0);
     }
     return glob0(patbuf, pglob);    
@@ -212,19 +209,10 @@ sglob(char *pattern,
 static int globexp1(const Char * pattern, glob_t * pglob, int recursion)
 {
     const Char *ptr = pattern;
-    int max_braces;
 
-    if (pglob->gl_flags & GLOB_ONE_BRACE) {
-        max_braces = 1;
-    } else {
-        max_braces = pglob->gl_maxdepth;
-    }
-    if (pglob->gl_maxdepth > 0) {
-        if (recursion > pglob->gl_maxdepth ||
-            ++pglob->gl_bracesc > max_braces) {
-            errno = 0;
-            return 0;
-        }
+    if (pglob->gl_maxdepth > 0 && recursion > pglob->gl_maxdepth) {
+        errno = 0;
+        return 0;
     }
     /* Protect a single {}, for find(1), like csh */
     if (pattern[0] == LBRACE && pattern[1] == RBRACE && pattern[2] == EOS)
@@ -551,7 +539,7 @@ glob2(Char * pathbuf,
                 return 0;
 
             ++pglob->gl_matchc;
-            return (globextend(pathbuf, pglob, limitp, recursion + 1));
+            return (globextend(pathbuf, pglob, limitp));
         }
 
         /* Find end of next segment, copy tentatively to pathend. */
@@ -671,8 +659,7 @@ glob3(Char * pathbuf, Char * pathbuf_last, Char * pathend,
  *    Either gl_pathc is zero and gl_pathv is NULL; or gl_pathc > 0 and
  *    gl_pathv points to (gl_offs + gl_pathc + 1) items.
  */
-static int globextend(const Char * path, glob_t * pglob, size_t * limitp,
-                      int recursion)
+static int globextend(const Char * path, glob_t * pglob, size_t * limitp)
 {
     char **pathv;
     unsigned int newsize;
@@ -680,9 +667,6 @@ static int globextend(const Char * path, glob_t * pglob, size_t * limitp,
     char *copy;
     const Char *p;
 
-    if (pglob->gl_maxdepth > 0 && recursion > pglob->gl_maxdepth) {
-        return 0;
-    }
     if (pglob->gl_maxfiles != (unsigned long) -1) {
         if (pglob->gl_maxfiles == 0) {
             return 0;

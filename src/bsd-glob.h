@@ -39,7 +39,6 @@ typedef struct {
     int gl_maxdepth;            /* Maximum depth */
     int gl_pathc;               /* Count of total paths so far. */
     int gl_matchc;              /* Count of paths matching pattern. */
-    int gl_bracesc;             /* Count of the number of braces. */
     int gl_offs;                /* Reserved at beginning of gl_pathv. */
     int gl_flags;               /* Copy of flags parameter to glob. */
     char **gl_pathv;            /* List of paths matching pattern. */
@@ -66,12 +65,11 @@ typedef struct {
 #define    GLOB_NOSPACE    (-1)    /* Malloc call failed. */
 #define    GLOB_ABORTED    (-2)    /* Unignored error. */
 #define    GLOB_NOMATCH    (-3)    /* Malloc call failed. */
-#define    GLOB_NOSYS      (-4)    /* Implementation does not support function. */
+#define    GLOB_NOSYS    (-4)    /* Implementation does not support function. */
 
-#define    GLOB_BRACE      0x0080  /* Expand braces ala csh. */
+#define    GLOB_BRACE    0x0080  /* Expand braces ala csh. */
 #define    GLOB_MAGCHAR    0x0100  /* Pattern had globbing characters. */
-#define    GLOB_ONE_BRACE  0x0200  /* Expand only one brace. */
-#define    GLOB_QUOTE      0       /* source compatibility */
+#define    GLOB_QUOTE    0       /* source compatibility */
 
 #define    GLOB_ABEND    GLOB_ABORTED    /* source compatibility */
 
