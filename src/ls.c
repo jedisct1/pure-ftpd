@@ -786,7 +786,7 @@ static char *unescape_and_return_next_file(char * const str) {
             pnt++;            
         } else {
             seen_backslash = 0;
-            if (*pnt == ' ' || *pnt == '\\') {
+            if (*pnt == ' ' || *pnt == '\\' || *pnt == '{' || *pnt == '}') {
                 memmove(pnt - 1, pnt, strlen(pnt) + (size_t) 1U);
             }
         }
@@ -909,7 +909,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             
             alarm(GLOB_TIMEOUT);
             a = sglob(arg,
-                      GLOB_BRACE | (opt_a ? GLOB_PERIOD : 0),
+                      opt_a ? GLOB_PERIOD : 0,
                       NULL, &g, max_ls_files + 2, max_ls_depth * 2);
             alarm(0);
             if (a == 0) {

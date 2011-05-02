@@ -1,4 +1,9 @@
 
+* Version 1.0.32:
+ - Support SHA1 password hashing in MySQL and PostgreSQL backends
+ - Support for braces expansion in directory listings has been
+disabled - Cf. CVE-2011-0418
+
 * Version 1.0.31:
  - The list of allowed ciphers for SSL/TLS connections can now be
 specified (--tlsciphersuite / -J).
