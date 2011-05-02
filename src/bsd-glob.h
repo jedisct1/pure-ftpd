@@ -66,11 +66,12 @@ typedef struct {
 #define    GLOB_NOSPACE    (-1)    /* Malloc call failed. */
 #define    GLOB_ABORTED    (-2)    /* Unignored error. */
 #define    GLOB_NOMATCH    (-3)    /* Malloc call failed. */
-#define    GLOB_NOSYS    (-4)    /* Implementation does not support function. */
+#define    GLOB_NOSYS      (-4)    /* Implementation does not support function. */
 
-#define    GLOB_BRACE    0x0080  /* Expand braces ala csh. */
+#define    GLOB_BRACE      0x0080  /* Expand braces ala csh. */
 #define    GLOB_MAGCHAR    0x0100  /* Pattern had globbing characters. */
-#define    GLOB_QUOTE    0       /* source compatibility */
+#define    GLOB_ONE_BRACE  0x0200  /* Expand only one brace. */
+#define    GLOB_QUOTE      0       /* source compatibility */
 
 #define    GLOB_ABEND    GLOB_ABORTED    /* source compatibility */
 

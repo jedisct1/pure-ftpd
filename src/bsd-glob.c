@@ -50,6 +50,8 @@
  *    not contain any magic characters.  [Used in csh style globbing]
  * GLOB_BRACE:
  *    expand {1,2}{a,b} to 1a 1b 2a 2b
+ * GLOB_ONE_BRACE:
+ *    expand only one pair of braces
  * gl_matchc:
  *    Number of matches in the current invocation of glob.
  */
@@ -179,7 +181,7 @@ static int glob_(const char *pattern,
     }
     *bufnext = EOS;
 
-    if (flags & GLOB_BRACE) {
+    if (flags & (GLOB_BRACE | GLOB_ONE_BRACE)) {
         return globexp1(patbuf, pglob, 0);
     }
     return glob0(patbuf, pglob);    
@@ -210,10 +212,16 @@ sglob(char *pattern,
 static int globexp1(const Char * pattern, glob_t * pglob, int recursion)
 {
     const Char *ptr = pattern;
+    int max_braces;
 
+    if (pglob->gl_flags & GLOB_ONE_BRACE) {
+        max_braces = 1;
+    } else {
+        max_braces = pglob->gl_maxdepth;
+    }
     if (pglob->gl_maxdepth > 0) {
         if (recursion > pglob->gl_maxdepth ||
-            ++pglob->gl_bracesc > pglob->gl_maxdepth) {
+            ++pglob->gl_bracesc > max_braces) {
             errno = 0;
             return 0;
         }
