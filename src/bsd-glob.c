@@ -116,8 +116,6 @@ typedef u_short Char;
 #define	ismeta(c)	(((c)&M_QUOTE) != 0)
 
 #define	GLOB_LIMIT_MALLOC	65536
-#define	GLOB_LIMIT_STAT		128
-#define	GLOB_LIMIT_READDIR	16384
 
 struct glob_lim {
 	size_t	glim_malloc;
@@ -629,14 +627,12 @@ glob2(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
 			if (g_lstat(pathbuf, &sb, pglob)) {
 				return 0;
             }
-			if ((pglob->gl_flags & GLOB_LIMIT) &&
-			    limitp->glim_stat++ >= GLOB_LIMIT_STAT) {
+			if (limitp->glim_stat++ >= pglob->gl_maxfiles) {
 				errno = 0;
 				*pathend++ = SEP;
 				*pathend = EOS;
 				return GLOB_NOSPACE;
 			}
-
 			if (((pglob->gl_flags & GLOB_MARK) &&
 			    pathend[-1] != SEP) && (S_ISDIR(sb.st_mode) ||
 			    (S_ISLNK(sb.st_mode) &&
@@ -738,12 +734,15 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
 		u_char *sc;
 		Char *dc;
 
-		if ((pglob->gl_flags & GLOB_LIMIT) &&
-		    limitp->glim_readdir++ >= GLOB_LIMIT_READDIR) {
+		if (limitp->glim_readdir++ >= pglob->gl_maxfiles) {
+#ifdef USELESS_FOR_PUREFTPD
 			errno = 0;
 			*pathend++ = SEP;
 			*pathend = EOS;
 			return GLOB_NOSPACE;
+#else
+            break;
+#endif
 		}
 
 		/* Initial DOT must be matched literally. */
@@ -868,8 +867,7 @@ nospace:
 			statv[pglob->gl_offs + pglob->gl_pathc] = NULL;
 		} else {
 			limitp->glim_malloc += sizeof(**statv);
-			if ((pglob->gl_flags & GLOB_LIMIT) &&
-			    limitp->glim_malloc >= GLOB_LIMIT_MALLOC) {
+			if (limitp->glim_malloc >= GLOB_LIMIT_MALLOC) {
 				errno = 0;
 				return GLOB_NOSPACE;
 			}
@@ -896,9 +894,7 @@ nospace:
 	}
 	pathv[pglob->gl_offs + pglob->gl_pathc] = NULL;
 
-	if ((pglob->gl_flags & GLOB_LIMIT) &&
-	    (newn * sizeof(*pathv)) + limitp->glim_malloc >
-	    GLOB_LIMIT_MALLOC) {
+	if ((newn * sizeof(*pathv)) + limitp->glim_malloc > GLOB_LIMIT_MALLOC) {
 		errno = 0;
 		return GLOB_NOSPACE;
 	}
