@@ -739,10 +739,9 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
 			errno = 0;
 			*pathend++ = SEP;
 			*pathend = EOS;
-			return GLOB_NOSPACE;
-#else
-            break;
+			err = GLOB_NOSPACE;
 #endif
+            break;
 		}
 
 		/* Initial DOT must be matched literally. */
