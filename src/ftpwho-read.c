@@ -12,7 +12,7 @@
 
 static int checkproc(const pid_t proc)
 {    
-    return kill(proc, 0) == 0;
+    return kill(proc, 0) == 0 || errno == EPERM;
 }
 
 static int scoreboard_cleanup(const char * const file)

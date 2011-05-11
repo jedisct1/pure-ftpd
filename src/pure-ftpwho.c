@@ -101,7 +101,7 @@ void logfile(const int facility, const char *format, ...)
 
 static int checkproc(const pid_t proc)
 {    
-    return kill(proc, 0) == 0;
+    return kill(proc, 0) == 0 || errno == EPERM;
 }
 
 /* Text output */
