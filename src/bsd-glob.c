@@ -215,16 +215,12 @@ static int globexp1(const Char * pattern, glob_t * pglob, int recursion)
         return 0;
     }
     /* Protect a single {}, for find(1), like csh */
-    if (pattern[0] == LBRACE && pattern[1] == RBRACE && pattern[2] == EOS)
+    if (pattern[0] == LBRACE && pattern[1] == RBRACE && pattern[2] == EOS) {
         return glob0(pattern, pglob);
-
-    while ((ptr =
-            (const Char *) g_strchr((const Char *) ptr, LBRACE)) != NULL) {
-        if (!globexp2(ptr, pattern, pglob, recursion + 1)) {
-            return 0;
-        }
     }
-
+    if ((ptr = (const Char *) g_strchr(ptr, LBRACE)) != NULL) {
+        return globexp2(ptr, pattern, pglob, recursion + 1);
+    }
     return glob0(pattern, pglob);
 }
 
