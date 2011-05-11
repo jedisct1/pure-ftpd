@@ -1,4 +1,7 @@
 
+* Version 1.0.33:
+ - Sync built-in glob(3) code with OpenBSD-current.
+
 * Version 1.0.32:
  - Support SHA1 password hashing in MySQL and PostgreSQL backends
  - Support for braces expansion in directory listings has been
