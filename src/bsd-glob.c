@@ -128,7 +128,9 @@ static int	 g_Ctoc(const Char *, char *, u_int);
 static int	 g_lstat(Char *, struct stat *, glob_t *);
 static DIR	*g_opendir(Char *, glob_t *);
 static Char	*g_strchr(const Char *, int);
+#ifdef USELESS_FOR_PUREFTPD
 static int	 g_strncmp(const Char *, const char *, size_t);
+#endif
 static int	 g_stat(Char *, struct stat *, glob_t *);
 static int	 glob0(const Char *, glob_t *, struct glob_lim *);
 static int	 glob1(Char *, Char *, glob_t *, struct glob_lim *);
@@ -415,6 +417,7 @@ globtilde(const Char *pattern, Char *patbuf, size_t patbuf_len, glob_t *pglob)
 
 #endif
 
+#ifdef USELESS_FOR_PUREFTPD
 static int
 g_strncmp(const Char *s1, const char *s2, size_t n)
 {
@@ -432,7 +435,6 @@ g_strncmp(const Char *s1, const char *s2, size_t n)
 	return rv;
 }
 
-#ifdef USELESS_FOR_PUREFTPD
 static int
 g_charclass(const Char **patternp, Char **bufnextp)
 {
