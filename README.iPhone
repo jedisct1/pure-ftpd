@@ -154,23 +154,9 @@ Grab it from: http://github.com/jedisct1/pure-ftpd/tree/threaded/iphone/Test/
        ------------------------ SHORTCOMINGS ------------------------
        
        
-iPhone applications can't fork(). For this reason, the library only accepts
-one client connection at a time.
+iPhone applications can't fork(). For this reason, the library uses
+threads and local-storage instead of independant processes.
         
-Cyberduck seems to be unable to work with less than 2 connections, and is
-therefore currently incompatible with the library.
-
-Filezilla also wants to hit the server with multiple connections by default,
-and doesn't handle gracefully the fact that it could reach the server limit.
-
-In order to connect with Filezilla, open the site manager and create a new
-entry for your iPhone. Then, in the transfers settings tab, restrict the
-maximum number of connections to 1 and make sure that the checkbox is
-checked.
-
-Most other clients should work out of the box, including, but not limited to,
-the awesome FireFTP extension for Firefox.
-
 Please keep in mind that the iPhone port is experimental and just meant to
 be used as a temporary personal FTP server.
 
@@ -221,6 +207,8 @@ validation process?
 
 -> It doesn't use any undocumented API and shouldn't be a showstopper for
 the Apple validation process.
+In addition, it's been embedded for quite some time by applications present on
+the AppStore like Twonav.
 
 
 * Why does it require libiconv?
