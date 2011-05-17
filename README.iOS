@@ -1,17 +1,16 @@
 
 
-       ------------------------ IPHONE SUPPORT ------------------------
+         ------------------------ IOS SUPPORT ------------------------
        
-                     An embeddable FTP server for iPhone
+                       An embeddable FTP server for iOS
 
 
-Starting with version 1.0.25, Pure-FTPd can be compiled for the iPhone and
-iPod Touch targets, as a library that can easily be embedded into your own
-applications.
+Starting with version 1.0.25, Pure-FTPd can be compiled for the iOS, as a
+library that can easily be embedded into your own applications.
 
 The purpose is not to provide a full-fledged server, but to provide a simple
 way for applications to occasionnally allow users to download and upload files
-through the iPhone acting like a personal FTP server.
+through the iOS acting like a personal FTP server.
 
 Although the PureDB backend can be added in order to support virtual users,
 the default configuration is designed to support a single user. It can be
@@ -154,17 +153,17 @@ Grab it from: http://github.com/jedisct1/pure-ftpd/tree/threaded/iphone/Test/
        ------------------------ SHORTCOMINGS ------------------------
        
        
-iPhone applications can't fork(). For this reason, the library uses
+iOS applications can't fork(). For this reason, the library uses
 threads and local-storage instead of independant processes.
         
-Please keep in mind that the iPhone port is experimental and just meant to
+Please keep in mind that the iOS port is experimental and just meant to
 be used as a temporary personal FTP server.
 
 
             ------------------------ FAQ ------------------------
        
        
-* May I use it in any iPhone application?
+* May I use it in any iOS application?
 
 -> Yes.
 
@@ -217,7 +216,4 @@ the AppStore like Twonav.
 If you don't want this dependency, feel free to remove --with-rfc2640 from
 the build script. But files names might be messed up if they aren't plain
 ASCII.
-
-
-
 
