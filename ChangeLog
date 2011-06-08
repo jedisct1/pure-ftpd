@@ -1,6 +1,8 @@
 
 * Version 1.0.33:
  - Sync built-in glob(3) code with OpenBSD-current.
+ - Repair checkproc() on Linux when support for capabitilies is
+compiled in. Reported by Eric Gouyer.
 
 * Version 1.0.32:
  - Support SHA1 password hashing in MySQL and PostgreSQL backends

@@ -41,6 +41,7 @@ External contributors and people who helped in any way, shape or form:
 * David Majorel - fixed LDAP FTPStatus
 * David Vincelli - Reported OpenBSD issues.
 * Eric <ericnew at pacific.net.sg> - Reported a quota bug.
+* Eric Gouyer - Reported that without CAP_KILL, kill(..., 0) could fail on Linux.
 * Eric Larsson - Reported a ftpwho bug.
 * Erik (Cirvam, <erik at sublevo.com>) for his very nice help on the Solaris port.
 * Flaw Zero <flawzero at eyou.com> - Fixes to the simplified Chinese translation.
