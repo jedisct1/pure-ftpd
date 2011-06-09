@@ -255,7 +255,7 @@
 extern int errno;
 #endif
 #ifndef environ
-# ifdef __APPLE__
+# ifdef __APPLE_CC__
 #  include <crt_externs.h>
 #  define environ (*_NSGetEnviron())
 # else
