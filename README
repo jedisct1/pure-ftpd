@@ -642,7 +642,7 @@ FTP access. Alternatively, you can give them "ftp" as a shell. Users with a
 "ftp" shell will be able to login through FTP only: no telnet, no SSH. And
 there's no need (and you shouldn't do so) for an "ftp" entry in /etc/shells.
 
-Here are the recognised switches:
+Here are the recognized switches:
 
 - '-0': when a file is uploaded and there is already a previous version of the
 file with the same name, the old file will neither get removed nor truncated.
