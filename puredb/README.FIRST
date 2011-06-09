@@ -1,11 +1,11 @@
 
 *****************************************************************************
 
-  This is a modified version of PureDB, that doesn't install any library nor
-header. If you want to use PureDB in other applications, you can get it as a
-separate package here:
+  This is a modified version of PureDB, that doesn't install any libraries
+nor headers.
 
-  http://www.pureftpd.org/puredb/
+  A standalone version of PureDB can be downloaded from:
+http://download.pureftpd.org/pure-ftpd/pure-db/
   
 *****************************************************************************  
 
