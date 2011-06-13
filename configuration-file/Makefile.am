@@ -1,5 +1,4 @@
-EXTRA_DIST = \
-	pure-ftpd.conf.in \
-	pure-config.pl.in \
-	pure-config.py.in
-
+CLEANFILES = \
+	pure-ftpd.conf \
+	pure-config.pl \
+	pure-config.py

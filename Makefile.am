@@ -1,6 +1,7 @@
+CLEANFILES = \
+	pure-ftpd.spec
+    
 EXTRA_DIST = \
-	pure-ftpd.spec \
-	pure-ftpd.spec.in \
 	THANKS \
 	HISTORY \
 	CONTACT \
