@@ -218,7 +218,8 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL | SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL |
+                        SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 # else
     SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
 # endif
