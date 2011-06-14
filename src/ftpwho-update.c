@@ -139,6 +139,7 @@ int ftpwho_initwho(void)
         err:
         free(scoreboardfile);
         scoreboardfile = NULL;
+        shm_data_cur = NULL;
         
         return -1;
     }
@@ -147,7 +148,7 @@ int ftpwho_initwho(void)
      * Don't check for any lock: we could get a deadlock.
      */
     if ((mmap_fd = open(scoreboardfile, 
-                       O_RDWR | O_CREAT | O_NOFOLLOW, 0600)) == -1) {
+                        O_RDWR | O_CREAT | O_NOFOLLOW, 0600)) == -1) {
         goto err;
     }
     if (fstat(mmap_fd, &st) != 0 || !S_ISREG(st.st_mode) ||
