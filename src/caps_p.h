@@ -7,6 +7,9 @@
 # endif
 
 cap_value_t cap_keep_startup[] = {
+# if defined(USE_PAM) && defined(CAP_AUDIT_WRITE)
+    CAP_AUDIT_WRITE,
+# endif
     CAP_SETGID,
     CAP_SETUID,
     CAP_CHOWN,
