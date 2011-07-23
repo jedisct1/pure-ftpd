@@ -6,15 +6,25 @@
 #include "puredb_p.h"
 #include "puredb_read.h"
 
-static puredb_u32_t puredb_hash(const char * const msg, size_t len)
+static puredb_u32_t puredb_hash(const char * const key, size_t keylen)
 {
     puredb_u32_t j = (puredb_u32_t) 5381U;
-    
-    while (len != 0) {
-        len--;
-        j += (j << 5);
-        j ^= ((unsigned char) msg[len]);        
+    const unsigned char *ukey = (const unsigned char *) key;
+    size_t i = 0U;
+    if (keylen >= 8U) {
+        const size_t keylen_chunk = keylen - 8U;
+        while (i < keylen_chunk) {
+            const unsigned char * const p = &ukey[i];
+            i += 8U;
+            j = j * 33U ^ p[0]; j = j * 33U ^ p[1];
+            j = j * 33U ^ p[2]; j = j * 33U ^ p[3];
+            j = j * 33U ^ p[4]; j = j * 33U ^ p[5];
+            j = j * 33U ^ p[6]; j = j * 33U ^ p[7];
+        }
     }
+    while (i < keylen) {
+        j = j * 33U ^ ukey[i++];
+    }    
     j &= 0xffffffff;
     
     return j;
