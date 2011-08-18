@@ -119,7 +119,8 @@ static int traversal(const char * const s)
         nodes = new_nodes;
     }
     {
-        Node * const node = (Node *) (((unsigned char *) nodes) + nodes_size);
+        Node * const node =
+            (Node *) (void *) (((unsigned char *) nodes) + nodes_size);
 
         node->inode = st.st_ino;
         node->device = st.st_dev;

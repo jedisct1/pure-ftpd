@@ -119,7 +119,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             } else {
                 const unsigned char * const ip_raw =
                     (const unsigned char *) &
-                    (((const struct sockaddr_in *) 
+                    (((const struct sockaddr_in *) (void *)
                       (res->ai_addr))->sin_addr.s_addr);
                 
                 ip = (ip_raw[0] << 24) | (ip_raw[1] << 16) |

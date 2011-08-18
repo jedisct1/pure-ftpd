@@ -102,8 +102,8 @@ int puredbw_add(PureDBW * const dbw,
         hash0->hash1_list = newpnt;
     }
     dbw->offset_first_data += sizeof(puredb_u32_t) + sizeof(puredb_u32_t);
-    hash1 = (Hash1 *) ((unsigned char *) hash0->hash1_list +
-                       hash0->hash1_list_size - sizeof(Hash1));
+    hash1 = (Hash1 *) (void *) ((unsigned char *) hash0->hash1_list +
+                                hash0->hash1_list_size - sizeof(Hash1));
     hash1->hash = hash;
     hash1->offset_data = dbw->data_offset_counter;
     dbw->data_offset_counter += sizeof(puredb_u32_t) + sizeof(puredb_u32_t) +

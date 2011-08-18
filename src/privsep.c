@@ -73,7 +73,7 @@ int privsep_sendfd(const int psfd, const int fd)
     cmsg->cmsg_len = CMSG_LEN(sizeof fd);
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
-    if ((fdptr = (int *) CMSG_DATA(cmsg)) == NULL) {
+    if ((fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {
         ALLOCA_FREE(buf);    
         return -1;
     }
@@ -116,7 +116,7 @@ int privsep_recvfd(const int psfd)
     msg.msg_controllen = sizeof_buf;
     msg.msg_flags = 0;
     if ((cmsg = CMSG_FIRSTHDR(&msg)) == NULL ||
-        (fdptr = (int *) CMSG_DATA(cmsg)) == NULL) {    
+        (fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {    
         ALLOCA_FREE(buf);
         return -1;    
     }    
@@ -132,7 +132,7 @@ int privsep_recvfd(const int psfd)
     if (received != (ssize_t) sizeof fodder ||
         fodder != PRIVSEPCMD_ANSWER_FD ||
         (cmsg = CMSG_FIRSTHDR(&msg)) == NULL ||
-        (fdptr = (int *) CMSG_DATA(cmsg)) == NULL) {
+        (fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {
         ALLOCA_FREE(buf);
         return -1;
     }
