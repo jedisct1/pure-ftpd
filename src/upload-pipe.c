@@ -45,8 +45,13 @@ int upload_pipe_open(void)
         goto anew;
     }        
     anew2:
-    if ((upload_pipe_fd =
-         open(UPLOAD_PIPE_FILE, O_WRONLY | O_NOFOLLOW)) == -1) {
+    upload_pipe_fd =
+        open(UPLOAD_PIPE_FILE, O_WRONLY | O_NOFOLLOW);
+    if (upload_pipe_fd == -1 && errno == ENXIO) {
+        upload_pipe_fd =
+            open(UPLOAD_PIPE_FILE, O_RDWR | O_NOFOLLOW);
+    }
+    if (upload_pipe_fd == -1) {
         if (mkfifo(UPLOAD_PIPE_FILE, (mode_t) 0600) < 0) {
             return -1;
         }
