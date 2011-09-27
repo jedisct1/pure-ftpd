@@ -254,3 +254,7 @@ and Robert Vasvari.
   SSL/TLS works out of the box.
   
   
+* WinSCP (Windows)
+  WinSCP should be configured with "File protocol" set to "FTP" with
+"TLS Explicit encryption".
+
