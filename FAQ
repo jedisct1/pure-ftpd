@@ -503,9 +503,9 @@ errors), but you just have to deinstall Kerberos on your client host to have
 
 * Wrong group ownership.
 
--> I have a user called 'john' whoose group is 'johngroup'. When John
+-> I have a user called 'john' whose group is 'johngroup'. When John
 uploads a file, that one belongs to 'john', but to another group like
-'wheel' (whoose John isn't a member of). What's wrong?
+'wheel' (whose John isn't a member of). What's wrong?
 
 This is a BSD standard behavior (verified on OpenBSD, ISOS, DragonflyBSD and
 FreeBSD): when a new file is created, the group is inherited from the parent
@@ -543,7 +543,7 @@ That message can means two things:
 even if it's a fake shell like /bin/false . Also make sure that you have a
 carriage return after the last entry in /etc/shells.
 
-- You are using the -u <uid> option to deny access to users whoose uid is
+- You are using the -u <uid> option to deny access to users whose uid is
 below <uid> . But the user you are trying to log in as, has an uid in the
 forbidden range.
 

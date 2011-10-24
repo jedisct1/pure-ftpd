@@ -71,7 +71,7 @@ To add a new user, use the following syntax:
                          [-y <max number of concurrent sessions>]
                          [-z <hhmm>-<hhmm>] [-m]
 
-Let's create "joe", whoose home directory will be /home/ftpusers/joe . The
+Let's create "joe", whose home directory will be /home/ftpusers/joe . The
 system account associated with "joe" is "ftpusers".
 
             pure-pw useradd joe -u ftpuser -d /home/ftpusers/joe
@@ -151,7 +151,7 @@ To disable the number of concurrent sessions, use pure-pw usermod <user> -y ''
 
 
 We won't delete Joe at this time. Joe is a fine guy :) But FYI, deleting an
-user is as simple as running "pure-pw userdel", whoose syntax is:
+user is as simple as running "pure-pw userdel", whose syntax is:
 
          pure-pw userdel <login> [-f <passwd file>] [-m]
          
@@ -176,7 +176,7 @@ To change the password of a user, use "pure-pw passwd":
 To review info about one user, reading the /etc/pureftpd.passwd file is ok,
 but it's not really human-friendly.
 
-It's why you can use "pure-pw show", whoose syntax is:
+It's why you can use "pure-pw show", whose syntax is:
 
          pure-pw show    <login> [-f <passwd file>]
          

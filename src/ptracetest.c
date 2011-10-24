@@ -1,7 +1,7 @@
 
 /*
  * This little program checks whether your operating system allows a process
- * to attach to another process whoose uid is only identical because it
+ * to attach to another process whose uid is only identical because it
  * revoked its privileges.
  * 
  * If it detects that your operating system may be unsafe, then it's probably

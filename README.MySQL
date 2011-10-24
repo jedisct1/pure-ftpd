@@ -97,7 +97,7 @@ With "any", all hashing functions (not plaintext) are tried.
 
 * RECOMMENDATION: On Solaris systems and on very old C libraries, use MySQL
 MD5 hashing. On all other systems, better use crypt(), which adds a salt.
-Avoid password() whoose hash function is rather weak, not portable, and it is
+Avoid password() whose hash function is rather weak, not portable, and it is
 supposed to be only used for internal accounts of MySQL servers. password() is
 no more supported by Pure-FTPd with MySQL 4.1.0 and later.
 

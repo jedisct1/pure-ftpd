@@ -258,7 +258,7 @@ private channel : a restricted trusted part and the main part that
 definitely revokes all privileges after authentication and chroot().
 Add --with-privsep to ./configure in order to enable that feature.
  - Automatic detection of Virtuozzo was added.
- - Forced passive IP addresses (-P) can now work with gateways whoose
+ - Forced passive IP addresses (-P) can now work with gateways whose
 addresses are dynamic (DSL and cable modem users), using symbolic host
 names.
 
@@ -279,7 +279,7 @@ more (Thanks to Ying-Chieh Liao) .
 slashes.
  - pure-uploadscript will no more immediately give up when the server
 hasn't been started before.
- - Files whoose names contains non-printable characters are not listed
+ - Files whose names contains non-printable characters are not listed
 any more.
  - A new switch (--with-boring) has been introduced to produce more
 professional-looking messages.

@@ -200,7 +200,7 @@ int puredb_find(PureDB * const db, const char * const tofind,
                 const size_t tofind_len, off_t * const retpos, 
                 size_t * const retlen);
 
-This function looks the database for a key matching tofind, whoose length is
+This function looks the database for a key matching tofind, whose length is
 tofind_len. After a successful match, retpos contains the offset to the
 first byte of the matching data, and retlen is the length of the data.
 

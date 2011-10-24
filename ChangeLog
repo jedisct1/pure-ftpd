@@ -562,7 +562,7 @@ out why they can't upload an ISO image when there's 700Mb free on a
     Relax permissions enforcement in dochmod() when quotas are enabled
 - Thanks to Claudiu.
     Introduce checkprintable() function in ls.c : don't display files
-whoose name contains characters < 32.
+whose name contains characters < 32.
     Contributed sfv-crc-check has been removed (people reported that it simply
 doesn't work) .
     PAM sample fixed : ftplockout should really be ftpusers. Add some
@@ -597,7 +597,7 @@ names, don't parse options. Reported by Martin Hedenfalk.
 by Kenneth Stailey.
     Don't display "you are user number 0".
     Check whether we have pread() in configure.ac .
-    Remove dead scoreboard files in pure-ftpwho, even those whoose status
+    Remove dead scoreboard files in pure-ftpwho, even those whose status
 isn't marked as free.
     New translation : Russian. Contributed by Andrey Ulanov
 <drey at rt.mipt.ru> .

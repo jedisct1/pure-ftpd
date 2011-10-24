@@ -852,7 +852,7 @@ connect.
 (anonymous and non-anonymous). Members of the root (0, something called
 'wheel') have no ratio.
 
-- '-r': Never overwrite existing files. Uploading a file whoose name
+- '-r': Never overwrite existing files. Uploading a file whose name
 already exists cause an automatic rename. Files are called xyz, xyz.1, xyz.2,
 xyz.3, etc.
 
@@ -1613,7 +1613,7 @@ The syntax is:
 pure-quotacheck -u username/uid -d home directory [-g group/gid]
 
 For instance, if you want to summarize usage for the /home/ftpusers/john
-directory, whoose files are owned by the "ftpusers" system account, just run:
+directory, whose files are owned by the "ftpusers" system account, just run:
 
 pure-quotacheck -u ftpusers -d /home/ftpusers/john
 
@@ -1709,7 +1709,7 @@ To support that feature, the server must be compiled with --with-diraliases
 passed to ./configure .
 
 To define alias/directory pairs, you must create a file called
-/etc/pureftpd-dir-aliases, whoose format is:
+/etc/pureftpd-dir-aliases, whose format is:
 
 Alternating lines of alias and dir
 (this enables embeded whitespace in dir and alias without quoting rules)

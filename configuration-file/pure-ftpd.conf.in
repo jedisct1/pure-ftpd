@@ -267,7 +267,7 @@ ProhibitDotFilesRead        no
 
 
 
-# Never overwrite files. When a file whoose name already exist is uploaded,
+# Never overwrite files. When a file whose name already exist is uploaded,
 # it get automatically renamed to file.1, file.2, file.3, ...
 
 AutoRename                  no

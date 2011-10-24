@@ -433,7 +433,7 @@ Enable ratios for anonymous and non\-anonymous users. If the
 option is also used, users from the trusted group have no ratio.
 .TP
 .B \-r
-Never overwrite existing files. Uploading a file whoose name
+Never overwrite existing files. Uploading a file whose name
 already exists cause an automatic rename. Files are called xyz.1, xyz.2,
 xyz.3, etc.
 .TP
