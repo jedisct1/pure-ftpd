@@ -210,6 +210,7 @@ int tls_init_library(void)
     tls_data_cnx_handshaked = 0;
     SSL_library_init();
     SSL_load_error_strings();
+    OpenSSL_add_all_algorithms();
     while (RAND_status() == 0) {
         rnd = zrand();
         RAND_seed(&rnd, (int) sizeof rnd);
@@ -276,6 +277,7 @@ void tls_free_library(void)
         SSL_CTX_free(tls_ctx);
         tls_ctx = NULL;
     }
+    EVP_cleanup();
 }
 
 int tls_init_new_session(void)
