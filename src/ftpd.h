@@ -320,9 +320,8 @@ typedef enum {
 } ChannelProtectionLevel;
 
 int pureftpd_start(int argc, char *argv[], const char *home_directory);
-int safe_write(const int fd, const void *buf_, size_t count);
 #ifdef WITH_TLS
-int secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
+ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
 #endif
 void parser(void);
 void stripctrl(char * const buf, size_t len);

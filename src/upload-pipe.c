@@ -5,6 +5,7 @@
 # include "ftpwho-update.h"
 # include "globals.h"
 # include "upload-pipe.h"
+# include "safe_rw.h"
 
 # ifdef WITH_DMALLOC
 #  include <dmalloc.h>
@@ -122,7 +123,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     memcpy(pnt, vuser, sizeof_vuser);
     pnt += sizeof_vuser;
     memcpy(pnt, file, sizeof_file);
-    (void) safe_write(upload_pipe_fd, buf, sizeof_buf);
+    (void) safe_write(upload_pipe_fd, buf, sizeof_buf, -1);
     free(buf);
     lock.l_type = F_UNLCK;
     while (fcntl(upload_pipe_lock, F_SETLK, &lock) < 0 && errno == EINTR);

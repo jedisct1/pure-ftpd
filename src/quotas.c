@@ -7,6 +7,7 @@
 # include "globals.h"
 # include "messages.h"
 # include "quotas.h"
+# include "safe_rw.h"
 
 # ifdef WITH_DMALLOC
 #  include <dmalloc.h>
@@ -37,6 +38,7 @@ int quota_update(Quota *quota,
     char *bufpnt = buf;
     int dummy_overflow;
     ssize_t left = (ssize_t) (sizeof buf - 1U);
+    size_t buf_len;
     
     if (hasquota() != 0 || chrooted == 0) {
         return -2;
@@ -113,7 +115,8 @@ int quota_update(Quota *quota,
         lseek(fd, (off_t) 0, SEEK_SET) != (off_t) -1 &&
         ftruncate(fd, (off_t) 0) == 0) {
         
-        if (safe_write(fd, buf, strlen(buf)) != 0) {
+        buf_len = strlen(buf);
+        if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
             (void) ftruncate(fd, (off_t) 0);
             goto bye;
         }

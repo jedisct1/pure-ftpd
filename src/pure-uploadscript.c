@@ -14,6 +14,7 @@ int main(void)
 
 # include "ftpd.h"
 # include "upload-pipe.h"
+# include "safe_rw.h"
 # include "pure-uploadscript_p.h"
 
 #ifdef WITH_DMALLOC
@@ -415,30 +416,10 @@ static int run(const char * const who, const char * const file,
     return 0;
 }
 
-int safe_write(const int fd, const void *buf_, size_t count)
-{
-    const char *buf = (const char *) buf_;
-    ssize_t written;
-        
-    while (count > (size_t) 0) {
-        for (;;) {
-            if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno != EINTR) {
-                    return -1;
-                }
-                continue;
-            }
-            break;
-        }
-        buf += written;
-        count -= written;
-    }
-    return 0;
-}
-
 static void updatepidfile(void)
 {
-    char buf[42];    
+    char buf[42];
+    size_t buf_len;
     int fd;
     
     if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n", 
@@ -452,7 +433,8 @@ static void updatepidfile(void)
                    O_NOFOLLOW, (mode_t) 0644)) == -1) {
         return;
     }
-    if (safe_write(fd, buf, strlen(buf)) != 0) {
+    buf_len = strlen(buf);
+    if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
         ftruncate(fd, (off_t) 0);
     }
     close(fd);

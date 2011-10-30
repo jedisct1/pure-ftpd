@@ -11,6 +11,7 @@
 # include "ftpwho-update.h"
 # include "globals.h"
 # include "altlog.h"
+# include "safe_rw.h"
 
 # ifdef WITH_DMALLOC
 #  include <dmalloc.h>
@@ -38,7 +39,7 @@ static int altlog_write(const char *str)
 	) {
         return -1;
     }
-    (void) safe_write(altlog_fd, str, (size_t) left);
+    (void) safe_write(altlog_fd, str, (size_t) left, -1);
     lock.l_type = F_UNLCK;
     while (fcntl(altlog_fd, F_SETLK, &lock) < 0 && errno == EINTR);    
     

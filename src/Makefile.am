@@ -22,11 +22,48 @@ libpureftpd_a_DEPENDS = \
 	../puredb/src/libpuredb_read.a
 
 libpureftpd_a_SOURCES = \
+	altlog.c \
+	altlog.h \
+	bonjour.h \
+	bonjour.c \
+	bsd-glob.c \
+	bsd-glob.h \
+	bsd-realpath.h \
+	bsd-realpath.c \
+	bsd-getopt_long.c \
+	bsd-getopt_long.h \
+	caps.c \
+	caps_p.h \
+	caps.h \
+	crypto.c \
+	crypto.h \
+	crypto-md5.c \
+	crypto-md5.h \
+	crypto-sha1.c \
+	crypto-sha1.h \
 	daemons.c \
+	diraliases.h \
+	diraliases.c \
+	dynamic.c \
+	dynamic.h \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	fakechroot.h \
+	fakechroot.c \
+	ftp_parser.c \
 	ftpd.c \
 	ftpd_p.h \
 	ftpd.h \
-	syslognames.h \
+	ftpwho-update.c \
+	ftpwho-update.h \
+	ftpwho-update_p.h \
+	ftpwho-read.h \
+	ftpwho-read.c \
+	getloadavg.h \
+	getloadavg.c \
+	globals.h \
+	ipstack.c \
+	ipstack.h \
 	log_unix.c \
 	log_unix.h \
 	log_mysql.c \
@@ -47,25 +84,7 @@ libpureftpd_a_SOURCES = \
 	log_extauth_p.h \
 	ls.c \
 	ls_p.h \
-	parser.c \
-	parser_p.h \
-	parser.h \
-	globals.h \
-	bsd-glob.c \
-	bsd-glob.h \
 	messages.h \
-	fakesnprintf.h \
-	fakesnprintf.c \
-	bsd-realpath.h \
-	bsd-realpath.c \
-	mysnprintf.c \
-	mysnprintf.h \
-	caps.c \
-	caps_p.h \
-	caps.h \
-	ftp_parser.c \
-	dynamic.c \
-	dynamic.h \
 	messages_cs_cz.h \
 	messages_da.h \
 	messages_de.h \
@@ -87,40 +106,23 @@ libpureftpd_a_SOURCES = \
 	messages_tr.h \
 	messages_zh_cn.h \
 	messages_zh_tw.h \
-	ftpwho-update.c \
-	ftpwho-update.h \
-	ftpwho-update_p.h \
-	bsd-getopt_long.c \
-	bsd-getopt_long.h \
-	upload-pipe.c \
-	upload-pipe.h \
-	ipstack.c \
-	ipstack.h \
-	altlog.c \
-	altlog.h \
-	crypto.c \
-	crypto.h \
-	crypto-md5.c \
-	crypto-md5.h \
-	crypto-sha1.c \
-	crypto-sha1.h \
-	quotas.h \
-	quotas.c \
-	fakechroot.h \
-	fakechroot.c \
-	diraliases.h \
-	diraliases.c \
-	ftpwho-read.h \
-	ftpwho-read.c \
-	getloadavg.h \
-	getloadavg.c \
+	mysnprintf.c \
+	mysnprintf.h \
+	parser.c \
+	parser_p.h \
+	parser.h \
 	privsep.h \
 	privsep_p.h \
 	privsep.c \
+	quotas.h \
+	quotas.c \
+	safe_rw.h \
+	safe_rw.c \
+	syslognames.h \
 	tls.h \
 	tls.c \
-	bonjour.h \
-	bonjour.c
+	upload-pipe.c \
+	upload-pipe.h
 
 pure_ftpd_DEPENDS = \
 	libpureftpd.a \
@@ -167,6 +169,8 @@ pure_uploadscript_SOURCES = \
 	ftpwho-update.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
+	safe_rw.c \
+	safe_rw.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
 	mysnprintf.c \
@@ -185,6 +189,8 @@ pure_quotacheck_SOURCES = \
 	ftpd.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
+	safe_rw.c \
+	safe_rw.h \
 	mysnprintf.c \
 	mysnprintf.h \
 	bsd-getopt_long.c \
@@ -204,6 +210,8 @@ pure_pw_SOURCES = \
 	fakesnprintf.c \
 	mysnprintf.c \
 	mysnprintf.h \
+	safe_rw.c \
+	safe_rw.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h
 
@@ -221,6 +229,8 @@ pure_authd_SOURCES = \
 	ftpd.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
+	safe_rw.c \
+	safe_rw.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
 	mysnprintf.c \

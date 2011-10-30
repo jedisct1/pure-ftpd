@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "log_extauth.h"
 #include "log_extauth_p.h"
+#include "safe_rw.h"
 #ifdef WITH_TLS
 # include "tls.h"
 #endif
@@ -150,27 +151,6 @@ static void callback_reply_end(const char *str, AuthResult * const result)
     auth_finalized |= 1;
 }
 
-static ssize_t safe_read(const int fd, void * const buf_, size_t maxlen)
-{
-    unsigned char *buf = (unsigned char *) buf_;
-    ssize_t readnb;
-    
-    do {
-        while ((readnb = read(fd, buf, maxlen)) < (ssize_t) 0 && 
-               errno == EINTR);
-        if (readnb < (ssize_t) 0 || readnb > (ssize_t) maxlen) {
-            return readnb;
-        }
-        if (readnb == (ssize_t) 0) {
-            ret:
-            return (ssize_t) (buf - (unsigned char *) buf_);
-        }
-        maxlen -= readnb;
-        buf += readnb;
-    } while (maxlen > (ssize_t) 0);
-    goto ret;
-}
-
 void pw_extauth_check(AuthResult * const result,
                       const char *account, const char *password,
                       const struct sockaddr_storage * const sa,
@@ -186,6 +166,7 @@ void pw_extauth_check(AuthResult * const result,
     char sa_port[NI_MAXSERV];
     char peer_hbuf[NI_MAXHOST];
     char line[4096];
+    size_t line_len;
     
     result->auth_ok = 0;
     if (getnameinfo((struct sockaddr *) sa, STORAGE_LEN(*sa),
@@ -227,7 +208,8 @@ void pw_extauth_check(AuthResult * const result,
                 sizeof line)) {
         goto bye;
     }
-    if (safe_write(kindy, line, strlen(line)) != 0) {
+    line_len = strlen(line);
+    if (safe_write(kindy, line, line_len, -1) != (ssize_t) line_len) {
         goto bye;
     }    
     result->uid = (uid_t) 0;
@@ -235,7 +217,8 @@ void pw_extauth_check(AuthResult * const result,
     result->dir = NULL;
     result->slow_tilde_expansion = 1;    
     auth_finalized = 0;
-    if ((readnb = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
+    if ((readnb =
+         safe_read_partial(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
         goto bye;
     }
     line[readnb] = 0;    

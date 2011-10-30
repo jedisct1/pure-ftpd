@@ -23,6 +23,7 @@
 #include "ftpd.h"
 #include "bsd-glob.h"
 #include "getloadavg.h"
+#include "safe_rw.h"
 #ifndef WITHOUT_PRIVSEP
 # include "privsep.h"
 #endif
@@ -61,29 +62,8 @@ void usleep2(const unsigned long microsec)
     enablesignals();
 }
 
-int safe_write(const int fd, const void *buf_, size_t count)
-{
-    ssize_t written;    
-    const char *buf = (const char *) buf_;
-    
-    while (count > (size_t) 0U) {
-        for (;;) {
-            if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno != EINTR) {
-                    return -1;
-                }
-                continue;
-            }
-            break;
-        }
-        buf += written;
-        count -= written;
-    }
-    return 0;
-}
-
 #ifdef WITH_TLS
-int secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
+ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
 {
     ssize_t written;
     const char *buf = (const char *) buf_;
@@ -93,7 +73,7 @@ int secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
         for (;;) {
             if ((written = SSL_write(tls_fd, buf, count)) <= (ssize_t) 0) {
                 if (SSL_get_error(tls_fd, written) != SSL_ERROR_NONE) {
-                    return -1;
+                    return (ssize_t) -1;
                 }
                 continue;
             }
@@ -102,7 +82,7 @@ int secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
         buf += written;
         count -= written;
     }
-    return ssw_status;
+    return (ssize_t) (buf - (const char *) buf_);
 }
 #endif
 
@@ -328,7 +308,7 @@ void client_fflush(void)
     if (replybuf_pos == replybuf) {
         return;
     }
-    safe_write(clientfd, replybuf, (size_t) (replybuf_pos - replybuf));
+    safe_write(clientfd, replybuf, (size_t) (replybuf_pos - replybuf), -1);
     client_init_reply_buf();
 }
 
@@ -3963,6 +3943,7 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
                const size_t size_, off_t * const uploaded)
 {
     size_t size = size_;
+    ssize_t written;
     const unsigned char *buf = buf_;
     unsigned char *unasciibuf = NULL;
     int ret = 0;
@@ -3991,7 +3972,8 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
         size = (size_t) (unasciibufpnt - unasciibuf);
     }
 #endif
-    ret = safe_write(ulhandler->f, buf, size);
+    written = safe_write(ulhandler->f, buf, size, -1); 
+    ret = - (written == (ssize_t) size);
     if (unasciibuf != NULL) {
         ALLOCA_FREE(unasciibuf);
     }
@@ -5277,6 +5259,7 @@ static void updatepidfile(void)
 {
     int fd;
     char buf[42];
+    size_t buf_len;
 
     if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n",
                          (unsigned long) getpid()), sizeof buf)) {
@@ -5289,7 +5272,8 @@ static void updatepidfile(void)
                    O_NOFOLLOW, (mode_t) 0644)) == -1) {
         return;
     }
-    if (safe_write(fd, buf, strlen(buf)) != 0) {
+    buf_len = strlen(buf);
+    if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
         (void) ftruncate(fd, (off_t) 0);
     }
     (void) close(fd);

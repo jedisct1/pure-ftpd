@@ -7,6 +7,7 @@
 #include "dynamic.h"
 #include "ftpwho-update.h"
 #include "globals.h"
+#include "safe_rw.h"
 #ifdef WITH_TLS
 # include "tls.h"
 #endif
@@ -25,14 +26,15 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
         if (outcnt > (size_t) 0U) {
 #ifdef WITH_TLS
             if (tls_fd != NULL) {
-                if (secure_safe_write(tls_fd, outbuf, outcnt) < 0) {
+                if (secure_safe_write(tls_fd, outbuf, outcnt) !=
+                    (ssize_t) outcnt) {
                     return;
                 } 
             } else
 #endif      
             {
                 (void) tls_fd;
-                if (safe_write(f, outbuf, outcnt) != 0) {
+                if (safe_write(f, outbuf, outcnt, -1) != (ssize_t) outcnt) {
                     return;
                 }
             }
@@ -57,20 +59,23 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
     }
 #ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
-        if (secure_safe_write(tls_fd, outbuf, sizeof outbuf) < 0) {
+        if (secure_safe_write(tls_fd, outbuf, sizeof outbuf) !=
+            (ssize_t) sizeof outbuf) {
             return;
         } 
     } else
 #endif
     {       
-        if (safe_write(f, outbuf, sizeof outbuf) != 0) {
+        if (safe_write(f, outbuf, sizeof outbuf, -1) !=
+            (ssize_t) sizeof outbuf) {
             return;
         }
     }
 #ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {    
         while (l > sizeof outbuf) {
-            if (secure_safe_write(tls_fd, s, sizeof outbuf) < 0) {
+            if (secure_safe_write(tls_fd, s, sizeof outbuf) !=
+                (ssize_t) sizeof outbuf) {
                 return;
             }
             s += sizeof outbuf;
@@ -80,7 +85,8 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
 #endif
     {
         while (l > sizeof outbuf) {
-            if (safe_write(f, s, sizeof outbuf) != 0) {
+            if (safe_write(f, s, sizeof outbuf, -1) !=
+                (ssize_t) sizeof outbuf) {
                 return;
             }
             s += sizeof outbuf;
@@ -881,7 +887,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
         else
 #endif
         {
-            safe_write(c, "213-STAT" CRLF, sizeof "213-STAT" CRLF - 1U);
+            safe_write(c, "213-STAT" CRLF, sizeof "213-STAT" CRLF - 1U, -1);
         }
     }
     if (arg != NULL && *arg != 0) {

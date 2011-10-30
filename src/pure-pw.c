@@ -2,6 +2,7 @@
 
 #include "ftpd.h"
 #include "pure-pw.h"
+#include "safe_rw.h"
 #include "../puredb/src/puredb_write.h"
 #ifdef HAVE_POSIX_TERMIOS
 # include <termios.h>
@@ -255,7 +256,7 @@ static unsigned int pw_zrand(void)
         return (unsigned int) rand();
 #endif
     }
-    if (read(fd, &ret, sizeof ret) != (ssize_t) sizeof ret) {
+    if (safe_read(fd, &ret, sizeof ret) != (ssize_t) sizeof ret) {
         close(fd);
         goto nax;
     }

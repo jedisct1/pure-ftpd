@@ -15,6 +15,7 @@ int main(void)
 #include "ftpd.h"
 #include "log_extauth.h"
 #include "pure-authd_p.h"
+#include "safe_rw.h"
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -208,52 +209,11 @@ static void newenv_str(const char * const var, const char * const str)
 #endif    
 }
 
-static ssize_t safe_read(const int fd, void * const buf_, size_t maxlen)
-{
-    unsigned char *buf = (unsigned char *) buf_;
-    ssize_t readnb;
-    
-    do {
-        while ((readnb = read(fd, buf, maxlen)) < (ssize_t) 0 && 
-               errno == EINTR);
-        if (readnb < (ssize_t) 0 || readnb > (ssize_t) maxlen) {
-            return readnb;
-        }
-        if (readnb == (ssize_t) 0) {
-            ret:
-            return (ssize_t) (buf - (unsigned char *) buf_);
-        }
-        maxlen -= readnb;
-        buf += readnb;
-    } while (maxlen > (ssize_t) 0);
-    goto ret;
-}
-
-int safe_write(const int fd, const void *buf_, size_t count)
-{
-    const char *buf = (const char *) buf_;
-    ssize_t written;
-        
-    while (count > (size_t) 0) {
-        for (;;) {
-            if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno != EINTR) {
-                    return -1;
-                }
-                continue;
-            }
-            break;
-        }
-        buf += written;
-        count -= written;
-    }
-    return 0;
-}
-
 static void updatepidfile(void)
 {
     int fd;
     char buf[42];
+    size_t buf_len;
     
     if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n", 
                          (unsigned long) getpid()), sizeof buf)) {
@@ -266,7 +226,8 @@ static void updatepidfile(void)
                    O_NOFOLLOW, (mode_t) 0644)) == -1) {
         return;
     }
-    if (safe_write(fd, buf, strlen(buf)) != 0) {
+    buf_len = strlen(buf);
+    if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
         ftruncate(fd, (off_t) 0);
     }
     close(fd);
@@ -334,9 +295,9 @@ static void process(const int clientfd)
     }    
     if (pid != (pid_t) 0) {
         close(pfds[1]);         /* close the output side of the pipe */
-        if ((readnb = safe_read(pfds[0], line, 
-                                sizeof line - 1U)) > (ssize_t) 0) {
-            (void) safe_write(clientfd, line, readnb);
+        if ((readnb = safe_read_partial(pfds[0], line, 
+                                        sizeof line - 1U)) > (ssize_t) 0) {
+            (void) safe_write(clientfd, line, readnb, -1);
         }
 #ifdef HAVE_WAITPID
         (void) waitpid(pid, NULL, 0);
