@@ -137,6 +137,8 @@ void pw_ldap_exit(void)
     use_tls_s = NULL;
     free((void *) ldap_auth_method_s);
     ldap_auth_method_s = NULL;
+    free((void *) ldap_default_home_directory);
+    ldap_default_home_directory = NULL;
 }
 
 static LDAP *pw_ldap_connect(const char *dn, const char *password)
@@ -419,7 +421,13 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if ((pwret.pw_dir = 
          pw_ldap_getvalue(ld, res, ldap_homedirectory)) == NULL ||
         *pwret.pw_dir == 0) {
-        goto error;
+        if (ldap_default_home_directory == NULL &&
+            *ldap_default_home_directory != 0) {
+            goto error;
+        }
+        if ((pwret.pw_dir = strdup(ldap_default_home_directory)) == NULL) {
+            DIE_MEM();
+        }
     }    
     if ((pwret.pw_shell = 
          pw_ldap_getvalue(ld, res, LDAP_LOGINSHELL)) == NULL) {

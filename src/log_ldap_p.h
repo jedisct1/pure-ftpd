@@ -27,6 +27,7 @@ static char *use_tls_s;
 static int use_tls;
 static char *ldap_auth_method_s;
 static int use_ldap_bind_method;
+static char *ldap_default_home_directory;
 
 static ConfigKeywords ldap_config_keywords[] = {
     { "LDAPServer", &ldap_host },
@@ -41,6 +42,7 @@ static ConfigKeywords ldap_config_keywords[] = {
     { "LDAPDefaultGID", &default_gid_s },
     { "LDAPUseTLS", &use_tls_s },
     { "LDAPAuthMethod", &ldap_auth_method_s },
+    { "LDAPDefaultHomeDirectory", &ldap_default_home_directory },
     { NULL, NULL }
 };
 
