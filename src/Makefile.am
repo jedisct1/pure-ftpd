@@ -1,12 +1,12 @@
 noinst_LIBRARIES = libpureftpd.a
 
 sbin_PROGRAMS = \
+	pure-authd \
 	pure-ftpd \
-	pure-mrtginfo \
 	pure-ftpwho \
-	pure-uploadscript \
+	pure-mrtginfo \
 	pure-quotacheck \
-	pure-authd
+	pure-uploadscript
 
 bin_PROGRAMS = \
 	pure-statsdecode \
@@ -142,61 +142,61 @@ pure_mrtginfo_CFLAGS = -DIN_PURE_MRTGINFO=1
 
 pure_mrtginfo_SOURCES = \
 	daemons.c \
-	pure-mrtginfo.c \
-	messages.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
+	messages.h \
+	pure-mrtginfo.c \
 	mysnprintf.c \
 	mysnprintf.h
 
 pure_ftpwho_SOURCES = \
-	pure-ftpwho.c \
-	ftpd.h \
-	syslognames.h \
-	ftpwho-update.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
+	ftpd.h \
+	ftpwho-update.h \
+	ipstack.c \
+	ipstack.h \
 	mysnprintf.c \
 	mysnprintf.h \
-	ipstack.c \
-	ipstack.h
+	pure-ftpwho.c \
+	syslognames.h
 
 pure_uploadscript_SOURCES = \
-	pure-uploadscript.c \
-	pure-uploadscript_p.h \
-	ftpd.h \
-	syslognames.h \
-	ftpwho-update.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
-	safe_rw.c \
-	safe_rw.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
-	mysnprintf.c \
-	mysnprintf.h
-
-pure_statsdecode_SOURCES = \
-	pure-statsdecode.c \
 	ftpd.h \
-	fakesnprintf.h \
-	fakesnprintf.c \
-	mysnprintf.c \
-	mysnprintf.h
-
-pure_quotacheck_SOURCES = \
-	pure-quotacheck.c \
-	ftpd.h \
-	fakesnprintf.h \
-	fakesnprintf.c \
-	safe_rw.c \
-	safe_rw.h \
+	ftpwho-update.h \
 	mysnprintf.c \
 	mysnprintf.h \
+	pure-uploadscript.c \
+	pure-uploadscript_p.h \
+	safe_rw.c \
+	safe_rw.h \
+	syslognames.h
+
+pure_statsdecode_SOURCES = \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	ftpd.h \
+	mysnprintf.c \
+	mysnprintf.h \
+	pure-statsdecode.c
+
+pure_quotacheck_SOURCES = \
 	bsd-getopt_long.c \
-	bsd-getopt_long.h
+	bsd-getopt_long.h \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	ftpd.h \
+	mysnprintf.c \
+	mysnprintf.h \
+	pure-quotacheck.c \
+	safe_rw.c \
+	safe_rw.h
 
 pure_pw_DEPENDS = \
 	../puredb/src/libpuredb_write.a
@@ -205,38 +205,38 @@ pure_pw_LDADD = \
 	../puredb/src/libpuredb_write.a
 
 pure_pw_SOURCES = \
-	pure-pw.c \
-	pure-pw.h \
-	ftpd.h \
-	fakesnprintf.h \
-	fakesnprintf.c \
-	mysnprintf.c \
-	mysnprintf.h \
-	safe_rw.c \
-	safe_rw.h \
-	bsd-getopt_long.c \
-	bsd-getopt_long.h
-
-pure_pwconvert_SOURCES = \
-	pure-pwconvert.c \
-	ftpd.h \
-	fakesnprintf.h \
-	fakesnprintf.c \
-	mysnprintf.c \
-	mysnprintf.h
-
-pure_authd_SOURCES = \
-	pure-authd.c \
-	pure-authd_p.h \
-	ftpd.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
-	safe_rw.c \
-	safe_rw.h \
 	fakesnprintf.h \
 	fakesnprintf.c \
+	ftpd.h \
 	mysnprintf.c \
-	mysnprintf.h
+	mysnprintf.h \
+	pure-pw.c \
+	pure-pw.h \
+	safe_rw.c \
+	safe_rw.h
+
+pure_pwconvert_SOURCES = \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	ftpd.h \
+	mysnprintf.c \
+	mysnprintf.h \
+	pure-pwconvert.c
+
+pure_authd_SOURCES = \
+	bsd-getopt_long.c \
+	bsd-getopt_long.h \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	ftpd.h \
+	mysnprintf.c \
+	mysnprintf.h \
+	pure-authd.c \
+	pure-authd_p.h \
+	safe_rw.c \
+	safe_rw.h
 
 ptracetest_SOURCES = \
 	ptracetest.c
