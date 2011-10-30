@@ -206,6 +206,7 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 int tls_init_library(void) 
 {
     unsigned int rnd;
+    long options;
     
     tls_cnx_handshaked = 0;
     tls_data_cnx_handshaked = 0;
@@ -220,12 +221,15 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL |
-                        SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+    options = SSL_OP_NO_SSLv2 | SSL_OP_ALL |
+        SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION;
 # else
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
+    options = SSL_OP_NO_SSLv2 | SSL_OP_ALL;
 # endif
-    
+    if (ssl_disabled != 0) {
+        options |= SSL_OP_NO_SSLv3;
+    }
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
     if (SSL_CTX_use_certificate_chain_file(tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
         die(421, LOG_ERR,

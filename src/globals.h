@@ -164,6 +164,7 @@ GLOBAL0(signed char be_customer_proof);
 GLOBAL0(signed char enforce_tls_auth);
 GLOBAL0(int data_protection_level); 
 GLOBAL(const char *tlsciphersuite, NULL);
+GLOBAL0(signed char ssl_disabled);
 #endif
 
 GLOBAL0(char *atomic_prefix);

@@ -5767,6 +5767,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             break;
         }            
         case 'J': {
+            if (strncmp(optarg, "-S:", sizeof "-S:" - (size_t) 1U)) {
+                optarg += sizeof "-S:" - (size_t) 1U;
+                ssl_disabled = 1;
+            }
             if ((tlsciphersuite = strdup(optarg)) == NULL) {
                 die_mem();
             }

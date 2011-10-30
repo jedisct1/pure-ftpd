@@ -424,6 +424,7 @@ CustomerProof              yes
 
 
 # List of ciphers that will be accepted for SSL/TLS connections
+# Prefix with -S: in order to totally disable SSL but not TLS.
 
 # TLSCipherSuite           HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3
 
