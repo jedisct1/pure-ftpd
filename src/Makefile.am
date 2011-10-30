@@ -205,6 +205,8 @@ pure_pw_LDADD = \
 	../puredb/src/libpuredb_write.a
 
 pure_pw_SOURCES = \
+	alt_arc4random.c \
+	alt_arc4random.h \
 	bsd-getopt_long.c \
 	bsd-getopt_long.h \
 	fakesnprintf.h \

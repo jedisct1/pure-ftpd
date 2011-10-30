@@ -8,6 +8,7 @@
 #include "ftpwho-read.h"
 #include "globals.h"
 #include "caps.h"
+#include "alt_arc4random.h"
 #if defined(WITH_UPLOAD_SCRIPT)
 # include "upload-pipe.h"
 #endif
@@ -2133,67 +2134,9 @@ void docwd(const char *dir)
 #endif
 }
 
-static void iptropize(const struct sockaddr_storage *ss)
-{
-    size_t t = sizeof *ss;
-    const unsigned char *s = (const unsigned char *) ss;
-    
-    iptropy = getpid();
-    do {
-        iptropy += (iptropy << 5);
-        iptropy ^= (int) *s++;
-    } while (--t > 0U);
-}
-
-#ifdef PROBE_RANDOM_AT_RUNTIME
-static void pw_zrand_probe(void)
-{
-    static const char * const devices[] = {
-        "/dev/arandom", "/dev/urandom", "/dev/random", NULL
-    };
-    const char * const *device = devices;
-    
-    do {
-        if (access(*device, F_OK | R_OK) == 0) {
-            random_device = *device;
-            break;
-        }
-        device++;
-    } while (*device != NULL);
-}
-#endif
-
 unsigned int zrand(void)
 {
-    int fd;
-    int ret;
-    
-    if (chrooted != 0 ||
-#ifdef PROBE_RANDOM_AT_RUNTIME
-        ((fd = open(random_device, O_RDONLY | O_NONBLOCK)) == -1)        
-#elif defined(HAVE_DEV_ARANDOM)
-        ((fd = open("/dev/arandom", O_RDONLY | O_NONBLOCK)) == -1)
-#elif defined(HAVE_DEV_URANDOM)
-        ((fd = open("/dev/urandom", O_RDONLY | O_NONBLOCK)) == -1)
-#else
-        ((fd = open("/dev/random", O_RDONLY | O_NONBLOCK)) == -1)
-#endif
-        ) {
-        nax:
-#ifdef HAVE_ARC4RANDOM
-        return (unsigned int) (arc4random() ^ iptropy);
-#elif defined HAVE_RANDOM
-        return (unsigned int) (random() ^ iptropy);
-#else
-        return (unsigned int) (rand() ^ iptropy);
-#endif
-    }
-    if (read(fd, &ret, sizeof ret) != (ssize_t) sizeof ret) {
-        (void) close(fd);
-        goto nax;
-    }
-    (void) close(fd);
-    return (unsigned int) (ret ^ iptropy);
+    return (unsigned int) arc4random();
 }
 
 static void keepalive(const int fd, int keep)
@@ -5043,7 +4986,6 @@ static void doit(void)
     *host = '?';
     host[1] = 0;
 #endif
-    iptropize(&peer);
     logfile(LOG_INFO, MSG_NEW_CONNECTION, host);
 
     replycode = 220;
@@ -5557,9 +5499,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     home_directory = home_directory_;
 #endif
     client_init_reply_buf();    
-#ifdef PROBE_RANDOM_AT_RUNTIME
-    pw_zrand_probe();
-#endif    
     
 #ifdef HAVE_GETPAGESIZE
     page_size = (size_t) getpagesize();
@@ -6260,6 +6199,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #endif
     (void) umask((mode_t) 0);
     clearargs(argc, argv);
+    alt_arc4random_stir();
     idletime_noop = (double) idletime * 2.0;
     if (firstport) {
         unsigned int portmax;
@@ -6342,6 +6282,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #ifdef WITH_TLS
     tls_free_library();
 #endif
+    alt_arc4random_close();
     
     _EXIT(EXIT_SUCCESS);
 

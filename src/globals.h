@@ -83,7 +83,6 @@ GLOBAL(unsigned int maxusers, DEFAULT_MAX_USERS);
 GLOBAL0(unsigned int per_user_max);
 GLOBAL0(unsigned int per_anon_max);
 #endif
-GLOBAL0(int iptropy);
 GLOBAL(volatile int xferfd, -1);
 #ifndef NO_STANDALONE
 GLOBAL0(unsigned int maxip);

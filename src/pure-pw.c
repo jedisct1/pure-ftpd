@@ -3,6 +3,7 @@
 #include "ftpd.h"
 #include "pure-pw.h"
 #include "safe_rw.h"
+#include "alt_arc4random.h"
 #include "../puredb/src/puredb_write.h"
 #ifdef HAVE_POSIX_TERMIOS
 # include <termios.h>
@@ -213,56 +214,9 @@ static void no_mem(void)
     exit(EXIT_FAILURE);
 }
 
-#ifdef PROBE_RANDOM_AT_RUNTIME
-static void pw_zrand_probe(void)
-{
-    static const char * const devices[] = {
-        "/dev/arandom", "/dev/urandom", "/dev/random", NULL
-    };
-    const char * const *device = devices;
-    
-    do {
-        if (access(*device, F_OK | R_OK) == 0) {
-            random_device = *device;
-            break;
-        }
-        device++;
-    } while (*device != NULL);
-}
-#endif
-
 static unsigned int pw_zrand(void)
 {
-    int fd;
-    int ret;
-    
-    if (
-#ifdef PROBE_RANDOM_AT_RUNTIME
-        ((fd = open(random_device, O_RDONLY | O_NONBLOCK)) == -1)
-#elif defined(HAVE_DEV_ARANDOM)
-        ((fd = open("/dev/arandom", O_RDONLY | O_NONBLOCK)) == -1)
-#elif defined(HAVE_DEV_URANDOM)
-        ((fd = open("/dev/urandom", O_RDONLY | O_NONBLOCK)) == -1)
-#else
-        ((fd = open("/dev/random", O_RDONLY | O_NONBLOCK)) == -1)
-#endif        
-        ) {
-        nax:
-#ifdef HAVE_ARC4RANDOM
-        return (unsigned int) arc4random();
-#elif defined HAVE_RANDOM
-        return (unsigned int) random();
-#else
-        return (unsigned int) rand();
-#endif
-    }
-    if (safe_read(fd, &ret, sizeof ret) != (ssize_t) sizeof ret) {
-        close(fd);
-        goto nax;
-    }
-    close(fd);    
-    
-    return (unsigned int) ret;
+    return (unsigned int) alt_arc4random();
 }
 
 static char *best_crypt(const char * const pwd)
@@ -1287,10 +1241,6 @@ int main(int argc, char *argv[])
 # endif
 #endif    
 
-#ifdef PROBE_RANDOM_AT_RUNTIME
-    pw_zrand_probe();
-#endif
-    
     pwinfo.pwd = NULL;
     pwinfo.gecos = NULL;
     pwinfo.home = NULL;

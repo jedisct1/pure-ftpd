@@ -339,12 +339,6 @@ AC_ARG_WITH(brokenrealpath,
     AC_DEFINE(USE_BUILTIN_REALPATH,,[realpath() is broken])
   fi ])
 
-AC_ARG_WITH(probe-random-dev,
-[AS_HELP_STRING(--with-probe-random-dev,If you want to probe for /dev/*random at run-time)],
-[ if test "x$withval" = "xyes" ; then
-    AC_DEFINE(PROBE_RANDOM_AT_RUNTIME,,[probe for /dev/Xrandom at run-time])
-  fi ])
-
 AC_ARG_WITH(minimal,
 [AS_HELP_STRING(--with-minimal,Build only a small minimal server)],
 [ if test "x$withval" = "xyes" ; then

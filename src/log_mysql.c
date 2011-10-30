@@ -8,6 +8,7 @@
 # include "log_mysql.h"
 # include "messages.h"
 # include "crypto.h"
+# include "alt_arc4random.h"
 
 # ifdef WITH_DMALLOC
 #  include <dmalloc.h>
