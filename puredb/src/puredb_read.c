@@ -13,7 +13,7 @@ static puredb_u32_t puredb_hash(const char * const key, size_t keylen)
     size_t i = 0U;
     if (keylen >= 8U) {
         const size_t keylen_chunk = keylen - 8U;
-        while (i <= keylen_chunk) {
+        while (i < keylen_chunk) {
             const unsigned char * const p = &ukey[i];
             i += 8U;
             j = j * 33U ^ p[0]; j = j * 33U ^ p[1];
