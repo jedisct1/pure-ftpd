@@ -23,7 +23,7 @@ Pure-FTPd is covered by the following license :
                   
                   
 
-  The bsd-glob.c, bsd-glob.h, bsd-realpath.c, bsd-getopt_long.c and
-bsd-getopt_long.h source codes are based upon the OpenBSD and NetBSD projects
-and they are covered by the BSD license.
+  The bsd-glob.c, bsd-glob.h, bsd-realpath.c, bsd-getopt_long.c,
+bsd-getopt_long.h and alt_arc4random.c source files are based on the
+OpenBSD and NetBSD projects and they are covered by the BSD license.
   The original license is enclosed at the beginning of the related files.

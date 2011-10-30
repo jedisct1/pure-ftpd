@@ -24,6 +24,8 @@ libpureftpd_a_DEPENDS = \
 libpureftpd_a_SOURCES = \
 	altlog.c \
 	altlog.h \
+	alt_arc4random.c \
+	alt_arc4random.h \
 	bonjour.h \
 	bonjour.c \
 	bsd-glob.c \
