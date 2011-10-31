@@ -37,22 +37,19 @@
 #ifndef __OpenBSD__
 
 #include <config.h>
-#include <sys/types.h>
 
-#include <fcntl.h>
-#include <limits.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include "alt_arc4random.h"
+#include "ftpd.h"
 #include "safe_rw.h"
+#include "alt_arc4random.h"
+
+#if SIZEOF_INT < 4
+# error Unsupported architecture
+#endif
 
 struct alt_arc4_stream {
-    uint8_t i;
-    uint8_t j;
-    uint8_t s[256];
+    unsigned char i;
+    unsigned char j;
+    unsigned char s[256];
 };
 
 static int rs_initialized;
@@ -60,7 +57,7 @@ static struct alt_arc4_stream rs;
 static pid_t alt_arc4_stir_pid;
 static int alt_arc4_count;
 static int random_data_source_fd = -1;
-static uint8_t alt_arc4_getbyte(void);
+static unsigned char alt_arc4_getbyte(void);
 
 /* Warning: no thread safety. But we don't need any */
 #define _alt_arc4_LOCK()   do { } while(0)
@@ -109,7 +106,7 @@ static void
 alt_arc4_addrandom(unsigned char *dat, int datlen)
 {
     int     n;
-    uint8_t si;
+    unsigned char si;
 
     rs.i--;
     for (n = 0; n < 256; n++) {
@@ -167,7 +164,7 @@ alt_arc4_stir(void)
      * http://www.wisdom.weizmann.ac.il/~itsik/RC4/Papers/Rc4_ksa.ps
      */
     for (i = 0; i < 256; i++) {
-        (void)alt_arc4_getbyte();
+        (void) alt_arc4_getbyte();
     }
     alt_arc4_count = 1600000;
 }
@@ -183,10 +180,10 @@ alt_arc4_stir_if_needed(void)
     }
 }
 
-static uint8_t
+static unsigned char
 alt_arc4_getbyte(void)
 {
-    uint8_t si, sj;
+    unsigned char si, sj;
 
     rs.i = (rs.i + 1);
     si = rs.s[rs.i];
@@ -198,14 +195,14 @@ alt_arc4_getbyte(void)
     return (rs.s[(si + sj) & 0xff]);
 }
 
-static uint32_t
+static unsigned int
 alt_arc4_getword(void)
 {
-    uint32_t val;
-    val =  ((uint32_t) alt_arc4_getbyte()) << 24;
-    val |= ((uint32_t) alt_arc4_getbyte()) << 16;
-    val |= ((uint32_t) alt_arc4_getbyte()) << 8;
-    val |= ((uint32_t) alt_arc4_getbyte());
+    unsigned int val;
+    val =  ((unsigned int) alt_arc4_getbyte()) << 24;
+    val |= ((unsigned int) alt_arc4_getbyte()) << 16;
+    val |= ((unsigned int) alt_arc4_getbyte()) << 8;
+    val |= ((unsigned int) alt_arc4_getbyte());
 
     return val;
 }
@@ -244,17 +241,17 @@ alt_arc4random_addrandom(unsigned char *dat, int datlen)
     _alt_arc4_UNLOCK();
 }
 
-uint32_t
+unsigned int
 alt_arc4random(void)
 {
-    uint32_t val;
+    unsigned int val;
     _alt_arc4_LOCK();
     alt_arc4_count -= 4;
     alt_arc4_stir_if_needed();
     val = alt_arc4_getword();
     _alt_arc4_UNLOCK();
 
-    return val;
+    return (unsigned int) val;
 }
 
 void
@@ -282,17 +279,17 @@ alt_arc4random_buf(void *_buf, size_t n)
  * [2**32 % upper_bound, 2**32) which maps back to [0, upper_bound)
  * after reduction modulo upper_bound.
  */
-uint32_t
-alt_arc4random_uniform(uint32_t upper_bound)
+unsigned int
+alt_arc4random_uniform(unsigned int upper_bound)
 {
-    uint32_t r, min;
+    unsigned int r, min;
 
-    if (upper_bound < 2) {
-        return 0;
+    if (upper_bound < 2U) {
+        return 0U;
     }
 
 #if (ULONG_MAX > 0xffffffffUL)
-    min = 0x100000000UL % upper_bound;
+    min = (unsigned int) (0x100000000UL % upper_bound);
 #else
     /* Calculate (2**32 % upper_bound) avoiding 64-bit math */
     if (upper_bound > 0x80000000)

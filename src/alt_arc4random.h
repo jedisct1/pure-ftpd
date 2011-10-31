@@ -14,11 +14,11 @@
 
 #else
 
-uint32_t  alt_arc4random(void);
-void      alt_arc4random_stir(void);
-void      alt_arc4random_addrandom(unsigned char *, int);
-uint32_t  alt_arc4random_uniform(uint32_t);
-void      alt_arc4random_buf(void *, size_t);
+unsigned int alt_arc4random(void);
+void         alt_arc4random_stir(void);
+void         alt_arc4random_addrandom(unsigned char *, int);
+unsigned int alt_arc4random_uniform(unsigned int);
+void         alt_arc4random_buf(void *, size_t);
 
 #endif
 
