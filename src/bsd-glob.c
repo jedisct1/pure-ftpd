@@ -107,7 +107,7 @@ typedef unsigned short Char;
 #define M_SET           META('[')
 #define ismeta(c)       (((c)&M_QUOTE) != 0)
 
-#define GLOB_LIMIT_MALLOC       65536
+#define GLOB_LIMIT_MALLOC       655360
 
 struct glob_lim {
     size_t  glim_malloc;
@@ -128,11 +128,11 @@ static DIR      *g_opendir(Char *, glob_t *);
 static Char     *g_strchr(const Char *, int);
 static int       g_stat(Char *, struct stat *, glob_t *);
 static int       glob0(const Char *, glob_t *, struct glob_lim *);
-static int       glob1(Char *, Char *, glob_t *, struct glob_lim *);
+static int       glob1(Char *, Char *, glob_t *, struct glob_lim *, int);
 static int       glob2(Char *, Char *, Char *, Char *, Char *, Char *,
-                       glob_t *, struct glob_lim *);
+                       glob_t *, struct glob_lim *, int);
 static int       glob3(Char *, Char *, Char *, Char *, Char *,
-                       Char *, Char *, glob_t *, struct glob_lim *);
+                       Char *, Char *, glob_t *, struct glob_lim *, int);
 static int       globextend(const Char *, glob_t *, struct glob_lim *,
                             struct stat *);
 static int       globexp1(const Char *, glob_t *, struct glob_lim *, int);
@@ -416,7 +416,7 @@ glob0(const Char *pattern, glob_t *pglob, struct glob_lim *limitp)
     }
     *bufnext = EOS;
 
-    if ((err = glob1(patbuf, patbuf+MAXPATHLEN - 1, pglob, limitp)) != 0) {
+    if ((err = glob1(patbuf, patbuf+MAXPATHLEN - 1, pglob, limitp, 1)) != 0) {
         return err;
     }
 
@@ -481,7 +481,8 @@ compare_gps(const void *_p, const void *_q)
 }
 
 static int
-glob1(Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp)
+glob1(Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp,
+      int recursion)
 {
     Char pathbuf[MAXPATHLEN];
 
@@ -491,7 +492,7 @@ glob1(Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp)
     }
     return glob2(pathbuf, pathbuf + MAXPATHLEN - 1,
                  pathbuf, pathbuf + MAXPATHLEN - 1,
-                 pattern, pattern_last, pglob, limitp);
+                 pattern, pattern_last, pglob, limitp, recursion);
 }
 
 /*
@@ -501,7 +502,8 @@ glob1(Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp)
  */
 static int
 glob2(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
-      Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp)
+      Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp,
+      int recursion)
 {
     struct stat sb;
     Char *p, *q;
@@ -566,7 +568,7 @@ glob2(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
             /* Need expansion, recurse. */
             return glob3(pathbuf, pathbuf_last, pathend,
                          pathend_last, pattern, p, pattern_last,
-                         pglob, limitp);
+                         pglob, limitp, recursion + 1);
         }
     }
     /* NOTREACHED */
@@ -575,7 +577,7 @@ glob2(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
 static int
 glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
       Char *pattern, Char *restpattern, Char *restpattern_last, glob_t *pglob,
-      struct glob_lim *limitp)
+      struct glob_lim *limitp, int recursion)
 {
     struct dirent *dp;
     DIR *dirp;
@@ -596,6 +598,9 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
     *pathend = EOS;
     errno = 0;
 
+    if (recursion >= pglob->gl_maxdepth) {
+        return GLOB_NOSPACE;
+    }
     if ((dirp = g_opendir(pathbuf, pglob)) == NULL) {
         /* TODO: don't call for ENOENT or ENOTDIR? */
         if (pglob->gl_errfunc) {
@@ -649,7 +654,7 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
             continue;
         }
         err = glob2(pathbuf, pathbuf_last, --dc, pathend_last,
-                    restpattern, restpattern_last, pglob, limitp);
+                    restpattern, restpattern_last, pglob, limitp, recursion);
         if (err) {
             break;
         }
