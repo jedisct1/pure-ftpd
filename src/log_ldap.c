@@ -426,7 +426,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             goto error;
         }
         if ((pwret.pw_dir = strdup(ldap_default_home_directory)) == NULL) {
-            DIE_MEM();
+            die_mem();
         }
     }    
     if ((pwret.pw_shell = 
