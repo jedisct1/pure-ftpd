@@ -623,6 +623,10 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
         Char *dc;
 
         if (limitp->glim_readdir++ >= pglob->gl_maxfiles) {
+            errno = 0;
+            *pathend++ = SEP;
+            *pathend = EOS;
+            err = GLOB_NOSPACE;
             break;
         }
 
