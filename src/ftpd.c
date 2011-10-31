@@ -2136,7 +2136,7 @@ void docwd(const char *dir)
 
 unsigned int zrand(void)
 {
-    return (unsigned int) arc4random();
+    return (unsigned int) alt_arc4random();
 }
 
 static void keepalive(const int fd, int keep)

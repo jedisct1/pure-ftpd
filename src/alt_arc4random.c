@@ -148,8 +148,8 @@ alt_arc4_stir(void)
         unsigned short r;
         do {
             r = (unsigned short) random();
-            r[i++] = r & 0xFF;
-            r[i++] = (r << 8) & 0xFF;
+            rnd[i++] = r & 0xFF;
+            rnd[i++] = (r << 8) & 0xFF;
         } while (i < sizeof(rnd));
 #else
         unsigned char r;
