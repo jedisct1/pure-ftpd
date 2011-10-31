@@ -4915,6 +4915,21 @@ static void fill_atomic_prefix(void)
     }
 }
 
+static void seed_old_rng(void)
+{
+#ifndef HAVE_ARC4RANDOM
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    const unsigned int seed = (unsigned int)
+        (((long) getpid() * 131072L) ^ tv->tv_sec ^ (tv_usec * 4096L));
+# if defined(HAVE_RANDOM)
+    srandom(seed);
+# else
+    srand(seed);
+# endif
+#endif
+}
+
 static void doit(void)
 {
     socklen_t socksize;
@@ -4928,6 +4943,8 @@ static void doit(void)
     fcntl(clientfd, F_SETOWN, getpid());
 #endif
     set_signals_client();
+    seed_old_rng();
+    alt_arc4random_stir();
     (void) umask((mode_t) 0);
     socksize = (socklen_t) sizeof ctrlconn;
     if (getsockname(clientfd, (struct sockaddr *) &ctrlconn, &socksize) != 0) {
@@ -6203,7 +6220,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #endif
     (void) umask((mode_t) 0);
     clearargs(argc, argv);
-    alt_arc4random_stir();
     idletime_noop = (double) idletime * 2.0;
     if (firstport) {
         unsigned int portmax;
