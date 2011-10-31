@@ -2653,7 +2653,7 @@ void doutime(char *name, const char * const wanted_time)
     if (utime(name, &tb) < 0) {
         addreply(550, "utime(%s): %s", name, strerror(errno));
     } else {
-        addreply_noformat(250, "UTIME OK");
+        addreply_noformat(213, "UTIME OK");
     }    
 }
 #endif
@@ -3538,11 +3538,11 @@ void dormd(char *name)
 void dofeat(void)
 {
 # define FEAT  "Extensions supported:" CRLF \
-    " EPRT" CRLF " IDLE" CRLF " MDTM" CRLF " SIZE" CRLF \
+    " EPRT" CRLF " IDLE" CRLF " MDTM" CRLF " SIZE" CRLF " MFMT" CRLF \
         " REST STREAM" CRLF \
         " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
         " MLSD"
-    
+
 # ifdef WITH_TLS
 #  define FEAT_TLS CRLF " AUTH TLS" CRLF " PBSZ" CRLF " PROT"
 # else

@@ -232,6 +232,26 @@ char *charset_client2fs(const char * const string)
 }
 #endif
 
+#ifndef MINIMAL
+static void parse_file_time_change(char *arg)
+{
+    char *name;
+
+    if ((name = strchr(arg, ' ')) == NULL) {
+        addreply_noformat(501, MSG_MISSING_ARG);
+        return;
+    }
+    while (*name == ' ') {
+        name++;
+    }
+    if (*name == 0) {
+        addreply_noformat(501, MSG_MISSING_ARG);
+        return;
+    }
+    doutime(name, arg);
+}
+#endif
+
 void parser(void)
 {
     char *arg;
@@ -632,24 +652,26 @@ void parser(void)
                     donlist(arg, 0, 0, 0, broken_client_compat);
                 }
 #ifndef MINIMAL
+            } else if (!strcmp(cmd, "mfmt")) {
+                parse_file_time_change(arg);
             } else if (!strcmp(cmd, "mlst")) {
-#ifdef WITH_TLS
+# ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
                     addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
                 } else
-#endif
+# endif
                 {
                     domlst(*arg != 0 ? arg : ".");
                 }
             } else if (!strcmp(cmd, "mlsd")) {
                 modern_listings = 1;
-#ifdef WITH_TLS
+# ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
                     addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
                 } else
-#endif
+# endif
                 {
                     donlist(arg, 0, 1, 1, 0);
                 }
@@ -735,7 +757,7 @@ void parser(void)
                         goto utime_wayout;
                     }
                     if (strcasecmp(sitearg2, " UTC") != 0) {
-                        addreply_noformat(500, "UTC Only");
+                        parse_file_time_change(sitearg);
                         goto utime_wayout;			
                     }
                     *sitearg2-- = 0;
