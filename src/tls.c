@@ -229,7 +229,7 @@ int tls_init_library(void)
     if (ssl_disabled != 0) {
         options |= SSL_OP_NO_SSLv3;
     }
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2 | SSL_OP_ALL);
+    SSL_CTX_set_options(tls_ctx, options);
     if (SSL_CTX_use_certificate_chain_file(tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
         die(421, LOG_ERR,
