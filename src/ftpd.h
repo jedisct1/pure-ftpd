@@ -18,6 +18,10 @@
 #  include <stdlib.h>
 # endif
 #endif
+#include <sys/types.h>
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
 #endif
@@ -48,7 +52,6 @@
 #  include <time.h>
 # endif
 #endif
-#include <sys/types.h>
 #include <sys/stat.h>
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
