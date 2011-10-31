@@ -68,7 +68,6 @@ ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
 {
     ssize_t written;
     const char *buf = (const char *) buf_;
-    size_t ssw_status = count;
     
     while (count > (size_t) 0U) {
         for (;;) {
