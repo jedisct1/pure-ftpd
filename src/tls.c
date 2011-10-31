@@ -287,7 +287,7 @@ void tls_free_library(void)
 
 int tls_init_new_session(void)
 {
-    SSL_CIPHER *cipher;
+    const SSL_CIPHER *cipher;
     int ret;
     int ret_;
     
@@ -329,7 +329,7 @@ int tls_init_new_session(void)
 
 int tls_init_data_session(const int fd, const int passive)
 {
-    SSL_CIPHER *cipher;
+    const SSL_CIPHER *cipher;
     int ret;
     int ret_;
     
