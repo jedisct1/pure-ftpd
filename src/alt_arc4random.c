@@ -133,27 +133,31 @@ alt_arc4_stir(void)
     if (random_data_source_fd != -1) {
         safe_read(random_data_source_fd, rnd, sizeof rnd);
     } else {
+#ifdef HAVE_RANDOM_DEV
+        _exit(1);
+#else
         size_t i = (size_t) 0U;
-#ifdef HAVE_ARC4RANDOM
+# ifdef HAVE_ARC4RANDOM
         u_int32_t r;
         do {
             r = arc4random();
             memcpy(&rnd[i], &r, (size_t) 4U);
             i += (size_t) 4U;
         } while (i < sizeof(rnd));
-#elif defined(HAVE_RANDOM)
+# elif defined(HAVE_RANDOM)
         unsigned short r;
         do {
             r = (unsigned short) random();
             rnd[i++] = r & 0xFF;
             rnd[i++] = (r << 8) & 0xFF;
         } while (i < sizeof(rnd));
-#else
+# else
         unsigned char r;
         do {
             r = (unsigned char) rand();
             rnd[i++] = r;
         } while (i < sizeof(rnd));
+# endif
 #endif
     }
 

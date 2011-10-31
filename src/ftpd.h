@@ -756,7 +756,11 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #  define setegid(X) (-1)
 # endif
 #endif
-    
+
+#if defined(HAVE_DEV_ARANDOM) || defined(HAVE_DEV_URANDOM) || defined(HAVE_DEV_RANDOM)
+# define HAVE_RANDOM_DEV 1
+#endif
+
 #define CRLF "\r\n"
 
 #ifdef WITH_DMALLOC

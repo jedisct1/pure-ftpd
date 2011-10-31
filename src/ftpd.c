@@ -4917,11 +4917,12 @@ static void fill_atomic_prefix(void)
 
 static void seed_old_rng(void)
 {
-#ifndef HAVE_ARC4RANDOM
+#ifndef HAVE_RANDOM_DEV
     struct timeval tv;
     gettimeofday(&tv, NULL);
     const unsigned int seed = (unsigned int)
         (((long) getpid() * 131072L) ^ tv->tv_sec ^ (tv_usec * 4096L));
+
 # if defined(HAVE_RANDOM)
     srandom(seed);
 # else
