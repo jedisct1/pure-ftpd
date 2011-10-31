@@ -1,5 +1,9 @@
 
 * Version 1.0.33:
+ - SITE UTIME now supports the 2-arguments syntax in addition to the
+5-arguments syntax.
+ - Support for the MFMT command has been implemented.
+ - A default directory can now be specified when using the LDAP backend.
 
 * Version 1.0.32:
  - Support SHA1 password hashing in MySQL and PostgreSQL backends

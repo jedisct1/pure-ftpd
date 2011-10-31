@@ -1,8 +1,22 @@
 
 * Version 1.0.33:
- - Sync built-in glob(3) code with OpenBSD-current.
+ - Sync built-in glob(3) code with OpenBSD-current, and remove code we
+don't use instead of ifdef'ing it.
  - Repair checkproc() on Linux when support for capabitilies is
 compiled in. Reported by Eric Gouyer.
+ - Don't read /dev/*random every time we need a value. Just use
+arc4random() everywhere and seed it before we possibly chroot().
+ - Add support for MFMT, with the same code as SITE UTIME.
+ - Support 2-arguments SITE UTIME.
+ - LDAP: Add LDAPDefaultHomeDirectory, suggested by Landry Breuil.
+ - Add SSL_OP_NO_SSLv3 to SSL options if the list of ciphers is
+prefixed by -S: , needed by Brad.
+ - Remove the various safe_read() / safe_write() instances and
+factorize them in safe_rw.c
+ - Call OpenSSL_add_all_algorithms(), suggested by Brad.
+ - Mention that WinSCP works fine with Pure-FTPd.
+ - On Linux, opening a named pipe that nobody reads with O_WRONLY yields ENXIO.
+The workaround is to opens it O_RDWR. So, just do that.
 
 * Version 1.0.32:
  - Support SHA1 password hashing in MySQL and PostgreSQL backends
