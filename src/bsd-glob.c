@@ -107,7 +107,7 @@ typedef unsigned short Char;
 #define M_SET           META('[')
 #define ismeta(c)       (((c)&M_QUOTE) != 0)
 
-#define GLOB_LIMIT_MALLOC       655360
+#define GLOB_LIMIT_MALLOC       65536
 
 struct glob_lim {
     size_t  glim_malloc;
