@@ -758,10 +758,12 @@ static int do_useradd(const char * const file,
         fprintf(stderr, "Missing passwd file\n");
         return PW_ERROR_MISSING_PASSWD_FILE;
     }
+#ifndef ACCEPT_ROOT_VIRTUAL_USERS
     if (pwinfo.uid <= (uid_t) 0 || pwinfo.gid <= (gid_t) 0) {
         fprintf(stderr, "You must give (non-root) uid and gid\n");
         return PW_ERROR_USERADD_NOT_ROOT;
     }
+#endif
     if (pwinfo.home == NULL) {
         fprintf(stderr, "Missing home directory\n");        
         return PW_ERROR_USERADD_MISSING_HOME_DIR;
