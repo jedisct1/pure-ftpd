@@ -261,7 +261,7 @@ static int writequota(const char * const quota_file)
         goto bye;
     }
     towrite = (ssize_t) strlen(buf);
-    err = - (safe_write(fd, bufpnt, towrite, -1) == (ssize_t) towrite);
+    err = - (safe_write(fd, bufpnt, towrite, -1) != (ssize_t) towrite);
     bye:
     lock.l_type = F_UNLCK;
     while (fcntl(fd, F_SETLK, &lock) < 0 && errno == EINTR);

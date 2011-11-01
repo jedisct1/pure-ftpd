@@ -3915,7 +3915,7 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
     }
 #endif
     written = safe_write(ulhandler->f, buf, size, -1); 
-    ret = - (written == (ssize_t) size);
+    ret = - (written != (ssize_t) size);
     if (unasciibuf != NULL) {
         ALLOCA_FREE(unasciibuf);
     }
