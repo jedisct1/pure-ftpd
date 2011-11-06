@@ -1,17 +1,17 @@
 .TH "pure-authd" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
-.LP 
+.LP
 pure\-authd \- External authentication agent for Pure\-FTPd.
 .SH "SYNTAX"
-.LP 
+.LP
 pure\-authd [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-u\fP uid] [\fI\-g\fP gid] [\fI\-B\fP] <\fI\-s\fP /path/to/socket> \fI\-r\fP /program/to/run
 
 .SH "DESCRIPTION"
-.LP 
+.LP
 pure\-authd is a daemon that forks an authentication program, waits for an authentication reply, and feed them to an application server.
-.TP 
+.LP
 pure\-authd listens to a local Unix socket. A new connection to that socket should feed pure\-authd the following structure :
-
+.IP
 account:xxx
 
 password:xxx
@@ -23,11 +23,11 @@ localport:xxx
 peer:xxx
 
 end
-.TP 
+.LP
 (replace xxx with appropriate values) . localhost, localport and peer are numeric IP addresses and ports. peer is the IP address of the remote client.
-.TP 
+.LP
 These arguments are passed to the authentication program, as environment variables :
-
+.IP
 AUTHD_ACCOUNT
 
 AUTHD_PASSWORD
@@ -39,9 +39,9 @@ AUTHD_LOCAL_PORT
 AUTHD_REMOTE_IP
 
 AUTHD_ENCRYPTED
-.TP 
+.LP
 The authentication program should take appropriate actions to fetch account info according to these arguments, and reply to the standard output a structure like the following one :
-
+.IP
 auth_ok:1
 
 uid:42
@@ -52,68 +52,67 @@ dir:/home/j
 
 end
 
-.TP 
+.TP
 \fBauth_ok:\fRxxx
 If xxx is 0, the user was not found (the next authentication method passed to pure\-ftpd will be tried) . If xxx is \-1, the user was found, but there was a fatal authentication error : user is root, password is wrong, account has expired, etc (next authentication methods will not be tried) . If xxx is 1, the user was found and successfully authenticated.
-.TP 
+.TP
 \fBuid:\fRxxx
 The system uid to be assigned to that user. Must be > 0.
-.TP 
+.TP
 \fBgid:\fRxxx
 The primary system gid. Must be > 0.
-.TP 
+.TP
 \fBdir:\fRxxx
 The absolute path to the home directory. Can contain /./ for a chroot jail.
-.TP 
+.TP
 \fBslow_tilde_expansion:\fRxxx \fI(optional, default is 1)\fR
 When the command 'cd ~user' is issued, it's handy to go to that user's home directory, as expected in a shell environment. But fetching account info can be an expensive operation for non\-system accounts. If xxx is 0, 'cd ~user' will expand to the system user home directory. If xxx is 1, 'cd ~user' won't expand. You should use 1 in most cases with external authentication, when your FTP users don't match system users. You can also set xxx to 1 if you're using slow nss_* system authentication modules.
-.TP 
+.TP
 \fBthrottling_bandwidth_ul:\fRxxx \fI(optional)\fR
 The allocated bandwidth for uploads, in bytes per second.
-.TP 
+.TP
 \fBthrottling_bandwidth_dl:\fRxxx \fI(optional)\fR
 The allocated bandwidth for downloads, in bytes per second.
-.TP 
+.TP
 \fBuser_quota_size:\fRxxx \fI(optional)\fR
 The maximal total size for this account, in bytes.
-.TP 
+.TP
 \fBuser_quota_files:\fRxxx \fI(optional)\fR
 The maximal number of files for this account.
-.TP 
+.TP
 \fBratio_upload:\fRxxx \fI(optional)\fR
-.TP 
+.TP
 \fBradio_download:\fRxxx \fI(optional)\fR
 The user must match a ratio_upload:ratio_download ratio.
-.TP 
+.LP
 \fIOnly one authentication program is forked at a time. It must return quickly.\fR
 .SH "OPTIONS"
-.LP 
-.TP 
+.TP
 \fB\-u\fR <\fIuid\fP>
 Have the daemon run with that uid.
-.TP 
+.TP
 \fB\-g\fR <\fIgid\fP>
 Have the daemon run with that gid.
-.TP 
+.TP
 \fB\-B\fR
 Fork in background (daemonization).
-.TP 
+.TP
 \fB\-s\fR <\fI/path/to/socket\fP>
 Set the full path to the local Unix socket.
-.TP 
+.TP
 \fB\-R\fR <\fI/path/to/program\fP>
 Set the full path to the authentication program.
-.TP 
+.TP
 \fB\-h\fR
 Output help information and exit.
 .SH "EXAMPLES"
-.LP 
+.LP
 To run this program the standard way type:
-.LP 
+.LP
 pure\-authd \-s @LOCALSTATEDIR@/run/ftpd.sock \-r /usr/bin/my\-auth\-program &
-.LP 
+.LP
 pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/ftpd.sock &
-.TP 
+.TP
 /usr/bin/my\-auth\-program can be as simple as :
 #! /bin/sh
 
@@ -127,7 +126,7 @@ echo 'dir:/home/j'
 
 echo 'end'
 .SH "AUTHORS"
-.LP 
+.LP
 Frank DENIS <j at pureftpd dot org>
 .SH "SEE ALSO"
 .BR "ftp(1)" ,

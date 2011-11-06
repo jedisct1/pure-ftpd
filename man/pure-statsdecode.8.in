@@ -1,36 +1,35 @@
 .TH "pure-statsdecode" "8" "@VERSION@" "Pure-FTPd team" "Pure-FTPd"
 .SH "NAME"
-.LP 
+.LP
 pure\-statsdecode \- Show human\-readable dates from a "stats" logfile
 .SH "SYNTAX"
-.LP 
+.LP
 pure\-statsdecode \fIfilename\fP
 .br
 pure\-statsdecode \fI\-\fP
 .SH "DESCRIPTION"
-.LP 
+.LP
 This program decodes Pure\-FTPd's "stats" log files and converts timestamps into human\-readable dates.
 
 .SH "OPTIONS"
-.LP 
-.TP 
+.TP
 \fB\-\fR
 means to read the standard input.
-.TP 
+.TP
 \fBfilename\fR
 is a log file produced with pure\-ftpd \-O ftpstats:/path/to/logfile
 .SH "EXAMPLES"
-.LP 
+.LP
 To run this program the standard way type:
-.LP 
+.LP
 pure\-statsdecode /var/log/pureftpd.log > /tmp/pureftpd.humanlog
-.LP 
+.LP
 Alternativly you can run it as:
-.LP 
+.LP
 cat /var/log/pureftpd.log | pure\-statsdecode \- | gzip \-\-best > /tmp/pureftpd.humanlog.gz
 
 .SH "AUTHORS"
-.LP 
+.LP
 Frank DENIS <j at pureftpd dot org>
 
 .SH "SEE ALSO"
