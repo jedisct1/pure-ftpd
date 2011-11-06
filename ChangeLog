@@ -1,4 +1,7 @@
 
+* Version 1.0.34:
+ - Fix safe_write() inverted checks that broke uploads.
+
 * Version 1.0.33:
  - Sync built-in glob(3) code with OpenBSD-current, and remove code we
 don't use instead of ifdef'ing it.

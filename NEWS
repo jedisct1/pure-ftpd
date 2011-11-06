@@ -1,4 +1,8 @@
 
+* Version 1.0.34:
+ - Fix uploads. The bug was introduced in version 1.0.33. Thanks to
+Hugo Gomes.
+
 * Version 1.0.33:
  - SITE UTIME now supports the 2-arguments syntax in addition to the
 5-arguments syntax.
