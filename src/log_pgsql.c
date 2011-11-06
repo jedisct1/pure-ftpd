@@ -27,8 +27,8 @@ static int pw_pgsql_validate_name(const char *name)
             (*name >= '0' && *name <= '9') ||
             *name == ' ' || *name == '-' ||
             *name == '_' || *name == '\'' || *name == '.' ||
-            *name == ':' || *name == '@') {
-            /* God bless the Perl 'unless' keyword */
+            *name == ':' || *name == '@' || *name == '+') {
+            /* God bless the Ruby 'unless' keyword */
         } else {
             return -1;
         }            
