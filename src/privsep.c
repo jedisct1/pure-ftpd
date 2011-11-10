@@ -184,8 +184,8 @@ int privsep_removeftpwhoentry(void)
 }
 # endif
 
-int privsep_privpart_bindresport(const int psfd, 
-                                 const PrivSepQuery * const query)
+static int privsep_privpart_bindresport(const int psfd,
+                                        const PrivSepQuery * const query)
 {
     static const in_port_t portlist[] = FTP_ACTIVE_SOURCE_PORTS;
     const in_port_t *portlistpnt = portlist;    

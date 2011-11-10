@@ -86,8 +86,8 @@ ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count)
 }
 #endif
 
-ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
-                            const void *buf_, size_t count)
+static ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
+                                   const void *buf_, size_t count)
 {
     ssize_t written;
     const char *buf = (const char *) buf_;
@@ -2901,8 +2901,9 @@ static void displayopenfailure(const char * const name)
     error(550, buffer);
 }
 
-int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
-                       const double ts_start, double *required_sleep)
+static int dlhandler_throttle(DLHandler * const dlhandler,
+                              const off_t downloaded, const double ts_start,
+                              double *required_sleep)
 {
     double ts_now;
     double elapsed;
@@ -2959,14 +2960,14 @@ int dlhandler_throttle(DLHandler * const dlhandler, const off_t downloaded,
     return 0;
 }
 
-int dlhandler_init(DLHandler * const dlhandler, 
-                   const int clientfd, void * const tls_clientfd,
-                   const int xferfd,
-                   const char * const name,
-                   const int f, void * const tls_fd,
-                   const off_t restartat,
-                   const int ascii_mode,
-                   const unsigned long bandwidth)
+static int dlhandler_init(DLHandler * const dlhandler, 
+                          const int clientfd, void * const tls_clientfd,
+                          const int xferfd,
+                          const char * const name,
+                          const int f, void * const tls_fd,
+                          const off_t restartat,
+                          const int ascii_mode,
+                          const unsigned long bandwidth)
 {
     struct stat st;
     struct pollfd *pfd;
@@ -3017,15 +3018,11 @@ int dlhandler_init(DLHandler * const dlhandler,
     return 0;
 }
 
-int dlmap_init(DLHandler * const dlhandler, 
-               const int clientfd, void * const tls_clientfd,
-               const int xferfd,
-               const char * const name,
-               const int f,
-               void * const tls_fd,
-               const off_t restartat,
-               const int ascii_mode,
-               const unsigned long bandwidth)
+static int dlmap_init(DLHandler * const dlhandler, const int clientfd,
+                      void * const tls_clientfd, const int xferfd,
+                      const char * const name, const int f,
+                      void * const tls_fd, const off_t restartat,
+                      const int ascii_mode, const unsigned long bandwidth)
 {
     if (dlhandler_init(dlhandler, clientfd, tls_clientfd, xferfd, name, f,
                        tls_fd, restartat, ascii_mode, bandwidth) != 0) {
@@ -3145,8 +3142,8 @@ static int _dlmap_remap(DLHandler * const dlhandler)
     return 0;
 }
 
-int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
-               const size_t size_, off_t * const downloaded)
+static int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
+                      const size_t size_, off_t * const downloaded)
 {
     size_t size = size_;
     const unsigned char *buf = buf_;
@@ -3190,8 +3187,8 @@ int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
     return ret;
 }
 
-int dlhandler_handle_commands(DLHandler * const dlhandler,
-                              const double required_sleep)
+static int dlhandler_handle_commands(DLHandler * const dlhandler,
+                                     const double required_sleep)
 {
     int pollret;
     char buf[100];
@@ -3251,7 +3248,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
     return 0;
 }
 
-int dlmap_send(DLHandler * const dlhandler)
+static int dlmap_send(DLHandler * const dlhandler)
 {
     int ret;
     double ts_start = 0.0;
@@ -3295,7 +3292,7 @@ int dlmap_send(DLHandler * const dlhandler)
     return 0;
 }
 
-int dlmap_exit(DLHandler * const dlhandler)
+static int dlmap_exit(DLHandler * const dlhandler)
 {
     if (dlhandler->map != NULL) {
         free(dlhandler->map);
@@ -3748,8 +3745,9 @@ static int ul_quota_update(const char * const file_name,
 }
 #endif
 
-int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
-                       const double ts_start, double *required_sleep)
+static int ulhandler_throttle(ULHandler * const ulhandler,
+                              const off_t uploaded, const double ts_start,
+                              double *required_sleep)
 {
     double ts_now;
     double elapsed;
@@ -3806,15 +3804,11 @@ int ulhandler_throttle(ULHandler * const ulhandler, const off_t uploaded,
     return 0;
 }
 
-int ul_init(ULHandler * const ulhandler, 
-            const int clientfd, void * const tls_clientfd,
-            const int xferfd,
-            const char * const name,
-            const int f, void * const tls_fd,
-            const off_t restartat,
-            const int ascii_mode,
-            const unsigned long bandwidth,
-            const off_t max_filesize)
+static int ul_init(ULHandler * const ulhandler, const int clientfd,
+                   void * const tls_clientfd, const int xferfd,
+                   const char * const name, const int f, void * const tls_fd,
+                   const off_t restartat, const int ascii_mode,
+                   const unsigned long bandwidth, const off_t max_filesize)
 {
     struct pollfd *pfd;
 
@@ -3881,8 +3875,8 @@ int ul_init(ULHandler * const ulhandler,
     return 0;
 }
 
-int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
-               const size_t size_, off_t * const uploaded)
+static int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
+                      const size_t size_, off_t * const uploaded)
 {
     size_t size = size_;
     ssize_t written;
@@ -3927,7 +3921,7 @@ int ul_dowrite(ULHandler * const ulhandler, const unsigned char *buf_,
     return ret;
 }
 
-int ulhandler_handle_commands(ULHandler * const ulhandler)
+static int ulhandler_handle_commands(ULHandler * const ulhandler)
 {
     char buf[100];
     char *bufpnt;    
@@ -3968,8 +3962,8 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
     return 0;
 }
 
-int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
-                   const double ts_start)
+static int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
+                          const double ts_start)
 {
     ssize_t readnb;
     double required_sleep = 0.0;
@@ -4049,7 +4043,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
     return 0;
 }
 
-int ul_send(ULHandler * const ulhandler)
+static int ul_send(ULHandler * const ulhandler)
 {
     double ts_start = 0.0;
     off_t uploaded = (off_t) 0;
@@ -4117,7 +4111,7 @@ int ul_send(ULHandler * const ulhandler)
     return 0;
 }
 
-int ul_exit(ULHandler * const ulhandler)
+static int ul_exit(ULHandler * const ulhandler)
 {
     free(ulhandler->buf);
     ulhandler->buf = NULL;
