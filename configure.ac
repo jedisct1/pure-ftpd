@@ -13,6 +13,7 @@ ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 
 dnl Checks for programs.
+LX_CFLAGS=${CFLAGS-NONE}
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_CC
@@ -20,6 +21,46 @@ AM_PROG_CC_C_O
 AC_USE_SYSTEM_EXTENSIONS
 AC_SEARCH_LIBS([strerror],[cposix])
 
+AX_CHECK_COMPILE_FLAG([-fPIE], [CFLAGS="$CFLAGS -fPIE"])
+AX_CHECK_COMPILE_FLAG([-fcatch-undefined-c99-behavior], [CFLAGS="$CFLAGS -fcatch-undefined-c99-behavior"])
+AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
+AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
+AX_CHECK_COMPILE_FLAG([-fstack-protector-all], [CFLAGS="$CFLAGS -fstack-protector-all"])
+
+AX_CHECK_COMPILE_FLAG([--param ssp-buffer-size=1], [CFLAGS="$CFLAGS --param ssp-buffer-size=1"; CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"])
+
+AX_CHECK_COMPILE_FLAG([-Wbounded], [CFLAGS="$CFLAGS -Wbounded"])
+AX_CHECK_COMPILE_FLAG([-Winit-self], [CFLAGS="$CFLAGS -Winit-self"])
+AX_CHECK_COMPILE_FLAG([-Wwrite-strings], [CFLAGS="$CFLAGS -Wwrite-strings"])
+AX_CHECK_COMPILE_FLAG([-Wdiv-by-zero], [CFLAGS="$CFLAGS -Wdiv-by-zero"])
+
+AC_ARG_VAR([CWFLAGS], [define to compilation flags for generating extra warnings])
+AX_CHECK_COMPILE_FLAG([-Wall], [CWFLAGS="$CWFLAGS -Wall"])
+AX_CHECK_COMPILE_FLAG([-Wbad-function-cast], [CWFLAGS="$CWFLAGS -Wbad-function-cast"])
+AX_CHECK_COMPILE_FLAG([-Wcast-align], [CWFLAGS="$CWFLAGS -Wcast-align"])
+AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CWFLAGS="$CWFLAGS -Wcast-qual"])
+AX_CHECK_COMPILE_FLAG([-Wchar-subscripts], [CWFLAGS="$CWFLAGS -Wchar-subscripts"])
+AX_CHECK_COMPILE_FLAG([-Wcomment], [CWFLAGS="$CWFLAGS -Wcomment"])
+AX_CHECK_COMPILE_FLAG([-Wextra], [CWFLAGS="$CWFLAGS -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wfloat-equal], [CWFLAGS="$CWFLAGS -Wfloat-equal"])
+AX_CHECK_COMPILE_FLAG([-Wformat=2], [CWFLAGS="$CWFLAGS -Wformat=2"])
+AX_CHECK_COMPILE_FLAG([-Wimplicit], [CWFLAGS="$CWFLAGS -Wimplicit"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-declarations], [CWFLAGS="$CWFLAGS -Wmissing-declarations"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-noreturn], [CWFLAGS="$CWFLAGS -Wmissing-noreturn"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-prototypes], [CWFLAGS="$CWFLAGS -Wmissing-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wnormalized=id], [CWFLAGS="$CWFLAGS -Wnormalized=id"])
+AX_CHECK_COMPILE_FLAG([-Woverride-init], [CWFLAGS="$CWFLAGS -Woverride-init"])
+AX_CHECK_COMPILE_FLAG([-Wparentheses], [CWFLAGS="$CWFLAGS -Wparentheses"])
+AX_CHECK_COMPILE_FLAG([-Wpointer-arith], [CWFLAGS="$CWFLAGS -Wpointer-arith"])
+AX_CHECK_COMPILE_FLAG([-Wredundant-decls], [CWFLAGS="$CWFLAGS -Wredundant-decls"])
+AX_CHECK_COMPILE_FLAG([-Wstack-protector], [CWFLAGS="$CWFLAGS -Wstack-protector"])
+AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [CWFLAGS="$CWFLAGS -Wstrict-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wswitch-enum], [CWFLAGS="$CWFLAGS -Wswitch-enum"])
+AX_CHECK_COMPILE_FLAG([-Wvariable-decl], [CWFLAGS="$CWFLAGS -Wvariable-decl"])
+
+AX_CHECK_LINK_FLAG([-pie], [LDFLAGS="$LDFLAGS -pie"])
+AX_CHECK_LINK_FLAG([-z relro], [LDFLAGS="$LDFLAGS -z relro"])
+AX_CHECK_LINK_FLAG([-z now], [LDFLAGS="$LDFLAGS -z now"])
 
 AC_ARG_VAR(PERL,local path to the perl interpreter)
 perl_possible_path="/usr/bin:/usr/local/bin:/bin:/opt/perl/bin:/opt/perl/usr/bin:/opt/perl/usr/local/bin"
@@ -771,7 +812,18 @@ AC_ARG_WITH(implicittls,
 AC_ARG_WITH(debug,
 [AS_HELP_STRING(--with-debug,For maintainers only - please do not use)],
 [ if test "x$withval" = "xyes" ; then
-    CFLAGS="$CFLAGS -DDEBUG=1 -g -Wall -W -Wcast-align -Wbad-function-cast -Wstrict-prototypes -Wwrite-strings -Wreturn-type "
+    if test "$LX_CFLAGS" = "NONE"; then
+      nxflags=""
+      for flag in `echo $CFLAGS`; do
+        case "$flag" in
+          -O*) ;;
+          -g*) ;;
+          *) nxflags="$nxflags $flag"
+        esac
+      done
+      CFLAGS="$nxflags -O0 -g3 $CWFLAGS"
+    fi
+    AM_CFLAGS="$AM_CFLAGS -DDEBUG=1"
   fi ])
 
 AC_ARG_WITH(everything,
