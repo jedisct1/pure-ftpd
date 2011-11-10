@@ -335,7 +335,6 @@ void docwd(const char *dir);
 void doretr(char *name);
 void dorest(const char *name);
 void dodele(char *name);
-void doallo(off_t size);
 void dostor(char *name, const int append, const int autorename);
 void domkd(char *name);
 void dormd(char *name);
