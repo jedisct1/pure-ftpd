@@ -68,7 +68,7 @@ static unsigned char alt_arc4_getbyte(void);
 #endif
 
 static int
-alt_random_dev_open(void)
+alt_arc4_random_dev_open(void)
 {
     static const char * const devices[] = {
         "/dev/arandom", "/dev/urandom", "/dev/random", NULL
@@ -99,7 +99,7 @@ alt_arc4_init(void)
     if (random_data_source_fd != -1) {
         return;
     }
-    random_data_source_fd = alt_random_dev_open();
+    random_data_source_fd = alt_arc4_random_dev_open();
 }
 
 static void
