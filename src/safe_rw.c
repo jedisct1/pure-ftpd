@@ -62,7 +62,7 @@ safe_read(const int fd, void * const buf_, size_t count)
 ssize_t
 safe_read_partial(const int fd, void * const buf_, const size_t max_count)
 {
-    unsigned char * const buf = (unsigned char * const) buf_;
+    unsigned char * const buf = (unsigned char *) buf_;
     ssize_t               readnb;
 
     while ((readnb = read(fd, buf, max_count)) < (ssize_t) 0 &&
