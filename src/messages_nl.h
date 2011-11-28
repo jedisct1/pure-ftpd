@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Nieuwe verbinding vanaf %s"
 #define MSG_WELCOME_TO "Welkom bij"
 #define MSG_MAX_USERS "%lu gebruikers (het maximum) zijn reeds ingelogd, sorry"
-#define MSG_NB_USERS "U bent gebruiker nummer %d van %d toegestane gebruikers"
+#define MSG_NB_USERS "U bent gebruiker nummer %u van %u toegestane gebruikers"
 #define MSG_WELCOME_TIME "Locale tijd is nu %02d:%02d. Server poort: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Alleen anonieme FTP is hier toegestaan"
 #define MSG_RATIOS_EVERYONE "UL/DL VERHOUDINGEN ZIJN VOOR IEDEREEN INGESCHAKELD:"

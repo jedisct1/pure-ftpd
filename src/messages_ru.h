@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Новое соединение с %s"
 #define MSG_WELCOME_TO "Добро пожаловать на"
 #define MSG_MAX_USERS "%lu пользователей (это максимум) уже подключились, извините"
-#define MSG_NB_USERS "Вы пользователь %d из %d разрешенных"
+#define MSG_NB_USERS "Вы пользователь %u из %u разрешенных"
 #define MSG_WELCOME_TIME "Местное время %02d:%02d. Серверный порт: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Вход разрешен только для анонимных пользователей"
 #define MSG_RATIOS_EVERYONE "СОБЛЮДЕНИЕ ПРОПОРЦИИ ОБЯЗАТЕЛЬНО ДЛЯ ВСЕХ:"

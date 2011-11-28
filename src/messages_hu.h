@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Új kapcsolat a következo címrol: %s"
 #define MSG_WELCOME_TO "Üdvözlöm"
 #define MSG_MAX_USERS "%lu felhasználó (a maximum) már be van lépve, sajnálom"
-#define MSG_NB_USERS "Te vagy a %d a %d felhasználó közül, aki beléphet."
+#define MSG_NB_USERS "Te vagy a %u a %u felhasználó közül, aki beléphet."
 #define MSG_WELCOME_TIME "A Helyi Ido %02d:%02d. szerver port: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Csak anonymous FTP megengedett"
 #define MSG_RATIOS_EVERYONE "A RÁTÁK MINDENKIRE ÉRVÉNYESEK:"

@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Conexiune noua de la %s"
 #define MSG_WELCOME_TO "Bine ati venit pe"
 #define MSG_MAX_USERS "%lu utilizatori (maximul) sint deja logati"
-#define MSG_NB_USERS "Sineti utilizatorul cu numarul %d din %d permisi"
+#define MSG_NB_USERS "Sineti utilizatorul cu numarul %u din %u permisi"
 #define MSG_WELCOME_TIME "Timpul local este acum %02d:%02d. Port server: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Aici este permis numai acces FTP anonim"
 #define MSG_RATIOS_EVERYONE "COTELE SINT ACTIVATE PENTRU ORICINE :"

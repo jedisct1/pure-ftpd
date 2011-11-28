@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Nové spojení z %s"
 #define MSG_WELCOME_TO "Vítejte na"
 #define MSG_MAX_USERS "Lituji, ale %lu (maximum) u¾ivatelù je ji¾ pøihlá¹ených"
-#define MSG_NB_USERS "Jste u¾ivatelem èíslo %d z %d povolených"
+#define MSG_NB_USERS "Jste u¾ivatelem èíslo %u z %u povolených"
 #define MSG_WELCOME_TIME "Lokalní èas je %02d:%02d. Port serveru je %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Zde je povolen pouze anonymní pøístup"
 #define MSG_RATIOS_EVERYONE "V©ICHNI U®IVATELE MUSI DODR®ET POMER UL/DL :"

@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Nyanslutning från %s"
 #define MSG_WELCOME_TO "Välkommen till"
 #define MSG_MAX_USERS "%lu användare (maximala antalet) är redan inloggade"
-#define MSG_NB_USERS "Du är användare nummer %d av %d tillåtna"
+#define MSG_NB_USERS "Du är användare nummer %u av %u tillåtna"
 #define MSG_WELCOME_TIME "Lokal tid är nu %02d:%02d. Server port: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Endast anonym FTP är tillåten"
 #define MSG_RATIOS_EVERYONE "RATIOS är aktiverat för ALLA:"

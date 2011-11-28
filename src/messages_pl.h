@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Nowe po³±czenie z %s"
 #define MSG_WELCOME_TO "Witaj na"
 #define MSG_MAX_USERS "%lu u¿ytkowników (maksimum) ju¿ zalogowanych, wybacz"
-#define MSG_NB_USERS "Jeste¶ %d u¿ytkownikiem z %d mo¿liwych"
+#define MSG_NB_USERS "Jeste¶ %u u¿ytkownikiem z %u mo¿liwych"
 #define MSG_WELCOME_TIME "Lokalny czas: %02d:%02d. Port serwera: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Wy³±cznie anonimowe FTP jest dozwolone"
 #define MSG_RATIOS_EVERYONE "WSPÓ£CZYNNIK OBEJMUJE WSZYSTKICH U¯YTKOWNIKÓW :"

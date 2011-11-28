@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Ny forbindelse fra %s"
 #define MSG_WELCOME_TO "Velkommen til"
 #define MSG_MAX_USERS "%lu brugere (det maksimale) er allerede logget på, desværre"
-#define MSG_NB_USERS "Du er bruger nr %d af %d tilladte"
+#define MSG_NB_USERS "Du er bruger nr %u af %u tilladte"
 #define MSG_WELCOME_TIME "Lokal tid er nu %02d:%02d. Server port: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Kun anonym FTP er tilladt her"
 #define MSG_RATIOS_EVERYONE "FORHOLD ER SLÅET TIL FOR ALLE :"

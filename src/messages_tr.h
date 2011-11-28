@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "%s den yeni baðlantý"
 #define MSG_WELCOME_TO "Hoþgeldiniz"
 #define MSG_MAX_USERS "%lu kullanýcý (maksimum) zaten giriþ yaptý, üzgünüz"
-#define MSG_NB_USERS "Kullanýcý numaranýz %d den %d kabul edildi."
+#define MSG_NB_USERS "Kullanýcý numaranýz %u den %u kabul edildi."
 #define MSG_WELCOME_TIME "Lokal zaman þuan %02d:%02d. Sunucu kapýsý: %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Sadece Misafir FTP kabul edilir"
 #define MSG_RATIOS_EVERYONE "HERKES ÝÇÝN ORAN AÇIK:"

@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "自 %s 的新连接"
 #define MSG_WELCOME_TO "欢迎来到"
 #define MSG_MAX_USERS "%lu 使用者(最大值)已经登录，抱歉"
-#define MSG_NB_USERS "您是第 %d 个使用者，最多可达 %d 个连接"
+#define MSG_NB_USERS "您是第 %u 个使用者，最多可达 %u 个连接"
 #define MSG_WELCOME_TIME "现在本地时间是 %02d:%02d。服务器端口： %u。"
 #define MSG_ANONYMOUS_FTP_ONLY "这里只用匿名FTP"
 #define MSG_RATIOS_EVERYONE "针对EVERYONE启用比率:"

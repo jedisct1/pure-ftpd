@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "Nouvelle connexion de %s"
 #define MSG_WELCOME_TO "Bienvenue sur"
 #define MSG_MAX_USERS "%lu utilisateurs (le maximum) sont deja connectes, desole"
-#define MSG_NB_USERS "Vous etes l'utilisateur %d sur les %d autorises."
+#define MSG_NB_USERS "Vous etes l'utilisateur %u sur les %u autorises."
 #define MSG_WELCOME_TIME "L'heure locale est %02d:%02d. Port du serveur : %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Seules les connexions anonymes sont acceptees"
 #define MSG_RATIOS_EVERYONE "LES RATIOS SONT ACTIVES POUR TOUS LES UTILISATEURS :"

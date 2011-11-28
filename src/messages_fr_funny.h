@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "%s ramene son cul"
 #define MSG_WELCOME_TO "C'est de la bonne :"
 #define MSG_MAX_USERS "%lu relous (le maximum) sont deja connectes, degage"
-#define MSG_NB_USERS "T'es le numero %d sur les %d max."
+#define MSG_NB_USERS "T'es le numero %u sur les %u max."
 #define MSG_WELCOME_TIME "L'heure locale est %02d:%02d. Port du serveur : %u."
 #define MSG_ANONYMOUS_FTP_ONLY "Je prend que les mecs anonymes"
 #define MSG_RATIOS_EVERYONE "Y A DES RATIOS POUR TOUS LES UTILISATEURS :"

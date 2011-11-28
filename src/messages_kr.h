@@ -173,7 +173,7 @@
 #define MSG_NEW_CONNECTION "%s 부터 새로운 연결"
 #define MSG_WELCOME_TO "어서오세요!~"
 #define MSG_MAX_USERS "%lu 명 (최대 동시 접속 제한)이 이미 접속해 있습니다. 죄송합니다."
-#define MSG_NB_USERS "당신은 %d 번째로 접속중입니다. 최대 %d 명"
+#define MSG_NB_USERS "당신은 %u 번째로 접속중입니다. 최대 %u 명"
 #define MSG_WELCOME_TIME "현재 시각은 %02d:%02d, 사용중인 포트는 %u 입니다."
 #define MSG_ANONYMOUS_FTP_ONLY "anonymous 유저만 접속 가능합니다."
 #define MSG_RATIOS_EVERYONE "모든 유저에게 업/다운 비율이 적용됨 :"
