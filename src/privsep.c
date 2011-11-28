@@ -96,7 +96,7 @@ int privsep_recvfd(const int psfd)
     struct iovec vec;
     const size_t sizeof_buf = CMSG_SPACE(sizeof *fdptr);
     size_t sizeof_buf_ = sizeof_buf;
-    PrivSepCmd fodder = 0;
+    PrivSepCmd fodder = PRIVSEPCMD_NONE;
     ssize_t received;
     
     if (sizeof_buf_ < sizeof *cmsg) {

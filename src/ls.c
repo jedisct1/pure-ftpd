@@ -446,7 +446,6 @@ static void outputfiles(int f, void * const tls_fd)
     struct filename *q;
     char *c_buf; /* buffer with charset of client */
 
-    (void) c_buf;
     if (!head) {
         return;
     }
@@ -519,6 +518,7 @@ static void outputfiles(int f, void * const tls_fd)
             wrstr(f, tls_fd, c_buf);
             free(c_buf);
 #else
+            (void) c_buf;
             wrstr(f, tls_fd, q->line);
 #endif
             wrstr(f, tls_fd, pad);
