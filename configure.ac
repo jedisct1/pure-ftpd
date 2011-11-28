@@ -28,7 +28,10 @@ AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overf
 AX_CHECK_COMPILE_FLAG([-fstack-protector-all], [CFLAGS="$CFLAGS -fstack-protector-all"])
 
 AS_IF([test "x$ac_compiler_gnu" = "xyes"],[
-  AX_CHECK_COMPILE_FLAG([--param ssp-buffer-size=1], [CFLAGS="$CFLAGS --param ssp-buffer-size=1"; CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"])
+  AS_IF([$CC --version 2>/dev/null | fgrep "Free Software Foundation" > /dev/null 2>&1],[
+    CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
+    AX_CHECK_COMPILE_FLAG([--param ssp-buffer-size=1], [CFLAGS="$CFLAGS --param ssp-buffer-size=1"])
+  ])
 ])
 
 AX_CHECK_COMPILE_FLAG([-Wbounded], [CFLAGS="$CFLAGS -Wbounded"])
@@ -55,7 +58,6 @@ AX_CHECK_COMPILE_FLAG([-Woverride-init], [CWFLAGS="$CWFLAGS -Woverride-init"])
 AX_CHECK_COMPILE_FLAG([-Wparentheses], [CWFLAGS="$CWFLAGS -Wparentheses"])
 AX_CHECK_COMPILE_FLAG([-Wpointer-arith], [CWFLAGS="$CWFLAGS -Wpointer-arith"])
 AX_CHECK_COMPILE_FLAG([-Wredundant-decls], [CWFLAGS="$CWFLAGS -Wredundant-decls"])
-AX_CHECK_COMPILE_FLAG([-Wstack-protector], [CWFLAGS="$CWFLAGS -Wstack-protector"])
 AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [CWFLAGS="$CWFLAGS -Wstrict-prototypes"])
 AX_CHECK_COMPILE_FLAG([-Wswitch-enum], [CWFLAGS="$CWFLAGS -Wswitch-enum"])
 AX_CHECK_COMPILE_FLAG([-Wvariable-decl], [CWFLAGS="$CWFLAGS -Wvariable-decl"])
