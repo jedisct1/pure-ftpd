@@ -261,6 +261,7 @@ static int privsep_privpart_waitcmd(const int psfd)
     default:
         return -1;
     }
+    /* NOTREACHED */
     return 0;
 }
 
