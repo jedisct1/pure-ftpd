@@ -2621,7 +2621,7 @@ void doutime(char *name, const char * const wanted_time)
         return;
     }
     memset(&tm, 0, sizeof tm);
-    sscanf(wanted_time, "%4u%2u%2u%2u%2u%2u", &tm.tm_year, &tm.tm_mon,
+    sscanf(wanted_time, "%4d%2d%2d%2d%2d%2d", &tm.tm_year, &tm.tm_mon,
            &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec);
     tm.tm_mon--;
     tm.tm_year -= 1900;
