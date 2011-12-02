@@ -158,13 +158,12 @@ static int init_tz(void)
 {
     char stbuf[10];
     struct tm *tm;
-    time_t now;
+    time_t now = time(NULL);
     
 #ifdef HAVE_TZSET
     tzset();
 #endif
 #ifdef HAVE_PUTENV    
-    time(&now);                                                                 
     if ((tm = localtime(&now)) == NULL ||
         strftime(stbuf, sizeof stbuf, "%z", tm) != (size_t) 5U) {
         return -1;
@@ -173,7 +172,9 @@ static int init_tz(void)
              "TZ=UTC%c%c%c:%c%c", (*stbuf == '-' ? '+' : '-'),
              stbuf[1], stbuf[2], stbuf[3], stbuf[4]);
     putenv(default_tz_for_putenv);
-#endif   
+#endif
+    (void) gmtime(&now);
+
     return 0;
 }
 
@@ -5528,14 +5529,15 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     (void) setlocale(LC_MESSAGES, MESSAGES_LOCALE);
 # endif
 # ifdef LC_CTYPE
-    (void) setlocale(LC_CTYPE, "");
+    (void) setlocale(LC_CTYPE, "C");
 # endif
 # ifdef LC_COLLATE
-    (void) setlocale(LC_COLLATE, "");
+    (void) setlocale(LC_COLLATE, "C");
 # endif
 #endif    
     
     init_tz();
+    (void) strerror(ENOENT);
     
 #ifndef SAVE_DESCRIPTORS
     openlog("pure-ftpd", LOG_NDELAY | log_pid, DEFAULT_FACILITY);
