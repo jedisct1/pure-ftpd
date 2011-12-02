@@ -827,7 +827,7 @@ AC_ARG_WITH(debug,
       done
       CFLAGS="$nxflags -O0 -g3 $CWFLAGS"
     fi
-    AM_CFLAGS="$AM_CFLAGS -DDEBUG=1"
+    CPPFLAGS="$CPPFLAGS -DDEBUG=1"
   fi ])
 
 AC_ARG_WITH(everything,
