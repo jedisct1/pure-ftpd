@@ -1,6 +1,12 @@
 
 * Version 1.0.35:
  - Improve compatibility with the Intel and Ekopath compilers.
+ - Use more paranoid compiler options whenever possible, and preliminary
+uncluttering of the autoconf script.
+ - Try to cache locale-related data at startup after tzset(), rather
+than during a session.
+ - Fix quota computation after rename() overwrites an existing file.
+Report and patch by Hiramoto Koujo, thanks!
 
 * Version 1.0.34:
  - Fix safe_write() inverted checks that broke uploads.

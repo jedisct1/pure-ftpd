@@ -4598,12 +4598,9 @@ void dornto(char *name)
             addreply_noformat(550, MSG_RENAME_FAILURE);
             goto bye;
         }
-        bytes = (long long) source_file_size;
         target_file_size = get_file_size(name);        
-        if (target_file_size > (off_t) 0) {            
-            bytes -= (long long) target_file_size;
-        }
         if (target_file_size >= (off_t) 0) {
+            bytes = - (long long) target_file_size;
             files_count = -1;
             (void) quota_update(NULL, files_count, bytes, NULL);            
         } else {

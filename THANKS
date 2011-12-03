@@ -58,6 +58,7 @@ External contributors and people who helped in any way, shape or form:
 * Henning Brauer - reported that empty passwords would bind anonymously using LDAP.
 * Henri Virtanen <hvirtanen at daous.com> - Suggested SO_REUSEPORT for FreeBSD.
 * Henrik Edlund <henrik at edlund.org> - Suggested documentation fixes (quoting field names) in PostgreSQL templates.
+* Hiramoto Kouji - reported and fixed the fact that quotas weren't properly updated when overwriting a file using RNTO.
 * JG <jg at cms.ac> - Reported a breakage of pure-ftpwho in version 1.0.16.
 * JKadilak (reported a Flash FXP feature, good for the FAQ)
 * Jan Hudoba - Support for new MySQL scrambling.
