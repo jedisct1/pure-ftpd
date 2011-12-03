@@ -4592,23 +4592,38 @@ void dornto(char *name)
         return;                        /* don't clear rnfrom buffer */
     }
 #ifdef QUOTAS
-    if (hasquota() == 0) {        
-        source_file_size = get_file_size(renamefrom);
-        if (source_file_size < (off_t) 0) {
+    if (hasquota() == 0) {
+        struct stat st_source, st_target;
+
+        if (stat(renamefrom, &st_source) != 0) {
             addreply_noformat(550, MSG_RENAME_FAILURE);
             goto bye;
         }
-        target_file_size = get_file_size(name);        
+        source_file_size = st_source.st_size;
+        if (stat(name, &st_target) != 0) {
+            if (errno == ENOENT) {
+                target_file_size = (off_t) -1;
+            } else {
+                addreply_noformat(550, MSG_RENAME_FAILURE);
+                goto bye;
+            }
+        } else if (st_source.st_ino == st_target.st_ino &&
+                   st_source.st_dev == st_target.st_dev) {
+            addreply_noformat(550, MSG_RENAME_FAILURE);
+            goto bye;
+        } else {
+            target_file_size = st_target.st_size;
+        }
         if (target_file_size >= (off_t) 0) {
             bytes = - (long long) target_file_size;
             files_count = -1;
-            (void) quota_update(NULL, files_count, bytes, NULL);            
+            (void) quota_update(NULL, files_count, bytes, NULL);
         } else {
             bytes = (off_t) 0;
         }
     }
 #endif
-    if ((rename(renamefrom, name)) < 0) {
+    if (rename(renamefrom, name) < 0) {
         error(451, MSG_RENAME_FAILURE);        
 #ifdef QUOTAS
         (void) quota_update(NULL, -files_count, -bytes, NULL);
