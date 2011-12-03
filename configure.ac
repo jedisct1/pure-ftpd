@@ -27,13 +27,6 @@ AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-alias
 AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
 AX_CHECK_COMPILE_FLAG([-fstack-protector-all], [CFLAGS="$CFLAGS -fstack-protector-all"])
 
-AS_IF([test "x$ac_compiler_gnu" = "xyes"],[
-  AS_IF([$CC --version 2>/dev/null | fgrep "Free Software Foundation" > /dev/null 2>&1],[
-    CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
-    AX_CHECK_COMPILE_FLAG([--param ssp-buffer-size=1], [CFLAGS="$CFLAGS --param ssp-buffer-size=1"])
-  ])
-])
-
 AX_CHECK_COMPILE_FLAG([-Wbounded], [CFLAGS="$CFLAGS -Wbounded"])
 AX_CHECK_COMPILE_FLAG([-Winit-self], [CFLAGS="$CFLAGS -Winit-self"])
 AX_CHECK_COMPILE_FLAG([-Wwrite-strings], [CFLAGS="$CFLAGS -Wwrite-strings"])
@@ -89,6 +82,8 @@ fi
 if uname | fgrep SunOS > /dev/null 2> /dev/null ; then
   CPPFLAGS="$CPPFLAGS -D_XPG4_2=1"
 fi
+
+CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 
 dnl Checks for header files
 
