@@ -1,4 +1,9 @@
 
+* Version 1.0.35:
+ - An old-standing bug has been fixed: when a file was renamed and
+overwrote an existing file, the quota wasn't properly updated.
+Reported by Hiramoto Kouji.
+
 * Version 1.0.34:
  - Fix uploads. The bug was introduced in version 1.0.33. Thanks to
 Hugo Gomes.
