@@ -4609,7 +4609,7 @@ void dornto(char *name)
             }
         } else if (st_source.st_ino == st_target.st_ino &&
                    st_source.st_dev == st_target.st_dev) {
-            addreply_noformat(550, MSG_RENAME_FAILURE);
+            addreply_noformat(250, MSG_RENAME_SUCCESS);
             goto bye;
         } else {
             target_file_size = st_target.st_size;
