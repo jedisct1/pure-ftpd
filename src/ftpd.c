@@ -3316,12 +3316,10 @@ void doretr(char *name)
         addreply(550, MSG_LOAD_TOO_HIGH, load);
         goto end;
     }
-# if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32__) && !defined(__CYGWIN__)
     if (type < 1 || (type == 1 && restartat > (off_t) 1)) {
         addreply_noformat(503, MSG_NO_ASCII_RESUME);
         goto end;
     }
-# endif
     if (checknamesanity(name, dot_read_ok) != 0) {
         addreply(553, MSG_SANITY_FILE_FAILURE, name);
         goto end;
