@@ -89,10 +89,9 @@ define the directory for public files.
   The Win32 version of Pure-FTPd has been configured with the following
 command-line, using the Cygnus Win32 environment:
 
-env CFLAGS="-O2 -march=pentium -pipe" LDFLAGS="-static -s" \
+env LDFLAGS="-static -s" \
     ./configure --with-everything --with-brokenrealpath \
-                --without-shadow  --with-nonroot --with-tls \
-                --with-probe-random-dev --without-ascii
+                --without-shadow  --with-nonroot --with-tls
                 
   All these switches (except --with-everything and --with-tls) are highly
 recommended to compile Pure-FTPd on Windows.                
