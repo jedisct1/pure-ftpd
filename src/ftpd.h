@@ -595,7 +595,8 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 
 #define PUREFTPD_TMPFILE_PREFIX ".pureftpd-"    
 #define ATOMIC_PREFIX_PREFIX PUREFTPD_TMPFILE_PREFIX "upload."
-
+#define WIN32_ANON_DIR "/ftp"
+    
 #define STORAGE_PORT(X)  (*storage_port(&(X)))
 #define STORAGE_PORT6(X) (*storage_port6(&(X)))
 #define STORAGE_SIN_ADDR(X) (storage_sin_addr(&(X))->s_addr)
