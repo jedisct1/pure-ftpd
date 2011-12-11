@@ -4989,20 +4989,12 @@ static void doit(void)
               resolve_hostnames != 0 ? 0 : NI_NUMERICHOST)) == 0) {
             break;
         }
-        /* 
-         * getnameinfo() is lousy on MacOS X Panther and returns EAI_NONAME
-         * or EAI_SYSTEM (errno=ENOENT) when no name is found instead of
-         * filling the buffer with the IP.
-         */
-# if defined(EAI_NONAME) && defined(EAI_SYSTEM)
-        if ((eai == EAI_NONAME || eai == EAI_SYSTEM) &&
-            resolve_hostnames != 0 &&
-           getnameinfo
+        if (resolve_hostnames != 0 &&
+            getnameinfo
             ((struct sockaddr *) &peer, STORAGE_LEN(peer), host,
              sizeof host, NULL, (size_t) 0U, NI_NUMERICHOST) == 0) {
             break;
         }
-# endif
         die(425, LOG_ERR, MSG_INVALID_IP);        
     }
 #endif
