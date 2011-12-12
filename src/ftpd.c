@@ -850,9 +850,11 @@ static int checknamesanity(const char *name, int dot_ok)
     }
 #endif
     while (*namepnt != 0) {
+#ifndef ALLOW_EVERYTHING_IN_FILE_NAMES
         if (ISCTRLCODE(*namepnt) || *namepnt == '\\') {
             return -1;
         }
+#endif
         if (dot_ok == 0) {
             if (*namepnt == '/') {
                 namepnt++;
