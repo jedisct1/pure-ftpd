@@ -777,4 +777,16 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 #include "bsd-realpath.h"    
 #include "fakechroot.h"
         
+#ifdef WITH_VIRTUALDIRS
+typedef struct {
+    char *virtualdir_base;
+    char *virtualdir_name;
+    size_t virtualdir_base_len;
+    size_t virtualdir_name_len;
+} virtualdir_info;
+
+virtualdir_info **virtualdirs;
+int num_virtualdirs;
+#endif
+
 #endif

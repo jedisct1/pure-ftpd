@@ -16,6 +16,7 @@ static char *sqlreq_getgid;
 static char *sqlreq_getdir;
 static char *sql_default_uid;
 static char *sql_default_gid;
+static char *sql_getvirtualdirs;
 #ifdef QUOTAS
 static char *sqlreq_getqta_sz;
 static char *sqlreq_getqta_fs;
@@ -43,6 +44,7 @@ static ConfigKeywords pgsql_config_keywords[] = {
     { "PGSQLGetGID", &sqlreq_getgid },
     { "PGSQLDefaultGID", &sql_default_gid },
     { "PGSQLGetDir", &sqlreq_getdir },
+    { "PGSQLGetVirtualDirs", &sql_getvirtualdirs },
 #ifdef QUOTAS
     { "PGSQLGetQTAFS", &sqlreq_getqta_fs },    
     { "PGSQLGetQTASZ", &sqlreq_getqta_sz },

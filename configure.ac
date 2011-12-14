@@ -780,6 +780,13 @@ AC_ARG_WITH(virtualchroot,
       AC_DEFINE(WITH_VIRTUAL_CHROOT,,[with virtual chroot])
   fi ])
 
+AC_ARG_WITH(virtualdirs,
+[AS_HELP_STRING(--with-virtualdirs,Enable the ability to provide paths a user can follow outside a chroot jail without a symlink present)],
+[ if test "x$withval" = "xyes" ; then
+      AC_DEFINE(WITH_VIRTUALDIRS,,[with virtual directories])
+  fi ])
+
+
 AC_ARG_WITH(diraliases,
 [AS_HELP_STRING(--with-diraliases,Enable directory aliases)],
 [ if test "x$withval" = "xyes" ; then
