@@ -1,6 +1,6 @@
 #! @PERL@
 
-# (C) 2001-2011 Aristotle Pagaltzis
+# (C) 2001-2012 Aristotle Pagaltzis
 # derived from code (C) 2001-2002 Frank Denis and Matthias Andree
 
 use strict;

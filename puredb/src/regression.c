@@ -1,5 +1,5 @@
 
-/* (C)opyleft 2001-2011 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2012 Frank DENIS <j at pureftpd dot org> */
 
 #include <config.h>
 #ifdef HAVE_SNPRINTF
