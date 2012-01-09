@@ -221,8 +221,8 @@ static int fakexlate(char *curdirtmp, size_t sizeof_curdirtmp, const char *dir)
 	if (strncmp(curdirtmp + chroot_len, virtualdirs[i]->virtualdir_name, virtualdirs[i]->virtualdir_name_len) == 0) {
 	    memcpy(dir_workspace, virtualdirs[i]->virtualdir_base, virtualdirs[i]->virtualdir_base_len);
 	    snprintf(dir_workspace + virtualdirs[i]->virtualdir_base_len, sizeof dir_workspace - virtualdirs[i]->virtualdir_base_len, 
-		"%s/", curdirtmp + chroot_len + virtualdirs[i]->virtualdir_name_len);
-	    snprintf(curdirtmp, sizeof_curdirtmp, "%s/", dir_workspace);
+		"%s", curdirtmp + chroot_len + virtualdirs[i]->virtualdir_name_len);
+	    snprintf(curdirtmp, sizeof_curdirtmp, "%s", dir_workspace);
 	    simplify(curdirtmp);
 	    return 0;
 	}
