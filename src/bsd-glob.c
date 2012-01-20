@@ -516,16 +516,15 @@ glob2(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
     for (anymeta = 0;;) {
         if (*pattern == EOS) {      /* End of pattern? */
             *pathend = EOS;
-            if (g_lstat(pathbuf, &sb, pglob)) {
-                return 0;
-            }
             if (limitp->glim_stat++ >= pglob->gl_maxfiles) {
                 errno = 0;
                 *pathend++ = SEP;
                 *pathend = EOS;
                 return GLOB_NOSPACE;
             }
-
+            if (g_lstat(pathbuf, &sb, pglob)) {
+                return 0;
+            }
             if (((pglob->gl_flags & GLOB_MARK) &&
                  pathend[-1] != SEP) &&
                 (S_ISDIR(sb.st_mode) ||
