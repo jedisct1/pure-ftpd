@@ -34,10 +34,9 @@
  * descriptor, so that we can still reseed the PRNG after a chroot() call.
  */
 
-#ifndef __OpenBSD__
-
 #include <config.h>
 
+#ifndef __OpenBSD__
 #include "ftpd.h"
 #include "safe_rw.h"
 #include "alt_arc4random.h"
@@ -321,6 +320,8 @@ alt_arc4random_uniform(unsigned int upper_bound)
 }
 
 #else
+
+#include "alt_arc4random.h"
 
 int
 alt_arc4random_close(void)
