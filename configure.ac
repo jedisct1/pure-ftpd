@@ -21,7 +21,12 @@ AM_PROG_CC_C_O
 AC_USE_SYSTEM_EXTENSIONS
 AC_SEARCH_LIBS([strerror],[cposix])
 
-AX_CHECK_COMPILE_FLAG([-fPIE], [CFLAGS="$CFLAGS -fPIE"])
+AX_CHECK_COMPILE_FLAG([-fPIE], [
+  AX_CHECK_LINK_FLAG([-fPIE],
+    [CFLAGS="$CFLAGS -fPIE"]
+  )
+])
+
 AX_CHECK_COMPILE_FLAG([-fcatch-undefined-c99-behavior], [CFLAGS="$CFLAGS -fcatch-undefined-c99-behavior"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
