@@ -238,7 +238,8 @@ static int listfile(const PureFileInfo * const fi, const char *name)
     struct stat st;
     struct tm *t;
     char suffix[2] = { 0, 0 };
-    char m[MAXPATHLEN + 1U];    
+    char m[MAXPATHLEN + 1U];
+    const char *format;
 
 #ifndef MINIMAL
     if (modern_listings != 0) {
@@ -384,8 +385,13 @@ static int listfile(const PureFileInfo * const fi, const char *name)
             if ((alloca_nameline = ALLOCA(sizeof_nameline)) == NULL) {
                 return 0;
             }
+            if (st.st_size < 10000000000U) {
+                format = "%s %4u %s %s %10llu %s %2d %s %s";
+            } else {
+                format = "%s %4u %s %s %18llu %s %2d %s %s";
+            }
             if (SNCHECK(snprintf(alloca_nameline, sizeof_nameline,
-                                 "%s %4u %s %s %10llu %s %2d %s %s", 
+                                 format,
                                  m, (unsigned int) st.st_nlink,
                                  getname(st.st_uid),
                                  getgroup(st.st_gid), 
