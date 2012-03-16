@@ -60,7 +60,8 @@ AC_DEFUN([AX_CHECK_LINK_FLAG],
 AC_CACHE_CHECK([whether the linker accepts $1], CACHEVAR, [
   ax_check_save_flags=$LDFLAGS
   LDFLAGS="$LDFLAGS $4 $1"
-  AC_LINK_IFELSE([AC_LANG_PROGRAM()],
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],
+  [[char x[42U];if (fgets(x,1000,stdin)) puts(x)]])],  
     [AS_VAR_SET(CACHEVAR,[yes])],
     [AS_VAR_SET(CACHEVAR,[no])])
   LDFLAGS=$ax_check_save_flags])
