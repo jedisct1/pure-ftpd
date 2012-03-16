@@ -295,8 +295,8 @@ static void process(const int clientfd)
     }    
     if (pid != (pid_t) 0) {
         close(pfds[1]);         /* close the output side of the pipe */
-        if ((readnb = safe_read_partial(pfds[0], line, 
-                                        sizeof line - 1U)) > (ssize_t) 0) {
+        if ((readnb = safe_read(pfds[0], line,
+                                sizeof line - 1U)) > (ssize_t) 0) {
             (void) safe_write(clientfd, line, readnb, -1);
         }
 #ifdef HAVE_WAITPID

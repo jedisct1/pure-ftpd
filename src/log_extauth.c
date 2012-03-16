@@ -217,8 +217,7 @@ void pw_extauth_check(AuthResult * const result,
     result->dir = NULL;
     result->slow_tilde_expansion = 1;    
     auth_finalized = 0;
-    if ((readnb =
-         safe_read_partial(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
+    if ((readnb = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
         goto bye;
     }
     line[readnb] = 0;    
