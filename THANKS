@@ -135,6 +135,7 @@ External contributors and people who helped in any way, shape or form:
 * Philip Mak <mak at aaanime.net> - Suggested that pure-quotacheck should be runnable as a non-root user.
 * Pierre <pierre at epinetworx.com> - Reported a compilation bug with extauth.
 * Rafa Michalski - Reported broken throtting under FreeBSD.
+* Rasmus Fauske <rfauske at gmail.com> - Reported extauth regression.
 * Robert Wierzbicki - Reported a typo in README.Virtual-Users.
 * Robin Ericsson - Implemented support for MySQL password() function.
 * Ryan Laginski (suggested for -P feature)

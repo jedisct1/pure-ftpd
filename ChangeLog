@@ -1,4 +1,17 @@
 
+* Version 1.0.36:
+ - The safe_write()/safe_read() factorization broke extauth. Using
+safe_read_partial() to read from the extauth pipe wasn't enough.
+Bug reported by Rasmus Fauske.
+ - Improved autoconf detection of -fstack-protector and -fPIE
+ - If 10 digits are not enough to print the size of a file in an
+ls-like output, bump the max number of digits to 18. This adds support for
+files up to 1 exabyte.
+ - Pure-FTPd can be compiled with Cygwin, ASLR/DEP is enabled by
+default on Windows, and ASCII downloads on Windows have been fixed.
+ - A new undocumented macro, ALLOW_EVERYTHING_IN_FILE_NAMES, allows
+any characters in a file name. Disabled by default.
+
 * Version 1.0.35:
  - Improve compatibility with the Intel and Ekopath compilers.
  - Use more paranoid compiler options whenever possible, and preliminary

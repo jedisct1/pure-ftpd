@@ -1,4 +1,10 @@
 
+* Version 1.0.36:
+ - Support for external authentification handlers has been fixed.
+Reported by Rasmus Fauske.
+ - Directory listings can now report file sizes up to 1 exabyte.
+ - Pure-FTPd is now useable on Win32 again.
+
 * Version 1.0.35:
  - An old-standing bug has been fixed: when a file was renamed and
 overwrote an existing file, the quota wasn't properly updated.
