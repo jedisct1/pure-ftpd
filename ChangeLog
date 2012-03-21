@@ -11,6 +11,9 @@ files up to 1 exabyte.
 default on Windows, and ASCII downloads on Windows have been fixed.
  - A new undocumented macro, ALLOW_EVERYTHING_IN_FILE_NAMES, allows
 any characters in a file name. Disabled by default.
+ - Don't display dot files (except . and ..) if dot_read_ok is 0 in
+donlist() - but not in sglob() yet. This change is purely cosmetic. There are
+many ways to figure out if a file exists.
 
 * Version 1.0.35:
  - Improve compatibility with the Intel and Ekopath compilers.

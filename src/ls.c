@@ -705,16 +705,21 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     }
     s = dir;
     while (s->name_offset != (size_t) -1) {
+        d = 0;
         if (FI_NAME(s)[0] != '.') {
             d = listfile(s, NULL);
         } else if (opt_a) {
-            d = listfile(s, NULL);
             if (FI_NAME(s)[1] == 0 ||
                 (FI_NAME(s)[1] == '.' && FI_NAME(s)[2] == 0)) {
-                d = 0;
+                listfile(s, NULL);
+#ifndef DONT_LIE_ABOUT_DOT_FILES
+            } else if (dot_read_ok != 0) {
+                d = listfile(s, NULL);
+#else
+            } else {
+                d = listfile(s, NULL);
+#endif
             }
-        } else {
-            d = 0;
         }
         if (!d) {
             s->name_offset = (size_t) -1;

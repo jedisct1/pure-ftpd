@@ -4,6 +4,8 @@
 Reported by Rasmus Fauske.
  - Directory listings can now report file sizes up to 1 exabyte.
  - Pure-FTPd is now useable on Win32 again.
+ - Per popular request, dot files are now hidden from directory listings when
+the -X flag is turned on.
 
 * Version 1.0.35:
  - An old-standing bug has been fixed: when a file was renamed and
