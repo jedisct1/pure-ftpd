@@ -347,9 +347,9 @@ void pw_mysql_check(AuthResult * const result,
     if (STORAGE_FAMILY(*peer) == AF_INET) {
         const unsigned char *decimal_ip_raw =
             (const unsigned char *) &(STORAGE_SIN_ADDR(*peer));
-        decimal_ip_num = (decimal_ip_raw[0] << 24) | 
-            (decimal_ip_raw[1] << 16) | (decimal_ip_raw[2] << 8) |
-            decimal_ip_raw[3];
+        decimal_ip_num = ((unsigned long) decimal_ip_raw[0] << 24) |
+            ((unsigned long) decimal_ip_raw[1] << 16) |
+            (decimal_ip_raw[2] << 8) | decimal_ip_raw[3];
         if (SNCHECK(snprintf(decimal_ip, sizeof decimal_ip,
                              "%lu", decimal_ip_num), sizeof decimal_ip)) {
             goto bye;

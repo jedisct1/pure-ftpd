@@ -1035,7 +1035,8 @@ void doeprt(char *p)
             memset(&a, 0, sizeof a);
             STORAGE_FAMILY(a) = AF_INET;
             STORAGE_SIN_ADDR(a) =
-                htonl((a1 << 24) | (a2 << 16) | (a3 << 8) | a4);
+                htonl(((uint32_t) a1 << 24) |
+                      ((uint32_t) a2 << 16) | (a3 << 8) | a4);
             SET_STORAGE_LEN(a, sizeof(struct sockaddr_in));
             doport2(a, port);
         }
@@ -2268,7 +2269,8 @@ void doport(const char *arg)
     memset(&a, 0, sizeof a);
     STORAGE_FAMILY(a) = AF_INET;
     STORAGE_SIN_ADDR(a) =
-        htonl((a1 << 24) | (a2 << 16) | (a3 << 8) | a4);
+        htonl(((uint32_t) a1 << 24) | ((uint32_t) a2 << 16) |
+              (a3 << 8) | a4);
     SET_STORAGE_LEN(a, sizeof(struct sockaddr_in));
     doport2(a, (p1 << 8) | p2);
 }

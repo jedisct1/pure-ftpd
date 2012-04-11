@@ -1210,9 +1210,11 @@ static void init_zrand(void)
 #ifdef HAVE_SRANDOMDEV
     srandomdev();
 #elif defined(HAVE_RANDOM)
-    srandom((unsigned int) (tv.tv_sec ^ tv.tv_usec ^ (getpid() << 16)));
+    srandom((unsigned int) (tv.tv_sec ^ tv.tv_usec ^
+                            ((unsigned int) getpid() << 16)));
 #else
-    srand((unsigned int) (tv.tv_sec ^ tv.tv_usec ^ (getpid() << 16)));
+    srand((unsigned int) (tv.tv_sec ^ tv.tv_usec ^
+                          ((unsigned int) getpid() << 16)));
 #endif
 }
 
