@@ -10,9 +10,7 @@ previous command:
 
 /usr/local/sbin/pure-ftpd --dontresolve
 
-But you can use traditional configuration files over command-line
-options. Adding a parser for configuration files in the server is a bad
-idea. It slows down everything and needs resources for nothing.
+But you can use traditional configuration files over command-line options.
 
 If you want to use a configuration file with Pure-FTPd, you can, through
 a wrapper. That wrapper will parse a file and convert it to command-line
