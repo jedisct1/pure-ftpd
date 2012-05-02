@@ -155,9 +155,9 @@ SSHA is believed to be the most secure one-way hashing method, but it's also
 the slowest and it can be time-consuming if you're accepting a lot of
 users.
 
-Please note that a login ('uid' field) can only contains common characters:
-A...Z, a...z, 0...9, -, ., _, space and ' . For security purposes, other
-characters are forbidden.
+Please note that a login can only contains common characters: A...Z, a...z,
+0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
+are forbidden.
 
 If you don't want to use posixAccount objects, you can edit src/log_ldap.h
 to customize attribute names.

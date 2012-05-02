@@ -132,8 +132,8 @@ won't be the same account than joe@domain2 . And with \R, you can restrict
 one account to one specific address.
 
 Please note that a login can only contains common characters: A...Z, a...z,
-0...9, -, ., _, space, :, @ and  and ' . For security purposes, other
-characters are forbidden.
+0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
+are forbidden.
 
 You can also remove uid and gid fields in your tables and use default
 values instead (thus saving useless lookups) . Two directives are
