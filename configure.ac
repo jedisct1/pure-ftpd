@@ -47,7 +47,8 @@ AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
         AX_CHECK_LINK_FLAG([-fstack-protector-all],
           [CFLAGS="$CFLAGS -fstack-protector-all"]
         )
-      ])    
+      ])
+      AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
     ]
   )
 ])
