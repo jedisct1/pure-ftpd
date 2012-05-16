@@ -125,7 +125,7 @@ CLF (common log format) is the basic format produced by Apache, WebFS, Roxen
 and most web servers. These log files only record file transfers and they can
 feed web statistic software (Analog, Webalizer, etc.) to analyze the load of
 your FTP server. The Stats format is a special output format, designed for log
-file analys software. The W3C format is a standard format parsed by most
+file analysis software. The W3C format is a standard format parsed by most
 commercial log analyzers (all analyzers with support for IIS should deal with
 it) . Xferlog is the traditional format created by wu-ftpd. Check the -O
 option later in this documentation for additional info.
