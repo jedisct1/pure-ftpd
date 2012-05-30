@@ -688,10 +688,10 @@ static char *do_get_passwd(void)
     puts("");
     if (strcmp(pwd, pwd2) != 0) {
         if (*pwd2 != 0) {
-            memset(pwd2, 0, strlen(pwd2));
+            memset((volatile void *) pwd2, 0, strlen(pwd2));
         }
         if (*pwd != 0) {
-            memset(pwd, 0, strlen(pwd));
+            memset((volatile void *) pwd, 0, strlen(pwd));
         }
         puts("You didn't enter the same password");
         if (--tries > 0) {
@@ -702,7 +702,7 @@ static char *do_get_passwd(void)
         return NULL;
     }
     if (*pwd2 != 0) {
-        memset(pwd2, 0, strlen(pwd2));
+        memset((volatile void *) pwd2, 0, strlen(pwd2));
     }
     enable_echo();
     
@@ -782,7 +782,7 @@ static int do_useradd(const char * const file,
 
         pwinfo.pwd = best_crypt(cleartext);
         if (*cleartext != 0) {
-            memset(cleartext, 0, strlen(cleartext));
+            memset((volatile void *) cleartext, 0, strlen(cleartext));
         }
     }            
     if ((file2 = newpasswd_filename(file)) == NULL) {
@@ -851,7 +851,7 @@ static int do_usermod(const char * const file,
 
         fetched_info.pwd = best_crypt(cleartext);
         if (*cleartext != 0) {
-            memset(cleartext, 0, strlen(cleartext));
+            memset((volatile void *) cleartext, 0, strlen(cleartext));
         }        
     }
     if (pwinfo->uid > (uid_t) 0) {

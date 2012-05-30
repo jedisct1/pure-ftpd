@@ -234,7 +234,7 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX * context)
     memset(context->buffer, 0, 64);
     memset(context->state, 0, 20);
     memset(context->count, 0, 8);
-    memset(&finalcount, 0, 8);
+    memset((volatile void *) &finalcount, 0, 8);
 # ifdef SHA1HANDSOFF            /* make SHA1Transform overwrite it's own static vars */
     SHA1Transform(context->state, context->buffer);
 # endif

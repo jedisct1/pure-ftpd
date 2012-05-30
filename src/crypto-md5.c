@@ -282,7 +282,7 @@ static void MD5Transform(crypto_uint4 state[4],
 
     /* Zeroize sensitive information.
      */
-    MD5_memset((void *) x, 0, sizeof x);
+    MD5_memset((volatile void *) x, 0, sizeof x);
 }
 
 #ifdef WORDS_BIGENDIAN
