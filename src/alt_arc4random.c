@@ -37,6 +37,7 @@
 #include <config.h>
 
 #ifndef __OpenBSD__
+#include "crypto.h"
 #include "ftpd.h"
 #include "safe_rw.h"
 #include "alt_arc4random.h"
@@ -198,14 +199,15 @@ alt_arc4_getbyte(void)
     return (rs.s[(si + sj) & 0xff]);
 }
 
-static unsigned int
+static crypto_uint4
 alt_arc4_getword(void)
 {
-    unsigned int val;
-    val =  ((unsigned int) alt_arc4_getbyte()) << 24;
-    val |= ((unsigned int) alt_arc4_getbyte()) << 16;
-    val |= ((unsigned int) alt_arc4_getbyte()) << 8;
-    val |= ((unsigned int) alt_arc4_getbyte());
+    crypto_uint4 val;
+
+    val  = ((crypto_uint4) alt_arc4_getbyte()) << 24;
+    val |= ((crypto_uint4) alt_arc4_getbyte()) << 16;
+    val |= ((crypto_uint4) alt_arc4_getbyte()) << 8;
+    val |= ((crypto_uint4) alt_arc4_getbyte());
 
     return val;
 }
@@ -244,17 +246,17 @@ alt_arc4random_addrandom(unsigned char *dat, int datlen)
     _alt_arc4_UNLOCK();
 }
 
-unsigned int
+crypto_uint4
 alt_arc4random(void)
 {
-    unsigned int val;
+    crypto_uint4 val;
     _alt_arc4_LOCK();
     alt_arc4_count -= 4;
     alt_arc4_stir_if_needed();
     val = alt_arc4_getword();
     _alt_arc4_UNLOCK();
 
-    return (unsigned int) val;
+    return val;
 }
 
 void
@@ -282,26 +284,17 @@ alt_arc4random_buf(void *_buf, size_t n)
  * [2**32 % upper_bound, 2**32) which maps back to [0, upper_bound)
  * after reduction modulo upper_bound.
  */
-unsigned int
-alt_arc4random_uniform(unsigned int upper_bound)
+crypto_uint4
+alt_arc4random_uniform(crypto_uint4 upper_bound)
 {
-    unsigned int r, min;
+    crypto_uint4 r, min;
 
     if (upper_bound < 2U) {
         return 0U;
     }
 
-#if (ULONG_MAX > 0xffffffffUL)
-    min = (unsigned int) (0x100000000UL % upper_bound);
-#else
-    /* Calculate (2**32 % upper_bound) avoiding 64-bit math */
-    if (upper_bound > 0x80000000)
-        min = 1 + ~upper_bound;         /* 2**32 - upper_bound */
-    else {
-        /* (2**32 - (x * 2)) % x == 2**32 % x when x <= 2**31 */
-        min = ((0xffffffff - (upper_bound * 2)) + 1) % upper_bound;
-    }
-#endif
+    /* 2**32 % x == (2**32 - x) % x */
+    min = (crypto_uint4) (- upper_bound % upper_bound);
 
     /*
      * This could theoretically loop forever but each retry has
