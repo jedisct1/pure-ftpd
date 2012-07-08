@@ -35,10 +35,16 @@
 #define PASSWD_LDAP_SMD5_PREFIX "{smd5}"
 #define PASSWD_LDAP_SHA_PREFIX "{sha}"
 #define PASSWD_LDAP_SSHA_PREFIX "{ssha}"
+#define LDAP_DEFAULT_SCHEME "ldap"
 #define LDAP_DEFAULT_SERVER "localhost"
 #define LDAP_DEFAULT_PORT 389
 #define LDAP_DEFAULT_FILTER "(&(objectClass=posixAccount)(uid=\\L))"
 #define LDAP_DEFAULT_VERSION 3
+
+/* RFC 3986 - http://tools.ietf.org/html/rfc3986 */
+#define URI_SCHEME_SEPARATOR ":"
+#define URI_AUTHORITY_LEADER "//"
+#define URI_PORT_LEADER ":"
 
 void pw_ldap_parse(const char * const file);
 

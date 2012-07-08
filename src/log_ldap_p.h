@@ -9,6 +9,8 @@
 #include <lber.h>
 #include <ldap.h>
 
+static char *ldap_uri;
+static char *ldap_scheme;
 static char *ldap_host;
 static char *port_s;
 static int port;
@@ -30,6 +32,7 @@ static int use_ldap_bind_method;
 static char *ldap_default_home_directory;
 
 static ConfigKeywords ldap_config_keywords[] = {
+    { "LDAPScheme", &ldap_scheme },
     { "LDAPServer", &ldap_host },
     { "LDAPPort", &port_s },    
     { "LDAPBindDN", &binddn },        
