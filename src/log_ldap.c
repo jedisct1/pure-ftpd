@@ -22,6 +22,11 @@ void pw_ldap_parse(const char * const file)
         die(421, LOG_ERR, MSG_CONF_ERR ": " MSG_ILLEGAL_CONFIG_FILE_LDAP 
             ": %s" , file == NULL ? "-" : file);
     }
+    if (ldap_scheme == NULL) {
+        if ((ldap_scheme = strdup(LDAP_DEFAULT_SCHEME)) == NULL) {
+            die_mem();
+        }
+    }
     if (ldap_host == NULL) {
         if ((ldap_host = strdup(LDAP_DEFAULT_SERVER)) == NULL) {
             die_mem();
@@ -86,6 +91,35 @@ void pw_ldap_parse(const char * const file)
         free(use_tls_s);
         use_tls_s = NULL;
     }
+    /* Build ldap URI string */
+    ldap_uri = NULL;
+    {
+#ifndef WITH_ASPRINTF
+	/* be lazy and use asprintf instead? */
+        int uri_sz = 0;
+        uri_sz += strlen(ldap_scheme);
+        uri_sz += strlen(URI_SCHEME_SEPARATOR);
+        uri_sz += strlen(URI_AUTHORITY_LEADER);
+        uri_sz += strlen(ldap_host);
+        uri_sz += strlen(URI_PORT_LEADER);
+        uri_sz += 5; /* string representation of port; 5 digits at most */
+        uri_sz += 1; /* null byte */
+
+        if ((ldap_uri = (char *)malloc(uri_sz)) == NULL) {
+            die_mem();
+	}
+        
+        sprintf(ldap_uri, "%s%s%s%s%s%u",
+            ldap_scheme, URI_SCHEME_SEPARATOR, URI_AUTHORITY_LEADER,
+            ldap_host, URI_PORT_LEADER, port );
+#else
+        if (asprintf(&ldap_uri, "%s%s%s%s%s%u",
+            ldap_scheme, URI_SCHEME_SEPARATOR, URI_AUTHORITY_LEADER,
+            ldap_host, URI_PORT_LEADER, port) == -1) {
+            die_mem();
+        }
+#endif
+    }
 
     /* Default to auth method bind, but for backward compatibility, if a binddn 
      * is supplied, default to password checking. */
@@ -116,6 +150,10 @@ void pw_ldap_parse(const char * const file)
 
 void pw_ldap_exit(void)
 {
+    free((void *) ldap_scheme);
+    ldap_scheme = NULL;
+    free((void *) ldap_uri);
+    ldap_uri =  NULL;
     free((void *) ldap_host);
     ldap_host = NULL;
     free((void *) port_s);
@@ -148,10 +186,10 @@ static LDAP *pw_ldap_connect(const char *dn, const char *password)
     int version = ldap_version;
 # endif
     
-    if (ldap_host == NULL || port < 0) {
+    if (ldap_uri == NULL) {
         return NULL;
     }
-    if ((ld = ldap_init(ldap_host, port)) == NULL) {
+    if (ldap_initialize(&ld, ldap_uri) != LDAP_SUCCESS) {
         return NULL;
     }
 # ifdef LDAP_OPT_PROTOCOL_VERSION
