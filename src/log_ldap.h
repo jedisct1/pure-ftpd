@@ -41,7 +41,6 @@
 #define LDAP_DEFAULT_FILTER "(&(objectClass=posixAccount)(uid=\\L))"
 #define LDAP_DEFAULT_VERSION 3
 
-/* RFC 3986 - http://tools.ietf.org/html/rfc3986 */
 #define URI_SCHEME_SEPARATOR ":"
 #define URI_AUTHORITY_LEADER "//"
 #define URI_PORT_LEADER ":"
