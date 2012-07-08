@@ -323,6 +323,11 @@ enabled.
 
     -J option (set allowed ciphers for SSL/TLS).
 
+* Clement Chauplannaz
+
+    Added support for URI schemes other than LDAP (namely LDAPS) in
+    the LDAP backend.
+
 * Frank DENIS aka Jedi/Sector One <j <at> pureftpd.org> :
 
     Pure-FTPd project initiator and maintainer.
