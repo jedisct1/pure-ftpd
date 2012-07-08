@@ -224,12 +224,13 @@ static char *best_crypt(const char * const pwd)
     static const char crcars[64] =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
     const char *crypted;
-    
+
     if ((crypted = (const char *)      /* Blowfish */
-         crypt("test", "$2a$07$1234567890123456789012")) != NULL &&        
-        strcmp(crypted, "$2a$07$123456789012345678901uKO4"
-               "/IReKqBzRzT6YaajGvw20UBdHW7m") == 0) {
-        char salt[] = "$2a$07$0000000000000000000000";        
+         crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
+        strcmp(crypted,
+               "$2a$08$123456789012345678901uBdmsfIXjJcWQwz1wT/IZrWhimJ6xy6a")
+        == 0) {
+        char salt[] = "$2a$08$0000000000000000000000";
         int c = 28;
         
         do {            
