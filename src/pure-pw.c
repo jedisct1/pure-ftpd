@@ -239,6 +239,21 @@ static char *best_crypt(const char * const pwd)
         } while (c > 7);
         
         return (char *) crypt(pwd, salt);        
+    } else if ((crypted = (const char *)    /* SHA-512 */
+                crypt("test", "$6$1234567890123456$")) != NULL &&
+               strcmp(crypted,
+                      "$6$1234567890123456$d.pgKQFaiD8bRiExg5NesbGR/"
+                      "3u51YvxeYaQXPzx4C6oSYREw8VoReiuYZjx0V9OhGVTZF"
+                      "qhc6emAxT1RC5BV.") == 0) {
+        char salt[] = "$6$0000000000000000";
+        int c = 18;
+
+        do {
+            c--;
+            salt[c] = crcars[pw_zrand() & 63];
+        } while (c > 3);
+
+        return (char *) crypt(pwd, salt);
     } else if ((crypted = (const char *)    /* MD5 */
                 crypt("test", "$1$12345678$")) != NULL &&
                strcmp(crypted, "$1$12345678$oEitTZYQtRHfNGmsFvTBA/") == 0) {
