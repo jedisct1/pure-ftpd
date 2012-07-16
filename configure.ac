@@ -65,7 +65,6 @@ AX_CHECK_COMPILE_FLAG([-Wdiv-by-zero], [CFLAGS="$CFLAGS -Wdiv-by-zero"])
 AC_ARG_VAR([CWFLAGS], [define to compilation flags for generating extra warnings])
 AX_CHECK_COMPILE_FLAG([-Wall], [CWFLAGS="$CWFLAGS -Wall"])
 AX_CHECK_COMPILE_FLAG([-Wextra], [CWFLAGS="$CWFLAGS -Wextra"])
-AX_CHECK_COMPILE_FLAG([-Wno-unknown-warning-option], [CWFLAGS="$CWFLAGS -Wno-unknown-warning-option"])
 
 AX_CHECK_COMPILE_FLAG([-Wbad-function-cast], [CWFLAGS="$CWFLAGS -Wbad-function-cast"])
 AX_CHECK_COMPILE_FLAG([-Wcast-align], [CWFLAGS="$CWFLAGS -Wcast-align"])
