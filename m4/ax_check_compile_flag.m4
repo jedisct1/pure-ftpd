@@ -62,7 +62,7 @@ AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
   ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
   _AC_LANG_PREFIX[]FLAGS="$[]_AC_LANG_PREFIX[]FLAGS $4 $1"
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],
-  [[char x[42U];if (fgets(x,1000,stdin)) puts(x)]])],
+  [[char x[42U], fodder = 0;if (fodder > -1000 && fgets(x,1000,stdin)) puts(x)]])],
     [AS_VAR_SET(CACHEVAR,[yes])],
     [AS_VAR_SET(CACHEVAR,[no])])
   _AC_LANG_PREFIX[]FLAGS=$ax_check_save_flags])
