@@ -32,7 +32,10 @@ AX_CHECK_COMPILE_FLAG([-fPIE], [
   )
 ])
 
-AX_CHECK_COMPILE_FLAG([-fcatch-undefined-c99-behavior], [CFLAGS="$CFLAGS -fcatch-undefined-c99-behavior"])
+AX_CHECK_COMPILE_FLAG([-fcatch-undefined-c99-behavior],
+  [CFLAGS="$CFLAGS -fcatch-undefined-c99-behavior"],
+  [AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])]
+)
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
 AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
