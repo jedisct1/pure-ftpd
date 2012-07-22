@@ -112,10 +112,6 @@ if test -d /usr/local/lib; then
   LDFLAGS="$LDFLAGS -L/usr/local/lib"
 fi
 
-if uname | fgrep SunOS > /dev/null 2> /dev/null ; then
-  CPPFLAGS="$CPPFLAGS -D_XPG4_2=1"
-fi
-
 CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 
 dnl Checks for header files
