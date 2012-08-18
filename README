@@ -242,12 +242,12 @@ should be installed to use that feature. If Postgres is installed in a custom
 location, you can use the --with-pgsql=<directory> syntax. See the
 README.PGSQL file for more info about Postgres and Pure-FTPd. 
 
---with-probe-random-dev: Pure-FTPd uses /dev/arandom, /dev/urandom or
-/dev/random devices to provide hardly-predicable random numbers. Presence of
-these devices are usually probed at compile-time. If you want to compile a
-binary package on a host, then run it on another host, this option will
-enable the probe at run-time. This is useless on Linux and BSD systems, but
-it can be needed on Solaris and QNX.
+--with-probe-random-dev: Pure-FTPd uses /dev/urandom or /dev/random devices
+to provide hardly-predicable random numbers. Presence of these devices are
+usually probed at compile-time. If you want to compile a binary package on
+a host, then run it on another host, this option will enable the probe at
+run-time. This is useless on Linux and BSD systems, but it can be needed on
+Solaris and QNX.
 
 --with-puredb: support virtual users, ie. a local users database,
 independent of your system accounts. Please read the README.Virtual-Users

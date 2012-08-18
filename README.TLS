@@ -26,9 +26,9 @@ compilation :
 
   If something goes wrong, try to bring your OpenSSL library up-to-date.  
 
-  If your system does not have a working randomness device like /dev/srandom,
-/dev/arandom or /dev/random, please have a look at the OpenSSL FAQ in order to
-properly seed the PRNG for your operating system.
+  If your system does not have a working randomness device like /dev/urandom,
+or /dev/random, please have a look at the OpenSSL FAQ in order to properly
+seed the PRNG for your operating system.
 
 
         ------------------------ CERTIFICATES ------------------------

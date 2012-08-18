@@ -71,7 +71,7 @@ static int
 alt_arc4_random_dev_open(void)
 {
     static const char * const devices[] = {
-        "/dev/arandom", "/dev/urandom", "/dev/random", NULL
+        "/dev/urandom", "/dev/random", NULL
     };
     const char * const *device = devices;
 

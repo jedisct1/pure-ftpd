@@ -1414,10 +1414,6 @@ else
   fi
 fi  
 
-if test -r /dev/arandom; then
-  AC_MSG_NOTICE([You have /dev/arandom - Great])
-  AC_DEFINE(HAVE_DEV_ARANDOM,,[Define if you have /dev/arandom])
-fi
 if test -r /dev/urandom; then
   AC_MSG_NOTICE([You have /dev/urandom - Great])
   AC_DEFINE(HAVE_DEV_URANDOM,,[Define if you have /dev/urandom])
