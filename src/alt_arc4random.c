@@ -28,7 +28,7 @@
  */
 
 /*
- * OpenBSD can fetch random data through a sysctl call, but other operating
+ * OpenBSD and Bitrig can fetch random data through a sysctl call, but other
  * systems require reading a device.
  * This modified version of the arc4random*() functions keeps an open file
  * descriptor, so that we can still reseed the PRNG after a chroot() call.
@@ -36,7 +36,7 @@
 
 #include <config.h>
 
-#ifndef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__Bitrig__)
 #include "crypto.h"
 #include "ftpd.h"
 #include "safe_rw.h"

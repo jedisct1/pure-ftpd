@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "crypto.h"
 
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__Bitrig__)
 
 #define alt_arc4random() arc4random()
 #define alt_arc4random_stir() arc4random_stir()
