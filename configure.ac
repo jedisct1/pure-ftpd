@@ -26,10 +26,14 @@ AX_CHECK_COMPILE_FLAG([-fPIC], [
     [CFLAGS="$CFLAGS -fPIC"]
   )
 ])
-AX_CHECK_COMPILE_FLAG([-fPIE], [
-  AX_CHECK_LINK_FLAG([-fPIE],
-    [CFLAGS="$CFLAGS -fPIE"]
-  )
+AS_IF([test "$enable_pie" != "no"],[
+  AX_CHECK_COMPILE_FLAG([-fPIE], [
+    AX_CHECK_LINK_FLAG([-fPIE],
+      [AX_CHECK_LINK_FLAG([-pie],
+        [CFLAGS="$CFLAGS -fPIE"
+         LDFLAGS="$LDFLAGS -pie"])
+    ])
+  ])
 ])
 
 AX_CHECK_COMPILE_FLAG([-fcatch-undefined-c99-behavior],
@@ -287,6 +291,24 @@ AC_C_INLINE
 dnl Options
 
 AM_WITH_DMALLOC
+
+AC_ARG_ENABLE(pie,
+[AS_HELP_STRING(--enable-pie,Produce position independent executables @<:@default=yes@:>@)],
+ enable_pie=$enableval, enable_pie="maybe")
+
+AC_ARG_ENABLE(ssp,
+[AS_HELP_STRING(--disable-ssp,Don't compile with -fstack-protector)],
+[AS_IF([test "x$enableval" = "xno"], [
+    nxflags=""
+    for flag in `echo $CFLAGS`; do
+      case "$flag" in
+       -fstack-protector*) ;;
+        *) AS_VAR_APPEND([nxflags], [" $flag"]) ;;
+      esac
+    done
+    CFLAGS="$nxflags"
+  ])
+])
 
 AC_ARG_WITH(standalone,
 [AS_HELP_STRING(--without-standalone,Don't compile the standalone server code)],
