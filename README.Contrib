@@ -131,3 +131,7 @@ vpopmail password files.
 * pure-stat.pl (author: Julien Andrieux):
 
   This script parses Apache-like log files and generates nice text summaries.
+
+* Vidibus::Pureftpd (author: Andre Pankratz):
+  A Ruby gem that p rovides an ActiveModel-based abstraction of Pure-FTPd's
+virtual users.
