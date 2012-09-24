@@ -1459,6 +1459,11 @@ CPPFLAGS="$CPPFLAGS -DSTATEDIR=\\\"$localstatedir\\\""
 AC_SUBST(CONFDIR)
 AC_SUBST(LOCALSTATEDIR)
 
+AH_VERBATIM([NDEBUG], [/* Never ever ignore assertions */
+#ifdef NDEBUG
+#/**/undef/**/ NDEBUG
+#endif])
+
 AC_CONFIG_FILES(Makefile src/Makefile pam/Makefile man/Makefile
 gui/Makefile configuration-file/Makefile contrib/Makefile m4/Makefile
 configuration-file/pure-ftpd.conf configuration-file/pure-config.pl
