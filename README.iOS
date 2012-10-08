@@ -24,7 +24,7 @@ particular, they can create directories, and overwrite and remove files.
    ------------------------ COMPILING THE LIBRARY ------------------------
 
 
-Compilation was tested with Xcode 3.1 and Xcode 3.2.
+Compilation was tested with Xcode 4.5.
 
 Enter the "iphone" directory and launch the ./compile-iphoneOS.sh script.
 
@@ -33,8 +33,8 @@ before.
 
 After a while, a library called libpureftpd.a will get created.
 
-It's a FAT library containing code for i386, x86_64, armv6 and armv7
-architectures. So don't panic while having a look at the file size: the
+It's a FAT library containing code for i386 (for the simulator), armv7 and
+armv7s architectures. So don't panic while having a look at the file size: the
 real memory footprint is actually very low.
 
 
@@ -216,4 +216,3 @@ the AppStore like Twonav.
 If you don't want this dependency, feel free to remove --with-rfc2640 from
 the build script. But files names might be messed up if they aren't plain
 ASCII.
-
