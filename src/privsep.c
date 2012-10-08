@@ -1,9 +1,6 @@
 #include <config.h>
 
 #ifndef WITHOUT_PRIVSEP
-#ifndef _XOPEN_SOURCE
-# define _XOPEN_SOURCE 500
-#endif
 # include "ftpd.h"
 # include "dynamic.h"
 # include "ftpwho-update.h"
