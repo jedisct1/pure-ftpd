@@ -36,7 +36,7 @@
 
 #include <config.h>
 
-#if defined(__OpenBSD__) || defined(__Bitrig__)
+#if !defined(__OpenBSD__) && !defined(__Bitrig__)
 #include "crypto.h"
 #include "ftpd.h"
 #include "safe_rw.h"
