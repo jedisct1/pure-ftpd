@@ -1525,7 +1525,7 @@ void douser(const char *username)
 #ifdef FTPWHO
         if (shm_data_cur != NULL) {
             ftpwho_lock();
-            strncpy(shm_data_cur->LOCAL_account, LOCAL_account,
+            strncpy(shm_data_cur->account, LOCAL_account,
                     sizeof shm_data_cur->account - (size_t) 1U);
             shm_data_cur->account[sizeof shm_data_cur->account - 1U] = 0;
             ftpwho_unlock();

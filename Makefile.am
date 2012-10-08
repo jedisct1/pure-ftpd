@@ -18,7 +18,7 @@ EXTRA_DIST = \
 	README.TLS \
 	README.MacOS-X \
 	README.Threaded \
-	README.iPhone \
+	README.iOS \
 	README.Donations \
 	pureftpd.schema \
 	pureftpd-ldap.conf \
