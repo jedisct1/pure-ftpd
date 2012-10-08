@@ -26,7 +26,7 @@ static unsigned int count(in_port_t server_port, const char * const file)
     
     for (;;) {
         while ((r = (int) read(f, buf + e, (size_t) (2048U - e)))
-               < (ssize_t) 0 && errno == EINTR);
+               < (ssize_t) 0 && ZERO_ON_IPHONE(errno) == EINTR);
         if (r <= (ssize_t) 0) {    /* ignore errors. 0 is okay, in fact common. */
             break;
         }

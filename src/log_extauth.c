@@ -157,7 +157,7 @@ static ssize_t safe_read(const int fd, void * const buf_, size_t maxlen)
     
     do {
         while ((readnb = read(fd, buf, maxlen)) < (ssize_t) 0 && 
-               errno == EINTR);
+               ZERO_ON_IPHONE(errno) == EINTR);
         if (readnb < (ssize_t) 0 || readnb > (ssize_t) maxlen) {
             return readnb;
         }
@@ -203,7 +203,7 @@ void pw_extauth_check(AuthResult * const result,
         goto bye;
     }
     while ((err = connect(kindy, (struct sockaddr *) saddr, SUN_LEN(saddr)))
-           != 0 && errno == EINTR);
+           != 0 && ZERO_ON_IPHONE(errno) == EINTR);
     if (err != 0) {
         close(kindy);
         kindy = -1;

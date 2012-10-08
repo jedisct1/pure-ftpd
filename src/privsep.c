@@ -18,7 +18,7 @@ static int privsep_sendcmd(const int psfd, const void * const cmdarg,
     ssize_t sent;
     
     while ((sent = send(psfd, cmdarg, cmdarg_len, 0)) == (ssize_t) -1 &&
-           errno == EINTR);
+           ZERO_ON_IPHONE(errno) == EINTR);
     if (sent != (ssize_t) cmdarg_len) {
         return -1;
     }    
@@ -31,7 +31,7 @@ static int privsep_recvcmd(const int psfd, void * const cmdarg,
     ssize_t received;
     
     while ((received = recv(psfd, cmdarg, cmdarg_len, 0)) == (ssize_t) -1 &&
-           errno == EINTR);
+           ZERO_ON_IPHONE(errno) == EINTR);
     if (received != (ssize_t) cmdarg_len) {
         return -1;
     }    
@@ -79,7 +79,7 @@ int privsep_sendfd(const int psfd, const int fd)
     }
     *fdptr = fd;
     msg.msg_controllen = cmsg->cmsg_len;
-    while ((sent = sendmsg(psfd, &msg, 0)) == (ssize_t) -1 && errno == EINTR);
+    while ((sent = sendmsg(psfd, &msg, 0)) == (ssize_t) -1 && ZERO_ON_IPHONE(errno) == EINTR);
     ALLOCA_FREE(buf);    
     if (sent != (ssize_t) sizeof fodder) {
         return -1;
@@ -122,7 +122,7 @@ int privsep_recvfd(const int psfd)
     }    
     *fdptr = -1;
     while ((received = recvmsg(psfd, &msg, 0)) == (ssize_t) -1 && 
-           errno == EINTR);
+           ZERO_ON_IPHONE(errno) == EINTR);
 # if defined(MSG_TRUNC) && defined(MSG_CTRUNC)        
     if ((msg.msg_flags & MSG_TRUNC) || (msg.msg_flags & MSG_CTRUNC)) {
         ALLOCA_FREE(buf);

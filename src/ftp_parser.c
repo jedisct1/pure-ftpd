@@ -89,7 +89,7 @@ int sfgets(void)
         if (LOCAL_sfgets_scanned >= LOCAL_readnbd) {      /* nothing left in the buffer */
             pfd.revents = 0;
             while ((pollret = poll(&pfd, 1U, idletime * 1000UL)) < 0 &&
-                   errno == EINTR);
+                   ZERO_ON_IPHONE(errno) == EINTR);
             if (pollret == 0) {
                 return -1;
             }
@@ -107,13 +107,13 @@ int sfgets(void)
             if (LOCAL_tls_cnx != NULL) {
                 while ((readnb = SSL_read
                         (LOCAL_tls_cnx, LOCAL_cmd + LOCAL_readnbd, cmdsize - LOCAL_readnbd))
-                       < (ssize_t) 0 && errno == EINTR);
+                       < (ssize_t) 0 && ZERO_ON_IPHONE(errno) == EINTR);
             } else
 #endif
             {
                 while ((readnb = read(LOCAL_clientfd, LOCAL_cmd + LOCAL_readnbd,
                                       cmdsize - LOCAL_readnbd)) < (ssize_t) 0 &&
-                       errno == EINTR);
+                       ZERO_ON_IPHONE(errno) == EINTR);
             }
             if (readnb <= (ssize_t) 0) {
                 return -2;

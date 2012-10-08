@@ -30,7 +30,7 @@ static int altlog_write(const char *str)
     lock.l_len = (off_t) 0;
     lock.l_pid = getpid();
     lock.l_type = F_WRLCK;
-    while (fcntl(altlog_fd, F_SETLKW, &lock) < 0 && errno == EINTR);
+    while (fcntl(altlog_fd, F_SETLKW, &lock) < 0 && ZERO_ON_IPHONE(errno) == EINTR);
     if (lseek(altlog_fd, (off_t) 0, SEEK_END) < (off_t) 0
 # ifdef ESPIPE
         && errno != ESPIPE
@@ -40,7 +40,7 @@ static int altlog_write(const char *str)
     }
     (void) safe_write(altlog_fd, str, (size_t) left);
     lock.l_type = F_UNLCK;
-    while (fcntl(altlog_fd, F_SETLK, &lock) < 0 && errno == EINTR);    
+    while (fcntl(altlog_fd, F_SETLK, &lock) < 0 && ZERO_ON_IPHONE(errno) == EINTR);    
     
     return 0;
 }

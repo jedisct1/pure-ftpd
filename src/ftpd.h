@@ -821,7 +821,13 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 
 #ifndef offsetof
 # define offsetof(type, member) ((size_t) &((type*) NULL)->member)
-#endif    
+#endif
+    
+#ifdef __IPHONE__
+# define ZERO_ON_IPHONE(X) (0)
+#else
+# define ZERO_ON_IPHONE(X) X
+#endif
 
 #include "thread-local.h"          
 #include "bsd-realpath.h"    

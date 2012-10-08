@@ -59,13 +59,13 @@ int quota_update(Quota *quota,
     lock.l_pid = getpid();
     lock.l_type = F_WRLCK;
     while (fcntl(fd, F_SETLKW, &lock) < 0) {
-        if (errno != EINTR) {
+        if (ZERO_ON_IPHONE(errno) != EINTR) {
             goto byenounlock;
         }    
     }
     do {
         while ((readnb = read(fd, bufpnt, left)) < (ssize_t) 0 && 
-               errno == EINTR);
+               ZERO_ON_IPHONE(errno) == EINTR);
         if (readnb < (ssize_t) 0) {
             goto bye;        
         }
@@ -123,7 +123,7 @@ int quota_update(Quota *quota,
     
     bye:
     lock.l_type = F_UNLCK;
-    while (fcntl(fd, F_SETLK, &lock) < 0 && errno == EINTR);
+    while (fcntl(fd, F_SETLK, &lock) < 0 && ZERO_ON_IPHONE(errno) == EINTR);
     byenounlock:
     close(fd);
     

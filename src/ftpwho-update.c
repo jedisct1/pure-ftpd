@@ -59,7 +59,7 @@ void ftpwho_unlock(void)
 #endif
     lock.l_type = F_UNLCK;
     while (fcntl(mmap_fd, F_SETLK, &lock) < 0) {
-        if (errno != EINTR) {
+        if (ZERO_ON_IPHONE(errno) != EINTR) {
             return;
         }    
     }
@@ -69,7 +69,7 @@ void ftpwho_lock(void)
 {
     lock.l_type = F_WRLCK;
     while (fcntl(mmap_fd, F_SETLKW, &lock) < 0) {
-        if (errno != EINTR) {
+        if (ZERO_ON_IPHONE(errno) != EINTR) {
             return;
         }    
     }    
@@ -167,7 +167,7 @@ int ftpwho_initwho(void)
         goto err2;
     }
     while (write(mmap_fd, "", (size_t) 1U) < 0 && 
-           (errno == EAGAIN || errno == EINTR));
+           (errno == EAGAIN || ZERO_ON_IPHONE(errno) == EINTR));
     lock.l_whence = SEEK_SET;
     lock.l_start = (off_t) 0;
     lock.l_len = (off_t) 0;

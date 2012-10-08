@@ -100,7 +100,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     lock.l_pid = getpid();
     lock.l_type = F_WRLCK;
     while (fcntl(upload_pipe_lock, F_SETLKW, &lock) < 0) {
-        if (errno != EINTR) {
+        if (ZERO_ON_IPHONE(errno) != EINTR) {
             return -1;
         }        
     }
@@ -120,7 +120,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     (void) safe_write(upload_pipe_fd, buf, sizeof_buf);
     free(buf);
     lock.l_type = F_UNLCK;
-    while (fcntl(upload_pipe_lock, F_SETLK, &lock) < 0 && errno == EINTR);
+    while (fcntl(upload_pipe_lock, F_SETLK, &lock) < 0 && ZERO_ON_IPHONE(errno) == EINTR);
     
     return 0;
 }

@@ -69,7 +69,7 @@ int safe_write(const int fd, const void *buf_, size_t count)
     while (count > (size_t) 0U) {
         for (;;) {
             if ((written = write(fd, buf, count)) <= (ssize_t) 0) {
-                if (errno != EINTR) {
+                if (ZERO_ON_IPHONE(errno) != EINTR) {
                     return -1;
                 }
                 continue;
@@ -140,7 +140,7 @@ ssize_t safe_nonblock_write(const int fd, void * const tls_fd,
                     errno = EPIPE;
                     return -1;
                 }                    
-            } else if (errno != EINTR) {
+            } else if (ZERO_ON_IPHONE(errno) != EINTR) {
                 return -1;
             }
         }
@@ -2603,7 +2603,7 @@ void opendata(void)
         again:
         if (connect(LOCAL_datafd, (struct sockaddr *) &peer2,
                     STORAGE_LEN(peer2)) != 0) {
-            if ((errno == EAGAIN || errno == EINTR
+            if ((errno == EAGAIN || ZERO_ON_IPHONE(errno) == EINTR
 #ifdef EADDRINUSE
                  || errno == EADDRINUSE
 #endif
@@ -3181,11 +3181,11 @@ static int _dlmap_read(DLHandler * const dlhandler)
             }
             dlhandler->dlmap_fdpos = dlhandler->dlmap_pos;
             readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
-        } while (readnb == (ssize_t) -1 && errno == EINTR);
+        } while (readnb == (ssize_t) -1 && ZERO_ON_IPHONE(errno) == EINTR);
     } else {
         do {
             readnb = read(dlhandler->f, dlhandler->map, dlhandler->dlmap_size);
-        } while (readnb == (ssize_t) -1 && errno == EINTR);
+        } while (readnb == (ssize_t) -1 && ZERO_ON_IPHONE(errno) == EINTR);
     }
     if (readnb <= (ssize_t) 0) {
         dlhandler->dlmap_fdpos = (off_t) -1;
@@ -3324,7 +3324,7 @@ int dlhandler_handle_commands(DLHandler * const dlhandler,
             return -2;
         }
         if (readnb < (ssize_t) 0) {
-            if (errno == EAGAIN || errno == EINTR) {
+            if (errno == EAGAIN || ZERO_ON_IPHONE(errno) == EINTR) {
                 return 0;
             }
             return -1;
@@ -4048,7 +4048,7 @@ int ulhandler_handle_commands(ULHandler * const ulhandler)
         return -2;
     }
     if (readnb < (ssize_t) 0) {
-        if (errno == EAGAIN || errno == EINTR) {
+        if (errno == EAGAIN || ZERO_ON_IPHONE(errno) == EINTR) {
             return 0;
         }
         return -1;
@@ -4101,7 +4101,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
         return 2;
     }
     if (readnb < (ssize_t) 0) {
-        if (errno == EAGAIN || errno == EINTR) {
+        if (errno == EAGAIN || ZERO_ON_IPHONE(errno) == EINTR) {
             return 0;
         }
         addreply_noformat(451, MSG_DATA_READ_FAILED);
@@ -4129,7 +4129,7 @@ int ul_handle_data(ULHandler * const ulhandler, off_t * const uploaded,
                 return 0;
             }
             if (pollret < 0) {
-                if (errno == EINTR) {
+                if (ZERO_ON_IPHONE(errno) == EINTR) {
                     goto repoll;
                 }
                 return -1;
@@ -5626,7 +5626,7 @@ static void standalone_server(void)
         safe_fd_set(listenfd, &rs);
         safe_fd_set(listenfd6, &rs);
         if (select(max_fd, &rs, NULL, NULL, NULL) <= 0) {
-            if (errno != EINTR) {
+            if (ZERO_ON_IPHONE(errno) != EINTR) {
                 (void) sleep(1);
             }
             continue;
