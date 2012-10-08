@@ -179,7 +179,7 @@ int  ftpAuthCallback(const char *account, const char *password, void *userData) 
 
 - (void) applicationDidFinishLaunching:(UIApplication *)application {   
 	[self getBaseDir];
-	ftpService = [[NSNetService alloc] initWithDomain:@"" type:@"_ftp._tcp" name:@"iPhone FTP Server" port: 2121];
+	ftpService = [[NSNetService alloc] initWithDomain:@"" type:@"_ftp._tcp" name:@"iPhone FTP Server" port: 21];
 	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(ftpOnOffStatusChanged:) name: @"ftp_on_off_status_changed" object: nil];
 	
 	[window addSubview:viewController.view];

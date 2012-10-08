@@ -48,7 +48,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+#if TARGET_IPHONE_SIMULATOR
 	ipLabel.text = [NSString stringWithFormat: @"ftp://%@:2121", [self getIPAddress]];
+#else
+    ipLabel.text = [NSString stringWithFormat: @"ftp://%@", [self getIPAddress]];
+#endif
 }
 
 - (void) showFtpActivity: (BOOL) on {
