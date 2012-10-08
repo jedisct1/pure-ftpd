@@ -26,8 +26,9 @@ for arch in i386; do
 export BASEDIR="${XCODEDIR}/Platforms/iPhoneSimulator.platform/Developer"
 export PATH="${BASEDIR}/usr/bin:$BASEDIR/usr/sbin:$PATH"
 export SDK="${BASEDIR}/SDKs/iPhoneSimulator6.0.sdk"
-export CFLAGS="-pthread -Oz -mthumb -arch ${arch} -isysroot ${SDK}"
-export LDFLAGS="-pthread -mthumb -arch ${arch} -isysroot ${SDK}"
+export CFLAGS="-pthread -O0 -g3 -mthumb -arch ${arch} -isysroot ${SDK}"
+export LDFLAGS="-pthread -g3 -mthumb -arch ${arch} -isysroot ${SDK}"
+export CPPFLAGS="${CPPFLAGS} -DDEFAULT_FTP_PORT_S=2121"
 
 rm -fr "obj-$arch" 2>/dev/null
 mkdir "obj-$arch" 2>/dev/null
