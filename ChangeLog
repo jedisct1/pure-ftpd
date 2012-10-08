@@ -1,4 +1,10 @@
 
+* Version 1.0.32.1 (threaded only):
+ - Don't retry when errno == EINTR on iOS. This means that a
+descriptor has been closed (by a different thread), not that a signal
+has been received.
+ - The iphone/compile-iphoneOS.sh script has been updated for XCode 4.5.
+
 * Version 1.0.32:
  - Support SHA1 password hashing in MySQL and PostgreSQL backends
  - Support for braces expansion in directory listings has been
