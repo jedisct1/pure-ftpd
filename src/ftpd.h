@@ -489,23 +489,25 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # endif
 #endif
 
-#if !defined(NON_ROOT_FTP) || defined(__IPHONE__)
-# ifdef IMPLICIT_TLS
-#  define DEFAULT_FTP_PORT_S "990"
+#ifndef DEFAULT_FTP_PORT_S
+# if !defined(NON_ROOT_FTP) || defined(__IPHONE__)
+#  ifdef IMPLICIT_TLS
+#   define DEFAULT_FTP_PORT_S "990"
+#  else
+#   define DEFAULT_FTP_PORT_S "21"
+#  endif
+# elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
+#  ifdef IMPLICIT_TLS
+#   define DEFAULT_FTP_PORT_S "990"
+#  else
+#   define DEFAULT_FTP_PORT_S "21"
+#  endif
 # else
-#  define DEFAULT_FTP_PORT_S "21"
-# endif
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-# ifdef IMPLICIT_TLS
-#  define DEFAULT_FTP_PORT_S "990"
-# else
-#  define DEFAULT_FTP_PORT_S "21"
-# endif
-#else
-# ifdef IMPLICIT_TLS
-#  define DEFAULT_FTP_PORT_S "9990"
-# else
-#  define DEFAULT_FTP_PORT_S "2121"
+#  ifdef IMPLICIT_TLS
+#   define DEFAULT_FTP_PORT_S "9990"
+#  else
+#   define DEFAULT_FTP_PORT_S "2121"
+#  endif
 # endif
 #endif
 
