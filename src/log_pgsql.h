@@ -7,6 +7,9 @@
 #define PASSWD_SQL_MD5 "md5"
 #define PASSWD_SQL_SHA1 "sha1"
 #define PASSWD_SQL_ANY "any"
+#define SALT_SQL_APPEND "append"
+#define SALT_SQL_PREPEND "prepend"
+#define SALT_SQL_NONE "none"
 #define PGSQL_DEFAULT_SERVER "localhost"
 #define PGSQL_DEFAULT_PORT 5432
 #define PGSQL_MAX_REQUEST_LENGTH ((size_t) 8192U)

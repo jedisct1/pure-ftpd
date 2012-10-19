@@ -52,7 +52,9 @@ PGSQLUser       root
 PGSQLPassword   rootpw
 PGSQLDatabase   pureftpd
 PGSQLCrypt      cleartext
+PGSQLSalting    append
 PGSQLGetPW      SELECT "Password" FROM "users" WHERE "User"='\L'
+PGSQLGetSalt    SELECT "Salt" FROM "users" WHERE "User"='\L'
 PGSQLGetUID     SELECT "Uid" FROM "users" WHERE "User"='\L'
 PGSQLGetGID     SELECT "Gid" FROM "users" WHERE "User"='\L'
 PGSQLGetDir     SELECT "Dir" FROM "users" WHERE "User"='\L'
