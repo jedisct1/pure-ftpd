@@ -670,12 +670,15 @@ void pw_pgsql_check(AuthResult * const result,
     }
     free((void *) spwd);
     free((void *) salt);
-    /* Clear salted_password from memory, paranoia */        
-    volatile char *salted_password_ = (volatile char *) salted_password;
-    while (*salted_password_ != 0) {
-        *salted_password_++ = 0;
+    /* Clear salted_password from memory, paranoia */
+    if(strcasecmp(salting, SALT_SQL_NONE) != 0) {
+        /* but only IF we allocated space for it.. */
+        volatile char *salted_password_ = (volatile char *) salted_password;
+        while (*salted_password_ != 0) {
+            *salted_password_++ = 0;
+        }
+        free((void *) salted_password);
     }
-    free((void *) salted_password);
     if (uid != sql_default_uid) {
         free((void *) uid);
     }
