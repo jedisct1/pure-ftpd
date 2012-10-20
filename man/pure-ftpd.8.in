@@ -315,7 +315,9 @@ run the server with
 Accounts will first be authenticated from a PureDB database. If it fails, a
 MySQL server will be asked. If the account is still not found is the
 database, standard unix accounts will be scanned. Authentication methods are
-tried in the order you give the -l options.
+tried in the order you give the -l options, if you do not give -l, then the
+decision comes from configure, if PAM is built in, it is used, if not,
+then UNIX (/etc/passwd) is used by default.
 .br
 See the
 .I README.LDAP
