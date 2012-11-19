@@ -227,3 +227,4 @@
 #define MSG_PROT_BEFORE_PBSZ "PROT must be preceded by a successful PBSZ command"
 #define MSG_WARN_LDAP_USERPASS_EMPTY "LDAP returned no userPassword attribute, check LDAP access rights."
 #define MSG_LDAP_INVALID_AUTH_METHOD "Invalid LDAPAuthMethod in the configuration file. Should be 'bind' or 'password'."
+#define MSG_INVALID_SALTING_METHOD "Salting method in Config File is invalid. Method is: %s."

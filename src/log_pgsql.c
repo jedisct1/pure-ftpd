@@ -468,6 +468,9 @@ void pw_pgsql_check(AuthResult * const result,
                                  escaped_account, escaped_ip,
                                  escaped_port, escaped_peer_ip,
                                  escaped_decimal_ip);
+        if (salt == NULL) {
+            goto bye;
+        }
     }
     if ((spwd = pw_pgsql_getquery(id_sql_server, sqlreq_getpw,
                                   escaped_account, escaped_ip,
@@ -532,7 +535,6 @@ void pw_pgsql_check(AuthResult * const result,
 
     if (crypto_crypt != 0) {
         const char *crypted;
-        
         if ((crypted = (const char *) crypt(salted_password, spwd)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
@@ -540,7 +542,6 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (crypto_md5 != 0) {
         const char *crypted;
-        
         if ((crypted = (const char *) crypto_hash_md5(salted_password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
@@ -548,13 +549,13 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (crypto_sha1 != 0) {
         const char *crypted;
-        
         if ((crypted = (const char *) crypto_hash_sha1(salted_password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
     if (crypto_plain != 0) {
+        logfile(LOG_DEBUG, "Plain password -> no encryption, but NULL will be refused.");
         if (*salted_password != 0 &&    /* refuse null cleartext passwords */
             strcmp(salted_password, spwd) == 0) {
             goto auth_ok;
@@ -670,15 +671,12 @@ void pw_pgsql_check(AuthResult * const result,
     }
     free((void *) spwd);
     free((void *) salt);
-    /* Clear salted_password from memory, paranoia */
-    if(strcasecmp(salting, SALT_SQL_NONE) != 0) {
-        /* but only IF we allocated space for it.. */
-        volatile char *salted_password_ = (volatile char *) salted_password;
-        while (*salted_password_ != 0) {
-            *salted_password_++ = 0;
-        }
-        free((void *) salted_password);
+    /* Clear salted_password from memory, paranoia */        
+    volatile char *salted_password_ = (volatile char *) salted_password;
+    while (*salted_password_ != 0) {
+        *salted_password_++ = 0;
     }
+    free((void *) salted_password);
     if (uid != sql_default_uid) {
         free((void *) uid);
     }
@@ -721,6 +719,11 @@ void pw_pgsql_parse(const char * const file)
         }
         free(port_s);
         port_s = NULL;
+    }
+    if(salting == NULL || 
+        (strcasecmp(salting, SALT_SQL_APPEND) && strcasecmp(salting, SALT_SQL_PREPEND) && strcasecmp(salting, SALT_SQL_NONE)))
+    {
+        die(421, LOG_ERR, MSG_CONF_ERR ": " MSG_INVALID_SALTING_METHOD, salting);
     }
 }
 
