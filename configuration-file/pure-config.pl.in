@@ -120,5 +120,7 @@ open CONF, "< $conffile" or die "Can't open $conffile: $!\n";
 
 close CONF;
 
-print "Running: $PUREFTPD ", join(" ", @flg), "\n";
+if (-t STDOUT) {
+        print "Running: $PUREFTPD ", join(" ", @flg), "\n";
+}
 exec { $PUREFTPD } ($PUREFTPD, @flg) or die "cannot exec $PUREFTPD: $!";
