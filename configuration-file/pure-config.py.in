@@ -180,7 +180,7 @@ def parse_filename(filename = conffile):
 if __name__ == '__main__':
     args = parse_filename()
 
-    ## debug
-    #print str(args)
-    print "Running:", args + argv
+    if os.isatty(1):
+        print "Running:", args + argv
+
     os.execv(pureftpd, args + argv)
