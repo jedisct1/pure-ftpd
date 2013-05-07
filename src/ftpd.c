@@ -3316,6 +3316,7 @@ void doretr(char *name)
     double started = 0.0;
     int ret;
 
+    dlhandler.total_downloaded = 0;
     if (!candownload) {
         addreply(550, MSG_LOAD_TOO_HIGH, load);
         goto end;
