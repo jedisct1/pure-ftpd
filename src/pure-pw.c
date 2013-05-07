@@ -197,7 +197,7 @@ static void help(void)
          "\n"
          "-d <home directory> : chroot user (recommended)\n"
          "-D <home directory> : don't chroot user\n"
-     "-<option> '' : set this option to unlimited\n"
+         "-<option> '' : set this option to unlimited\n"
          "-m : also update the " DEFAULT_PW_DB " database\n"
          "For a 1:10 ratio, use -q 1 -Q 10\n"
          "To allow access only between 9 am and 6 pm, use -z 0900-1800\n"
@@ -788,7 +788,7 @@ static int do_useradd(const char * const file,
         if ((pwinfo.gecos = strdup("")) == NULL) {
             no_mem();
         }
-    }           
+    }
     if ((pwinfo.pwd = do_get_passwd()) == NULL) {
         fprintf(stderr, "Error with entering password - aborting\n");        
         return PW_ERROR_ENTER_PASSWD_PW_ERROR;
@@ -1478,14 +1478,14 @@ int main(int argc, char *argv[])
             }
             break;
         }
-    case 'y' : {
-        if ((pwinfo.per_user_max = (unsigned int) strtoul(optarg, NULL, 10)) <= 0U) {
+        case 'y' : {
+            if ((pwinfo.per_user_max = (unsigned int) strtoul(optarg, NULL, 10)) <= 0U) {
                 pwinfo.has_per_user_max = -1;
             } else {
                 pwinfo.has_per_user_max = 1;
             }
-        break;
-    }
+            break;
+        }
         case 'z' : {
             if (sscanf(optarg, "%u-%u", 
                        &pwinfo.time_begin, &pwinfo.time_end) == 2 &&
@@ -1546,6 +1546,7 @@ int main(int argc, char *argv[])
         ret = PW_ERROR_UNEXPECTED_ERROR;
         help();
     }
+    free(pwinfo.gecos);
                
     return ret;
 }
