@@ -60,8 +60,9 @@ LDAPBaseDN cn=Users,dc=c9x,dc=org
 LDAPBindDN cn=Manager,dc=c9x,dc=org
 LDAPBindPW r00tPaSsw0rD
 LDAPDefaultUID 500
+LDAPForceDefaultUID False
 LDAPDefaultGID 100
-
+LDAPForceDefaultGID False
 
 Well... the keywords should be self-explanatory, but here we go for some
 details anyway:
@@ -89,6 +90,18 @@ LDAPBindDN/LDAPBindPW.
 
 - LDAPDefaultUID and LDAPDefaultGID are default values for objects without
 any entry for them.
+
+- LDAPForceDefaultUID and LDAPForceDefaultGID - These options both default to
+`False`. Any value other than `True` (case insensitive) is also treated as
+`False`.  When set these options cause the respective uid or gid value returned
+by the LDAP server for a username to be ignored and instead use the value set
+by `LDAPDefaultUID` or `LDAPDefaultGID`.  If the appropriate `LDAPDefaultXID`
+option is not set, these options have no effect.
+
+This is useful for allowing users to authenticate against LDAP but access or
+create content with common a set of ownership/permissions.  It also provides a
+measure of security in that it prevents pure-ftpd processes from being created
+with arbitrary uid/gids that may conflict with local accounts.
 
 - LDAPFilter is the filter to use in order to find the object to authenticate
 against. The special sequence \L is replaced with the login of the user. The
