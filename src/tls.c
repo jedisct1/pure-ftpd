@@ -35,12 +35,12 @@
 # endif
 
 static void tls_error(const int line, int err)
-{    
+{
     if (err == 0) {
         err = ERR_get_error();
     }
     if (err != 0) {
-        logfile(LOG_ERR, "SSL/TLS [%s](%d): %s", 
+        logfile(LOG_ERR, "SSL/TLS [%s](%d): %s",
                 TLS_CERTIFICATE_FILE, line,
                 ERR_error_string(err, NULL));
     }
@@ -113,7 +113,7 @@ static int tls_init_diffie(void)
     DH *dh = NULL;
     BIO *bio = NULL;
     int ret = 0;
-    
+
     if ((bio = BIO_new_file(TLS_CERTIFICATE_FILE, "r")) == NULL) {
         logfile(LOG_ERR, "SSL/TLS: Can't read [%s]",
                 TLS_CERTIFICATE_FILE);
@@ -138,7 +138,7 @@ static int tls_init_diffie(void)
     }
     if (bio != NULL) {
         BIO_free(bio);
-    }    
+    }
     if (ret != 0) {
         SSL_CTX_set_tmp_dh_callback(tls_ctx, cb_tmp_dh);
     }
@@ -152,7 +152,7 @@ static RSA *get_rsa(const unsigned long key_length)
 
 static RSA *cb_tmp_rsa(SSL * const ctx,
                        const int for_export, const int key_length)
-    
+
 {
     (void) ctx;
     if (for_export == 0 || key_length >= 1024) {
@@ -164,7 +164,7 @@ static RSA *cb_tmp_rsa(SSL * const ctx,
 static void tls_init_cache(void)
 {
     static const char *tls_ctx_id = "pure-ftpd";
-    
+
     SSL_CTX_set_session_cache_mode(tls_ctx, SSL_SESS_CACHE_SERVER);
     SSL_CTX_set_session_id_context(tls_ctx, (unsigned char *) tls_ctx_id,
                                    (unsigned int) strlen(tls_ctx_id));
@@ -172,11 +172,23 @@ static void tls_init_cache(void)
     SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
 }
 
+static int tls_add_entropy(void)
+{
+    struct timeval tv;
+
+    if (gettimeofday(&tv, NULL) != 0) {
+        die(400, LOG_ERR, "gettimeofday()");
+    }
+    RAND_add(&tv, sizeof tv, 0.0);
+
+    return 0;
+}
+
 # ifdef DISABLE_SSL_RENEGOTIATION
 static void ssl_info_cb(const SSL *cnx, int where, int ret)
 {
     (void) ret;
-    
+
 #  if DISABLE_SSL_RENEGOTIATION == 1
     if ((where & SSL_CB_HANDSHAKE_START) != 0) {
         if ((cnx == tls_cnx && tls_cnx_handshaked != 0) ||
@@ -185,7 +197,7 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
         }
         return;
     }
-#  endif    
+#  endif
     if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
         if (cnx == tls_cnx) {
             tls_cnx_handshaked = 1;
@@ -203,11 +215,11 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 }
 # endif
 
-int tls_init_library(void) 
+int tls_init_library(void)
 {
     unsigned int rnd;
     long options;
-    
+
     tls_cnx_handshaked = 0;
     tls_data_cnx_handshaked = 0;
     SSL_library_init();
@@ -241,7 +253,7 @@ int tls_init_library(void)
     }
     if (SSL_CTX_check_private_key(tls_ctx) != 1) {
         tls_error(__LINE__, 0);
-    }    
+    }
     SSL_CTX_set_tmp_rsa_callback(tls_ctx, cb_tmp_rsa);
     if (tls_init_diffie() < 0) {
         tls_error(__LINE__, 0);
@@ -250,7 +262,7 @@ int tls_init_library(void)
 # ifdef DISABLE_SSL_RENEGOTIATION
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
-    
+
     if (tlsciphersuite != NULL) {
         if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
             logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
@@ -265,7 +277,7 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
 # endif
-    
+
     return 0;
 }
 
@@ -290,18 +302,19 @@ int tls_init_new_session(void)
     const SSL_CIPHER *cipher;
     int ret;
     int ret_;
-    
+
+    tls_add_entropy();
     if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
     if (SSL_set_fd(tls_cnx, clientfd) != 1) {
         tls_error(__LINE__, 0);
     }
-    SSL_set_accept_state(tls_cnx);    
+    SSL_set_accept_state(tls_cnx);
     for (;;) {
-        ret = SSL_accept(tls_cnx);        
+        ret = SSL_accept(tls_cnx);
         if (ret <= 0) {
-            ret_ = SSL_get_error(tls_cnx, ret);            
+            ret_ = SSL_get_error(tls_cnx, ret);
             if (ret == -1 &&
                 (ret_ == SSL_ERROR_WANT_READ ||
                  ret_ == SSL_ERROR_WANT_WRITE)) {
@@ -314,11 +327,11 @@ int tls_init_new_session(void)
     if ((cipher = SSL_get_current_cipher(tls_cnx)) != NULL) {
         int alg_bits;
         int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
-        
+
         if (alg_bits < bits) {
             bits = alg_bits;
         }
-        logfile(LOG_INFO, MSG_TLS_INFO, SSL_CIPHER_get_version(cipher), 
+        logfile(LOG_INFO, MSG_TLS_INFO, SSL_CIPHER_get_version(cipher),
                 SSL_CIPHER_get_name(cipher), bits);
         if (bits < MINIMAL_CIPHER_KEY_LEN) {
             die(534, LOG_ERR, MSG_TLS_WEAK);
@@ -332,17 +345,17 @@ int tls_init_data_session(const int fd, const int passive)
     const SSL_CIPHER *cipher;
     int ret;
     int ret_;
-    
+
     (void) passive;
     if (tls_ctx == NULL) {
         logfile(LOG_ERR, MSG_TLS_NO_CTX);
         tls_error(__LINE__, 0);
-    }    
+    }
     if (tls_data_cnx != NULL) {
         tls_close_session(&tls_data_cnx);
     } else if ((tls_data_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
-    }    
+    }
     if (SSL_set_fd(tls_data_cnx, fd) != 1) {
         tls_error(__LINE__, 0);
     }
@@ -353,7 +366,7 @@ int tls_init_data_session(const int fd, const int passive)
             ret_ = SSL_get_error(tls_data_cnx, ret);
             if (ret == -1 && (ret_ == SSL_ERROR_WANT_READ ||
                               ret_ == SSL_ERROR_WANT_WRITE)) {
-                continue;                
+                continue;
             }
             logfile(LOG_INFO, MSG_LOGOUT);
             _EXIT(EXIT_FAILURE);
@@ -368,7 +381,7 @@ int tls_init_data_session(const int fd, const int passive)
     if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
         int alg_bits;
         int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
-        
+
         if (alg_bits < bits) {
             bits = alg_bits;
         }
@@ -385,13 +398,13 @@ void tls_close_session(SSL ** const cnx)
 {
     if (*cnx == NULL) {
         return;
-    }    
+    }
     switch (SSL_shutdown(*cnx)) {
     case 0:
     case SSL_SENT_SHUTDOWN:
     case SSL_RECEIVED_SHUTDOWN:
         break;
-        
+
     default:
         if (SSL_clear(*cnx) == 1) {
             break;
@@ -403,7 +416,7 @@ void tls_close_session(SSL ** const cnx)
         tls_cnx_handshaked = 0;
     } else if (*cnx == tls_data_cnx) {
         tls_data_cnx_handshaked = 0;
-    }    
+    }
     *cnx = NULL;
 }
 
