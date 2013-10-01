@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1996, David Mazieres <dm@uun.org>
  * Copyright (c) 2008, Damien Miller <djm@openbsd.org>
+ * Copyright (c) 2013, Markus Friedl <markus@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,18 +17,6 @@
  */
 
 /*
- * Arc4 random number generator for OpenBSD.
- *
- * This code is derived from section 17.1 of Applied Cryptography,
- * second edition, which describes a stream cipher allegedly
- * compatible with RSA Labs "RC4" cipher (the actual description of
- * which is a trade secret).  The same algorithm is used as a stream
- * cipher called "arcfour" in Tatu Ylonen's ssh package.
- *
- * RC4 is a registered trademark of RSA Laboratories.
- */
-
-/*
  * OpenBSD and Bitrig can fetch random data through a sysctl call, but other
  * systems require reading a device.
  * This modified version of the arc4random*() functions keeps an open file
@@ -37,29 +26,30 @@
 #include <config.h>
 
 #if !defined(__OpenBSD__) && !defined(__Bitrig__)
+#define KEYSTREAM_ONLY
 #include "crypto.h"
 #include "ftpd.h"
 #include "safe_rw.h"
 #include "alt_arc4random.h"
+#include "alt_arc4random_p.h"
 
 #if SIZEOF_INT < 4
 # error Unsupported architecture
 #endif
 
-struct alt_arc4_stream {
-    unsigned char i;
-    unsigned char j;
-    unsigned char s[256];
-};
-
+#define KEYSZ   32
+#define IVSZ    8
+#define BLOCKSZ 64
+#define RSBUFSZ (16 * BLOCKSZ)
 static int rs_initialized;
-static struct alt_arc4_stream rs;
-static pid_t alt_arc4_stir_pid;
-static int alt_arc4_count;
+static pid_t rs_stir_pid;
+static chacha_ctx rs;           /* chacha context for random keystream */
+static unsigned char rs_buf[RSBUFSZ];   /* keystream blocks */
+static size_t rs_have;          /* valid bytes at end of rs_buf */
+static size_t rs_count;         /* bytes till reseed */
 static int random_data_source_fd = -1;
-static unsigned char alt_arc4_getbyte(void);
 
-/* Warning: no thread safety. But we don't need any */
+/* Warning: thread safety intentionally disabled */
 #define _alt_arc4_LOCK()   do { } while(0)
 #define _alt_arc4_UNLOCK() do { } while(0)
 
@@ -67,8 +57,31 @@ static unsigned char alt_arc4_getbyte(void);
 # include <dmalloc.h>
 #endif
 
+static void _rs_rekey(unsigned char *dat, size_t datlen);
+
+static void
+_rs_memzero(void * const pnt, const size_t len)
+{
+    volatile unsigned char *pnt_ = (volatile unsigned char *) pnt;
+    size_t                     i = (size_t) 0U;
+
+    while (i < len) {
+        pnt_[i++] = 0U;
+    }
+}
+
+static void
+_rs_init(unsigned char *buf, size_t n)
+{
+        if (n < KEYSZ + IVSZ) {
+                return;
+    }
+        chacha_keysetup(&rs, buf, KEYSZ * 8, 0);
+        chacha_ivsetup(&rs, buf + KEYSZ);
+}
+
 static int
-alt_arc4_random_dev_open(void)
+_rs_random_dev_open(void)
 {
     static const char * const devices[] = {
         "/dev/urandom", "/dev/random", NULL
@@ -86,50 +99,13 @@ alt_arc4_random_dev_open(void)
 }
 
 static void
-alt_arc4_init(void)
+_rs_stir(void)
 {
-    int     n;
-
-    for (n = 0; n < 256; n++) {
-        rs.s[n] = n;
-    }
-    rs.i = 0;
-    rs.j = 0;
-
-    if (random_data_source_fd != -1) {
-        return;
-    }
-    random_data_source_fd = alt_arc4_random_dev_open();
-}
-
-static void
-alt_arc4_addrandom(unsigned char *dat, int datlen)
-{
-    int     n;
-    unsigned char si;
-
-    rs.i--;
-    for (n = 0; n < 256; n++) {
-        rs.i = (rs.i + 1);
-        si = rs.s[rs.i];
-        rs.j = (rs.j + si + dat[n % datlen]);
-        rs.s[rs.i] = rs.s[rs.j];
-        rs.s[rs.j] = si;
-    }
-    rs.j = rs.i;
-}
-
-static void
-alt_arc4_stir(void)
-{
-    int     i;
-    unsigned char rnd[128];
+        unsigned char rnd[KEYSZ + IVSZ];
 
     if (!rs_initialized) {
-        alt_arc4_init();
-        rs_initialized = 1;
+        random_data_source_fd = _rs_random_dev_open();
     }
-
     if (random_data_source_fd != -1) {
         safe_read(random_data_source_fd, rnd, sizeof rnd);
     } else {
@@ -138,7 +114,7 @@ alt_arc4_stir(void)
 #else
         size_t i = (size_t) 0U;
 # ifdef HAVE_ARC4RANDOM
-        u_int32_t r;
+        crypto_uint4 r;
         do {
             r = arc4random();
             memcpy(&rnd[i], &r, (size_t) 4U);
@@ -160,63 +136,104 @@ alt_arc4_stir(void)
 # endif
 #endif
     }
-
-    alt_arc4_addrandom(rnd, sizeof(rnd));
-
-    /*
-     * Discard early keystream, as per recommendations in:
-     * http://www.wisdom.weizmann.ac.il/~itsik/RC4/Papers/Rc4_ksa.ps
-     */
-    for (i = 0; i < 256; i++) {
-        (void) alt_arc4_getbyte();
+        if (!rs_initialized) {
+                rs_initialized = 1;
+                _rs_init(rnd, sizeof rnd);
+        } else {
+                _rs_rekey(rnd, sizeof rnd);
     }
-    alt_arc4_count = 1600000;
+        _rs_memzero(rnd, sizeof rnd);
+
+        /* invalidate rs_buf */
+        rs_have = 0;
+        _rs_memzero(rs_buf, RSBUFSZ);
+
+        rs_count = 1600000;
+}
+
+static inline void
+_rs_stir_if_needed(size_t len)
+{
+        pid_t pid = getpid();
+
+        if (rs_count <= len || !rs_initialized || rs_stir_pid != pid) {
+                rs_stir_pid = pid;
+                _rs_stir();
+        } else {
+                rs_count -= len;
+    }
 }
 
 static void
-alt_arc4_stir_if_needed(void)
+_rs_rekey(unsigned char *dat, size_t datlen)
 {
-    pid_t pid = getpid();
+#ifndef KEYSTREAM_ONLY
+        _rs_memzero(rs_buf, RSBUFSZ);
+#endif
+        /* fill rs_buf with the keystream */
+        chacha_encrypt_bytes(&rs, rs_buf, rs_buf, RSBUFSZ);
+        /* mix in optional user provided data */
+        if (dat != NULL) {
+                size_t i, m;
 
-    if (alt_arc4_count <= 0 || !rs_initialized || alt_arc4_stir_pid != pid) {
-        alt_arc4_stir_pid = pid;
-        alt_arc4_stir();
+        if (datlen < KEYSZ + IVSZ) {
+            m = datlen;
+        } else {
+            m = KEYSZ + IVSZ;
+        }
+                for (i = 0; i < m; i++) {
+                        rs_buf[i] ^= dat[i];
+        }
+        }
+        /* immediately reinit for backtracking resistance */
+        _rs_init(rs_buf, KEYSZ + IVSZ);
+        _rs_memzero(rs_buf, KEYSZ + IVSZ);
+        rs_have = RSBUFSZ - KEYSZ - IVSZ;
+}
+
+static void
+_rs_random_buf(void *_buf, size_t n)
+{
+        unsigned char *buf = (unsigned char *)_buf;
+        size_t m;
+
+        _rs_stir_if_needed(n);
+        while (n > 0) {
+                if (rs_have > 0) {
+            if (n < rs_have) {
+                m = n;
+            } else {
+                m = rs_have;
+            }
+                        memcpy(buf, rs_buf + RSBUFSZ - rs_have, m);
+                        _rs_memzero(rs_buf + RSBUFSZ - rs_have, m);
+                        buf += m;
+                        n -= m;
+                        rs_have -= m;
+                }
+                if (rs_have == 0) {
+                        _rs_rekey(NULL, 0);
+        }
+        }
+}
+
+static inline void
+_rs_random_u32(crypto_uint4 *val)
+{
+        _rs_stir_if_needed(sizeof(*val));
+        if (rs_have < sizeof(*val)) {
+                _rs_rekey(NULL, 0);
     }
-}
-
-static unsigned char
-alt_arc4_getbyte(void)
-{
-    unsigned char si, sj;
-
-    rs.i = (rs.i + 1);
-    si = rs.s[rs.i];
-    rs.j = (rs.j + si);
-    sj = rs.s[rs.j];
-    rs.s[rs.i] = sj;
-    rs.s[rs.j] = si;
-
-    return (rs.s[(si + sj) & 0xff]);
-}
-
-static crypto_uint4
-alt_arc4_getword(void)
-{
-    crypto_uint4 val;
-
-    val  = ((crypto_uint4) alt_arc4_getbyte()) << 24;
-    val |= ((crypto_uint4) alt_arc4_getbyte()) << 16;
-    val |= ((crypto_uint4) alt_arc4_getbyte()) << 8;
-    val |= ((crypto_uint4) alt_arc4_getbyte());
-
-    return val;
+        memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
+        _rs_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
+        rs_have -= sizeof(*val);
 }
 
 void
 alt_arc4random_stir(void)
 {
     _alt_arc4_LOCK();
-    alt_arc4_stir();
+    _rs_stir();
     _alt_arc4_UNLOCK();
 }
 
@@ -235,43 +252,23 @@ alt_arc4random_close(void)
     return ret;
 }
 
-void
-alt_arc4random_addrandom(unsigned char *dat, int datlen)
-{
-    _alt_arc4_LOCK();
-    if (!rs_initialized) {
-        alt_arc4_stir();
-    }
-    alt_arc4_addrandom(dat, datlen);
-    _alt_arc4_UNLOCK();
-}
-
 crypto_uint4
 alt_arc4random(void)
 {
-    crypto_uint4 val;
-    _alt_arc4_LOCK();
-    alt_arc4_count -= 4;
-    alt_arc4_stir_if_needed();
-    val = alt_arc4_getword();
-    _alt_arc4_UNLOCK();
+        crypto_uint4 val;
 
-    return val;
+        _alt_arc4_LOCK();
+        _rs_random_u32(&val);
+        _alt_arc4_UNLOCK();
+        return val;
 }
 
 void
 alt_arc4random_buf(void *_buf, size_t n)
 {
-    unsigned char *buf = (unsigned char *)_buf;
-    _alt_arc4_LOCK();
-    alt_arc4_stir_if_needed();
-    while (n--) {
-        if (--alt_arc4_count <= 0) {
-            alt_arc4_stir();
-        }
-        buf[n] = alt_arc4_getbyte();
-    }
-    _alt_arc4_UNLOCK();
+        _alt_arc4_LOCK();
+        _rs_random_buf(_buf, n);
+        _alt_arc4_UNLOCK();
 }
 
 /*

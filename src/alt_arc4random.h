@@ -16,7 +16,6 @@
 #else
 
 void         alt_arc4random_stir(void);
-void         alt_arc4random_addrandom(unsigned char *, int);
 void         alt_arc4random_buf(void *, size_t);
 crypto_uint4 alt_arc4random(void);
 crypto_uint4 alt_arc4random_uniform(crypto_uint4);
