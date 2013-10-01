@@ -1092,13 +1092,13 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 # include <sys/param.h>
 #endif
 
-#ifndef MAXPATHLEN
-# define MAXPATHLEN PATH_MAX
+#ifndef PATH_MAX
+# define PATH_MAX MAXPATHLEN
 #endif
 
 int main(void)
 {
-    char x[MAXPATHLEN];
+    char x[PATH_MAX];
     
     if (mkdir("x", 0300) != 0) {
         return 1;

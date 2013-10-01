@@ -140,14 +140,14 @@ static size_t strlcat(char *dst, const char * const src, const size_t siz)
  * components.  Returns resolved on success, or NULL on failure,
  * in which case the path which caused trouble is left in (resolved).
  */
-char *bsd_realpath(const char *path, char resolved[MAXPATHLEN])
+char *bsd_realpath(const char *path, char resolved[PATH_MAX])
 {
     struct stat sb;
     char *p, *q, *s;
     size_t left_len, resolved_len;
     unsigned symlinks;
     int serrno, slen;
-    char left[MAXPATHLEN], next_token[MAXPATHLEN], symlink[MAXPATHLEN];
+    char left[PATH_MAX], next_token[PATH_MAX], symlink[PATH_MAX];
 
     serrno = errno;
     symlinks = 0;
@@ -160,14 +160,14 @@ char *bsd_realpath(const char *path, char resolved[MAXPATHLEN])
         resolved_len = 1;
         left_len = strlcpy(left, path + 1, sizeof left);
     } else {
-        if (getcwd(resolved, MAXPATHLEN) == NULL) {
-            strlcpy(resolved, ".", MAXPATHLEN);
+        if (getcwd(resolved, PATH_MAX) == NULL) {
+            strlcpy(resolved, ".", PATH_MAX);
             return NULL;
         }
         resolved_len = strlen(resolved);
         left_len = strlcpy(left, path, sizeof left);
     }
-    if (left_len >= sizeof left || resolved_len >= MAXPATHLEN) {
+    if (left_len >= sizeof left || resolved_len >= PATH_MAX) {
         errno = ENAMETOOLONG;
         return NULL;
     }
@@ -193,7 +193,7 @@ char *bsd_realpath(const char *path, char resolved[MAXPATHLEN])
             memmove(left, s + 1, left_len + 1);
         }
         if (resolved[resolved_len - 1] != '/') {
-            if (resolved_len + 1 >= MAXPATHLEN) {
+            if (resolved_len + 1 >= PATH_MAX) {
                 errno = ENAMETOOLONG;
                 return NULL;
             }
@@ -221,8 +221,8 @@ char *bsd_realpath(const char *path, char resolved[MAXPATHLEN])
          * lstat() fails we still can return successfully if
          * there are no more path components left.
          */
-        resolved_len = strlcat(resolved, next_token, MAXPATHLEN);
-        if (resolved_len >= MAXPATHLEN) {
+        resolved_len = strlcat(resolved, next_token, PATH_MAX);
+        if (resolved_len >= PATH_MAX) {
             errno = ENAMETOOLONG;
             return NULL;
         }

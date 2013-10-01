@@ -43,7 +43,7 @@
 #define DIRSCAN_FAILURE_DELAY (100000UL)  /* Delay after each chdir failure */
 #define ASCII_CHUNKSIZE 65536U
 #define BANNER_MAXLINES 100
-#define MAX_SERVER_REPLY_LEN (MAXPATHLEN + (size_t) 50U)
+#define MAX_SERVER_REPLY_LEN (PATH_MAX + (size_t) 50U)
 
 #ifndef NO_STANDALONE
 static volatile sig_atomic_t stop_server;

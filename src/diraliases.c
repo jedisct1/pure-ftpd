@@ -58,7 +58,7 @@ int init_aliases(void)
 {
     FILE *fp;
     char alias[MAXALIASLEN + 1U];
-    char dir[MAXPATHLEN + 1U];
+    char dir[PATH_MAX + 1U];
     
     if ((fp = fopen(ALIASES_FILE, "r")) == NULL) {
         return 0;
@@ -146,7 +146,7 @@ void print_aliases(void)
     }
     addreply_noformat(214, MSG_ALIASES_LIST);
     while (curr != NULL) {
-        char line[MAXALIASLEN + MAXPATHLEN + 3U];
+        char line[MAXALIASLEN + PATH_MAX + 3U];
         
         snprintf(line, sizeof line, " %s %s", curr->alias, curr->dir);
         addreply_noformat(0, line);

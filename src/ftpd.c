@@ -1115,7 +1115,7 @@ void dobanner(const int type)
 int modernformat(const char *file, char *target, size_t target_size,
                  const char * const prefix)
 {
-    char link_target[MAXPATHLEN + 1U];
+    char link_target[PATH_MAX + 1U];
     const char *ft;
     const char *ftx = "";
     struct tm *t;
@@ -1206,7 +1206,7 @@ int modernformat(const char *file, char *target, size_t target_size,
 
 void domlst(const char * const file)
 {
-    char line[MAXPATHLEN + 256U] = MLST_BEGIN;
+    char line[PATH_MAX + 256U] = MLST_BEGIN;
     
     if (modernformat(file, line + (sizeof MLST_BEGIN - 1U),
                      sizeof line - (sizeof MLST_BEGIN - 1U), " ") >= 0) {
@@ -1341,7 +1341,7 @@ void douser(const char *username)
         }
     } else {
 #ifdef WITH_VIRTUAL_HOSTS
-        char name[MAXPATHLEN];
+        char name[PATH_MAX];
         char hbuf[NI_MAXHOST];
 #endif
         if (chrooted != 0) {
@@ -1359,7 +1359,7 @@ void douser(const char *username)
 #ifdef NON_ROOT_FTP
         {
             static struct passwd pw_;
-            char s[MAXPATHLEN + 1U];            
+            char s[PATH_MAX + 1U];            
             
             if (getcwd(s, sizeof s - (size_t) 1U) == NULL) {
                 cantsec:
@@ -2014,7 +2014,7 @@ void dopass(char *password)
 void docwd(const char *dir)
 {
     const char *where;
-    char buffer[MAXPATHLEN + 256U];
+    char buffer[PATH_MAX + 256U];
 #ifdef WITH_RFC2640
     char *nwd = NULL;
 #endif
@@ -2707,7 +2707,7 @@ void dodele(char *name)
         struct stat st;
         struct stat st2;
         size_t dirlen = (size_t) 0U;    
-        char qtfile[MAXPATHLEN + 1];
+        char qtfile[PATH_MAX + 1];
         
         if ((p = strrchr(name, '/')) != NULL) {
             if ((dirlen = p - name + (size_t) 1U) >= sizeof qtfile) {
@@ -2839,9 +2839,9 @@ static void displayrate(const char *word, off_t size,
         )
     {
         char *alloca_filename_real;
-        const size_t sizeof_filename_real = MAXPATHLEN + VHOST_PREFIX_MAX_LEN;
+        const size_t sizeof_filename_real = PATH_MAX + VHOST_PREFIX_MAX_LEN;
         char *resolved_path;
-        const size_t sizeof_resolved_path = MAXPATHLEN + 1U;
+        const size_t sizeof_resolved_path = PATH_MAX + 1U;
         
         if ((resolved_path = malloc(sizeof_resolved_path)) == NULL) {
             return;
@@ -2895,7 +2895,7 @@ static void displayrate(const char *word, off_t size,
 
 static void displayopenfailure(const char * const name)
 {
-    char buffer[MAXPATHLEN + 42U];
+    char buffer[PATH_MAX + 42U];
     const int e = errno;
     
     if (SNCHECK(snprintf(buffer, sizeof buffer, MSG_OPEN_FAILURE, name),
@@ -3617,7 +3617,7 @@ void dostou(void)
 static int tryautorename(const char * const atomic_file, char * const name,
                          const char ** const name2_)
 {
-    static char name2[MAXPATHLEN];
+    static char name2[PATH_MAX];
     unsigned int gc = 0U;
     
     if (link(atomic_file, name) == 0) {
@@ -3664,7 +3664,7 @@ static int tryautorename(const char * const atomic_file, char * const name,
 
 static char *get_atomic_file(const char * const file)
 {
-    static char res[MAXPATHLEN];
+    static char res[PATH_MAX];
     char *z;
     size_t orig_len;
     size_t slash;
@@ -4910,7 +4910,7 @@ static void dns_sanitize(char *z)
 
 static void fill_atomic_prefix(void)
 {
-    char tmp_atomic_prefix[MAXPATHLEN];
+    char tmp_atomic_prefix[PATH_MAX];
     
     snprintf(tmp_atomic_prefix, sizeof tmp_atomic_prefix,
              "%s%lx.%x.%lx.%x",

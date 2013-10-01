@@ -10,7 +10,7 @@
 #  include <dmalloc.h>
 # endif
 
-static char curdir[MAXPATHLEN];
+static char curdir[PATH_MAX];
 static char *chroot_base;
 static size_t chroot_len;
 
@@ -159,7 +159,7 @@ static int fakexlate(char *curdirtmp, size_t sizeof_curdirtmp, const char *dir)
 
 int fakechdir(const char *dir)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     size_t curdirtmplen;
     
     if (chroot_base == NULL) {
@@ -181,7 +181,7 @@ int fakechdir(const char *dir)
 
 int fakestat(const char *file, struct stat *st)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return stat(file, st);
@@ -194,7 +194,7 @@ int fakestat(const char *file, struct stat *st)
 
 int fakelstat(const char *file, struct stat *st)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return lstat(file, st);
@@ -207,7 +207,7 @@ int fakelstat(const char *file, struct stat *st)
 
 FILE *fakefopen(const char *file, const char *mode)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return fopen(file, mode);
@@ -220,7 +220,7 @@ FILE *fakefopen(const char *file, const char *mode)
 
 int fakeaccess(const char *file, mode_t mode)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return access(file, mode);
@@ -233,7 +233,7 @@ int fakeaccess(const char *file, mode_t mode)
 
 int fakeunlink(const char *file)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return unlink(file);
@@ -246,7 +246,7 @@ int fakeunlink(const char *file)
 
 DIR *fakeopendir(const char *file)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return opendir(file);
@@ -259,7 +259,7 @@ DIR *fakeopendir(const char *file)
 
 int fakechmod(const char *file, mode_t mode)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return chmod(file, mode);
@@ -272,7 +272,7 @@ int fakechmod(const char *file, mode_t mode)
 
 int fakemkdir(const char *file, mode_t mode)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return mkdir(file, mode);
@@ -285,7 +285,7 @@ int fakemkdir(const char *file, mode_t mode)
 
 int fakermdir(const char *file)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return rmdir(file);
@@ -299,7 +299,7 @@ int fakermdir(const char *file)
 # ifdef HAVE_UTIME
 int fakeutime(const char *file, struct utimbuf *buf)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return utime(file, buf);
@@ -314,7 +314,7 @@ int fakeutime(const char *file, struct utimbuf *buf)
 # ifdef HAVE_UTIMES
 int fakeutimes(const char *file, struct timeval *buf)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return utimes(file, buf);
@@ -328,7 +328,7 @@ int fakeutimes(const char *file, struct timeval *buf)
 
 int fakechown(const char *file, uid_t uid, gid_t gid)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return chown(file, uid, gid);
@@ -342,7 +342,7 @@ int fakechown(const char *file, uid_t uid, gid_t gid)
 # ifdef HAVE_MKFIFO
 int fakemkfifo(const char *file, mode_t mode)
 {
-     char curdirtmp[MAXPATHLEN];
+     char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return mkfifo(file, mode);
@@ -357,7 +357,7 @@ int fakemkfifo(const char *file, mode_t mode)
 # ifdef HAVE_MKNOD
 int fakemknod(const char *file, mode_t mode, dev_t dev)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return mknod(file, mode, dev);
@@ -371,8 +371,8 @@ int fakemknod(const char *file, mode_t mode, dev_t dev)
 
 int fakelink(const char *oldpath, const char *newpath)
 {
-    char curdirtmp[MAXPATHLEN];
-    char curdirtmp2[MAXPATHLEN];     
+    char curdirtmp[PATH_MAX];
+    char curdirtmp2[PATH_MAX];     
     
     if (chroot_base == NULL) {
         return link(oldpath, newpath);
@@ -386,8 +386,8 @@ int fakelink(const char *oldpath, const char *newpath)
 
 int fakesymlink(const char *oldpath, const char *newpath)
 {
-    char curdirtmp[MAXPATHLEN];
-    char curdirtmp2[MAXPATHLEN];     
+    char curdirtmp[PATH_MAX];
+    char curdirtmp2[PATH_MAX];     
     
     if (chroot_base == NULL) {
         return symlink(oldpath, newpath);
@@ -401,7 +401,7 @@ int fakesymlink(const char *oldpath, const char *newpath)
 
 int fakereadlink(const char *file, char *buf, size_t bufsiz)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return readlink(file, buf, bufsiz);
@@ -414,8 +414,8 @@ int fakereadlink(const char *file, char *buf, size_t bufsiz)
 
 int fakerename(const char *oldpath, const char *newpath)
 {
-    char curdirtmp[MAXPATHLEN];
-    char curdirtmp2[MAXPATHLEN];     
+    char curdirtmp[PATH_MAX];
+    char curdirtmp2[PATH_MAX];     
     
     if (chroot_base == NULL) {
         return rename(oldpath, newpath);
@@ -448,7 +448,7 @@ int fakeopen(const char *file, int flags, ...)
 {
     va_list va;
     mode_t mode;
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     va_start(va, flags);
     if (chroot_base == NULL) {
@@ -476,7 +476,7 @@ int fakeopen(const char *file, int flags, ...)
 
 char *fakerealpath(const char *file, char *resolved_path)
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return realpath(file, resolved_path);
@@ -496,7 +496,7 @@ int fakestatfs(const char *path, STATFS_STRUCT *str)
 # endif            
 # if STATFS_TYPE > 0
 {
-    char curdirtmp[MAXPATHLEN];
+    char curdirtmp[PATH_MAX];
     
     if (chroot_base == NULL) {
         return STATFS(path, str);

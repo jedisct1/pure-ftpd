@@ -207,7 +207,7 @@ static void text_output_footer(void)
 }
 
 static char *xml_escaped(const char *const s_) {
-    static char buf[MAXPATHLEN + 32U];
+    static char buf[PATH_MAX + 32U];
     const unsigned char *s = (const unsigned char *) s_;
     char *bufpnt = buf;
     size_t left = sizeof buf - (size_t) 1U;
@@ -567,7 +567,7 @@ static void plist_output_footer(void)
 static const char *shell_escaped(const char * const s_)
 {
     const unsigned char *s = (const unsigned char *) s_;        
-    static char buf[MAXPATHLEN + 32U];
+    static char buf[PATH_MAX + 32U];
     const char * const bufend = &buf[sizeof buf - (size_t) 1U];
     char *bufpnt = buf;    
     

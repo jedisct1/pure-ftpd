@@ -479,18 +479,18 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
     DEFAULT_FTP_DATA_PORT, 2U, 3U, 4U, 5U, 6U, 10U, 14U, 16U, 0U \
 }
 
-#ifndef MAXPATHLEN
-# ifdef PATH_MAX
-#  define MAXPATHLEN PATH_MAX
+#ifndef PATH_MAX
+# ifdef MAXPATHLEN
+#  define PATH_MAX MAXPATHLEN
 # else
-#  define MAXPATHLEN 65536U
+#  define PATH_MAX 65536U
 Warning: neither PATH_MAX nor MAXPATHLEN were found.
 Remove these lines if you really want to compile the server, but
 the server may be insecure if a wrong value is set here.    
 # endif
 #endif
-#if (MAXPATHLEN) >= (INT_MAX)
-Your platform has a very large MAXPATHLEN, we should not trust it.
+#if (PATH_MAX) >= (INT_MAX)
+Your platform has a very large PATH_MAX, we should not trust it.
 #endif
 
 #ifndef DEFAULT_MAX_USERS    
@@ -504,7 +504,7 @@ Your platform has a very large MAXPATHLEN, we should not trust it.
 # endif
 #endif
 #ifndef MAX_SYSLOG_LINE
-# define MAX_SYSLOG_LINE (MAXPATHLEN + 512U)
+# define MAX_SYSLOG_LINE (PATH_MAX + 512U)
 #endif
 #ifndef DEFAULT_IDLE
 # define DEFAULT_IDLE (15UL * 60UL)

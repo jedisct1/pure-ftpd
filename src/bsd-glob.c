@@ -148,7 +148,7 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
 {
     const unsigned char *patnext;
     int c;
-    Char *bufnext, *bufend, patbuf[MAXPATHLEN];
+    Char *bufnext, *bufend, patbuf[PATH_MAX];
     struct glob_lim limit = { 0, 0, 0 };
 
     if (strlen(pattern) >= PATH_MAX) {
@@ -175,7 +175,7 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
         return GLOB_NOSPACE;
     }
     bufnext = patbuf;
-    bufend = bufnext + MAXPATHLEN - 1;
+    bufend = bufnext + PATH_MAX - 1;
     if (flags & GLOB_NOESCAPE) {
         while (bufnext < bufend && (c = *patnext++) != EOS) {
             *bufnext++ = c;
@@ -255,7 +255,7 @@ globexp2(const Char *ptr, const Char *pattern, glob_t *pglob,
     int         i, rv;
     Char       *lm, *ls;
     const Char *pe, *pm, *pl;
-    Char        patbuf[MAXPATHLEN];
+    Char        patbuf[PATH_MAX];
 
     /* copy part up to the brace */
     for (lm = patbuf, pm = pattern; pm != ptr; *lm++ = *pm++)
@@ -359,7 +359,7 @@ glob0(const Char *pattern, glob_t *pglob, struct glob_lim *limitp)
 {
     const Char *qpatnext;
     int c, err, oldpathc;
-    Char *bufnext, patbuf[MAXPATHLEN];
+    Char *bufnext, patbuf[PATH_MAX];
 
     qpatnext = pattern;
     oldpathc = pglob->gl_pathc;
@@ -418,7 +418,7 @@ glob0(const Char *pattern, glob_t *pglob, struct glob_lim *limitp)
     }
     *bufnext = EOS;
 
-    if ((err = glob1(patbuf, patbuf+MAXPATHLEN - 1, pglob, limitp, 1)) != 0) {
+    if ((err = glob1(patbuf, patbuf+PATH_MAX - 1, pglob, limitp, 1)) != 0) {
         return err;
     }
 
@@ -486,14 +486,14 @@ static int
 glob1(Char *pattern, Char *pattern_last, glob_t *pglob, struct glob_lim *limitp,
       int recursion)
 {
-    Char pathbuf[MAXPATHLEN];
+    Char pathbuf[PATH_MAX];
 
     /* A null pathname is invalid -- POSIX 1003.1 sect. 2.4. */
     if (*pattern == EOS) {
         return 0;
     }
-    return glob2(pathbuf, pathbuf + MAXPATHLEN - 1,
-                 pathbuf, pathbuf + MAXPATHLEN - 1,
+    return glob2(pathbuf, pathbuf + PATH_MAX - 1,
+                 pathbuf, pathbuf + PATH_MAX - 1,
                  pattern, pattern_last, pglob, limitp, recursion);
 }
 
@@ -583,7 +583,7 @@ glob3(Char *pathbuf, Char *pathbuf_last, Char *pathend, Char *pathend_last,
     struct dirent *dp;
     DIR *dirp;
     int err;
-    char buf[MAXPATHLEN];
+    char buf[PATH_MAX];
 
     /*
      * The readdirfunc declaration can't be prototyped, because it is
@@ -883,7 +883,7 @@ globfree(glob_t *pglob)
 static DIR *
 g_opendir(Char *str, glob_t *pglob)
 {
-    char buf[MAXPATHLEN];
+    char buf[PATH_MAX];
 
     if (!*str) {
         buf[0] = '.';
@@ -904,7 +904,7 @@ g_opendir(Char *str, glob_t *pglob)
 static int
 g_lstat(Char *fn, struct stat *sb, glob_t *pglob)
 {
-    char buf[MAXPATHLEN];
+    char buf[PATH_MAX];
 
     if (g_Ctoc(fn, buf, sizeof(buf))) {
         return -1;
@@ -918,7 +918,7 @@ g_lstat(Char *fn, struct stat *sb, glob_t *pglob)
 static int
 g_stat(Char *fn, struct stat *sb, glob_t *pglob)
 {
-    char buf[MAXPATHLEN];
+    char buf[PATH_MAX];
 
     if (g_Ctoc(fn, buf, sizeof(buf))) {
         return -1;

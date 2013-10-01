@@ -238,14 +238,14 @@ static int listfile(const PureFileInfo * const fi, const char *name)
     struct stat st;
     struct tm *t;
     char suffix[2] = { 0, 0 };
-    char m[MAXPATHLEN + 1U];
+    char m[PATH_MAX + 1U];
     const char *format;
 
 #ifndef MINIMAL
     if (modern_listings != 0) {
         const char *n;
         char *alloca_nameline;
-        const size_t sizeof_nameline = MAXPATHLEN + 256U;
+        const size_t sizeof_nameline = PATH_MAX + 256U;
 
         if (fi == NULL) {
             n = name;
@@ -335,7 +335,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
         }
         if (m[0] != ' ') {
             char *alloca_nameline;
-            const size_t sizeof_nameline = MAXPATHLEN + MAXPATHLEN + 128U;
+            const size_t sizeof_nameline = PATH_MAX + PATH_MAX + 128U;
             char timeline[6U];
             
             if (st.st_mode & 0400) {
@@ -424,7 +424,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
                         suffix[0] = '*';
                     }
                 }
-                /* 2 * MAXPATHLEN + gap should be enough, but be paranoid... */
+                /* 2 * PATH_MAX + gap should be enough, but be paranoid... */
                 if (SNCHECK
                     (snprintf(p, (sizeof_nameline) - strlen(alloca_nameline),
                               " -> %s", m), 
@@ -731,7 +731,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     while (opt_R && r != s) {
         if (r->name_offset != (size_t) -1 && !chdir(FI_NAME(r))) {
             char *alloca_subdir;
-            const size_t sizeof_subdir = MAXPATHLEN + 1U;
+            const size_t sizeof_subdir = PATH_MAX + 1U;
             
             if ((alloca_subdir = ALLOCA(sizeof_subdir)) == NULL) {
                 goto toomany;

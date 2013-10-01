@@ -28,9 +28,9 @@ GLOBAL(int datafd, -1);                    /* data connection file descriptor */
 GLOBAL0(struct sockaddr_storage ctrlconn);    /* stdin/stdout, for using the same ip number */
 GLOBAL0(signed char v6ready);                    /* IPv6 supported or not */
 GLOBAL0(signed char no_ipv4);                    /* IPv4 disabled or not */
-GLOBAL(const size_t cmdsize, MAXPATHLEN + 16U);
-GLOBAL0(char cmd[MAXPATHLEN + 32U]);        /* command line - about 30 chars for command */
-GLOBAL0(char wd[MAXPATHLEN + 1U]);            /* current working directory */
+GLOBAL(const size_t cmdsize, PATH_MAX + 16U);
+GLOBAL0(char cmd[PATH_MAX + 32U]);        /* command line - about 30 chars for command */
+GLOBAL0(char wd[PATH_MAX + 1U]);            /* current working directory */
 GLOBAL0(char *root_directory);                /* root directory, for chroot'd environments */
 GLOBAL0(signed char loggedin);                    /* != 0 if the user if logged in */
 GLOBAL0(char account[MAX_USER_LENGTH + 1U]);      /* user login */
