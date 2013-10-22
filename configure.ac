@@ -984,7 +984,7 @@ AC_CHECK_FUNCS(getaddrinfo getnameinfo inet_ntop inet_pton)
 AC_CHECK_FUNCS(setusershell setgroups snprintf vsnprintf vfprintf gethostname)
 AC_CHECK_FUNCS(setlocale timegm)
 AC_CHECK_FUNCS(tzset utime utimes mknod mkfifo)
-AC_CHECK_FUNCS(random srandomdev arc4random)
+AC_CHECK_FUNCS(random srandomdev arc4random arc4random_stir arc4random_addrandom)
 AC_CHECK_FUNCS(closefrom)
 
 AC_MSG_CHECKING([whether statvfs64() is defined])
