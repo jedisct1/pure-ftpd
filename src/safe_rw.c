@@ -43,7 +43,7 @@ safe_read(const int fd, void * const buf_, size_t count)
     unsigned char *buf = (unsigned char *) buf_;
     ssize_t        readnb;
 
-    do {
+    while (count > (ssize_t) 0) {
         while ((readnb = read(fd, buf, count)) < (ssize_t) 0 &&
                errno == EINTR);
         if (readnb < (ssize_t) 0) {
@@ -54,7 +54,7 @@ safe_read(const int fd, void * const buf_, size_t count)
         }
         count -= readnb;
         buf += readnb;
-    } while (count > (ssize_t) 0);
+    }
 
     return (ssize_t) (buf - (unsigned char *) buf_);
 }
