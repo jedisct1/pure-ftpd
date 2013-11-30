@@ -241,7 +241,7 @@ have any 'ftp' user in the LDAP directory. But you need to have a system
 
 
 If an LDAP user entry has a root (0) uidNumber and/or gidNumber, Pure-FTPd
-will refuse to log him in.
+will refuse to log them in.
 
 Without this preventive restriction, if your LDAP server ever gets
 compromised, the attacker could also easily compromise the FTP server.

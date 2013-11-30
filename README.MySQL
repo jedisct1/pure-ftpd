@@ -244,7 +244,7 @@ have any 'ftp' user in the MySQL directory. But you need to have a system
 
 
 If a MySQL user entry has a root (0) uid and/or gid, Pure-FTPd will refuse
-to log him in.
+to log them in.
 
 Without this preventive restriction, if your MySQL server ever gets
 compromised, the attacker could also easily compromise the FTP server.

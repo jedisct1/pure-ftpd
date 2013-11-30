@@ -1916,7 +1916,7 @@ safely delete it from its hard disk? If the remote file is corrupted, he
 will get really angry.
 It's why Pure-FTPd *refuses* to resume ASCII transfers. If a customer tells
 you that he isn't able to upload/download a partially transfered ASCII file,
-please tell him to remove the partial file and to retransfer it again. This
+please tell them to remove the partial file and to retransfer it again. This
 is a safe bet.
 
 

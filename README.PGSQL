@@ -190,7 +190,7 @@ have any 'ftp' user in the PGSQL directory. But you need to have a system
 
 
 If a PGSQL user entry has a root (0) uid and/or gid, Pure-FTPd will refuse
-to log him in.
+to log them in.
 
 Without this preventive restriction, if your PGSQL server ever gets
 compromised, the attacker could also easily compromise the FTP server.
