@@ -25,8 +25,8 @@ int main(void)
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif    
-    
+#endif
+
     setpwent();
     while ((pwd = getpwent()) != NULL) {
         if (pwd->pw_name == NULL) {
@@ -37,13 +37,13 @@ int main(void)
             continue;
         }
         if (stat(pwd->pw_dir, &st) != 0 ||
-            !S_ISDIR(st.st_mode)) { 
+            !S_ISDIR(st.st_mode)) {
             continue;
         }
 #ifdef HAVE_SETUSERSHELL
         if (strcasecmp(pwd->pw_shell, FAKE_SHELL) != 0) {
             const char *shell;
-            
+
             setusershell();
             while ((shell = (char *) getusershell()) != NULL &&
                    strcmp(pwd->pw_shell, shell) != 0);
@@ -51,17 +51,17 @@ int main(void)
             if (shell == NULL) {
                 continue;
             }
-        }            
+        }
 #endif
         pw = pwd->pw_passwd;
 #ifdef USE_SHADOW
-        if (pwd->pw_passwd != NULL && pwd->pw_name != NULL &&            
+        if (pwd->pw_passwd != NULL && pwd->pw_name != NULL &&
             (((pwd->pw_passwd)[0] == 'x' && (pwd->pw_passwd)[1] == 0) ||
-             (strcmp(pwd->pw_passwd, "********") == 0) ||             
+             (strcmp(pwd->pw_passwd, "********") == 0) ||
              ((pwd->pw_passwd)[0] == '#' && (pwd->pw_passwd)[1] == '#' &&
               strcmp(pwd->pw_passwd + 2, pwd->pw_name) == 0)) &&
             (spw = getspnam(pwd->pw_name)) != NULL && spw->sp_pwdp != NULL) {
-            pw = spw->sp_pwdp[0] == '@' ? "*" : spw->sp_pwdp;            
+            pw = spw->sp_pwdp[0] == '@' ? "*" : spw->sp_pwdp;
         }
 #endif
         if (pw == NULL || *pw == 0) {
@@ -69,17 +69,17 @@ int main(void)
         }
         {
             char *coma;
-            
-            if (pwd->pw_gecos != NULL && 
+
+            if (pwd->pw_gecos != NULL &&
                 (coma = strchr(pwd->pw_gecos, ',')) != NULL) {
                 *coma = 0;
             }
         }
         printf("%s:%s:%lu:%lu:%s:%s/./\n", pwd->pw_name, pw,
                (unsigned long) pwd->pw_uid, (unsigned long) pwd->pw_gid,
-               pwd->pw_gecos, pwd->pw_dir);        
+               pwd->pw_gecos, pwd->pw_dir);
     }
     endpwent();
-    
+
     return 0;
 }

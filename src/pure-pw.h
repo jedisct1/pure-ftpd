@@ -75,7 +75,7 @@ typedef struct PWInfo_ {
     int has_ul_ratio;
     int has_dl_ratio;
     char *allow_local_ip;
-    char *deny_local_ip;    
+    char *deny_local_ip;
     char *allow_client_ip;
     char *deny_client_ip;
     unsigned int time_begin;
