@@ -42,7 +42,7 @@ static struct option long_options[] = {
     { "run", 1, NULL, 'r' },
     { "socket", 1, NULL, 's' },
     { "uid", 1, NULL, 'u' },
-    { NULL, 0, NULL, 0 }    
+    { NULL, 0, NULL, 0 }
 };
 #endif
 
@@ -70,7 +70,7 @@ typedef struct ExtauthdCallBack_ {
 } ExtauthdCallBack;
 
 static ExtauthdCallBack extauthd_callbacks[] = {
-    { EXTAUTH_CLIENT_ACCOUNT, callback_client_account } , 
+    { EXTAUTH_CLIENT_ACCOUNT, callback_client_account } ,
     { EXTAUTH_CLIENT_PASSWORD, callback_client_password },
     { EXTAUTH_CLIENT_SA_HOST, callback_client_sa_host },
     { EXTAUTH_CLIENT_SA_PORT, callback_client_sa_port },

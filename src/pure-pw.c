@@ -34,9 +34,9 @@ static void disable_echo(void)
     }
 #ifdef ECHO
 # ifdef HAVE_POSIX_TERMIOS
-    {    
+    {
         struct termios p;
-        
+
         if (tcgetattr(0, &p) != 0) {
             return;
         }
@@ -49,7 +49,7 @@ static void disable_echo(void)
 # elif defined(HAVE_TERMIO_H) && defined(TCGETA)
     {
         struct termio tty;
-        
+
         if (ioctl(0, TCGETA, &tty) != 0) {
             return;
         }
@@ -59,7 +59,7 @@ static void disable_echo(void)
 # else
     {
         struct sgttyb tty;
-        
+
         if (ioctl(0, TIOCGETP, &tty) != 0) {
             return;
         }
@@ -74,12 +74,12 @@ static void enable_echo(void)
 {
     if (!isatty(0)) {
         return;
-    }    
+    }
 #ifdef ECHO
 # ifdef HAVE_POSIX_TERMIOS
     {
         struct termios p;
-        
+
         if (tcgetattr(0, &p) != 0) {
             return;
         }
@@ -92,7 +92,7 @@ static void enable_echo(void)
 # elif defined(HAVE_TERMIO_H) && defined(TCGETA)
     {
         struct termio tty;
-        
+
         if (ioctl(0, TCGETA, &tty) != 0) {
             return;
         }
@@ -102,7 +102,7 @@ static void enable_echo(void)
 # else
     {
         struct sgttyb tty;
-        
+
         if (ioctl(0, TIOCGETP, &tty) != 0) {
             return;
         }
@@ -124,11 +124,11 @@ static char *my_strtok2(char *str, const char delim)
 {
     static char *s;
     static char save;
-    
+
     if (str != NULL) {
         if (*str == 0) {
             return NULL;
-        }        
+        }
         s = str;
         scan:
         while (*s != 0 && *s != delim) {
@@ -136,15 +136,15 @@ static char *my_strtok2(char *str, const char delim)
         }
         save = *s;
         *s = 0;
-        
+
         return str;
     }
-    if (s == NULL || save == 0) {        
+    if (s == NULL || save == 0) {
         return NULL;
     }
     s++;
     str = s;
-    
+
     goto scan;
 }
 
@@ -181,7 +181,7 @@ static void help(void)
          "                [-q <upload ratio>] [-Q <download ratio>]\n"
          "                [-r <allow client ip>/<mask>] [-R <deny client ip>/<mask>]\n"
          "                [-i <allow local ip>/<mask>] [-I <deny local ip>/<mask>]\n"
-         "                [-y <max number of concurrent sessions>]\n"     
+         "                [-y <max number of concurrent sessions>]\n"
          "                [-z <hhmm>-<hhmm>] [-m]\n"
          "\n"
          "pure-pw userdel <login> [-f <passwd file>] [-m]\n"
@@ -205,7 +205,7 @@ static void help(void)
 #ifndef WITH_PUREDB
     puts("*WARNING* : that pure-ftpd server hasn't been compiled with puredb support\n");
 #endif
-    exit(EXIT_SUCCESS);   
+    exit(EXIT_SUCCESS);
 }
 
 static void no_mem(void)
@@ -232,13 +232,13 @@ static char *best_crypt(const char * const pwd)
         == 0) {
         char salt[] = "$2a$08$0000000000000000000000";
         int c = 28;
-        
-        do {            
+
+        do {
             c--;
             salt[c] = crcars[pw_zrand() & 63];
         } while (c > 7);
-        
-        return (char *) crypt(pwd, salt);        
+
+        return (char *) crypt(pwd, salt);
     } else if ((crypted = (const char *)    /* SHA-512 */
                 crypt("test", "$6$1234567890123456$")) != NULL &&
                strcmp(crypted,
@@ -259,61 +259,61 @@ static char *best_crypt(const char * const pwd)
                strcmp(crypted, "$1$12345678$oEitTZYQtRHfNGmsFvTBA/") == 0) {
         char salt[] = "$1$00000000";
         int c = 10;
-        
-        do {            
+
+        do {
             c--;
             salt[c] = crcars[pw_zrand() & 63];
         } while (c > 3);
-        
+
         return (char *) crypt(pwd, salt);
     } else if ((crypted = (const char *)    /* Extended DES */
                 crypt("test", "_.../1234")) != NULL &&
                strcmp(crypted, "_.../1234PAPUVmqGzpU") == 0) {
         char salt[] = "_.../0000";
         int c = 8;
-        
+
         do {
             c--;
             salt[c] = crcars[pw_zrand() & 63];
         } while (c > 5);
-        
+
         return (char *) crypt(pwd, salt);
     }
     /* Simple DES */
     {
         char salt[] = "00";
-        
+
         salt[0] = crcars[pw_zrand() & 63];
         salt[1] = crcars[pw_zrand() & 63];
-        
-        return (char *) crypt(pwd, salt);        
-    }    
+
+        return (char *) crypt(pwd, salt);
+    }
 }
 
 char *newpasswd_filename(const char * const file)
 {
     size_t sizeof_file2;
     char *file2;
-    
+
     sizeof_file2 = strlen(file) + sizeof NEWPASSWD_SUFFIX;
     if ((file2 = malloc(sizeof_file2)) == NULL) {
         return NULL;
     }
     (void) snprintf(file2, sizeof_file2, "%s%s", file, NEWPASSWD_SUFFIX);
-    
+
     return file2;
 }
 
 static void strip_lf(char *str)
 {
     char *f;
-    
+
     if (str == NULL) {
         return;
     }
     if ((f = strchr(str, '\r')) != NULL) {
         *f = 0;
-    }    
+    }
     if ((f = strchr(str, '\n')) != NULL) {
         *f = 0;
     }
@@ -326,7 +326,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
     pwinfo->gecos = NULL;
     pwinfo->home = NULL;
     pwinfo->allow_local_ip = pwinfo->deny_local_ip = NULL;
-    pwinfo->allow_client_ip = pwinfo->deny_client_ip = NULL;    
+    pwinfo->allow_client_ip = pwinfo->deny_client_ip = NULL;
     pwinfo->has_bw_dl = 0;
     pwinfo->has_bw_ul = 0;
     pwinfo->has_quota_files = 0;
@@ -339,7 +339,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
     pwinfo->gid = (gid_t) 0;
     pwinfo->has_per_user_max = 0;
     pwinfo->per_user_max = 0U;
-    
+
     if ((line = my_strtok2(line, *PW_LINE_SEP)) == NULL || *line == 0) {   /* account */
         return -1;
     }
@@ -369,7 +369,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
     if (*line != '/') {
         return -1;
     }
-    pwinfo->home = line;    
+    pwinfo->home = line;
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* bw_ul */
         return 0;
     }
@@ -379,7 +379,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
     }
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* bw_dl */
         return 0;
-    } 
+    }
     if (*line != 0) {
         pwinfo->has_bw_dl = 1;
         pwinfo->bw_dl = strtoul(line, NULL, 10);
@@ -390,7 +390,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
     if (*line != 0) {
         pwinfo->ul_ratio = (unsigned int) strtoul(line, NULL, 10);
         if (pwinfo->ul_ratio > 0U) {
-            pwinfo->has_ul_ratio = 1;     
+            pwinfo->has_ul_ratio = 1;
         }
     }
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* ratio down */
@@ -449,7 +449,7 @@ static int parse_pw_line(char *line, PWInfo * const pwinfo)
         pwinfo->time_end < 2360 && (pwinfo->time_end % 100) < 60) {
         pwinfo->has_time = 1;
     }
-    
+
     return 0;
 }
 
@@ -459,7 +459,7 @@ static int fetch_pw_account(const char * const file, PWInfo * const pwinfo,
 {
     FILE *fp;
     int ret = -1;
-    
+
     if (file == NULL || pwinfo == NULL || line == NULL ||
         sizeof_line < (size_t) 2U || login == NULL ||
         *login == 0) {
@@ -502,13 +502,13 @@ static FILE *create_newpasswd(const char * const file,
     int found = 0;
     size_t skip_login_len;
     char line[LINE_MAX];
-    
-    fp = fopen(file, "r");    
+
+    fp = fopen(file, "r");
     if ((fd2 = open(file2, O_EXCL | O_NOFOLLOW |
                     O_CREAT | O_WRONLY, (mode_t) 0700)) == -1) {
         if (fp != NULL) {
             fclose(fp);
-        }        
+        }
         return NULL;
     }
     if ((fp2 = fdopen(fd2, "w")) == NULL) {
@@ -516,7 +516,7 @@ static FILE *create_newpasswd(const char * const file,
             fclose(fp);
         }
         close(fd2);
-        
+
         return NULL;
     }
     if (fp != NULL) {
@@ -538,11 +538,11 @@ static FILE *create_newpasswd(const char * const file,
             }
             if (fputs(line, fp2) < 0) {
                 err:
-                fclose(fp2);                
+                fclose(fp2);
                 unlink(file2);
                 if (fp != NULL) {
                     fclose(fp);
-                }                                                
+                }
                 return NULL;
             }
         }
@@ -555,7 +555,7 @@ static FILE *create_newpasswd(const char * const file,
     if (fp != NULL) {
         fclose(fp);
     }
-    
+
     return fp2;
 }
 
@@ -564,12 +564,12 @@ static int add_new_pw_line(FILE * const fp2, const PWInfo * const pwinfo)
     if (fp2 == NULL) {
         return -1;
     }
-    if (fprintf(fp2, 
+    if (fprintf(fp2,
                 "%s" PW_LINE_SEP           /* account */
                 "%s" PW_LINE_SEP           /* password */
                 "%lu" PW_LINE_SEP          /* uid */
                 "%lu" PW_LINE_SEP          /* gid */
-                "%s" PW_LINE_SEP           /* gecos */                
+                "%s" PW_LINE_SEP           /* gecos */
                 "%s" PW_LINE_SEP           /* home */
                 , pwinfo->login, pwinfo->pwd,
                 (unsigned long) pwinfo->uid, (unsigned long) pwinfo->gid,
@@ -582,7 +582,7 @@ static int add_new_pw_line(FILE * const fp2, const PWInfo * const pwinfo)
             return -1;
         }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->has_bw_dl != 0) {
@@ -591,25 +591,25 @@ static int add_new_pw_line(FILE * const fp2, const PWInfo * const pwinfo)
             return -1;
         }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->has_ul_ratio != 0) {
         if (fprintf(fp2, "%u",             /* ratio up */
                     pwinfo->ul_ratio) < 0) {
             return -1;
-        }        
+        }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->has_dl_ratio != 0) {
         if (fprintf(fp2, "%u",             /* ratio down */
                     pwinfo->dl_ratio) < 0) {
             return -1;
-        }        
+        }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->has_per_user_max != 0) {
@@ -617,49 +617,49 @@ static int add_new_pw_line(FILE * const fp2, const PWInfo * const pwinfo)
         return -1;
     }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
-    }    
+    }
     if (pwinfo->has_quota_files != 0) {
         if (fprintf(fp2, "%llu",           /* files quota */
                     pwinfo->quota_files) < 0) {
             return -1;
         }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
-    if (pwinfo->has_quota_size != 0) {    
+    if (pwinfo->has_quota_size != 0) {
         if (fprintf(fp2, "%llu",           /* size quota */
                     pwinfo->quota_size) < 0) {
             return -1;
-        }        
+        }
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->allow_local_ip != NULL) {
         fprintf(fp2, "%s", pwinfo->allow_local_ip);   /* allowed local ip */
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->deny_local_ip != NULL) {
         fprintf(fp2, "%s", pwinfo->deny_local_ip);    /* denied local ip */
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
-    }    
+    }
     if (pwinfo->allow_client_ip != NULL) {
         fprintf(fp2, "%s", pwinfo->allow_client_ip);  /* allowed client ip */
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->deny_client_ip != NULL) {
         fprintf(fp2, "%s", pwinfo->deny_client_ip);   /* denied local ip */
     }
-    if (fprintf(fp2, PW_LINE_SEP) < 0) {    
+    if (fprintf(fp2, PW_LINE_SEP) < 0) {
         return -1;
     }
     if (pwinfo->has_time != 0) {
@@ -671,19 +671,19 @@ static int add_new_pw_line(FILE * const fp2, const PWInfo * const pwinfo)
     if (fprintf(fp2, "\n") < 0) {
         return -1;
     }
-    
+
     return 0;
 }
 
 static char *do_get_passwd(void)
 {
     static char pwd[LINE_MAX];
-    char pwd2[LINE_MAX];    
+    char pwd2[LINE_MAX];
     int tries = MAX_PASSWD_CHANGE_TRIES;
-       
+
     *pwd = 0;
     *pwd2 = 0;
-    
+
     again:
     printf("Password: ");
     fflush(stdout);
@@ -714,14 +714,14 @@ static char *do_get_passwd(void)
             goto again;
         }
         enable_echo();
-        
+
         return NULL;
     }
     if (*pwd2 != 0) {
         memset((volatile void *) pwd2, 0, strlen(pwd2));
     }
     enable_echo();
-    
+
     return pwd;
 }
 
@@ -729,15 +729,15 @@ static int do_list(const char * const file)
 {
     FILE *fp;
     PWInfo pwinfo;
-    char line[LINE_MAX];    
-    
+    char line[LINE_MAX];
+
     if (file == NULL) {
         fprintf(stderr, "missing file to list accounts\n");
         return PW_ERROR_MISSING_PASSWD_FILE;
     }
     if ((fp = fopen(file, "r")) == NULL) {
         perror("Unable to open the passwd file");
-        return PW_ERROR_MISSING_PASSWD_FILE;        
+        return PW_ERROR_MISSING_PASSWD_FILE;
     }
     while (fgets(line, (int) sizeof line - 1U, fp) != NULL) {
         strip_lf(line);
@@ -751,7 +751,7 @@ static int do_list(const char * const file)
         if (isatty(1)) {
             printf("%-19s %-39s %-19s\n", pwinfo.login, pwinfo.home, pwinfo.gecos);
         } else {
-            printf("%s\t%s\t%s\n", pwinfo.login, pwinfo.home, pwinfo.gecos);            
+            printf("%s\t%s\t%s\n", pwinfo.login, pwinfo.home, pwinfo.gecos);
         }
     }
     fclose(fp);
@@ -765,7 +765,7 @@ static int do_useradd(const char * const file,
     char *file2;
     FILE *fp2;
     PWInfo pwinfo = *pwinfo_;
-    
+
     if (pwinfo.login == NULL || *(pwinfo.login) == 0) {
         fprintf(stderr, "Missing login\n");
         return PW_ERROR_MISSING_LOGIN;
@@ -781,7 +781,7 @@ static int do_useradd(const char * const file,
     }
 #endif
     if (pwinfo.home == NULL) {
-        fprintf(stderr, "Missing home directory\n");        
+        fprintf(stderr, "Missing home directory\n");
         return PW_ERROR_USERADD_MISSING_HOME_DIR;
     }
     if (pwinfo.gecos == NULL) {
@@ -790,7 +790,7 @@ static int do_useradd(const char * const file,
         }
     }
     if ((pwinfo.pwd = do_get_passwd()) == NULL) {
-        fprintf(stderr, "Error with entering password - aborting\n");        
+        fprintf(stderr, "Error with entering password - aborting\n");
         return PW_ERROR_ENTER_PASSWD_PW_ERROR;
     }
     {
@@ -800,18 +800,18 @@ static int do_useradd(const char * const file,
         if (*cleartext != 0) {
             memset((volatile void *) cleartext, 0, strlen(cleartext));
         }
-    }            
+    }
     if ((file2 = newpasswd_filename(file)) == NULL) {
         no_mem();
     }
     if ((fp2 = create_newpasswd(file, file2, pwinfo.login, 1, 0)) == NULL) {
         fprintf(stderr, "Error.\n"
                 "Check that [%s] doesn't already exist,\n"
-                "and that [%s] can be written.\n", 
+                "and that [%s] can be written.\n",
                 pwinfo.login, file2);
-        free(file2);        
+        free(file2);
         return PW_ERROR_USER_ALREADY_EXIST;
-    }    
+    }
     if (add_new_pw_line(fp2, &pwinfo) != 0) {
         fprintf(stderr, "Unable to append a line\n");
         goto bye;
@@ -819,7 +819,7 @@ static int do_useradd(const char * const file,
     fflush(fp2);
 #ifdef HAVE_FILENO
     fsync(fileno(fp2));
-#endif  
+#endif
     if (fclose(fp2) != 0) {
         perror("Unable to close the file");
         goto bye2;
@@ -830,13 +830,13 @@ static int do_useradd(const char * const file,
     }
     free(file2);
     return 0;
-    
+
     bye:
     fclose(fp2);
     bye2:
     unlink(file2);
     free(file2);
-    
+
     return PW_ERROR_UNEXPECTED_ERROR;
 }
 
@@ -868,7 +868,7 @@ static int do_usermod(const char * const file,
         fetched_info.pwd = best_crypt(cleartext);
         if (*cleartext != 0) {
             memset((volatile void *) cleartext, 0, strlen(cleartext));
-        }        
+        }
     }
     if (pwinfo->uid > (uid_t) 0) {
         fetched_info.uid = pwinfo->uid;
@@ -892,7 +892,7 @@ static int do_usermod(const char * const file,
     }
     if (pwinfo->has_bw_ul != 0) {
         if (pwinfo->has_bw_ul < 0) {
-            fetched_info.has_bw_ul = 0;            
+            fetched_info.has_bw_ul = 0;
         } else {
             fetched_info.has_bw_ul = pwinfo->has_bw_ul;
             fetched_info.bw_ul = pwinfo->bw_ul;
@@ -908,7 +908,7 @@ static int do_usermod(const char * const file,
     }
     if (pwinfo->has_quota_size != 0) {
         if (pwinfo->has_quota_size < 0) {
-            fetched_info.has_quota_size = 0;            
+            fetched_info.has_quota_size = 0;
         } else {
             fetched_info.has_quota_size = pwinfo->has_quota_size;
             fetched_info.quota_size = pwinfo->quota_size;
@@ -916,7 +916,7 @@ static int do_usermod(const char * const file,
     }
     if (pwinfo->has_ul_ratio != 0) {
         if (pwinfo->has_ul_ratio < 0) {
-            fetched_info.has_ul_ratio = 0;            
+            fetched_info.has_ul_ratio = 0;
         } else {
             fetched_info.has_ul_ratio = pwinfo->has_ul_ratio;
             fetched_info.ul_ratio = pwinfo->ul_ratio;
@@ -953,7 +953,7 @@ static int do_usermod(const char * const file,
     }
     if (pwinfo->has_per_user_max != 0) {
         if (pwinfo->has_per_user_max < 0) {
-            fetched_info.has_per_user_max = 0;            
+            fetched_info.has_per_user_max = 0;
         } else {
             fetched_info.has_per_user_max = pwinfo->has_per_user_max;
             fetched_info.per_user_max = pwinfo->per_user_max;
@@ -968,7 +968,7 @@ static int do_usermod(const char * const file,
                 "and that [%s] can be written.\n", pwinfo->login, file2);
         free(file2);
         return PW_ERROR_USER_ALREADY_EXIST;
-    }    
+    }
     if (add_new_pw_line(fp2, &fetched_info) != 0) {
         fprintf(stderr, "Unable to append a line\n");
         goto bye;
@@ -976,7 +976,7 @@ static int do_usermod(const char * const file,
     fflush(fp2);
 #ifdef HAVE_FILENO
     fsync(fileno(fp2));
-#endif      
+#endif
     if (fclose(fp2) != 0) {
         perror("Unable to close the file");
         goto bye2;
@@ -987,13 +987,13 @@ static int do_usermod(const char * const file,
     }
     free(file2);
     return 0;
-    
+
     bye:
     fclose(fp2);
     bye2:
     unlink(file2);
     free(file2);
-    
+
     return PW_ERROR_UNEXPECTED_ERROR;
 }
 
@@ -1002,7 +1002,7 @@ static int do_userdel(const char * const file,
 {
     char *file2;
     FILE *fp2;
-    
+
     if (pwinfo->login == NULL || *(pwinfo->login) == 0) {
         fprintf(stderr, "Missing login\n");
         return -1;
@@ -1010,7 +1010,7 @@ static int do_userdel(const char * const file,
     if (file == NULL) {
         fprintf(stderr, "Missing passwd file\n");
         return PW_ERROR_MISSING_PASSWD_FILE;
-    }    
+    }
     if ((file2 = newpasswd_filename(file)) == NULL) {
         no_mem();
     }
@@ -1035,11 +1035,11 @@ static int do_userdel(const char * const file,
     }
     free(file2);
     return 0;
-    
+
     bye2:
     unlink(file2);
     free(file2);
-    
+
     return PW_ERROR_UNEXPECTED_ERROR;
 }
 
@@ -1049,9 +1049,9 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
     struct passwd *pwd;
     struct group *grp;
     const char *pwd_name = "-";
-    const char *grp_name = "-";    
+    const char *grp_name = "-";
     static char line[LINE_MAX];
-    
+
     if (pwinfo->login == NULL || *(pwinfo->login) == 0) {
         fprintf(stderr, "Missing login\n");
         return PW_ERROR_MISSING_LOGIN;
@@ -1085,9 +1085,9 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
            "Max size           : %llu Mb (%s)\n"
            "Ratio              : %u:%u (%s:%s)\n"
            "Allowed local  IPs : %s\n"
-           "Denied  local  IPs : %s\n"           
+           "Denied  local  IPs : %s\n"
            "Allowed client IPs : %s\n"
-           "Denied  client IPs : %s\n"           
+           "Denied  client IPs : %s\n"
            "Time restrictions  : %04u-%04u (%s)\n"
            "Max sim sessions   : %u (%s)\n"
            "\n",
@@ -1110,7 +1110,7 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
            SHOW_STATE(fetched_info.has_ul_ratio),
            SHOW_STATE(fetched_info.has_dl_ratio),
            SHOW_STRING(fetched_info.allow_local_ip),
-           SHOW_STRING(fetched_info.deny_local_ip),           
+           SHOW_STRING(fetched_info.deny_local_ip),
            SHOW_STRING(fetched_info.allow_client_ip),
            SHOW_STRING(fetched_info.deny_client_ip),
            SHOW_IFEN(fetched_info.has_time, fetched_info.time_begin),
@@ -1118,7 +1118,7 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
            SHOW_STATE(fetched_info.has_time),
            SHOW_IFEN(fetched_info.has_per_user_max, fetched_info.per_user_max),
            SHOW_STATE(fetched_info.per_user_max));
-    
+
     return 0;
 }
 
@@ -1134,9 +1134,9 @@ static int do_passwd(const char * const file,
         return PW_ERROR_MISSING_PASSWD_FILE;
     }
     if ((pwinfo->pwd = do_get_passwd()) == NULL) {
-        fprintf(stderr, "Error with entering password - aborting\n");        
+        fprintf(stderr, "Error with entering password - aborting\n");
         return PW_ERROR_ENTER_PASSWD_PW_ERROR;
-    }    
+    }
     return do_usermod(file, pwinfo);
 }
 
@@ -1151,20 +1151,20 @@ static int do_mkdb(const char *dbfile, const char * const file)
     PureDBW dbw;
     int ret = PW_ERROR_UNEXPECTED_ERROR;
     char line[LINE_MAX];
-    
+
     if (dbfile == NULL || *dbfile == 0) {
         char *dbfile_;
-        
+
         if ((dbfile_ = getenv(ENV_DEFAULT_PW_DB)) != NULL && *dbfile_ != 0) {
             dbfile = dbfile_;
-        } else {        
+        } else {
             dbfile = DEFAULT_PW_DB;
         }
     }
     if (file == NULL) {
         fprintf(stderr, "Missing passwd file\n");
         return PW_ERROR_MISSING_PASSWD_FILE;
-    }    
+    }
     if ((fp = fopen(file, "r")) == NULL) {
         perror("Unable to open the passwd file");
         return PW_ERROR_MISSING_PASSWD_FILE;
@@ -1211,9 +1211,9 @@ static int do_mkdb(const char *dbfile, const char * const file)
     err:
     puredbw_free(&dbw);
     ALLOCA_FREE(index_dbfile);
-    ALLOCA_FREE(data_dbfile);    
+    ALLOCA_FREE(data_dbfile);
     fclose(fp);
-    
+
     return ret;
 }
 
@@ -1221,7 +1221,7 @@ static void init_zrand(void)
 {
     struct timeval tv;
     struct timezone tz;
-    
+
     gettimeofday(&tv, &tz);
 #ifdef HAVE_SRANDOMDEV
     srandomdev();
@@ -1244,7 +1244,7 @@ int main(int argc, char *argv[])
     int ret = 0;
     int with_chroot = 1;
     int with_mkdb = 0;
-        
+
     if (argc < 2) {
         help();
     }
@@ -1259,13 +1259,13 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif    
+#endif
 
     pwinfo.pwd = NULL;
     pwinfo.gecos = NULL;
     pwinfo.home = NULL;
     pwinfo.allow_local_ip = pwinfo.deny_local_ip = NULL;
-    pwinfo.allow_client_ip = pwinfo.deny_client_ip = NULL;        
+    pwinfo.allow_client_ip = pwinfo.deny_client_ip = NULL;
     pwinfo.has_bw_dl = 0;
     pwinfo.has_bw_ul = 0;
     pwinfo.has_quota_files = 0;
@@ -1283,7 +1283,7 @@ int main(int argc, char *argv[])
     pwinfo.uid = (uid_t) 0U;
     pwinfo.gid = (gid_t) 0U;
 #endif
-    
+
     argv++;
     argc--;
     action = *argv;
@@ -1296,7 +1296,7 @@ int main(int argc, char *argv[])
     }
     filter_pw_line_sep(pwinfo.login);
     while ((fodder =
-            getopt(argc, argv, 
+            getopt(argc, argv,
                    "c:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
         switch(fodder) {
         case 'c' : {
@@ -1312,7 +1312,7 @@ int main(int argc, char *argv[])
             char *optarg_copy;
             size_t sizeof_home;
             size_t optarg_len;
-            
+
             if ((optarg_copy = strdup(optarg)) == NULL) {
                 no_mem();
             }
@@ -1333,7 +1333,7 @@ int main(int argc, char *argv[])
             }
             snprintf(pwinfo.home, sizeof_home, "%s%s", optarg_copy,
                      with_chroot != 0 ? "/./" : "");
-            filter_pw_line_sep(pwinfo.home);            
+            filter_pw_line_sep(pwinfo.home);
             break;
         }
         case 'f' : {
@@ -1350,16 +1350,16 @@ int main(int argc, char *argv[])
         }
         case 'g' : {
             struct group *gr;
-            
+
             if (pwinfo.gid > (gid_t) 0 && pwinfo.uid <= (uid_t) 0) {
                 fprintf(stderr, "You already gave a gid\n");
                 exit(EXIT_FAILURE);
-            }                
+            }
             if ((gr = getgrnam(optarg)) != NULL) {
                 pwinfo.gid = gr->gr_gid;
             } else {
                 pwinfo.gid = (gid_t) strtoul(optarg, NULL, 10);
-            }            
+            }
             break;
         }
         case 'h' : {
@@ -1395,7 +1395,7 @@ int main(int argc, char *argv[])
             if (*optarg == 0) {
                 pwinfo.has_quota_size = -1;
             } else {
-                pwinfo.quota_size = strtoull(optarg, NULL, 10) * 
+                pwinfo.quota_size = strtoull(optarg, NULL, 10) *
                     (1024ULL * 1024ULL);
                 pwinfo.has_quota_size = 1;
             }
@@ -1413,7 +1413,7 @@ int main(int argc, char *argv[])
                 pwinfo.has_ul_ratio = 1;
             }
             break;
-        }            
+        }
         case 'Q' : {
             if (*optarg == 0) {
                 pwinfo.has_dl_ratio = -1;
@@ -1422,7 +1422,7 @@ int main(int argc, char *argv[])
                 if (pwinfo.dl_ratio < 1U) {
                     fprintf(stderr, "Illegal download ratio\n");
                     exit(EXIT_FAILURE);
-                }            
+                }
                 pwinfo.has_dl_ratio = 1;
             }
             break;
@@ -1438,13 +1438,13 @@ int main(int argc, char *argv[])
                 no_mem();
             }
             break;
-        }            
+        }
         case 't' : {
             if (*optarg == 0) {
                 pwinfo.has_bw_dl = -1;
             } else {
                 if ((pwinfo.bw_dl = strtoul(optarg, NULL, 10)) > 0UL) {
-                    pwinfo.bw_dl *= 1024UL;                    
+                    pwinfo.bw_dl *= 1024UL;
                     pwinfo.has_bw_dl = 1;
                 }
             }
@@ -1460,10 +1460,10 @@ int main(int argc, char *argv[])
                 }
             }
             break;
-        }            
+        }
         case 'u' : {
-            struct passwd *pw;                
-            
+            struct passwd *pw;
+
             if (pwinfo.uid > (uid_t) 0) {
                 fprintf(stderr, "You already gave an uid\n");
                 exit(EXIT_FAILURE);
@@ -1487,7 +1487,7 @@ int main(int argc, char *argv[])
             break;
         }
         case 'z' : {
-            if (sscanf(optarg, "%u-%u", 
+            if (sscanf(optarg, "%u-%u",
                        &pwinfo.time_begin, &pwinfo.time_end) == 2 &&
                 pwinfo.time_begin < 2360 && (pwinfo.time_begin % 100) < 60 &&
                 pwinfo.time_end < 2360 && (pwinfo.time_end % 100) < 60) {
@@ -1495,7 +1495,7 @@ int main(int argc, char *argv[])
             } else if (*optarg != 0) {
                 fprintf(stderr, "Time should be given as hhmm-hhmm\n"
                         "Example : 0900-1800 (9 am to 6 pm)\n");
-                exit(EXIT_FAILURE);                    
+                exit(EXIT_FAILURE);
             } else {
                 pwinfo.has_time = -1;
             }
@@ -1507,7 +1507,7 @@ int main(int argc, char *argv[])
     }
     if (file == NULL) {
         char *file_;
-        
+
         if ((file_ = getenv(ENV_DEFAULT_PW_FILE)) != NULL && *file_ != 0) {
             file = file_;
         } else if ((file = strdup(DEFAULT_PW_FILE)) == NULL) {
@@ -1525,17 +1525,17 @@ int main(int argc, char *argv[])
         ret = do_usermod(file, &pwinfo);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
-        }        
+        }
     } else if (strcasecmp(action, "userdel") == 0) {
         ret = do_userdel(file, &pwinfo);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
-        }        
+        }
     } else if (strcasecmp(action, "passwd") == 0) {
         ret = do_passwd(file, &pwinfo);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
-        }        
+        }
     } else if (strcasecmp(action, "show") == 0) {
         ret = do_show(file, &pwinfo);
     } else if (strcasecmp(action, "mkdb") == 0) {
@@ -1547,7 +1547,7 @@ int main(int argc, char *argv[])
         help();
     }
     free(pwinfo.gecos);
-               
+
     return ret;
 }
 

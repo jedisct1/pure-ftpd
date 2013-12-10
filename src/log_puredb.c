@@ -21,7 +21,7 @@ void pw_puredb_parse(const char * const file)
     }
     if ((pdb_filename = strdup(file)) == NULL) {
         die_mem();
-    }    
+    }
 }
 
 void pw_puredb_exit(void)
@@ -40,11 +40,11 @@ static char *my_strtok2(char *str, const char delim)
 {
     static char *s;
     static char save;
-    
+
     if (str != NULL) {
         if (*str == 0) {
             return NULL;
-        }        
+        }
         s = str;
         scan:
         while (*s != 0 && *s != delim) {
@@ -52,15 +52,15 @@ static char *my_strtok2(char *str, const char delim)
         }
         save = *s;
         *s = 0;
-        
+
         return str;
     }
-    if (s == NULL || save == 0) {        
+    if (s == NULL || save == 0) {
         return NULL;
     }
     s++;
     str = s;
-    
+
     goto scan;
 }
 
@@ -76,10 +76,10 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
     unsigned long saip;
     const unsigned char *saip_raw;
     char *comapoint;
-        
+
     if (*pattern == 0) {
         return 1;
-    }    
+    }
     if (STORAGE_FAMILY(*sa) != AF_INET) {
         return 0;                      /* TODO: IPv6 */
     }
@@ -121,7 +121,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                     (const unsigned char *) &
                     (((const struct sockaddr_in *) (void *)
                       (res->ai_addr))->sin_addr.s_addr);
-                
+
                 ip = (ip_raw[0] << 24) | (ip_raw[1] << 16) |
                     (ip_raw[2] << 8) | ip_raw[3];
                 netbits = 32U;
@@ -135,7 +135,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
         *comapoint = ',';
         pattern = comapoint + 1;
     } while (*pattern != 0);
-        
+
     return 0;
 }
 
@@ -154,7 +154,7 @@ static int access_ip_check(const struct sockaddr_storage * const sa,
         if (access_ip_match(sa, deny) != 0) {
             return -1;
         }
-        return 0;        
+        return 0;
     }
     if (*deny == 0) {
         if (access_ip_match(sa, allow) != 0) {
@@ -171,10 +171,10 @@ static int access_ip_check(const struct sockaddr_storage * const sa,
 static int time_restrictions_check(const char * const restrictions)
 {
     const struct tm *tm;
-    time_t now_t;    
+    time_t now_t;
     unsigned int time_begin, time_end;
     unsigned int now;
-    
+
     if (*restrictions == 0) {
         return 0;
     }
@@ -192,7 +192,7 @@ static int time_restrictions_check(const char * const restrictions)
     }
     if (now >= time_begin || now <= time_end) {
         return 0;
-    }        
+    }
     return -1;
 }
 
@@ -204,16 +204,16 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     char *allow_local_ip, *deny_local_ip;
     char *allow_remote_ip, *deny_remote_ip;
     const char *time_restrictions;
-    
+
     if ((line = my_strtok2(line, *PW_LINE_SEP)) == NULL || *line == 0) {   /* pwd */
         return -1;
-    }    
+    }
     {
         const char *crypted;
-        
+
         if ((crypted = (const char *) crypt(pwd, line)) == NULL ||
             strcmp(line, crypted) != 0) {
-            
+
             return -1;
         }
     }
@@ -250,7 +250,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
 #endif
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* bw_dl */
         return 0;
-    } 
+    }
 #ifdef THROTTLING
     if (*line != 0) {
         result->throttling_dl_changed = 1;
@@ -264,10 +264,10 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     if (*line != 0) {
         result->ratio_upload = (unsigned int) strtoul(line, NULL, 10);
         if (result->ratio_upload > 0U) {
-            result->ratio_ul_changed = 1;     
+            result->ratio_ul_changed = 1;
         }
     }
-#endif    
+#endif
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* ratio down */
         return 0;
     }
@@ -275,14 +275,14 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     if (*line != 0) {
         result->ratio_download = (unsigned int) strtoul(line, NULL, 10);
         if (result->ratio_download > 0U) {
-            result->ratio_dl_changed = 1;     
+            result->ratio_dl_changed = 1;
         }
     }
-#endif    
+#endif
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* max cnx */
         return 0;
     }
-#ifdef PER_USER_LIMITS    
+#ifdef PER_USER_LIMITS
     if (*line != 0) {
     result->per_user_max = (unsigned int) strtoull(line, NULL, 10);
     }
@@ -332,7 +332,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     if (time_restrictions_check(time_restrictions) != 0) {
         return -1;
     }
-    
+
     return 0;
 }
 
@@ -341,11 +341,11 @@ void pw_puredb_check(AuthResult * const result,
                      const struct sockaddr_storage * const sa,
                      const struct sockaddr_storage * const peer)
 {
-    char *line = NULL;    
+    char *line = NULL;
     PureDB db;
     off_t retpos;
     size_t retlen;
-    
+
     result->auth_ok = 0;
     (void) sa;
     (void) peer;
