@@ -83,14 +83,20 @@ _rs_init(unsigned char *buf, size_t n)
 static int
 _rs_random_dev_open(void)
 {
-    static const char * const devices[] = {
+    struct stat        st;
+    static const char *devices[] = {
         "/dev/urandom", "/dev/random", NULL
     };
-    const char * const *device = devices;
+    const char **      device = devices;
+    int                fd;
 
     do {
-        if (access(*device, F_OK | R_OK) == 0) {
-            return open(*device, O_RDONLY);
+        if (access(*device, F_OK | R_OK) == 0 &&
+            (fd = open(*device, O_RDONLY)) != -1) {
+            if (fstat(fd, &st) == 0 && S_ISCHR(st.st_mode)) {
+                return fd;
+            }
+            (void) close(fd);
         }
         device++;
     } while (*device != NULL);
