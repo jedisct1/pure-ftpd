@@ -73,11 +73,11 @@ _rs_memzero(void * const pnt, const size_t len)
 static void
 _rs_init(unsigned char *buf, size_t n)
 {
-        if (n < KEYSZ + IVSZ) {
-                return;
+    if (n < KEYSZ + IVSZ) {
+        return;
     }
-        chacha_keysetup(&rs, buf, KEYSZ * 8, 0);
-        chacha_ivsetup(&rs, buf + KEYSZ);
+    chacha_keysetup(&rs, buf, KEYSZ * 8, 0);
+    chacha_ivsetup(&rs, buf + KEYSZ);
 }
 
 static int
@@ -107,7 +107,7 @@ _rs_random_dev_open(void)
 static void
 _rs_stir(void)
 {
-        unsigned char rnd[KEYSZ + IVSZ];
+    unsigned char rnd[KEYSZ + IVSZ];
 
     if (!rs_initialized) {
         random_data_source_fd = _rs_random_dev_open();
@@ -142,31 +142,31 @@ _rs_stir(void)
 # endif
 #endif
     }
-        if (!rs_initialized) {
-                rs_initialized = 1;
-                _rs_init(rnd, sizeof rnd);
-        } else {
-                _rs_rekey(rnd, sizeof rnd);
+    if (!rs_initialized) {
+        rs_initialized = 1;
+        _rs_init(rnd, sizeof rnd);
+    } else {
+        _rs_rekey(rnd, sizeof rnd);
     }
-        _rs_memzero(rnd, sizeof rnd);
+    _rs_memzero(rnd, sizeof rnd);
 
-        /* invalidate rs_buf */
-        rs_have = 0;
-        _rs_memzero(rs_buf, RSBUFSZ);
+    /* invalidate rs_buf */
+    rs_have = 0;
+    _rs_memzero(rs_buf, RSBUFSZ);
 
-        rs_count = 1600000;
+    rs_count = 1600000;
 }
 
 static inline void
 _rs_stir_if_needed(size_t len)
 {
-        pid_t pid = getpid();
+    pid_t pid = getpid();
 
-        if (rs_count <= len || !rs_initialized || rs_stir_pid != pid) {
-                rs_stir_pid = pid;
-                _rs_stir();
-        } else {
-                rs_count -= len;
+    if (rs_count <= len || !rs_initialized || rs_stir_pid != pid) {
+        rs_stir_pid = pid;
+        _rs_stir();
+    } else {
+        rs_count -= len;
     }
 }
 
@@ -174,65 +174,65 @@ static void
 _rs_rekey(unsigned char *dat, size_t datlen)
 {
 #ifndef KEYSTREAM_ONLY
-        _rs_memzero(rs_buf, RSBUFSZ);
+    _rs_memzero(rs_buf, RSBUFSZ);
 #endif
-        /* fill rs_buf with the keystream */
-        chacha_encrypt_bytes(&rs, rs_buf, rs_buf, RSBUFSZ);
-        /* mix in optional user provided data */
-        if (dat != NULL) {
-                size_t i, m;
+    /* fill rs_buf with the keystream */
+    chacha_encrypt_bytes(&rs, rs_buf, rs_buf, RSBUFSZ);
+    /* mix in optional user provided data */
+    if (dat != NULL) {
+        size_t i, m;
 
         if (datlen < KEYSZ + IVSZ) {
             m = datlen;
         } else {
             m = KEYSZ + IVSZ;
         }
-                for (i = 0; i < m; i++) {
-                        rs_buf[i] ^= dat[i];
+        for (i = 0; i < m; i++) {
+            rs_buf[i] ^= dat[i];
         }
-        }
-        /* immediately reinit for backtracking resistance */
-        _rs_init(rs_buf, KEYSZ + IVSZ);
-        _rs_memzero(rs_buf, KEYSZ + IVSZ);
-        rs_have = RSBUFSZ - KEYSZ - IVSZ;
+    }
+    /* immediately reinit for backtracking resistance */
+    _rs_init(rs_buf, KEYSZ + IVSZ);
+    _rs_memzero(rs_buf, KEYSZ + IVSZ);
+    rs_have = RSBUFSZ - KEYSZ - IVSZ;
 }
 
 static void
 _rs_random_buf(void *_buf, size_t n)
 {
-        unsigned char *buf = (unsigned char *)_buf;
-        size_t m;
+    unsigned char *buf = (unsigned char *)_buf;
+    size_t m;
 
-        _rs_stir_if_needed(n);
-        while (n > 0) {
-                if (rs_have > 0) {
+    _rs_stir_if_needed(n);
+    while (n > 0) {
+        if (rs_have > 0) {
             if (n < rs_have) {
                 m = n;
             } else {
                 m = rs_have;
             }
-                        memcpy(buf, rs_buf + RSBUFSZ - rs_have, m);
-                        _rs_memzero(rs_buf + RSBUFSZ - rs_have, m);
-                        buf += m;
-                        n -= m;
-                        rs_have -= m;
-                }
-                if (rs_have == 0) {
-                        _rs_rekey(NULL, 0);
+            memcpy(buf, rs_buf + RSBUFSZ - rs_have, m);
+            _rs_memzero(rs_buf + RSBUFSZ - rs_have, m);
+            buf += m;
+            n -= m;
+            rs_have -= m;
         }
+        if (rs_have == 0) {
+            _rs_rekey(NULL, 0);
         }
+    }
 }
 
 static inline void
 _rs_random_u32(crypto_uint4 *val)
 {
-        _rs_stir_if_needed(sizeof(*val));
-        if (rs_have < sizeof(*val)) {
-                _rs_rekey(NULL, 0);
+    _rs_stir_if_needed(sizeof(*val));
+    if (rs_have < sizeof(*val)) {
+        _rs_rekey(NULL, 0);
     }
-        memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
-        _rs_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
-        rs_have -= sizeof(*val);
+    memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
+    _rs_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
+    rs_have -= sizeof(*val);
 }
 
 void
@@ -261,20 +261,20 @@ alt_arc4random_close(void)
 crypto_uint4
 alt_arc4random(void)
 {
-        crypto_uint4 val;
+    crypto_uint4 val;
 
-        _alt_arc4_LOCK();
-        _rs_random_u32(&val);
-        _alt_arc4_UNLOCK();
-        return val;
+    _alt_arc4_LOCK();
+    _rs_random_u32(&val);
+    _alt_arc4_UNLOCK();
+    return val;
 }
 
 void
 alt_arc4random_buf(void *_buf, size_t n)
 {
-        _alt_arc4_LOCK();
-        _rs_random_buf(_buf, n);
-        _alt_arc4_UNLOCK();
+    _alt_arc4_LOCK();
+    _rs_random_buf(_buf, n);
+    _alt_arc4_UNLOCK();
 }
 
 /*
