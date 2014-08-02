@@ -171,7 +171,7 @@ static void help(void)
          "                [-q <upload ratio>] [-Q <download ratio>]\n"
          "                [-r <allow client ip>/<mask>] [-R <deny client ip>/<mask>]\n"
          "                [-i <allow local ip>/<mask>] [-I <deny local ip>/<mask>]\n"
-     "                [-y <max number of concurrent sessions>]\n"
+         "                [-y <max number of concurrent sessions>]\n"
          "                [-z <hhmm>-<hhmm>] [-m]\n"
          "\n"
          "pure-pw usermod <login> -f <passwd file> -u <uid> [-g <gid>]\n"
