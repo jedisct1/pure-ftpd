@@ -109,7 +109,7 @@ Let's have a look at its content:
 joe:$1$LX/3.F60$bYdYwsQOYIaWq.Ko.hfI3.:500:101::/home/ftpusers/joe/./:::::::::::::
 
 Passwords are hashed with the best one-way hash function your system supports.
-Hashes are tried in this order: Blowfish, MD5, multiple DES, simple DES.
+Hashes are tried in this order: Scrypt, Blowfish, MD5, multiple DES, simple DES.
 
 
        ------------------------ CHANGING INFO ------------------------

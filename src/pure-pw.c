@@ -19,6 +19,10 @@
 # include <getopt.h>
 #endif
 
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
+
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
 #endif
@@ -225,6 +229,19 @@ static char *best_crypt(const char * const pwd)
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
     const char *crypted;
 
+#ifdef HAVE_LIBSODIUM
+    {
+        static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
+
+        if (crypto_pwhash_scryptsalsa208sha256_str
+            (hash, pwd, strlen(pwd),
+             crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+             crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) != 0) {
+            no_mem();
+        }
+        return hash;
+    }
+#endif
     if ((crypted = (const char *)      /* Blowfish */
          crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
         strcmp(crypted,

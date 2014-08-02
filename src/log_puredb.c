@@ -8,6 +8,10 @@
 #include "pure-pw.h"
 #include "../puredb/src/puredb_read.h"
 
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
+
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
 #endif
@@ -210,11 +214,23 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     }
     {
         const char *crypted;
+        int         ret = -1;
 
-        if ((crypted = (const char *) crypt(pwd, line)) == NULL ||
-            strcmp(line, crypted) != 0) {
-
-            return -1;
+#ifdef HAVE_LIBSODIUM
+        if (line[0] == '$' && line[1] == '7' && line[2] == '$') {
+            ret = crypto_pwhash_scryptsalsa208sha256_str_verify
+                (line, pwd, strlen(pwd));
+            if (ret != 0) {
+                return -1;
+            }
+        } else
+#endif
+        {
+            ret = - ((crypted = (const char *) crypt(pwd, line)) == NULL ||
+                     strcmp(line, crypted) != 0);
+            if (ret != 0) {
+                return -1;
+            }
         }
     }
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL || *line == 0) {   /* uid */

@@ -34,7 +34,9 @@
 #ifdef WITH_BONJOUR
 # include "bonjour.h"
 #endif
-
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
 #endif
@@ -1739,14 +1741,17 @@ void dopass(char *password)
         return;
     }
     authresult = pw_check(account, password, &ctrlconn, &peer);
+#ifdef HAVE_LIBSODIUM
+    sodium_memzero(password, strlen(password));
+#else
     {
-        /* Clear password from memory, paranoia */        
         volatile char *password_ = (volatile char *) password;
         
         while (*password_ != 0) {
             *password_++ = 0;
         }
     }
+#endif
     if (authresult.auth_ok != 1) {
         tapping++;
         randomsleep(tapping);

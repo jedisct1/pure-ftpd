@@ -950,6 +950,8 @@ dnl Checks for libraries.
 
 AC_CHECK_LIB(crypt, crypt, , )
 
+AC_CHECK_LIB(sodium, crypto_pwhash_scryptsalsa208sha256_str)
+
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_MMAP
