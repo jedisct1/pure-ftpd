@@ -48,8 +48,8 @@ AUTHD_ENCRYPTED
 
 They are self-explanatory. Previous global environment variables aren't
 cleared when the script is called. The content of these variables is
-_not_ quoted. If you are using shell scripts to process them, don't
-forget the quotes.
+_not_ quoted. They may contain special characters. They are under the
+control of a possibly malicious remote user.
 
 The program must respond on the standard output with lines like:
 
