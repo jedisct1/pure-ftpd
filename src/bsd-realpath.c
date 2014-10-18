@@ -217,9 +217,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
         }
         
         /*
-         * Append the next path component and lstat() it. If
-         * lstat() fails we still can return successfully if
-         * there are no more path components left.
+         * Append the next path component and lstat() it.
          */
         resolved_len = strlcat(resolved, next_token, PATH_MAX);
         if (resolved_len >= PATH_MAX) {
@@ -227,10 +225,6 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
             return NULL;
         }
         if (lstat(resolved, &sb) != 0) {
-            if (errno == ENOENT && p == NULL) {
-                errno = serrno;
-                return resolved;
-            }
             return NULL;
         }
         if (S_ISLNK(sb.st_mode)) {
@@ -268,13 +262,16 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
                     symlink[slen] = '/';
                     symlink[slen + 1] = 0;
                 }
-                left_len = strlcat(symlink, left, sizeof left);
+                left_len = strlcat(symlink, left, sizeof symlink);
                 if (left_len >= sizeof left) {
                     errno = ENAMETOOLONG;
                     return NULL;
                 }
             }
             left_len = strlcpy(left, symlink, sizeof left);
+        } else if (!S_ISDIR(sb.st_mode) && p != NULL) {
+            errno = ENOTDIR;
+            return NULL;
         }
     }
     
