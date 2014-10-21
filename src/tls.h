@@ -39,7 +39,7 @@ extern
     int tls_data_cnx_handshaked;
 
 /* The minimal number of bits we accept for a cipher */
-# define MINIMAL_CIPHER_KEY_LEN 40
+# define MINIMAL_CIPHER_KEY_LEN 128
 
 #endif
 #endif
