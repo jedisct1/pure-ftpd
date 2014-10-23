@@ -4579,7 +4579,6 @@ void dornfr(char *name)
 void dornto(char *name)
 {
 #ifdef QUOTAS    
-    off_t source_file_size = (off_t) -1;
     off_t target_file_size = (off_t) -1;
     int files_count = 0;
     long long bytes = 0LL;
@@ -4607,7 +4606,6 @@ void dornto(char *name)
             addreply_noformat(550, MSG_RENAME_FAILURE);
             goto bye;
         }
-        source_file_size = st_source.st_size;
         if (stat(name, &st_target) != 0) {
             if (errno == ENOENT) {
                 target_file_size = (off_t) -1;
