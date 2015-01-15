@@ -26,28 +26,19 @@ AX_CHECK_COMPILE_FLAG([-fPIC], [
     [CFLAGS="$CFLAGS -fPIC"]
   )
 ])
-
 AS_IF([test "$enable_pie" != "no"],[
   AX_CHECK_COMPILE_FLAG([-fPIE], [
-    AX_CHECK_LINK_FLAG([-fPIE], [
-        AX_CHECK_LINK_FLAG([-Wl,-pie], [
-            CFLAGS="$CFLAGS -fPIE"
-            LDFLAGS="$LDFLAGS -Wl,-pie"
-        ], [
-            AX_CHECK_LINK_FLAG([-pie], [
-                CFLAGS="$CFLAGS -fPIE"
-                LDFLAGS="$LDFLAGS -pie"
-            ])
-        ])
+    AX_CHECK_LINK_FLAG([-fPIE],
+      [AX_CHECK_LINK_FLAG([-pie],
+        [CFLAGS="$CFLAGS -fPIE"
+         LDFLAGS="$LDFLAGS -pie"])
     ])
   ])
 ])
 
+AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
-AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"], [
-  AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
-])
-
+AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
 AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
   AX_CHECK_LINK_FLAG([-Wl,--dynamicbase], [LDFLAGS="$LDFLAGS -Wl,--dynamicbase"])
   AX_CHECK_LINK_FLAG([-Wl,--nxcompat], [LDFLAGS="$LDFLAGS -Wl,--nxcompat"])
