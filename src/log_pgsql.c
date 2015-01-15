@@ -382,6 +382,8 @@ void pw_pgsql_check(AuthResult * const result,
 {
     PGconn *id_sql_server = NULL;
     const char *spwd = NULL;           /* stored password */
+    const char *salt = NULL;           /* stored salt */
+    char * salted_password = NULL;     /* will point to salted password */
     const char *uid = sql_default_uid; /* stored system login/uid */
     const char *gid = sql_default_gid; /* stored system group/gid */
     const char *dir = NULL;            /* stored home directory */
@@ -461,6 +463,15 @@ void pw_pgsql_check(AuthResult * const result,
     if (pw_pgsql_simplequery(id_sql_server, PGSQL_TRANSACTION_START) == 0) {
         committed = 0;
     }
+    if (strcasecmp(salting, SALT_SQL_NONE) != 0) {
+        salt = pw_pgsql_getquery(id_sql_server, sqlreq_getsalt,
+                                 escaped_account, escaped_ip,
+                                 escaped_port, escaped_peer_ip,
+                                 escaped_decimal_ip);
+        if (salt == NULL) {
+            goto bye;
+        }
+    }
     if ((spwd = pw_pgsql_getquery(id_sql_server, sqlreq_getpw,
                                   escaped_account, escaped_ip,
                                   escaped_port, escaped_peer_ip,
@@ -505,33 +516,48 @@ void pw_pgsql_check(AuthResult * const result,
     } else {                           /* default to plaintext */
         crypto_plain++;
     }
+
+    if (salt != NULL) {
+        int salted_pw_size = strlen(salt) + strlen(password) + 1;
+        salted_password = (char *) malloc(salted_pw_size);
+
+        if (strcasecmp(salting, SALT_SQL_APPEND) == 0) {
+            strcpy(salted_password, password);
+            strcat(salted_password, salt);
+        } else if (strcasecmp(salting, SALT_SQL_PREPEND) == 0) {
+            strcpy(salted_password, salt);
+            strcat(salted_password, password);
+        }
+    } else {
+        salted_password = (char *) malloc(strlen(password) + 1);
+        strcpy(salted_password, password);
+    }
+
     if (crypto_crypt != 0) {
         const char *crypted;
-        
-        if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
+        if ((crypted = (const char *) crypt(salted_password, spwd)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
     if (crypto_md5 != 0) {
         const char *crypted;
-        
-        if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
+        if ((crypted = (const char *) crypto_hash_md5(salted_password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
     if (crypto_sha1 != 0) {
         const char *crypted;
-        
-        if ((crypted = (const char *) crypto_hash_sha1(password, 1)) != NULL &&
+        if ((crypted = (const char *) crypto_hash_sha1(salted_password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
     if (crypto_plain != 0) {
-        if (*password != 0 &&    /* refuse null cleartext passwords */
-            strcmp(password, spwd) == 0) {
+        logfile(LOG_DEBUG, "Plain password -> no encryption, but NULL will be refused.");
+        if (*salted_password != 0 &&    /* refuse null cleartext passwords */
+            strcmp(salted_password, spwd) == 0) {
             goto auth_ok;
         }
     }
@@ -644,6 +670,13 @@ void pw_pgsql_check(AuthResult * const result,
         PQfinish(id_sql_server);
     }
     free((void *) spwd);
+    free((void *) salt);
+    /* Clear salted_password from memory, paranoia */        
+    volatile char *salted_password_ = (volatile char *) salted_password;
+    while (*salted_password_ != 0) {
+        *salted_password_++ = 0;
+    }
+    free((void *) salted_password);
     if (uid != sql_default_uid) {
         free((void *) uid);
     }
@@ -686,6 +719,11 @@ void pw_pgsql_parse(const char * const file)
         }
         free(port_s);
         port_s = NULL;
+    }
+    if(salting == NULL || 
+        (strcasecmp(salting, SALT_SQL_APPEND) && strcasecmp(salting, SALT_SQL_PREPEND) && strcasecmp(salting, SALT_SQL_NONE)))
+    {
+        die(421, LOG_ERR, MSG_CONF_ERR ": " MSG_INVALID_SALTING_METHOD, salting);
     }
 }
 

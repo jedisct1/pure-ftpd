@@ -10,7 +10,9 @@ static char *user;
 static char *pw;
 static char *db;
 static char *crypto;
+static char *salting;
 static char *sqlreq_getpw;
+static char *sqlreq_getsalt;
 static char *sqlreq_getuid;
 static char *sqlreq_getgid;
 static char *sqlreq_getdir;
@@ -37,7 +39,9 @@ static ConfigKeywords pgsql_config_keywords[] = {
     { "PGSQLPassword", &pw },
     { "PGSQLDatabase", &db },    
     { "PGSQLCrypt", &crypto },
+    { "PGSQLSalting", &salting },
     { "PGSQLGetPW", &sqlreq_getpw },
+    { "PGSQLGetSalt", &sqlreq_getsalt },
     { "PGSQLGetUID", &sqlreq_getuid },
     { "PGSQLDefaultUID", &sql_default_uid },
     { "PGSQLGetGID", &sqlreq_getgid },
