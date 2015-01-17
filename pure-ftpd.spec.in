@@ -15,6 +15,7 @@
 %define con_uploadscript 1
 %define con_virtualhosts 1
 %define con_virtualchroot 1
+%define con_virtualdirs 1
 %define con_altlog 1
 %define con_cookie 1
 %define con_throttling 1
@@ -57,6 +58,7 @@
 %{?with_uploadscript:%define con_uploadscript 1}
 %{?with_virtualhosts:%define con_virtualhosts 1}
 %{?with_virtualchroot:%define con_virtualchroot 1}
+%{?with_virtualdirs:%define con_virtualdirs 1}
 %{?with_altlog:%define con_altlog 1}
 %{?with_cookie:%define con_cookie 1}
 %{?with_throttling:%define con_throttling 1}
@@ -155,6 +157,9 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} \
 %endif  
 %if %{con_virtualchroot}
   --with-virtualchroot \
+%endif
+%if %{con_virtualdirs}
+  --with-virtualdirs \
 %endif  
 %if %{con_altlog}
   --with-altlog \

@@ -24,6 +24,7 @@ static char *sql_default_uid;
 static char *sqlreq_getgid;
 static char *sql_default_gid;
 static char *sqlreq_getdir;
+static char *sql_getvirtualdirs;
 static char *tildexp_s;
 static int tildexp;
 #ifdef QUOTAS
@@ -55,6 +56,7 @@ static ConfigKeywords mysql_config_keywords[] = {
     { "MYSQLGetGID", &sqlreq_getgid },
     { "MYSQLDefaultGID", &sql_default_gid },
     { "MYSQLGetDir", &sqlreq_getdir },
+    { "MYSQLGetVirtualDirs", &sql_getvirtualdirs },
     { "MYSQLForceTildeExpansion", &tildexp_s },
 #ifdef QUOTAS
     { "MYSQLGetQTAFS", &sqlreq_getqta_fs },    

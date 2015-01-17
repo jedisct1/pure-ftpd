@@ -278,6 +278,16 @@ is very useful for having shared directories (for instance, have a symbolic
 link to /var/incoming in every home directory) .
 This feature isn't enabled by default.
 
+--with-virtualdirs: this feature will only work in conjunction with the
+virtual chroot option enabled, as well as either MySQL or PGSQL
+authentication enabled.  It allows management of specific paths outside a
+virtual chroot jail through the usage of a database table.  With this option
+enabled, a user can access paths specified by a user-specific database query
+that are accessible to the user without a symbolic link present, as would
+normally be required for a virtual chroot jail.  Please see the PGSQL or
+MySQL documentation for specifics on how to utilize this option correctly
+and effectively.
+
 --with-virtualhosts: support virtual hosting. It means that you can have
 different anonymouns FTP areas for each IP address. If your server has only
 one IP address, you don't need that feature. But if you have multiple IP

@@ -152,6 +152,14 @@ Using these directives overrides PGSQLGetUID and PGSQLGetGID.
 
 Individual settings can be set for every user, using optional queries.
 
+- PGSQLGetVirtualDirs grabs a result set of key pairs containing a virtual
+path (/virtual-path) from the root and a real filesystem path
+(/real/path/in/system).  The table should contain 3 columns: User, Virtual
+Path, and Real Path.
+
+Example:
+PGSQLGetVirtualDirs  SELECT "Virtual", "Real" FROM "virtualdirs" WHERE "User"='\L'
+
 - PGSQLGetQTAFS is the maximal number of files a user can store in his home
 directory.
 
