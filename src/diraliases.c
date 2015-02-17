@@ -112,6 +112,7 @@ int init_aliases(void)
     return 0;
 
     bad:
+    fclose(fp);
     logfile(LOG_ERR, MSG_ALIASES_BROKEN_FILE " [" ALIASES_FILE "]");
 
     return -1;
