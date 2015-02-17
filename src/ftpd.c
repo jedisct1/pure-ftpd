@@ -5629,7 +5629,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             if ((struck = strchr(optarg, ',')) != NULL) {
                 *struck = 0;
                 if (*optarg != 0) {
-                    if ((standalone_ip = strdup(optarg)) == NULL) {
+                    if (standalone_ip == NULL &&
+                        (standalone_ip = strdup(optarg)) == NULL) {
                         die_mem();
                     }
                 }
