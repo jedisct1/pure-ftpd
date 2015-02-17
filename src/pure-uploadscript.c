@@ -35,11 +35,11 @@ static int upload_pipe_ropen(void)
     again:
     if ((upload_pipe_fd =
          open(UPLOAD_PIPE_FILE, O_RDONLY | O_NOFOLLOW)) == -1) {
-    if (tries > 0) {
-        tries--;
-        (void) sleep(OPEN_DELAY);
-        goto again;
-    }
+        if (tries > 0) {
+            tries--;
+            (void) sleep(OPEN_DELAY);
+            goto again;
+        }
         perror("Unable to open " UPLOAD_PIPE_FILE);
         return -1;
     }
