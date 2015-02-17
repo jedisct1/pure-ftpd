@@ -272,7 +272,7 @@ static int parseoptions(int argc, char *argv[])
             nptr = optarg;
             endptr = NULL;
             uid = (uid_t) strtoul(nptr, &endptr, 10);
-            if (!nptr || !*nptr || !endptr || *endptr) {
+            if (!*nptr || !endptr || *endptr) {
                 perror("Illegal UID - Must be a number\n");
             }
             break;
