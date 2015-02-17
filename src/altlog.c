@@ -126,12 +126,14 @@ static char *urlencode(const char *filename)
     do {
         if (NO_URLENCODE(c)) {
             if (quoted_filename_size <= (size_t) 1U) {
+                free(quoted_filename);
                 return NULL;
             }
             quoted_filename_size--;
             *quoted_filename_ptr++ = c;
         } else {
             if (quoted_filename_size <= (size_t) 3U) {
+                free(quoted_filename);
                 return NULL;
             }
             quoted_filename_size -= (size_t) 3U;
