@@ -53,6 +53,7 @@ static int upload_pipe_ropen(void)
 #endif
         ) {
         fprintf(stderr, "Insecure permissions on " UPLOAD_PIPE_FILE "\n");
+        (void) close(upload_pipe_fd);
         return -1;
     }
     return upload_pipe_fd;
