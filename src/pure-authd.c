@@ -143,7 +143,7 @@ static int parseoptions(int argc, char *argv[])
         }
 #endif
         case 'r': {
-            if ((script = strdup(optarg)) == NULL) {
+            if (script == NULL && (script = strdup(optarg)) == NULL) {
                 perror("Oh no ! More memory !");
             }
             break;
