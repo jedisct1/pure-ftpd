@@ -5992,7 +5992,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
 #endif
         case 'P': {
-            if ((force_passive_ip_s = strdup(optarg)) == NULL) {
+            if (force_passive_ip_s == NULL &&
+                (force_passive_ip_s = strdup(optarg)) == NULL) {
                 die_mem();
             }
             break;
