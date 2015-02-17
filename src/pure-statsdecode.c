@@ -60,13 +60,17 @@ int main(int argc, char *argv[])
                 instamp = -1;
                 date = (time_t) strtoul(timestamp, NULL, 10);
                 tm = localtime(&date);
-                printf("%d/%02d/%02d %02d:%02d:%02d ",
-                       tm->tm_year + 1900,
-                       tm->tm_mon + 1,
-                       tm->tm_mday,
-                       tm->tm_hour,
-                       tm->tm_min,
-                       tm->tm_sec);
+                if (tm == NULL) {
+                    printf("- - ");
+                } else{
+                    printf("%d/%02d/%02d %02d:%02d:%02d ",
+                           tm->tm_year + 1900,
+                           tm->tm_mon + 1,
+                           tm->tm_mday,
+                           tm->tm_hour,
+                           tm->tm_min,
+                           tm->tm_sec);
+                }
             }
         } else {
             if (c == '\n' || !ISCTRLCODE(c)) {
