@@ -97,7 +97,11 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             if (STORAGE_FAMILY(*sa) != AF_INET || netbits == 0U) {
                 return -1;
             }
-            ip = (ip0 << 24) | (ip1 << 16) | (ip2 << 8) | ip3;
+            ip =
+                ((unsigned long) ip0 << 24) |
+                ((unsigned long) ip1 << 16) |
+                ((unsigned long) ip2 << 8) |
+                (unsigned long) ip3;
             ipcheck_ipdone:
             mask = ~((0x80000000 >> (netbits - 1U)) - 1U);
             saip_raw = (const unsigned char *) &(STORAGE_SIN_ADDR(*sa));
