@@ -6132,7 +6132,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
 #ifdef WITH_VIRTUAL_HOSTS
         case 'V': {
-            if ((trustedip = malloc(sizeof *trustedip)) == NULL) {
+            if (trustedip == NULL &&
+                (trustedip = malloc(sizeof *trustedip)) == NULL) {
                 die_mem();
             }
             if (generic_aton(optarg, trustedip) != 0) {
