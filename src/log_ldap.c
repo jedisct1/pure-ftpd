@@ -356,7 +356,8 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
         strcasecmp(pw_enabled, "TRUE") != 0) {
         goto error;
     }
-
+    free((void *) pw_enabled);
+    pw_enabled = NULL;
 #ifdef QUOTAS
     if ((quota_files = pw_ldap_getvalue(ld, res, LDAP_QUOTAFILES)) != NULL) {
         const unsigned long long q = strtoull(quota_files, NULL, 10);
