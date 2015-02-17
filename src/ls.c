@@ -827,11 +827,11 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     } else {
         opt_a = opt_a_;
     }
-    if (split_args != 0) {
+    if (split_args != 0 && arg != NULL) {
         while (isspace((unsigned char) *arg)) {
             arg++;
         }
-        while (arg && *arg == '-') {
+        while (*arg == '-') {
             while (arg++ && isalnum((unsigned char) *arg)) {
                 switch (*arg) {
                 case 'a':
