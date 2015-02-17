@@ -131,8 +131,11 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                     (((const struct sockaddr_in *) (void *)
                       (res->ai_addr))->sin_addr.s_addr);
 
-                ip = (ip_raw[0] << 24) | (ip_raw[1] << 16) |
-                    (ip_raw[2] << 8) | ip_raw[3];
+                ip =
+                    ((unsigned long) ip_raw[0] << 24) |
+                    ((unsigned long) ip_raw[1] << 16) |
+                    ((unsigned long) ip_raw[2] << 8) |
+                    (unsigned long) ip_raw[3];
                 netbits = 32U;
                 freeaddrinfo(res);
                 goto ipcheck_ipdone;
