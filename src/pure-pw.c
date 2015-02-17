@@ -1283,6 +1283,7 @@ int main(int argc, char *argv[])
     pwinfo.home = NULL;
     pwinfo.allow_local_ip = pwinfo.deny_local_ip = NULL;
     pwinfo.allow_client_ip = pwinfo.deny_client_ip = NULL;
+    pwinfo.bw_dl = pwinfo.bw_ul = 0UL;
     pwinfo.has_bw_dl = 0;
     pwinfo.has_bw_ul = 0;
     pwinfo.has_quota_files = 0;
