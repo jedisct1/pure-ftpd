@@ -3409,13 +3409,13 @@ void doretr(char *name)
         shm_data_cur->download_current_size = restartat;
         shm_data_cur->restartat = restartat;
         (void) time(&shm_data_cur->xfer_date);
-        if (sl < sizeof shm_data_cur->filename - 1U) {
-            /* no overflow, see the previous line */
-            strcpy(shm_data_cur->filename, name);   /* audited - ok */
+        if (sl < sizeof shm_data_cur->filename) {
+            memcpy(shm_data_cur->filename, name, sl);
+            shm_data_cur->filename[sl] = 0;
         } else {
-            /* same thing here, no possible buffer overflow, keep cool */
-            strcpy(shm_data_cur->filename,   /* audited - ok */
-                   &name[sl - sizeof shm_data_cur->filename + 1U]);
+            memcpy(shm_data_cur->filename,
+                   &name[sl - sizeof shm_data_cur->filename - 1U],
+                   sizeof shm_data_cur->filename);
         }
         ftpwho_unlock();
     }
