@@ -230,18 +230,16 @@ static char *best_crypt(const char * const pwd)
     const char *crypted;
 
 #ifdef HAVE_LIBSODIUM
-    {
-        static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
+    static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
 
-        if (crypto_pwhash_scryptsalsa208sha256_str
-            (hash, pwd, strlen(pwd),
-             crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
-             crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) != 0) {
-            no_mem();
-        }
-        return hash;
+    if (crypto_pwhash_scryptsalsa208sha256_str
+        (hash, pwd, strlen(pwd),
+            crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+            crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) != 0) {
+        no_mem();
     }
-#endif
+    return hash;
+#else
     if ((crypted = (const char *)      /* Blowfish */
          crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
         strcmp(crypted,
@@ -305,6 +303,7 @@ static char *best_crypt(const char * const pwd)
 
         return (char *) crypt(pwd, salt);
     }
+#endif
 }
 
 char *newpasswd_filename(const char * const file)
