@@ -379,7 +379,10 @@ void parser(void)
             addreply(221, MSG_GOODBYE,
                      (unsigned long long) ((uploaded + 1023ULL) / 1024ULL),
                      (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
+#ifdef WITH_RFC2640
+            free(narg);
             return;
+#endif
         } else if (!strcmp(cmd, "syst")) {
             antiidle();
             addreply_noformat(215, "UNIX Type: L8");
