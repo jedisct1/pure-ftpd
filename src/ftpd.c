@@ -5950,7 +5950,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
                     MSG_CONF_ERR ": " MSG_SANITY_FILE_FAILURE,
                     delpoint);
             }
-            if ((altlog_filename = strdup(delpoint)) == NULL) {
+            if (altlog_filename == NULL &&
+                (altlog_filename = strdup(delpoint)) == NULL) {
                 die_mem();
             }
             (void) free(optarg_copy);
