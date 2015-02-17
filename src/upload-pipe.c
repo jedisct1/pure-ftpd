@@ -43,6 +43,7 @@ int upload_pipe_open(void)
 # endif
         ) {
         unlink(UPLOAD_PIPE_LOCK);
+        (void) close(upload_pipe_lock);
         goto anew;
     }
     anew2:
@@ -54,6 +55,7 @@ int upload_pipe_open(void)
     }
     if (upload_pipe_fd == -1) {
         if (mkfifo(UPLOAD_PIPE_FILE, (mode_t) 0600) < 0) {
+            upload_pipe_close();
             return -1;
         }
         goto anew2;
@@ -66,6 +68,7 @@ int upload_pipe_open(void)
         st.st_uid != (uid_t) 0
 # endif
         ) {
+        upload_pipe_close();
         return -1;                       /* Don't fight, I'm too old for that */
     }
     if (lstat(UPLOAD_PIPE_FILE, &st) < 0 ||
@@ -77,6 +80,7 @@ int upload_pipe_open(void)
 # endif
         ) {
         unlink(UPLOAD_PIPE_FILE);       /* Okay, fight a bit :) */
+        (void) close(upload_pipe_fd);
         goto anew2;
     }
 
