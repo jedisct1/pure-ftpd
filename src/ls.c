@@ -770,8 +770,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                 goto toomany;
             }
             if (chdir("..")) {    /* defensive in the extreme... */
-                chdir(wd);
-                if (chdir(name)) {    /* someone rmdir()'d it? */
+                if (chdir(wd) || chdir(name)) {    /* someone rmdir()'d it? */
                     die(421, LOG_ERR, "chdir: %s" ,
                         strerror(errno));
                 }
