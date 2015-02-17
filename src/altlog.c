@@ -1,6 +1,6 @@
 
 /*
- * Alternative logging formats for Pure-FTPd 
+ * Alternative logging formats for Pure-FTPd
  */
 
 #include <config.h>
@@ -21,8 +21,8 @@ static int altlog_write(const char *str)
 {
     struct flock lock;
     ssize_t left;
-    
-    if (altlog_fd == -1 || str == NULL || 
+
+    if (altlog_fd == -1 || str == NULL ||
         (left = (ssize_t) strlen(str)) <= (ssize_t) 0) {
         return -1;
     }
@@ -36,13 +36,13 @@ static int altlog_write(const char *str)
 # ifdef ESPIPE
         && errno != ESPIPE
 # endif
-	) {
+        ) {
         return -1;
     }
     (void) safe_write(altlog_fd, str, (size_t) left, -1);
     lock.l_type = F_UNLCK;
-    while (fcntl(altlog_fd, F_SETLK, &lock) < 0 && errno == EINTR);    
-    
+    while (fcntl(altlog_fd, F_SETLK, &lock) < 0 && errno == EINTR);
+
     return 0;
 }
 
@@ -61,7 +61,7 @@ static int altlog_writexfer_stats(const int upload,
     const char *account_ = *account != 0 ? account : "-";
     char *alloca_line;
     size_t line_size;
-    
+
     line_size = 16U /* now */ + 1U + 16U /* start */ + 1U /* . */ +
         16U /* pid */ + 1U + strlen(account_) + 1U + strlen(host_) + 1U +
         1U /* U/D */ + 1U + 20U /* size */ + 1U + 16U /* duration */ +
@@ -79,11 +79,11 @@ static int altlog_writexfer_stats(const int upload,
                           (unsigned long long) size,
                           (unsigned long) (duration + 0.5),
                           filename), line_size)) {
-        altlog_write(alloca_line);        
+        altlog_write(alloca_line);
     }
-                          
+
     ALLOCA_FREE(alloca_line);
-    
+
     return 0;
 }
 
@@ -101,7 +101,7 @@ static char *urlencode(const char *filename)
     const char *ptr = filename;
     char *quoted_filename;
     char *quoted_filename_ptr;
-    size_t quoted_filename_size = (size_t) 1U;  
+    size_t quoted_filename_size = (size_t) 1U;
     int need_quote = 0;
     char c;
 
@@ -128,13 +128,13 @@ static char *urlencode(const char *filename)
             if (quoted_filename_size <= (size_t) 1U) {
                 return NULL;
             }
-            quoted_filename_size--;         
+            quoted_filename_size--;
             *quoted_filename_ptr++ = c;
         } else {
             if (quoted_filename_size <= (size_t) 3U) {
                 return NULL;
             }
-            quoted_filename_size -= (size_t) 3U;            
+            quoted_filename_size -= (size_t) 3U;
             *quoted_filename_ptr++ = '%';
             *quoted_filename_ptr++ = HEXD(((unsigned char) c) >> 4);
             *quoted_filename_ptr++ = HEXD(((unsigned char) c) & 0xf);
@@ -142,7 +142,7 @@ static char *urlencode(const char *filename)
         ptr++;
     } while ((c = *ptr) != 0);
     *quoted_filename_ptr = 0;
-    
+
     return quoted_filename;
 }
 
@@ -152,7 +152,7 @@ static int altlog_writexfer_clf(const int upload,
                                 const char * const filename,
                                 const off_t size)
 {
-    char date[sizeof "13/Apr/1975:12:34:56 +0100"];     
+    char date[sizeof "13/Apr/1975:12:34:56 +0100"];
     struct tm *tm;
     char *alloca_line;
     const char *host_ = *host != 0 ? host : "-";
@@ -167,18 +167,18 @@ static int altlog_writexfer_clf(const int upload,
         (tm = localtime(&now)) == NULL ||
         tm->tm_mon > 11 || tm->tm_mon < 0) {
         return -1;
-    }    
+    }
 # ifdef HAVE_STRUCT_TM_TM_GMTOFF
     diff = -(tm->tm_gmtoff) / 60L;
 # elif defined(HAVE_SCALAR_TIMEZONE)
-    diff = -(timezone) / 60L;    
+    diff = -(timezone) / 60L;
 # else
     {
         struct tm gmt;
         struct tm *t;
         int days, hours, minutes;
-        
-        gmt = *gmtime(&now);    
+
+        gmt = *gmtime(&now);
         t = localtime(&now);
         days = t->tm_yday - gmt.tm_yday;
         hours = ((days < -1 ? 24 : 1 < days ? -24 : days * 24)
@@ -193,8 +193,8 @@ static int altlog_writexfer_clf(const int upload,
         sign = '-';
         diff = -diff;
     }
-    
-    if (SNCHECK(snprintf(date, sizeof date, 
+
+    if (SNCHECK(snprintf(date, sizeof date,
                          "%02d/%s/%d:%02d:%02d:%02d %c%02ld%02ld",
                          tm->tm_mday, months[tm->tm_mon], tm->tm_year + 1900,
                          tm->tm_hour, tm->tm_min, tm->tm_sec,
@@ -211,9 +211,9 @@ static int altlog_writexfer_clf(const int upload,
     if ((alloca_line = ALLOCA(line_size)) == NULL) {
         return -1;
     }
-    if (!SNCHECK(snprintf(alloca_line, line_size, 
+    if (!SNCHECK(snprintf(alloca_line, line_size,
                           "%s - %s [%s] \"%s %s\" 200 %llu\n",
-                          host_, account_, date, 
+                          host_, account_, date,
                           upload == 0 ? "GET" : "PUT", quoted_filename,
                           (unsigned long long) size), line_size)) {
         altlog_write(alloca_line);
@@ -222,7 +222,7 @@ static int altlog_writexfer_clf(const int upload,
         free(quoted_filename);
     }
     ALLOCA_FREE(alloca_line);
-    
+
     return 0;
 }
 
@@ -250,8 +250,8 @@ static int altlog_writexfer_xferlog(const int upload,
         tm->tm_mon > 11 || tm->tm_mon < 0 ||
         tm->tm_wday > 6 || tm->tm_wday < 0) {
         return -1;
-    }    
-    if (SNCHECK(snprintf(date, sizeof date, 
+    }
+    if (SNCHECK(snprintf(date, sizeof date,
                          "%s %s %02d %02d:%02d:%02d %d",
                          week_days[tm->tm_wday], months[tm->tm_mon],
                          tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec,
@@ -265,7 +265,7 @@ static int altlog_writexfer_xferlog(const int upload,
     if ((quoted_filename = ALLOCA(filename_size)) == NULL) {
         return -1;
     }
-    
+
     quoted_filename[filename_idx] = 0;
     do {
         filename_idx--;
@@ -275,10 +275,10 @@ static int altlog_writexfer_xferlog(const int upload,
         }
         quoted_filename[filename_idx] = c;
     } while (filename_idx > (size_t) 0U);
-    
+
     line_size = (sizeof date - 1U) + (sizeof " " - 1U) +
         (size_t) 16U /* duration */ + (sizeof " " - 1U) +
-        strlen(host_) + (sizeof " " - 1U) + 
+        strlen(host_) + (sizeof " " - 1U) +
         (size_t) 20U /* size */ + (sizeof " " - 1U) +
         (filename_size - 1U) + (sizeof " " - 1U) +
         (size_t) 1U /* type */ + (sizeof " _ " - 1U) +
@@ -289,7 +289,7 @@ static int altlog_writexfer_xferlog(const int upload,
         ALLOCA_FREE(quoted_filename);
         return -1;
     }
-    if (!SNCHECK(snprintf(alloca_line, line_size, 
+    if (!SNCHECK(snprintf(alloca_line, line_size,
                           "%s %lu %s %llu %s %c _ %c %c %s ftp 1 * c\n",
                           date, (unsigned long) (duration + 0.5),
                           host_, (unsigned long long) size,
@@ -302,7 +302,7 @@ static int altlog_writexfer_xferlog(const int upload,
     }
     ALLOCA_FREE(quoted_filename);
     ALLOCA_FREE(alloca_line);
-    
+
     return 0;
 }
 
@@ -334,7 +334,7 @@ static int altlog_writexfer_w3c(const int upload,
     gmt = *gmtime(&now);
     if ((quoted_filename = urlencode(filename)) == NULL) {
         return -1;
-    }   
+    }
     line_size = (sizeof "13-04-1975 12:34:56 " - 1U) +
         strlen(host_) + 1U + (sizeof "[]created" - 1U) + 1U +
         strlen(quoted_filename) + 1U + (sizeof "226" - 1U) +
@@ -397,8 +397,8 @@ int altlog_write_w3c_header(void)
     return 0;
 }
 
-/* 
- * We should define a structure of function pointers, 
+/*
+ * We should define a structure of function pointers,
  * and associate a structure with each logging type in AltLogPrefixes.
  * But yet we only have *three* logging methods, and the code would be
  * complicated for nothing. So let's stick with simple tests for now. -j.
@@ -420,7 +420,7 @@ int altlog_writexfer(const int upload,
         return altlog_writexfer_w3c(upload, filename, size, duration);
     case ALTLOG_XFERLOG:
         return altlog_writexfer_xferlog(upload, filename, size, duration);
-    }    
+    }
     return -1;
 }
 

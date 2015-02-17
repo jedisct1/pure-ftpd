@@ -21,7 +21,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
     static char outbuf[CONF_TCP_SO_SNDBUF];
     static size_t outcnt;
     size_t l;
-    
+
     if (s == NULL) {
         if (outcnt > (size_t) 0U) {
 #ifdef WITH_TLS
@@ -29,9 +29,9 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
                 if (secure_safe_write(tls_fd, outbuf, outcnt) !=
                     (ssize_t) outcnt) {
                     return;
-                } 
+                }
             } else
-#endif      
+#endif
             {
                 (void) tls_fd;
                 if (safe_write(f, outbuf, outcnt, -1) != (ssize_t) outcnt) {
@@ -52,7 +52,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
     }
     if (outcnt < sizeof outbuf) {
         const size_t rest = sizeof outbuf - outcnt;
-        
+
         memcpy(outbuf + outcnt, s, rest);   /* secure, see above */
         s += rest;
         l -= rest;
@@ -62,17 +62,17 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
         if (secure_safe_write(tls_fd, outbuf, sizeof outbuf) !=
             (ssize_t) sizeof outbuf) {
             return;
-        } 
+        }
     } else
 #endif
-    {       
+    {
         if (safe_write(f, outbuf, sizeof outbuf, -1) !=
             (ssize_t) sizeof outbuf) {
             return;
         }
     }
 #ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {    
+    if (data_protection_level == CPL_PRIVATE) {
         while (l > sizeof outbuf) {
             if (secure_safe_write(tls_fd, s, sizeof outbuf) !=
                 (ssize_t) sizeof outbuf) {
@@ -80,7 +80,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
             }
             s += sizeof outbuf;
             l -= sizeof outbuf;
-        } 
+        }
     } else
 #endif
     {
@@ -129,7 +129,7 @@ const char *getname(const uid_t uid)
     }
     if (
 # ifndef ALWAYS_RESOLVE_IDS
-        chrooted == 0 && 
+        chrooted == 0 &&
 # endif
         authresult.slow_tilde_expansion == 0) {
         pwd = getpwuid(uid);
@@ -142,19 +142,19 @@ const char *getname(const uid_t uid)
         die_mem();
     }
     if (pwd != NULL) {
-        if (SNCHECK(snprintf(p->name, (size_t) 11U, 
+        if (SNCHECK(snprintf(p->name, (size_t) 11U,
                              "%-10.10s", pwd->pw_name), (size_t) 11U)) {
             _EXIT(EXIT_FAILURE);
         }
     } else {
-        if (SNCHECK(snprintf(p->name, (size_t) 11U, "%-10d", uid), 
+        if (SNCHECK(snprintf(p->name, (size_t) 11U, "%-10d", uid),
                     (size_t) 11U)) {
             _EXIT(EXIT_FAILURE);
         }
     }
     p->next = user_head;
     user_head = p;
-    
+
     return p->name;
 }
 
@@ -168,9 +168,9 @@ const char *getgroup(const gid_t gid)
         if (p->gid == gid) {
             return p->name;
         }
-    } 
-# ifndef ALWAYS_RESOLVE_IDS   
-    if (chrooted == 0) 
+    }
+# ifndef ALWAYS_RESOLVE_IDS
+    if (chrooted == 0)
 # endif
     {
         pwd = getgrgid(gid);
@@ -188,14 +188,14 @@ const char *getgroup(const gid_t gid)
             _EXIT(EXIT_FAILURE);
         }
     } else {
-        if (SNCHECK(snprintf(p->name, (size_t) 11U, "%-10d", gid), 
+        if (SNCHECK(snprintf(p->name, (size_t) 11U, "%-10d", gid),
                     (size_t) 11U)) {
             _EXIT(EXIT_FAILURE);
         }
     }
     p->next = group_head;
     group_head = p;
-    
+
     return p->name;
 }
 #endif
@@ -257,24 +257,24 @@ static int listfile(const PureFileInfo * const fi, const char *name)
         }
         if ((rval = modernformat(n, alloca_nameline,
                                  sizeof_nameline, "")) < 0) {
-            ALLOCA_FREE(alloca_nameline);            
+            ALLOCA_FREE(alloca_nameline);
             return 0;
         }
         addfile(alloca_nameline, suffix);
         ALLOCA_FREE(alloca_nameline);
-        
+
         return rval;
     }
 #endif
     if (fi == NULL) {
         if (lstat(name, &st) < 0) {
             return 0;
-        }    
+        }
     } else {
         st.st_size = fi->size;
-        st.st_mtime = fi->mtime;        
+        st.st_mtime = fi->mtime;
         st.st_mode = fi->mode;
-        st.st_nlink = fi->nlink;        
+        st.st_nlink = fi->nlink;
         st.st_uid = fi->uid;
         st.st_gid = fi->gid;
         name = FI_NAME(fi);
@@ -293,7 +293,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
 # endif
         S_ISLNK(st.st_mode)) {
         struct stat sts;
-        
+
         if (stat(name, &sts) == 0 && !S_ISLNK(sts.st_mode)) {
             st = sts;
         }
@@ -337,7 +337,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
             char *alloca_nameline;
             const size_t sizeof_nameline = PATH_MAX + PATH_MAX + 128U;
             char timeline[6U];
-            
+
             if (st.st_mode & 0400) {
                 m[1] = 'r';
             }
@@ -370,7 +370,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
                 m[9] = (char) (st.st_mode & 01000 ? 't' : 'x');
             } else if (st.st_mode & 01000) {
                 m[9] = 'T';
-            }            
+            }
             if (time(NULL) - st.st_mtime > 180 * 24 * 60 * 60) {
                 if (SNCHECK(snprintf(timeline, sizeof timeline, "%5d",
                                      t->tm_year + 1900), sizeof timeline)) {
@@ -394,7 +394,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
                                  format,
                                  m, (unsigned int) st.st_nlink,
                                  getname(st.st_uid),
-                                 getgroup(st.st_gid), 
+                                 getgroup(st.st_gid),
                                  (unsigned long long) st.st_size,
                                  months[t->tm_mon],
                                  t->tm_mday, timeline, name),
@@ -403,10 +403,10 @@ static int listfile(const PureFileInfo * const fi, const char *name)
                 _EXIT(EXIT_FAILURE);
             }
             if (S_ISLNK(st.st_mode)) {
-                char *p = alloca_nameline + strlen(alloca_nameline);                
+                char *p = alloca_nameline + strlen(alloca_nameline);
                 {
                     ssize_t sx;
-                    
+
                     if ((sx = readlink(name, m, sizeof m - 1U)) > 0) {
                         m[sx] = 0;
                     } else {
@@ -427,16 +427,16 @@ static int listfile(const PureFileInfo * const fi, const char *name)
                 /* 2 * PATH_MAX + gap should be enough, but be paranoid... */
                 if (SNCHECK
                     (snprintf(p, (sizeof_nameline) - strlen(alloca_nameline),
-                              " -> %s", m), 
+                              " -> %s", m),
                      (sizeof_nameline) - strlen(alloca_nameline))) {
-                    ALLOCA_FREE(alloca_nameline);                    
+                    ALLOCA_FREE(alloca_nameline);
                     _EXIT(EXIT_FAILURE);
                 }
             }
             addfile(alloca_nameline, suffix);
-            ALLOCA_FREE(alloca_nameline);            
+            ALLOCA_FREE(alloca_nameline);
         }                    /* hide non-downloadable files */
-    } else {        
+    } else {
         if (S_ISREG(st.st_mode) ||
             S_ISDIR(st.st_mode) || S_ISLNK(st.st_mode)) {
             addfile(name, suffix);
@@ -541,19 +541,19 @@ static void outputfiles(int f, void * const tls_fd)
 
 /* functions to to sort for qsort() */
 static int cmp(const void * const a, const void * const b)
-{    
+{
     return strcmp(FI_NAME((const PureFileInfo *) a),
                   FI_NAME((const PureFileInfo *) b));
 }
 
 static int cmp_r(const void * const a, const void * const b)
-{    
+{
     return strcmp(FI_NAME((const PureFileInfo *) b),
                   FI_NAME((const PureFileInfo *) a));
 }
 
 static int cmp_t(const void * const a, const void * const b)
-{    
+{
     if (((const PureFileInfo *) a)->mtime < ((const PureFileInfo *) b)->mtime) {
         return 1;
     }
@@ -564,12 +564,12 @@ static int cmp_t(const void * const a, const void * const b)
 }
 
 static int cmp_rt(const void * const a, const void * const b)
-{    
+{
     return cmp_t(b, a);
 }
 
 static int cmp_S(const void * const a, const void * const b)
-{    
+{
     if (((const PureFileInfo *) a)->size < ((const PureFileInfo *) b)->size) {
         return 1;
     }
@@ -580,7 +580,7 @@ static int cmp_S(const void * const a, const void * const b)
 }
 
 static int cmp_rS(const void * const a, const void * const b)
-{    
+{
     return cmp_S(b, a);
 }
 
@@ -588,7 +588,7 @@ static PureFileInfo *sreaddir(char **names_pnt)
 {
     struct stat st;
     DIR *d;
-    struct dirent *de;    
+    struct dirent *de;
     PureFileInfo *files_info;
     PureFileInfo *file_info;
     size_t files_info_size;
@@ -598,7 +598,7 @@ static PureFileInfo *sreaddir(char **names_pnt)
     size_t names_counter = (size_t) 0U;
     size_t name_len;
     int (*cmp_func)(const void * const, const void * const);
-    
+
     if ((d = opendir(".")) == NULL) {
         return NULL;
     }
@@ -617,10 +617,10 @@ static PureFileInfo *sreaddir(char **names_pnt)
         if (checkprintable(de->d_name) != 0 || lstat(de->d_name, &st) < 0) {
             continue;
         }
-        name_len = strlen(de->d_name) + (size_t) 1U;        
+        name_len = strlen(de->d_name) + (size_t) 1U;
         while (names_counter + name_len >= names_size) {
             char *new_names;
-        
+
             if (name_len >= CHUNK_SIZE) {
                 names_size += name_len + CHUNK_SIZE;
             } else {
@@ -637,14 +637,14 @@ static PureFileInfo *sreaddir(char **names_pnt)
         }
         while ((files_info_counter + (size_t) 1U) >= files_info_size) {
             PureFileInfo *new_files_info;
-            
+
             files_info_size += (CHUNK_SIZE / sizeof *files_info);
-            if ((new_files_info = realloc(files_info, 
+            if ((new_files_info = realloc(files_info,
                                           files_info_size * sizeof *files_info)) == NULL) {
                 goto nomem;
             }
             files_info = new_files_info;
-        }        
+        }
         memcpy(&names[names_counter], de->d_name, name_len);   /* safe */
         names[names_counter + name_len - 1] = 0;
         file_info = &files_info[files_info_counter];
@@ -654,14 +654,14 @@ static PureFileInfo *sreaddir(char **names_pnt)
         file_info->mtime = st.st_mtime;
         file_info->mode = st.st_mode;
         file_info->nlink = st.st_nlink;
-        file_info->uid = st.st_uid;        
+        file_info->uid = st.st_uid;
         file_info->gid = st.st_gid;
         names_counter += name_len;
         files_info_counter++;
-    }    
+    }
     closedir(d);
     files_info[files_info_counter].name_offset = (size_t) -1;
-    *names_pnt = names;    
+    *names_pnt = names;
 
     if (opt_t) {
         if (opt_r) {
@@ -680,8 +680,8 @@ static PureFileInfo *sreaddir(char **names_pnt)
     } else {
         cmp_func = cmp;
     }
-    qsort(files_info, files_info_counter, sizeof files_info[0], cmp_func);    
-    
+    qsort(files_info, files_info_counter, sizeof files_info[0], cmp_func);
+
     return files_info;
 }
 
@@ -695,7 +695,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     PureFileInfo *r;
     char *c_buf;
     int d;
-    
+
     if (depth >= max_ls_depth || matches >= max_ls_files) {
         return;
     }
@@ -732,7 +732,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
         if (r->name_offset != (size_t) -1 && !chdir(FI_NAME(r))) {
             char *alloca_subdir;
             const size_t sizeof_subdir = PATH_MAX + 1U;
-            
+
             if ((alloca_subdir = ALLOCA(sizeof_subdir)) == NULL) {
                 goto toomany;
             }
@@ -747,7 +747,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 #endif
 #ifndef MINIMAL
             if (modern_listings == 0) {
-#endif                
+#endif
 #ifdef FANCY_LS_DIRECTORY_HEADERS
                 wrstr(f, tls_fd, "\r\n>----------------[");
                 wrstr(f, tls_fd, c_buf);
@@ -755,20 +755,20 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 #else
                 wrstr(f, tls_fd, "\r\n\r\n");
                 wrstr(f, tls_fd, c_buf);
-                wrstr(f, tls_fd, ":\r\n\r\n");                    
+                wrstr(f, tls_fd, ":\r\n\r\n");
 #endif
 #ifndef MINIMAL
             }
 #endif
-#ifdef WITH_RFC2640            
+#ifdef WITH_RFC2640
             free(c_buf);
-#endif            
+#endif
             listdir(depth + 1U, f, tls_fd, alloca_subdir);
             nolist:
             ALLOCA_FREE(alloca_subdir);
             if (matches >= max_ls_files) {
                 goto toomany;
-            }                
+            }
             if (chdir("..")) {    /* defensive in the extreme... */
                 chdir(wd);
                 if (chdir(name)) {    /* someone rmdir()'d it? */
@@ -787,8 +787,8 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 
 static char *unescape_and_return_next_file(char * const str) {
     char *pnt = str;
-    signed char seen_backslash = 0;    
-    
+    signed char seen_backslash = 0;
+
     while (*pnt != 0) {
         if (seen_backslash == 0) {
             if (*pnt == '\\') {
@@ -800,7 +800,7 @@ static char *unescape_and_return_next_file(char * const str) {
                 }
                 break;
             }
-            pnt++;            
+            pnt++;
         } else {
             seen_backslash = 0;
             if (*pnt == ' ' || *pnt == '\\' || *pnt == '{' || *pnt == '}') {
@@ -817,7 +817,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     int c;
     void *tls_fd = NULL;
     char *c_buf;
-    
+
     matches = 0U;
 
     opt_C = opt_d = opt_F = opt_R = opt_r = opt_t = opt_S = 0;
@@ -923,7 +923,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
 #endif
 
             /* Expand ~ here if needed */
-            
+
             alarm(GLOB_TIMEOUT);
             a = sglob(arg,
                       opt_a ? (GLOB_PERIOD | GLOB_LIMIT) : GLOB_LIMIT,
@@ -961,12 +961,12 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                     }
                     if (**path != 0) {
                         if (!justone) {
-#ifdef WITH_RFC2640                            
+#ifdef WITH_RFC2640
                             c_buf = charset_fs2client(*path);
 #else
                             c_buf = *path;
 #endif
-#ifdef FANCY_LS_DIRECTORY_HEADERS                            
+#ifdef FANCY_LS_DIRECTORY_HEADERS
                             wrstr(c, tls_fd, "\r\n>-----------------[");
                             wrstr(c, tls_fd, c_buf);
                             wrstr(c, tls_fd, "]-----------------<\r\n\r\n");
@@ -975,7 +975,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                             wrstr(c, tls_fd, c_buf);
                             wrstr(c, tls_fd, ":\r\n\r\n");
 #endif
-#ifdef WITH_RFC2640                            
+#ifdef WITH_RFC2640
                             free(c_buf);
 #endif
                         }
@@ -1012,7 +1012,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     if (on_ctrl_conn == 0) {
 #ifdef WITH_TLS
         closedata();
-#endif    
+#endif
         close(c);
     } else {
         addreply_noformat(213, "End.");

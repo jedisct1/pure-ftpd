@@ -28,15 +28,15 @@ int workaround_snprintf(char *str, size_t size, const char *format, ...)
 {
     int v;
     int r = 0;
-    
-    va_list va;    
-    va_start(va, format);    
+
+    va_list va;
+    va_start(va, format);
     v = vsnprintf(str, size, format, va);
     if (v < 0 || (ssize_t) v >= (ssize_t) size) {
         r--;
     }
     va_end(va);
-    
+
     return r;
 }
 #endif

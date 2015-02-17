@@ -11,14 +11,14 @@ static char *strdup(const char *str)
 {
     char *newstr;
     size_t str_len_1;
-    
+
     if (str == NULL ||
         (str_len_1 = strlen(str) + (size_t) 1U) <= (size_t) 0U ||
         (newstr = malloc(str_len_1)) == NULL) {
         return NULL;
     }
     memcpy(newstr, str, str_len_1);
-    
+
     return newstr;
 }
 #endif
@@ -172,7 +172,7 @@ static int writekeys(PureDBW * const dbw)
     do {
         {
             const puredb_u32_t offset_ = htonl((puredb_u32_t) offset);
-            
+
             if (fwrite(&offset_, sizeof offset_, (size_t) 1U, dbw->fpindex) !=
                 (size_t) 1U) {
 
@@ -195,7 +195,7 @@ static int writekeys(PureDBW * const dbw)
             (size_t) 1U) {
                 return -1;
         }
-    }    
+    }
 
     hash_cnt = (int) (sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]);
     hash0 = dbw->hash_table0;
@@ -204,13 +204,13 @@ static int writekeys(PureDBW * const dbw)
         size_t list_size = hash0->hash1_list_size;
 
         if (hash1 == NULL) {
-            const puredb_u32_t null_ = 
+            const puredb_u32_t null_ =
                 (puredb_u32_t) htonl((hash0 - dbw->hash_table0) + 1U);
-            
+
             if (fwrite(&null_, sizeof null_, (size_t) 1U, dbw->fpindex) !=
                 (size_t) 1U) {
                 return -1;
-            }            
+            }
             goto next;
         }
         qsort((void *) hash1, hash0->hash1_list_size / sizeof(Hash1),
@@ -227,7 +227,7 @@ static int writekeys(PureDBW * const dbw)
             {
                 const puredb_u32_t offset_data_ = htonl(hash1->offset_data +
                                                       dbw->offset_first_data);
-                
+
                 if (fwrite(&offset_data_, sizeof offset_data_,
                            (size_t) 1U, dbw->fpindex) != (size_t) 1U) {
                     return -1;
@@ -286,8 +286,8 @@ static int mergefiles(PureDBW * const dbw)
     (void) unlink(dbw->file_data);
     if (rename(dbw->file_index, dbw->file_final) < 0)
     {
-        (void) unlink(dbw->file_final);        
-        if (rename(dbw->file_index, dbw->file_final) < 0) {        
+        (void) unlink(dbw->file_final);
+        if (rename(dbw->file_index, dbw->file_final) < 0) {
             return -1;
         }
     }

@@ -13,17 +13,17 @@ static unsigned int count(in_port_t server_port, const char * const file)
 {
     int f;
     int r;
-    int c;    
+    int c;
     int b = 0;
     int e = 0;
     unsigned int d = 0U;
-    char buf[2049];    
-    
+    char buf[2049];
+
     if ((f = open(file, O_RDONLY)) == -1) {
         return 0;
     }
     buf[2048] = 0;
-    
+
     for (;;) {
         while ((r = (int) read(f, buf + e, (size_t) (2048U - e)))
                < (ssize_t) 0 && errno == EINTR);
@@ -34,7 +34,7 @@ static unsigned int count(in_port_t server_port, const char * const file)
 
         /*
          * b is the offset of the start of the first line to be parsed
-         * and e the end of the available data 
+         * and e the end of the available data
          */
         c = b;
         while (c < e && buf[c] != '\n') {
@@ -82,17 +82,17 @@ static unsigned int count(in_port_t server_port, const char * const file)
         b = 0;
     }
     close(f);
-    
+
     return d;
 }
 
 unsigned int daemons(const in_port_t server_port)
 {
     unsigned int nbcnx;
-    
+
     nbcnx = count(server_port, "/proc/net/tcp");
     nbcnx += count(server_port, "/proc/net/tcp6");
-    
+
     return nbcnx;
 }
 #else

@@ -16,12 +16,12 @@ static int privsep_sendcmd(const int psfd, const void * const cmdarg,
                            const size_t cmdarg_len)
 {
     ssize_t sent;
-    
+
     while ((sent = send(psfd, cmdarg, cmdarg_len, 0)) == (ssize_t) -1 &&
            errno == EINTR);
     if (sent != (ssize_t) cmdarg_len) {
         return -1;
-    }    
+    }
     return 0;
 }
 
@@ -29,12 +29,12 @@ static int privsep_recvcmd(const int psfd, void * const cmdarg,
                            const size_t cmdarg_len)
 {
     ssize_t received;
-    
+
     while ((received = recv(psfd, cmdarg, cmdarg_len, 0)) == (ssize_t) -1 &&
            errno == EINTR);
     if (received != (ssize_t) cmdarg_len) {
         return -1;
-    }    
+    }
     return 0;
 }
 
@@ -42,14 +42,14 @@ int privsep_sendfd(const int psfd, const int fd)
 {
     char *buf;
     int *fdptr;
-    struct cmsghdr *cmsg;    
+    struct cmsghdr *cmsg;
     struct msghdr msg;
     struct iovec vec;
     const size_t sizeof_buf = CMSG_SPACE(sizeof *fdptr);
     size_t sizeof_buf_ = sizeof_buf;
     PrivSepCmd fodder = PRIVSEPCMD_ANSWER_FD;
     ssize_t sent;
-    
+
     if (sizeof_buf_ < sizeof *cmsg) {
         sizeof_buf_ = sizeof *cmsg;
     }
@@ -74,23 +74,23 @@ int privsep_sendfd(const int psfd, const int fd)
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     if ((fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {
-        ALLOCA_FREE(buf);    
+        ALLOCA_FREE(buf);
         return -1;
     }
     *fdptr = fd;
     msg.msg_controllen = cmsg->cmsg_len;
     while ((sent = sendmsg(psfd, &msg, 0)) == (ssize_t) -1 && errno == EINTR);
-    ALLOCA_FREE(buf);    
+    ALLOCA_FREE(buf);
     if (sent != (ssize_t) sizeof fodder) {
         return -1;
     }
     return 0;
-}    
+}
 
 int privsep_recvfd(const int psfd)
 {
     char *buf;
-    int *fdptr;    
+    int *fdptr;
     struct cmsghdr *cmsg;
     struct msghdr msg;
     struct iovec vec;
@@ -98,7 +98,7 @@ int privsep_recvfd(const int psfd)
     size_t sizeof_buf_ = sizeof_buf;
     PrivSepCmd fodder = PRIVSEPCMD_NONE;
     ssize_t received;
-    
+
     if (sizeof_buf_ < sizeof *cmsg) {
         sizeof_buf_ = sizeof *cmsg;
     }
@@ -116,17 +116,17 @@ int privsep_recvfd(const int psfd)
     msg.msg_controllen = sizeof_buf;
     msg.msg_flags = 0;
     if ((cmsg = CMSG_FIRSTHDR(&msg)) == NULL ||
-        (fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {    
+        (fdptr = (int *) (void *) CMSG_DATA(cmsg)) == NULL) {
         ALLOCA_FREE(buf);
-        return -1;    
-    }    
+        return -1;
+    }
     *fdptr = -1;
-    while ((received = recvmsg(psfd, &msg, 0)) == (ssize_t) -1 && 
+    while ((received = recvmsg(psfd, &msg, 0)) == (ssize_t) -1 &&
            errno == EINTR);
-# if defined(MSG_TRUNC) && defined(MSG_CTRUNC)        
+# if defined(MSG_TRUNC) && defined(MSG_CTRUNC)
     if ((msg.msg_flags & MSG_TRUNC) || (msg.msg_flags & MSG_CTRUNC)) {
         ALLOCA_FREE(buf);
-        return -1;        
+        return -1;
     }
 # endif
     if (received != (ssize_t) sizeof fodder ||
@@ -165,7 +165,7 @@ static int privsep_privpart_removeftpwhoentry(const int psfd)
         answer.removeftpwhoentry.cmd = PRIVSEPCMD_ANSWER_REMOVEFTPWHOENTRY;
     }
     privsep_unpriv_user();
-    
+
     return privsep_sendcmd(psfd, &answer, sizeof answer);
 }
 
@@ -173,14 +173,14 @@ int privsep_removeftpwhoentry(void)
 {
     PrivSepQuery query;
     PrivSepQuery answer;
-    
+
     query.removeftpwhoentry.cmd = PRIVSEPCMD_REMOVEFTPWHOENTRY;
     if (privsep_sendcmd(psfd, &query, sizeof query) != 0 ||
         privsep_recvcmd(psfd, &answer, sizeof answer) != 0 ||
         answer.removeftpwhoentry.cmd != PRIVSEPCMD_ANSWER_REMOVEFTPWHOENTRY) {
         return -1;
     }
-    return 0;    
+    return 0;
 }
 # endif
 
@@ -188,11 +188,11 @@ static int privsep_privpart_bindresport(const int psfd,
                                         const PrivSepQuery * const query)
 {
     static const in_port_t portlist[] = FTP_ACTIVE_SOURCE_PORTS;
-    const in_port_t *portlistpnt = portlist;    
+    const in_port_t *portlistpnt = portlist;
     int fd;
     int on = 1;
     int ret;
-    
+
     if ((fd = socket(query->bindresport.protocol,
                      SOCK_STREAM, IPPROTO_TCP)) == -1) {
         goto bye;
@@ -220,21 +220,21 @@ static int privsep_privpart_bindresport(const int psfd,
             break;
         }
         portlistpnt++;
-# endif        
+# endif
     }
     privsep_unpriv_user();
-    
-    bye:    
+
+    bye:
     ret = privsep_sendfd(psfd, fd);
     ret |= close(fd);
-    
+
     return ret;
 }
 
 int privsep_bindresport(const int protocol, const struct sockaddr_storage ss)
 {
     PrivSepQuery query;
-    
+
     query.bindresport.cmd = PRIVSEPCMD_BINDRESPORT;
     query.bindresport.protocol = protocol;
     query.bindresport.ss = ss;
@@ -247,7 +247,7 @@ int privsep_bindresport(const int protocol, const struct sockaddr_storage ss)
 static int privsep_privpart_waitcmd(const int psfd)
 {
     PrivSepQuery query;
-    
+
     if (privsep_recvcmd(psfd, &query, sizeof query) != 0) {
         return -1;
     }
@@ -268,9 +268,9 @@ static int privsep_privpart_waitcmd(const int psfd)
 static int privsep_privpart_main(void)
 {
     int ret;
-    
+
     while ((ret = privsep_privpart_waitcmd(psfd)) == 0);
-    
+
     if (ret != 1) {
         return -1;
     }
@@ -280,8 +280,8 @@ static int privsep_privpart_main(void)
 static int privsep_privpart_closejunk(void)
 {
     int ret = 0;
-    
-# if defined(WITH_UPLOAD_SCRIPT)    
+
+# if defined(WITH_UPLOAD_SCRIPT)
     if (upload_pipe_fd != -1) {
         ret |= close(upload_pipe_fd);
     }
@@ -289,7 +289,7 @@ static int privsep_privpart_closejunk(void)
         ret |= close(upload_pipe_lock);
     }
 # endif
-# ifdef WITH_ALTLOG    
+# ifdef WITH_ALTLOG
     if (altlog_fd != -1) {
         ret |= close(altlog_fd);
     }
@@ -301,7 +301,7 @@ static int privsep_privpart_closejunk(void)
 # endif
     (void) close(0);
     (void) close(1);
-    
+
     return ret;
 }
 
@@ -312,7 +312,7 @@ static void privsep_init_privsep_user(void)
     };
     const char **privsep_user = privsep_users;
     struct passwd *pw = NULL;
-    
+
     while (*privsep_user != NULL) {
         if ((pw = getpwnam(*privsep_user)) != NULL) {
             break;
@@ -343,13 +343,13 @@ int privsep_init(void)
     if ((pid = fork()) == (pid_t) -1) {
         (void) close(sv[0]);
         (void) close(sv[1]);
-        
+
         return -1;
     }
     if (pid != (pid_t) 0) {
         (void) close(sv[0]);
         psfd = sv[1];
-        
+
         return 0;
     }
     (void) close(sv[1]);
@@ -359,7 +359,7 @@ int privsep_init(void)
     privsep_init_privsep_user();
     privsep_unpriv_user();
     _exit(privsep_privpart_main());
-    
+
     return -1; /* NOTREACHED */
 }
 

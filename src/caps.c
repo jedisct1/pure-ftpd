@@ -33,7 +33,7 @@ static void apply_caps(cap_value_t * const ncaps,
 #else
     (void) ncaps;
     (void) ncaps_size;
-#endif    
+#endif
 }
 
 void drop_login_caps(void)

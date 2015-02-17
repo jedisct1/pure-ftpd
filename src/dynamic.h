@@ -4,7 +4,7 @@
 #ifndef NO_STANDALONE
 
 typedef struct IPTrack_ {
-    struct sockaddr_storage ip;    
+    struct sockaddr_storage ip;
     pid_t pid;
 } IPTrack;
 

@@ -105,15 +105,15 @@ static const char *GETOPT_OPTIONS =
 #endif
 #ifdef WITH_TLS
     "Y:J:"
-#endif    
+#endif
     "zZ";
 
-#ifndef NO_GETOPT_LONG    
+#ifndef NO_GETOPT_LONG
 static struct option long_options[] = {
-    { "notruncate", 0, NULL, '0' },    
+    { "notruncate", 0, NULL, '0' },
     { "logpid", 0, NULL, '1' },
     { "ipv4only", 0, NULL, '4' },
-    { "ipv6only", 0, NULL, '6' },    
+    { "ipv6only", 0, NULL, '6' },
 #ifdef WITH_RFC2640
     { "fscharset", 1, NULL, '8' },
     { "clientcharset", 1, NULL, '9' },
@@ -122,10 +122,10 @@ static struct option long_options[] = {
     { "trustedgid", 1, NULL, 'a' },
     { "brokenclientscompatibility", 0, NULL, 'b' },
 # ifndef NO_STANDALONE
-    { "daemonize", 0, NULL, 'B' },                
+    { "daemonize", 0, NULL, 'B' },
     { "maxclientsperip", 1, NULL, 'C' },
 # endif
-    { "maxclientsnumber", 1, NULL, 'c' },    
+    { "maxclientsnumber", 1, NULL, 'c' },
     { "verboselog", 0, NULL, 'd' },
     { "displaydotfiles", 0, NULL, 'D' },
     { "anonymousonly", 0, NULL, 'e' },
@@ -137,13 +137,13 @@ static struct option long_options[] = {
 # ifndef NO_STANDALONE
     { "pidfile", 1, NULL, 'g' },
 # endif
-    { "norename", 0, NULL, 'G' },    
+    { "norename", 0, NULL, 'G' },
     { "help", 0, NULL, 'h' },
     { "dontresolve", 0, NULL, 'H' },
     { "maxidletime", 1, NULL, 'I' },
     { "anonymouscantupload", 0, NULL, 'i' },
     { "createhomedir", 0, NULL, 'j' },
-    { "keepallfiles", 0, NULL, 'K' },    
+    { "keepallfiles", 0, NULL, 'K' },
     { "maxdiskusagepct", 1, NULL, 'k' },
     { "login", 1, NULL, 'l' },
     { "limitrecursion", 1, NULL, 'L' },
@@ -166,7 +166,7 @@ static struct option long_options[] = {
     { "userratio", 1, NULL, 'Q' },
 # endif
     { "autorename", 0, NULL, 'r' },
-    { "nochmod", 0, NULL, 'R' },    
+    { "nochmod", 0, NULL, 'R' },
     { "antiwarez", 0, NULL, 's' },
 # ifndef NO_STANDALONE
     { "bind", 1, NULL, 'S' },
@@ -234,7 +234,7 @@ static size_t argv_lth;
 /*
  * An authentication handler has three functions:
  * - One - parse() - is called with an optional file name, that contains a
- *   configuration file, or whatever is passed in the -l command-line switch 
+ *   configuration file, or whatever is passed in the -l command-line switch
  *   for this authentication.
  * - Another one, check() is called when the user has entered his password.
  *   It should fill an AuthResult structure.
@@ -298,16 +298,16 @@ typedef struct DLHandler_ {
     off_t file_size;
     size_t dlmap_size;
     off_t cur_pos;
-    off_t chunk_size;    
+    off_t chunk_size;
     off_t min_chunk_size;
     off_t default_chunk_size;
     off_t max_chunk_size;
     off_t dlmap_pos;
-    off_t dlmap_fdpos;    
+    off_t dlmap_fdpos;
     off_t total_downloaded;
     size_t sizeof_map;
     unsigned char *map;
-    unsigned char *map_data;    
+    unsigned char *map_data;
     int ascii_mode;
     double min_sleep;
     double max_sleep;
@@ -321,10 +321,10 @@ typedef struct ULHandler_ {
     int clientfd;
     void *tls_clientfd;
     int xferfd;
-    void *tls_fd;    
+    void *tls_fd;
     int f;
     off_t cur_pos;
-    off_t chunk_size;    
+    off_t chunk_size;
     off_t min_chunk_size;
     off_t default_chunk_size;
     off_t max_chunk_size;
@@ -336,7 +336,7 @@ typedef struct ULHandler_ {
     off_t max_filesize;
     unsigned long idletime;
     struct pollfd pfds[2];
-    struct pollfd pfds_command;    
+    struct pollfd pfds_command;
 } ULHandler;
 
 #define PFD_DATA 0

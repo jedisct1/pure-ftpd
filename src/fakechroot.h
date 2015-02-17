@@ -167,7 +167,7 @@ int fakestatfs(const char *path, STATFS_STRUCT *str);
 #     undef statfs
 #    endif
 #    define statfs(A, B) fakestatfs(A, B)
-#   endif            
+#   endif
 #  endif
 # endif
 #endif

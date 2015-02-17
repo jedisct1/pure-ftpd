@@ -115,5 +115,5 @@ in_port_t *storage_port(struct sockaddr_storage * const ss);
 in_port_t *storage_port6(struct sockaddr_storage * const ss);
 struct in_addr *storage_sin_addr(struct sockaddr_storage * const ss);
 struct in6_addr *storage_sin_addr6(struct sockaddr_storage * const ss);
-    
+
 #endif

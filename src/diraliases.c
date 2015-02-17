@@ -6,7 +6,7 @@
  optional blank lines
  optional lines beginning with '#' as comments
  (no you can't put a '#' just anywhere)
- 
+
 1) data structure for alias list nodes.
 typedef struct DirAlias_ {
        char *alias;
@@ -59,7 +59,7 @@ int init_aliases(void)
     FILE *fp;
     char alias[MAXALIASLEN + 1U];
     char dir[PATH_MAX + 1U];
-    
+
     if ((fp = fopen(ALIASES_FILE, "r")) == NULL) {
         return 0;
     }
@@ -69,11 +69,11 @@ int init_aliases(void)
         }
         {
             char * const z = alias + strlen(alias) - 1U;
-            
+
             if (*z != '\n') {
                 goto bad;
             }
-            *z = 0;            
+            *z = 0;
         }
         do {
             if (fgets(dir, sizeof dir, fp) == NULL || *dir == 0) {
@@ -81,7 +81,7 @@ int init_aliases(void)
             }
             {
                 char * const z = dir + strlen(dir) - 1U;
-                
+
                 if (*z == '\n') {
                     *z = 0;
                 }
@@ -96,7 +96,7 @@ int init_aliases(void)
             tail->next = NULL;
         } else {
             DirAlias *curr;
-            
+
             if ((curr = malloc(sizeof *curr)) == NULL ||
                 (curr->alias = strdup(alias)) == NULL ||
                 (curr->dir = strdup(dir)) == NULL) {
@@ -108,12 +108,12 @@ int init_aliases(void)
     }
     fclose(fp);
     aliases_up++;
-    
+
     return 0;
-    
+
     bad:
     logfile(LOG_ERR, MSG_ALIASES_BROKEN_FILE " [" ALIASES_FILE "]");
-    
+
     return -1;
 }
 
@@ -121,7 +121,7 @@ int init_aliases(void)
 char *lookup_alias(const char *alias)
 {
     const DirAlias *curr = head;
-    
+
     if (aliases_up == 0) {
         return NULL;
     }
@@ -138,16 +138,16 @@ char *lookup_alias(const char *alias)
 void print_aliases(void)
 {
     const DirAlias *curr = head;
-    
+
     if (aliases_up == 0) {
         addreply_noformat(502, MSG_CONF_ERR);
-        
+
         return;
     }
     addreply_noformat(214, MSG_ALIASES_LIST);
     while (curr != NULL) {
         char line[MAXALIASLEN + PATH_MAX + 3U];
-        
+
         snprintf(line, sizeof line, " %s %s", curr->alias, curr->dir);
         addreply_noformat(0, line);
         curr = curr->next;

@@ -38,8 +38,8 @@ static char *ldap_default_home_directory;
 static ConfigKeywords ldap_config_keywords[] = {
     { "LDAPScheme", &ldap_scheme },
     { "LDAPServer", &ldap_host },
-    { "LDAPPort", &port_s },    
-    { "LDAPBindDN", &binddn },        
+    { "LDAPPort", &port_s },
+    { "LDAPBindDN", &binddn },
     { "LDAPBindPW", &pwd },
     { "LDAPBaseDN", &base },
     { "LDAPFilter", &ldap_filter},

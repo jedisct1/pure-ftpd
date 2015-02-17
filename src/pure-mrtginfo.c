@@ -19,7 +19,7 @@ static const char *uptime(void)
     int mib[2];
     size_t size;
     time_t u;
-    static char buf[1025];    
+    static char buf[1025];
 
     (void)time(&now);
 
@@ -31,9 +31,9 @@ static const char *uptime(void)
         u = now - boottime.tv_sec;
         if (u > 60)
             u += 30;
-    
+
         if (SNCHECK(snprintf(buf, sizeof buf, "%lu days, %lu:%02lu:%02lu",
-                             u / 86400UL, u / 3600UL % 24UL, 
+                             u / 86400UL, u / 3600UL % 24UL,
                              u / 60UL % 60UL, u % 60UL),
                     sizeof buf)) {
             _exit(EXIT_FAILURE);
@@ -44,20 +44,20 @@ static const char *uptime(void)
     int f;
     ssize_t r;
     unsigned long u;
-    static char buf[1025];    
+    static char buf[1025];
 
     if ((f = open("/proc/uptime", O_RDONLY)) == -1) {
         return "?";
     }
     while ((r = read(f, buf, sizeof buf - 1U)) < (ssize_t) 0 && errno == EINTR);
     if (r <= (ssize_t) 0) {
-        close(f);        
+        close(f);
         return "?";
     }
     close(f);
     u = strtoul(buf, NULL, 10);
     if (SNCHECK(snprintf(buf, sizeof buf, "%lu days, %lu:%02lu:%02lu",
-                         u / 86400UL, u / 3600UL % 24UL, 
+                         u / 86400UL, u / 3600UL % 24UL,
                          u / 60UL % 60UL, u % 60UL),
                 sizeof buf)) {
         _exit(EXIT_FAILURE);
@@ -69,7 +69,7 @@ static const char *uptime(void)
 static const char *name(void)
 {
     static char buf[1025];
-    
+
     if (gethostname(buf, sizeof buf - 1U) != 0) {
         return "?";
     }
@@ -91,13 +91,13 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif    
-    
+#endif
+
     if (argc == 2) {
         server_port = (in_port_t) strtoul(argv[1], NULL, 10);
     }
     d = daemons(server_port);
     printf("%u\n%u\n%s\n%s\n", d, d, uptime(), name());
-    
+
     return 0;
 }

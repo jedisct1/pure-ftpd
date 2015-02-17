@@ -7,7 +7,7 @@ int main(void)
 {
     puts("Please compile the server with --with-ftpwho\n"
          "to use this feature. Thank you.");
-    
+
     return 0;
 }
 #else
@@ -33,13 +33,13 @@ static signed char verbose;
 static signed char dont_resolve_ip;
 static struct flock lock;
 
-void ftpwho_unlock(void) 
+void ftpwho_unlock(void)
 {
     lock.l_type = F_UNLCK;
     while (fcntl(mmap_fd, F_SETLK, &lock) < 0) {
         if (errno != EINTR) {
             return;
-        }    
+        }
     }
 }
 
@@ -49,8 +49,8 @@ void ftpwho_lock(void)
     while (fcntl(mmap_fd, F_SETLKW, &lock) < 0) {
         if (errno != EINTR) {
             return;
-        }    
-    }    
+        }
+    }
 }
 
 static RETSIGTYPE sigfpe(int sig)
@@ -76,7 +76,7 @@ static void fixlimits(void)
 {
 #ifdef HAVE_SETRLIMIT
     static struct rlimit lim;
-    
+
     lim.rlim_max = lim.rlim_cur = MAX_CPU_TIME;
     setrlimit(RLIMIT_CPU, &lim);
     lim.rlim_max = lim.rlim_cur = MAX_DATA_SIZE;
@@ -91,16 +91,16 @@ static void fixlimits(void)
 void logfile(const int facility, const char *format, ...)
 {
     va_list va;
-    
-    (void) facility;    
+
+    (void) facility;
     va_start(va, format);
     vfprintf(stderr, format, va);
-    va_end(va);    
+    va_end(va);
     fprintf(stderr, "\n");
 }
 
 static int checkproc(const pid_t proc)
-{    
+{
     return kill(proc, 0) == 0 || errno == EPERM;
 }
 
@@ -112,7 +112,7 @@ static void text_output_header(void)
         puts("\n"
 "+------+---------+-------+------+-------------------------------------------+\n"
 "| PID  |  Login  |For/Spd| What |                 File/IP                   |\n"
-"+------+---------+-------+------+-------------------------------------------+");    
+"+------+---------+-------+------+-------------------------------------------+");
     } else {
         puts("\n"
 "+------+---------+-------+------+-------------------------------------------+\n"
@@ -133,14 +133,14 @@ static void text_output_line(const pid_t pid, const char * const account,
                              const off_t total_size,
                              const off_t current_size)
 {
-    unsigned long bandwidth = 0UL;    
+    unsigned long bandwidth = 0UL;
     long double pct;
     int pcti = 0;
 
     if (current_size > (off_t) 0 && current_size > restartat) {
         if (xfer_since > 0UL) {
             bandwidth = (unsigned long) ((current_size - restartat) / xfer_since);
-        }         
+        }
         if ((long double) total_size > 0.0L) {
             pct = ((long double) current_size * 100.0) / (long double) total_size;
             pcti = (int) (pct + 0.5L);
@@ -148,9 +148,9 @@ static void text_output_line(const pid_t pid, const char * const account,
                 pcti = 100;           /* should never happen */
             }
         }
-    }             
+    }
     printf("|%5lu | %-8s| %02lu:%02lu | %s | %-42s|\n",
-           (unsigned long) pid, account, 
+           (unsigned long) pid, account,
            (since / 60UL) / 60UL, (since / 60UL) % 60UL,
            state, filename);
     printf("|  ''  |    ''   |");
@@ -171,9 +171,9 @@ static void text_output_line(const pid_t pid, const char * const account,
                         printf("%4luG/s|", bandwidth);
                     } else {
                         printf("   ''  |");
-                    }                    
+                    }
                 }
-            }    
+            }
         }
     } else {
         printf("   ''  |");
@@ -211,7 +211,7 @@ static char *xml_escaped(const char *const s_) {
     const unsigned char *s = (const unsigned char *) s_;
     char *bufpnt = buf;
     size_t left = sizeof buf - (size_t) 1U;
-    
+
     while (left > (size_t) 0U && *s != 0U) {
         if (ISCTRLCODE(*s)) {
             if (left <= (size_t) 0U) {
@@ -256,8 +256,8 @@ static char *xml_escaped(const char *const s_) {
         s++;
     }
     *bufpnt = 0;
-    
-    return buf;    
+
+    return buf;
 }
 
 /* HTML output */
@@ -275,8 +275,8 @@ static void html_output_header(void)
         puts("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n"
              "          \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n"
              "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n"
-             "<head>\n"             
-             " <meta http-equiv=\"Content-Type\"\n" 
+             "<head>\n"
+             " <meta http-equiv=\"Content-Type\"\n"
              "       content=\"text/html; charset=ISO-8859-15\" />\n"
              " <title>Pure-FTPd server status</title>\n"
              " <style type=\"text/css\">\n"
@@ -346,11 +346,11 @@ static void html_output_line(const pid_t pid, const char * const account,
                              const off_t restartat,
                              const off_t total_size,
                              const off_t current_size)
-{    
+{
     puts("   <tr>");
     printf("    <th scope=\"row\">%lu</th>\n", (unsigned long) pid);
     printf("    <td>%s</td>\n",
-           *account == 0 ? "&nbsp;" : html_escaped(account));           
+           *account == 0 ? "&nbsp;" : html_escaped(account));
     printf("    <td>%02lu:%02lu</td>\n",
            (since / 60UL) / 60UL, (since / 60UL) % 60UL);
     printf("    <td>%s</td>\n", html_escaped(state));
@@ -359,17 +359,17 @@ static void html_output_line(const pid_t pid, const char * const account,
     printf("    <td>%s</td>\n", html_escaped(hbuf));
     if (current_size > (off_t) 0) {
         unsigned long bandwidth;
-        
+
         if (xfer_since > 0UL && current_size > restartat) {
             bandwidth = (unsigned long) ((current_size - restartat) /
                                          (xfer_since * 1024UL));
         } else {
             bandwidth = 0UL;
-        }        
+        }
         if ((long double) total_size > 0.0L) {
             long double pct;
             int pcti;
-                
+
             pct = ((long double) current_size * 100.0L) / (long double) total_size;
             pcti = (int) (pct + 0.5L);
             if (pcti > 100) {
@@ -377,7 +377,7 @@ static void html_output_line(const pid_t pid, const char * const account,
             }
             printf("    <td>%llu/%llu (%d%% - %lu KB/s)</td>\n",
                    (unsigned long long) (current_size / 1024),
-                   (unsigned long long) (total_size / 1024), 
+                   (unsigned long long) (total_size / 1024),
                    pcti, bandwidth);
         } else {
             printf("    <td>%llu (%lu KB/s)</td>\n",
@@ -419,7 +419,7 @@ static void xml_output_line(const pid_t pid, const char * const account,
                             const char * const hbuf,
                             const char * const local_hbuf,
                             const char * const local_port,
-                            const off_t restartat,                            
+                            const off_t restartat,
                             const off_t total_size,
                             const off_t current_size)
 {
@@ -435,13 +435,13 @@ static void xml_output_line(const pid_t pid, const char * const account,
     if (current_size > (off_t) 0) {
         unsigned long bandwidth;
         long double pct;
-        int pcti;        
-        
+        int pcti;
+
         if (xfer_since > 0UL && current_size > restartat) {
             bandwidth = (unsigned long) ((current_size - restartat) / xfer_since);
         } else {
             bandwidth = 0UL;
-        }        
+        }
         if ((long double) total_size > 0.0L) {
             pct = ((long double) current_size * 100.0L) / (long double) total_size;
             pcti = (int) (pct + 0.5L);
@@ -456,7 +456,7 @@ static void xml_output_line(const pid_t pid, const char * const account,
         } else {
             printf(" resume=\"%llu\"", (unsigned long long) restartat);
             printf(" current_size=\"%llu\"", (unsigned long long) current_size);
-            printf(" bandwidth=\"%lu\"", bandwidth);            
+            printf(" bandwidth=\"%lu\"", bandwidth);
         }
     }
     puts(" />");
@@ -485,7 +485,7 @@ static void plist_output_line(const pid_t pid, const char * const account,
                               const char * const hbuf,
                               const char * const local_hbuf,
                               const char * const local_port,
-                              const off_t restartat,                              
+                              const off_t restartat,
                               const off_t total_size,
                               const off_t current_size)
 {
@@ -506,17 +506,17 @@ static void plist_output_line(const pid_t pid, const char * const account,
     printf("\t\t\t<string>%s</string>\n", xml_escaped(local_hbuf));
     puts("\t\t\t<key>localport</key>");
     printf("\t\t\t<string>%s</string>\n", xml_escaped(local_port));
-    
+
     if (current_size > (off_t) 0) {
         unsigned long bandwidth;
         long double pct;
-        int pcti;        
-        
+        int pcti;
+
         if (xfer_since > 0UL && current_size > restartat) {
             bandwidth = (unsigned long) ((current_size - restartat) / xfer_since);
         } else {
             bandwidth = 0UL;
-        }        
+        }
         if ((long double) total_size > 0.0L) {
             pct = ((long double) current_size * 100.0L) / (long double) total_size;
             pcti = (int) (pct + 0.5L);
@@ -532,7 +532,7 @@ static void plist_output_line(const pid_t pid, const char * const account,
             puts("\t\t\t<key>percentage</key>");
             printf("\t\t\t<string>%d</string>\n", pcti);
             puts("\t\t\t<key>bandwidth</key>");
-            printf("\t\t\t<string>%lu</string>\n", bandwidth);            
+            printf("\t\t\t<string>%lu</string>\n", bandwidth);
         } else {
             puts("\t\t\t<key>resume</key>");
             printf("\t\t\t<string>%llu</string>\n", (unsigned long long) restartat);
@@ -541,7 +541,7 @@ static void plist_output_line(const pid_t pid, const char * const account,
             puts("\t\t\t<key>bandwidth</key>");
             printf("\t\t\t<string>%lu</string>\n", bandwidth);
         }
-    } else {       
+    } else {
         puts("\t\t\t<key>resume</key>");
         puts("\t\t\t<string></string>");
         puts("\t\t\t<key>current_size</key>");
@@ -566,11 +566,11 @@ static void plist_output_footer(void)
 
 static const char *shell_escaped(const char * const s_)
 {
-    const unsigned char *s = (const unsigned char *) s_;        
+    const unsigned char *s = (const unsigned char *) s_;
     static char buf[PATH_MAX + 32U];
     const char * const bufend = &buf[sizeof buf - (size_t) 1U];
-    char *bufpnt = buf;    
-    
+    char *bufpnt = buf;
+
     while (*s != 0U) {
         if (ISCTRLCODE(*s)) {
             *bufpnt = '_';
@@ -594,7 +594,7 @@ static const char *shell_escaped(const char * const s_)
         s++;
     }
     *bufpnt = 0;
-    
+
     return buf;
 }
 
@@ -616,13 +616,13 @@ static void shell_output_line(const pid_t pid, const char * const account,
 {
     unsigned long bandwidth = 0UL;
     long double pct;
-    int pcti = 0;        
-    
-    if (current_size > (off_t) 0) {        
+    int pcti = 0;
+
+    if (current_size > (off_t) 0) {
         if (xfer_since > 0UL && current_size > restartat) {
             bandwidth = (unsigned long) ((current_size - restartat) /
                                          (xfer_since * 1024UL));
-        }         
+        }
         if ((long double) total_size > 0.0L) {
             pct = ((long double) current_size * 100.0L) / (long double) total_size;
             pcti = (int) (pct + 0.5L);
@@ -630,7 +630,7 @@ static void shell_output_line(const pid_t pid, const char * const account,
                 pcti = 100;           /* should never happen */
             }
         }
-    }         
+    }
     printf("%lu|", (unsigned long) pid);
     printf("%s|", shell_escaped(account));
     printf("%lu|", since);
@@ -653,14 +653,14 @@ static void shell_output_footer(void)
 
 static void (*output_header)(void) = text_output_header;
 static void (*output_line)(const pid_t pid, const char * const account,
-                           const unsigned long since, 
+                           const unsigned long since,
                            const unsigned long xfer_since,
                            const char * const state,
                            const char * const filename,
                            const char * const hbuf,
                            const char * const local_hbuf,
                            const char * const local_port,
-                           const off_t restartat,                           
+                           const off_t restartat,
                            const off_t total_size,
                            const off_t current_size) = text_output_line;
 static void (*output_footer)(void) = text_output_footer;
@@ -678,7 +678,7 @@ static void help(void)
          "-s : easily parsable output for shell scripts\n"
          "     format is :\n"
          "     pid|acct|time|state|file|peer|local|port|current|total|%|bandwidth\n"
-         "-v : output verbose ASCII\n"         
+         "-v : output verbose ASCII\n"
          "-w : output HTML page (web mode)\n"
          "-W : output HTML page without header/footer (embedded mode)\n"
          "-x : output XML data\n");
@@ -688,7 +688,7 @@ static void help(void)
 static int closedesc_but1(void)
 {
     int fodder;
-    
+
     (void) close(0);
     if ((fodder = open("/dev/null", O_RDONLY)) == -1) {
         return -1;
@@ -746,8 +746,8 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif    
-    
+#endif
+
     fixlimits();
 # ifdef SIGFPE
     signal(SIGFPE, sigfpe);
@@ -755,12 +755,12 @@ int main(int argc, char *argv[])
 # ifdef SIGSEGV
     signal(SIGSEGV, sigsegv);
 # endif
-    
+
     if (getenv("GATEWAY_INTERFACE") != NULL) {
         html_cgi = 1;
         output_header = html_output_header;
-        output_line = html_output_line;            
-        output_footer = html_output_footer;        
+        output_line = html_output_line;
+        output_footer = html_output_footer;
     }
     while ((fodder = getopt(argc, argv, "CchHnpsvwWx")) != -1) {
         switch(fodder) {
@@ -778,7 +778,7 @@ int main(int argc, char *argv[])
             html_raw++;
         case 'w' :
             output_header = html_output_header;
-            output_line = html_output_line;            
+            output_line = html_output_line;
             output_footer = html_output_footer;
             break;
         case 'p' :
@@ -788,21 +788,21 @@ int main(int argc, char *argv[])
             break;
         case 's' :
             output_header = shell_output_header;
-            output_line = shell_output_line;            
+            output_line = shell_output_line;
             output_footer = shell_output_footer;
-            break;            
+            break;
         case 'x' :
             output_header = xml_output_header;
-            output_line = xml_output_line;            
+            output_line = xml_output_line;
             output_footer = xml_output_footer;
-            break;            
+            break;
         case 'v' :
             verbose++;
             break;
         case '?' :
             help();
         }
-    }    
+    }
     now = time(NULL);
     if (chdir(SCOREBOARD_PATH) != 0 ||
         (dir = opendir(".")) == NULL) {
@@ -817,7 +817,7 @@ int main(int argc, char *argv[])
     lock.l_whence = SEEK_SET;
     lock.l_start = (off_t) 0;
     lock.l_len = (off_t) 0;
-    lock.l_pid = getpid();    
+    lock.l_pid = getpid();
     output_header();
     while ((entry = readdir(dir)) != NULL) {
         mmap_fd = -1;
@@ -832,7 +832,7 @@ int main(int argc, char *argv[])
             goto nextone;
         }
         if (fstat(mmap_fd, &st) != 0 || !S_ISREG(st.st_mode) ||
-            (st.st_mode & 0600) != 0600 || 
+            (st.st_mode & 0600) != 0600 ||
             st.st_size != (off_t) sizeof (FTPWhoEntry) ||
 #ifdef NON_ROOT_FTP
             st.st_uid != geteuid()
@@ -846,8 +846,8 @@ int main(int argc, char *argv[])
         locked++;
         if ((scanned_entry =
              (FTPWhoEntry *) mmap(NULL, sizeof (FTPWhoEntry),
-                                  PROT_READ, 
-                                  MAP_SHARED | MAP_FILE, 
+                                  PROT_READ,
+                                  MAP_SHARED | MAP_FILE,
                                   mmap_fd, (off_t) 0)) == (void *) MAP_FAILED) {
             goto nextone;
         }
@@ -855,12 +855,12 @@ int main(int argc, char *argv[])
             /* still in the scoreboard, but no more process */
             delete_file++;
             goto nextone;
-        }        
+        }
         if (scanned_entry->state != FTPWHO_STATE_FREE) {
             unsigned long since;
             unsigned long xfer_since;
             char local_port[NI_MAXSERV];
-            char local_hbuf[NI_MAXHOST];            
+            char local_hbuf[NI_MAXHOST];
             char hbuf[NI_MAXHOST];
 
             switch (scanned_entry->state) {
@@ -889,7 +889,7 @@ int main(int argc, char *argv[])
             }
             for (;;) {
                 int eai;
-                                
+
                 if ((eai = getnameinfo
                      ((struct sockaddr *) &scanned_entry->addr,
                       STORAGE_LEN(scanned_entry->addr),
@@ -906,13 +906,13 @@ int main(int argc, char *argv[])
                      hbuf, sizeof hbuf, NULL, (size_t) 0U,
                      NI_NUMERICHOST) == 0) {
                     break;
-                }                
+                }
 #endif
                 goto nextone;
             }
             for (;;) {
                 int eai;
-                
+
                 if ((eai = getnameinfo
                      ((struct sockaddr *) &scanned_entry->local_addr,
                       STORAGE_LEN(scanned_entry->addr),
@@ -937,9 +937,9 @@ int main(int argc, char *argv[])
                 goto nextone;
             }
             output_line(scanned_entry->pid, scanned_entry->account,
-                        since, xfer_since, state, scanned_entry->filename, 
+                        since, xfer_since, state, scanned_entry->filename,
                         hbuf, local_hbuf, local_port,
-                        (scanned_entry->restartat <= 
+                        (scanned_entry->restartat <=
                          scanned_entry->download_current_size) ?
                         scanned_entry->restartat : (off_t) 0,
                         (scanned_entry->state == FTPWHO_STATE_DOWNLOAD) ?
@@ -961,9 +961,9 @@ int main(int argc, char *argv[])
         if (delete_file != 0) {
             unlink(entry->d_name);
         }
-    }    
+    }
     output_footer();
-    
+
     return 0;
 }
 

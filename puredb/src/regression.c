@@ -12,7 +12,7 @@
 int main(void)
 {
     char key[42];
-    char data[42];    
+    char data[42];
     unsigned long long curkey = 0ULL;
     unsigned long long nbrec = 0ULL;
     PureDBW dbw;
@@ -29,7 +29,7 @@ int main(void)
     if (puredbw_open(&dbw, "puredb.index", "puredb.data", "puredb.pdb") != 0) {
         perror("Can't create the database");
         goto end;
-    }    
+    }
     seed = (unsigned int) time(NULL);
     srand(seed);
     do {
@@ -56,14 +56,14 @@ int main(void)
     } else {
         printf("Success! %llu records have been written\n", nbrec);
         pass = 0;
-    }    
+    }
     printf("Database lookups (wait) ... ");
     fflush(stdout);
     if (puredb_open(&db, "puredb.pdb") != 0) {
         perror("Can't open the database");
         goto end2;
     }
-    curkey = 0ULL;    
+    curkey = 0ULL;
     srand(seed);
     do {
         curkey += (rand() & 0x4fff);
@@ -98,19 +98,19 @@ int main(void)
     if (puredb_close(&db) != 0) {
         perror("The database couldn't be properly closed");
     }
-    unlink("puredb.pdb");    
+    unlink("puredb.pdb");
     if (pass == 0) {
         puts("Failure :(");
         return -1;
     } else {
         puts("Success!");
     }
-    
+
     return 0;
 }
 
 #else
-int main(void) 
+int main(void)
 {
     return 0;
 }

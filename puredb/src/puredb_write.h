@@ -31,7 +31,7 @@ typedef struct Hash0_ {
 } Hash0;
 
 typedef struct PureDBW_ {
-    FILE *fpindex;       
+    FILE *fpindex;
     FILE *fpdata;
     char *file_index;
     char *file_data;

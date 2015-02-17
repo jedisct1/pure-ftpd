@@ -16,24 +16,24 @@ int upload_pipe_open(void)
     struct stat st;
 
     upload_pipe_close();
-    
+
     anew:
-    if ((upload_pipe_lock = 
+    if ((upload_pipe_lock =
          open(UPLOAD_PIPE_LOCK,
               O_CREAT | O_RDWR | O_NOFOLLOW, (mode_t) 0600)) == -1) {
         unlink(UPLOAD_PIPE_LOCK);
         return -1;
-    }    
+    }
     if (fstat(upload_pipe_lock, &st) < 0 ||
         (st.st_mode & 0777) != 0600 || !S_ISREG(st.st_mode) ||
 # ifdef NON_ROOT_FTP
-        st.st_uid != geteuid()        
+        st.st_uid != geteuid()
 # else
         st.st_uid != (uid_t) 0
 # endif
         ) {
         return -1;
-    }    
+    }
     if (lstat(UPLOAD_PIPE_LOCK, &st) < 0 ||
         (st.st_mode & 0777) != 0600 || !S_ISREG(st.st_mode) ||
 # ifdef NON_ROOT_FTP
@@ -44,7 +44,7 @@ int upload_pipe_open(void)
         ) {
         unlink(UPLOAD_PIPE_LOCK);
         goto anew;
-    }        
+    }
     anew2:
     upload_pipe_fd =
         open(UPLOAD_PIPE_FILE, O_WRONLY | O_NOFOLLOW);
@@ -74,19 +74,19 @@ int upload_pipe_open(void)
         st.st_uid != geteuid()
 # else
         st.st_uid != (uid_t) 0
-# endif        
+# endif
         ) {
         unlink(UPLOAD_PIPE_FILE);       /* Okay, fight a bit :) */
         goto anew2;
     }
-    
+
     return upload_pipe_fd;
 }
 
 /* File is already prefixed by \001 */
 
 int upload_pipe_push(const char *vuser, const char *file)
-{    
+{
     struct flock lock;
     const char starter = 2;
     size_t sizeof_starter;
@@ -95,7 +95,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     size_t sizeof_buf;
     char *buf;
     char *pnt;
-    
+
     if (upload_pipe_lock == -1 || upload_pipe_fd == -1 ||
         file == NULL || *file == 0) {
         return 0;
@@ -108,7 +108,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     while (fcntl(upload_pipe_lock, F_SETLKW, &lock) < 0) {
         if (errno != EINTR) {
             return -1;
-        }        
+        }
     }
     sizeof_starter = (size_t) 1U;
     sizeof_vuser = strlen(vuser);
@@ -127,7 +127,7 @@ int upload_pipe_push(const char *vuser, const char *file)
     free(buf);
     lock.l_type = F_UNLCK;
     while (fcntl(upload_pipe_lock, F_SETLK, &lock) < 0 && errno == EINTR);
-    
+
     return 0;
 }
 

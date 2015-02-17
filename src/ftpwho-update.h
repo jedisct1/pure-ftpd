@@ -16,15 +16,15 @@ typedef enum {
 } FTPWhoEntryState;
 
 typedef struct FTPWhoEntry_ {
-    FTPWhoEntryState state;        
+    FTPWhoEntryState state;
     pid_t pid;
     struct sockaddr_storage addr;
-    struct sockaddr_storage local_addr;    
+    struct sockaddr_storage local_addr;
     time_t date;
     time_t xfer_date;
     volatile off_t restartat;
     volatile off_t download_total_size;
-    volatile off_t download_current_size;    
+    volatile off_t download_current_size;
     char account[MAX_USER_LENGTH + 1U];
 #if defined(__OpenBSD__) || defined(__Bitrig__)
     char filename[1024];
@@ -48,7 +48,7 @@ void ftpwho_unlock(void);
 #ifndef NO_STANDALONE
 void ftpwho_unlinksbfile(const pid_t pid);
 #endif
-    
+
 #endif
 
 #endif

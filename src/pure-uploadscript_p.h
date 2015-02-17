@@ -28,7 +28,7 @@ static struct option long_options[] = {
     { "pidfile", 1, NULL, 'p' },
     { "run", 1, NULL, 'r' },
     { "uid", 1, NULL, 'u' },
-    { NULL, 0, NULL, 0 }    
+    { NULL, 0, NULL, 0 }
 };
 #endif
 

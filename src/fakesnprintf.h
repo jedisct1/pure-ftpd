@@ -6,7 +6,7 @@
 int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
                            const char *format, va_list va);
 
-int fakesnprintf_snprintf(char * const str, const size_t size, 
+int fakesnprintf_snprintf(char * const str, const size_t size,
                           const char * const format, ...);
 
 # define snprintf  fakesnprintf_snprintf

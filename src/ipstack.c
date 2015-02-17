@@ -3,7 +3,7 @@
  * An IPv4-only reimplementation of getnameinfo(), getaddrinfo(),
  * freeaddrinfo() and inet_pton() for old IP stacks.
  * IPv6-enabled stacks don't need this, so we assume we have IPv4 everywhere.
- * 
+ *
  * Jedi <j at pureftpd dot org>
  * Matthias Andree <matthias.andree at stud.uni-dortmund.de>
  */
@@ -19,7 +19,7 @@
 
 #define DEFAULT_PROTO_NAME "tcp"
 
-/* 
+/*
  * This is a stripped-down version of getnameinfo()
  * Only host names can be resolved, and NI_NOFQDN is ignored.
  */
@@ -28,26 +28,26 @@
 int getnameinfo(const struct sockaddr *sa_, socklen_t salen,
                 char *host, size_t hostlen,
                 char *serv, size_t servlen, int flags)
-{            
+{
     struct sockaddr_in *sa = (struct sockaddr_in *) sa_;
-    
-    (void) salen;    
+
+    (void) salen;
     if (sa == NULL || sa->sin_family != AF_INET) {
         return EAI_FAMILY;
     }
     if (serv != NULL && servlen > (size_t) 1U) {
         snprintf(serv, servlen, "%lu", (unsigned long) ntohs(sa->sin_port));
-    }    
+    }
     if (host != NULL && hostlen > (size_t) 1U) {
         struct hostent *he;
-        
-        if ((flags & NI_NUMERICHOST) == 0 && 
-            (he = 
+
+        if ((flags & NI_NUMERICHOST) == 0 &&
+            (he =
              gethostbyaddr((const char *) &(sa->sin_addr),
                            sizeof sa->sin_addr, AF_INET)) != NULL &&
             he->h_name != NULL && *he->h_name != 0) {
             size_t h_name_len;
-            
+
             if ((h_name_len = strlen(he->h_name)) >= hostlen) {
                 goto resolve_numeric_ip;
             }
@@ -55,7 +55,7 @@ int getnameinfo(const struct sockaddr *sa_, socklen_t salen,
         } else {
             char *numeric_ip;
             size_t numeric_ip_len;
-            
+
             resolve_numeric_ip:
             if ((numeric_ip = inet_ntoa(sa->sin_addr)) == NULL) {
                 return EAI_SYSTEM;
@@ -65,7 +65,7 @@ int getnameinfo(const struct sockaddr *sa_, socklen_t salen,
             }
             memcpy(host, numeric_ip, numeric_ip_len + (size_t) 1U);
         }
-    }    
+    }
     return 0;
 }
 #endif
@@ -77,15 +77,15 @@ int getaddrinfo(const char *node, const char *service,
                 const struct addrinfo *hints, struct addrinfo **res)
 {
     struct addrinfo *answer;
-    struct sockaddr_in *saddr; 
+    struct sockaddr_in *saddr;
     const char *proto_name = DEFAULT_PROTO_NAME;
     int socktype = SOCK_STREAM;
     in_port_t port = 0U;
-    
+
     if (res == NULL) {
         return EAI_FAIL;
     }
-    *res = NULL;    
+    *res = NULL;
     if ((answer = malloc(sizeof *answer)) == NULL) {
         return EAI_MEMORY;
     }
@@ -95,7 +95,7 @@ int getaddrinfo(const char *node, const char *service,
     }
     answer->ai_family = AF_INET;
     answer->ai_addrlen = sizeof *saddr;
-    answer->ai_addr = (struct sockaddr *) saddr;    
+    answer->ai_addr = (struct sockaddr *) saddr;
     answer->ai_next = NULL;
     memset(saddr, 0, sizeof *saddr);
     saddr->sin_family = AF_INET;
@@ -104,7 +104,7 @@ int getaddrinfo(const char *node, const char *service,
 #endif
     if (hints != NULL) {
         struct protoent *pe;
-        
+
         if ((pe = getprotobynumber(hints->ai_protocol)) != NULL &&
             pe->p_name != NULL && *pe->p_name != 0) {
             proto_name = pe->p_name;
@@ -117,7 +117,7 @@ int getaddrinfo(const char *node, const char *service,
     }
     if (service != NULL) {
         struct servent *se;
-        
+
         if ((se = getservbyname(service, proto_name)) != NULL &&
             se->s_port > 0) {
             port = se->s_port;
@@ -131,9 +131,9 @@ int getaddrinfo(const char *node, const char *service,
     }
     if (node != NULL) {
         struct hostent *he;
-        
+
         if ((he = gethostbyname(node)) != NULL && he->h_addr_list != NULL
-            && he->h_addr_list[0] != NULL && he->h_length > 0 && 
+            && he->h_addr_list[0] != NULL && he->h_length > 0 &&
             he->h_length <= (int) sizeof saddr->sin_addr) {
             memcpy(&saddr->sin_addr, he->h_addr_list[0], he->h_length);
         }
@@ -141,8 +141,8 @@ int getaddrinfo(const char *node, const char *service,
     answer->ai_socktype = socktype;
     saddr->sin_port = htons(port);
     *res = answer;
-    
-    return 0; 
+
+    return 0;
 }
 
 void freeaddrinfo(struct addrinfo *res)
@@ -166,14 +166,14 @@ int inet_pton(int af, const char *src, void *dst)
         errno = EAFNOSUPPORT;
         return -1;
     }
-    
+
     /* inet_aton would be better, but Solaris 7 e. g. doesn't have it */
     ina = inet_addr(src);
     if (ina == 0UL) {
         return 0;
     }
     memcpy(dst, &ina, sizeof ina);
-    
+
     return 1;
 }
 #endif
@@ -183,14 +183,14 @@ int inet_pton(int af, const char *src, void *dst)
 in_port_t *storage_port(struct sockaddr_storage * const ss)
 {
     struct sockaddr_in * const si = (struct sockaddr_in *) ss;
-    
+
     return &si->sin_port;
 }
 
 in_port_t *storage_port6(struct sockaddr_storage * const ss)
 {
     struct sockaddr_in6 * const si = (struct sockaddr_in6 *) ss;
-    
+
     return &si->sin6_port;
 }
 

@@ -31,10 +31,10 @@ static int pw_pgsql_validate_name(const char *name)
             /* God bless the Ruby 'unless' keyword */
         } else {
             return -1;
-        }            
+        }
         name++;
     } while (*name != 0);
-    
+
     return 0;
 }
 
@@ -46,9 +46,9 @@ static char *pw_pgsql_escape_string(PGconn * const id_sql_server,
     char *to;
     size_t tolen;
     unsigned int t;
-    unsigned char t1, t2;    
+    unsigned char t1, t2;
     int error;
-            
+
     if (from == NULL) {
         return NULL;
     }
@@ -72,7 +72,7 @@ static char *pw_pgsql_escape_string(PGconn * const id_sql_server,
      * a segmentation violation, but without any possible exploit.
      */
     tolen = PQescapeStringConn(id_sql_server, to, from, from_len, &error);
-    if (tolen >= to_len || 
+    if (tolen >= to_len ||
         (unsigned char) to[to_len] != t1 ||
         (unsigned char) to[to_len + 1] != t2) {
         for (;;) {
@@ -82,7 +82,7 @@ static char *pw_pgsql_escape_string(PGconn * const id_sql_server,
     to[tolen] = 0;
     if (error != 0) {
         return NULL;
-    }                
+    }
     return to;
 }
 
@@ -130,40 +130,40 @@ static char *sqlsubst(const char *orig_str, char * const query,
                 }
                 if (ip_len <= (size_t) 0U) {
                     goto nextone;
-                }                
+                }
                 memcpy(query_pnt, ip, ip_len);
                 query_pnt += ip_len;
                 query_len -= ip_len;
                 goto nextone;
-            case 'p' :             
+            case 'p' :
                 if (port_len >= query_len) {
                     return NULL;
-                } 
+                }
                 if (port_len <= (size_t) 0U) {
                     goto nextone;
-                }               
+                }
                 memcpy(query_pnt, port, port_len);
                 query_pnt += port_len;
                 query_len -= port_len;
                 goto nextone;
-            case 'r' :             
+            case 'r' :
                 if (peer_ip_len >= query_len) {
                     return NULL;
-                } 
+                }
                 if (peer_ip_len <= (size_t) 0U) {
                     goto nextone;
-                }               
+                }
                 memcpy(query_pnt, peer_ip, peer_ip_len);
                 query_pnt += peer_ip_len;
                 query_len -= peer_ip_len;
                 goto nextone;
-            case 'd' :             
+            case 'd' :
                 if (decimal_ip_len >= query_len) {
                     return NULL;
-                } 
+                }
                 if (decimal_ip_len <= (size_t) 0U) {
                     goto nextone;
-                }               
+                }
                 memcpy(query_pnt, decimal_ip, decimal_ip_len);
                 query_pnt += decimal_ip_len;
                 query_len -= decimal_ip_len;
@@ -197,7 +197,7 @@ static size_t pw_pgsql_escape_conninfo_(char * const to,
     const char *source = from;
     char *target = to;
     size_t remaining = length;
-    
+
     while (remaining > (size_t) 0U) {
         switch (*source) {
         case 0:
@@ -205,7 +205,7 @@ static size_t pw_pgsql_escape_conninfo_(char * const to,
             break;
         case '\r':
             *target++ = '\\';
-            *target++ = 'r';            
+            *target++ = 'r';
             break;
         case '\n':
             *target++ = '\\';
@@ -226,10 +226,10 @@ static size_t pw_pgsql_escape_conninfo_(char * const to,
             *target++ = *source;
         }
         source++;
-        remaining--;        
-    }    
+        remaining--;
+    }
     *target = 0;
-    
+
     return (size_t) (target - to);
 }
 
@@ -238,8 +238,8 @@ static char *pw_pgsql_escape_conninfo(const char *from)
     size_t from_len;
     size_t to_len;
     char *to;
-    size_t tolen;    
-            
+    size_t tolen;
+
     if (from == NULL) {
         return NULL;
     }
@@ -255,7 +255,7 @@ static char *pw_pgsql_escape_conninfo(const char *from)
         }
     }
     to[tolen] = 0;
-                
+
     return to;
 }
 
@@ -270,28 +270,28 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     int ret = -1;
 
     *id_sql_server = NULL;
-    
+
     if ((escaped_server = pw_pgsql_escape_conninfo(server)) == NULL ||
         (escaped_db = pw_pgsql_escape_conninfo(db)) == NULL ||
         (escaped_user = pw_pgsql_escape_conninfo(user)) == NULL ||
         (escaped_pw = pw_pgsql_escape_conninfo(pw)) == NULL) {
         goto bye;
     }
-    
+
 #define PGSQL_CONNECT_FMTSTRING \
 "host='%s' port='%d' dbname='%s' user='%s' password='%s'"
-        
+
     sizeof_conninfo = sizeof PGSQL_CONNECT_FMTSTRING +
-        strlen(escaped_server) + (size_t) 5U + strlen(escaped_db) + 
+        strlen(escaped_server) + (size_t) 5U + strlen(escaped_db) +
         strlen(escaped_user) + strlen(escaped_pw);
     if ((conninfo = malloc(sizeof_conninfo)) == NULL) {
         goto bye;
     }
     if (SNCHECK(snprintf(conninfo, sizeof_conninfo,
-                         PGSQL_CONNECT_FMTSTRING, 
+                         PGSQL_CONNECT_FMTSTRING,
                          server, port, db, user, pw), sizeof_conninfo)) {
         goto bye;
-    }    
+    }
     if ((*id_sql_server = PQconnectdb(conninfo)) == NULL ||
         PQstatus(*id_sql_server) == CONNECTION_BAD) {
         if (server_down == 0) {
@@ -302,7 +302,7 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     }
     server_down = 0;
     ret = 0;
-    
+
     bye:
     free(conninfo);
     free(escaped_server);
@@ -322,11 +322,11 @@ static int pw_pgsql_simplequery(PGconn * const id_sql_server,
         return -1;
     }
     if (PQresultStatus(result) != PGRES_COMMAND_OK) {
-        PQclear(result);        
+        PQclear(result);
     return -1;
     }
     PQclear(result);
-    
+
     return 0;
 }
 
@@ -351,7 +351,7 @@ static char *pw_pgsql_getquery(PGconn * const id_sql_server,
         goto bye;
     }
     if ((qresult = PQexec(id_sql_server, query)) == NULL) {
-        logfile(LOG_WARNING, MSG_SQL_WRONG_PARMS " : [%s]", query);        
+        logfile(LOG_WARNING, MSG_SQL_WRONG_PARMS " : [%s]", query);
         goto bye;
     }
     if (PQresultStatus(qresult) != PGRES_TUPLES_OK ||
@@ -366,13 +366,13 @@ static char *pw_pgsql_getquery(PGconn * const id_sql_server,
     }
     strncpy(answer, PQgetvalue(qresult, 0, 0), length - (size_t) 1U);
     answer[length - (size_t) 1U] = 0;
-    
+
     bye:
     if (qresult != NULL) {
         PQclear(qresult);
     }
-    
-    return answer;    
+
+    return answer;
 }
 
 void pw_pgsql_check(AuthResult * const result,
@@ -386,13 +386,13 @@ void pw_pgsql_check(AuthResult * const result,
     const char *gid = sql_default_gid; /* stored system group/gid */
     const char *dir = NULL;            /* stored home directory */
 #ifdef QUOTAS
-    const char *sqta_fs = NULL;        /* stored quota files */    
+    const char *sqta_fs = NULL;        /* stored quota files */
     const char *sqta_sz = NULL;        /* stored quota size */
-#endif    
+#endif
 #ifdef RATIOS
     const char *ratio_ul = NULL;       /* stored ratio UL */
     const char *ratio_dl = NULL;       /* stored ratio DL */
-#endif    
+#endif
 #ifdef THROTTLING
     const char *bandwidth_ul = NULL;   /* stored bandwidth UL */
     const char *bandwidth_dl = NULL;   /* stored bandwidth DL */
@@ -401,7 +401,7 @@ void pw_pgsql_check(AuthResult * const result,
     char *escaped_ip = NULL;
     char *escaped_port = NULL;
     char *escaped_peer_ip = NULL;
-    char *escaped_decimal_ip = NULL;    
+    char *escaped_decimal_ip = NULL;
     char *scrambled_password = NULL;
     int committed = 1;
     int crypto_crypt = 0, crypto_md5 = 0, crypto_sha1 = 0, crypto_plain = 0;
@@ -410,7 +410,7 @@ void pw_pgsql_check(AuthResult * const result,
     char hbuf[NI_MAXHOST];
     char pbuf[NI_MAXSERV];
     char phbuf[NI_MAXHOST];
-    
+
     result->auth_ok = 0;
     if (pw_pgsql_validate_name(account) != 0) {
         goto bye;
@@ -438,23 +438,23 @@ void pw_pgsql_check(AuthResult * const result,
     if (pw_pgsql_connect(&id_sql_server) != 0) {
         goto bye;
     }
-    if ((escaped_account = 
+    if ((escaped_account =
          pw_pgsql_escape_string(id_sql_server, account)) == NULL) {
         goto bye;
     }
-    if ((escaped_ip = 
+    if ((escaped_ip =
          pw_pgsql_escape_string(id_sql_server, hbuf)) == NULL) {
         goto bye;
     }
-    if ((escaped_port = 
+    if ((escaped_port =
          pw_pgsql_escape_string(id_sql_server, pbuf)) == NULL) {
         goto bye;
     }
-    if ((escaped_peer_ip = 
+    if ((escaped_peer_ip =
          pw_pgsql_escape_string(id_sql_server, phbuf)) == NULL) {
         goto bye;
     }
-    if ((escaped_decimal_ip = 
+    if ((escaped_decimal_ip =
          pw_pgsql_escape_string(id_sql_server, decimal_ip)) == NULL) {
         goto bye;
     }
@@ -469,7 +469,7 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (uid == NULL) {
         uid = pw_pgsql_getquery(id_sql_server, sqlreq_getuid,
-                                escaped_account, escaped_ip, 
+                                escaped_account, escaped_ip,
                                 escaped_port, escaped_peer_ip,
                                 escaped_decimal_ip);
     }
@@ -495,7 +495,7 @@ void pw_pgsql_check(AuthResult * const result,
     if (strcasecmp(crypto, PASSWD_SQL_ANY) == 0) {
         crypto_crypt++;
         crypto_md5++;
-        crypto_sha1++;        
+        crypto_sha1++;
     } else if (strcasecmp(crypto, PASSWD_SQL_CRYPT) == 0) {
         crypto_crypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_MD5) == 0) {
@@ -507,7 +507,7 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (crypto_crypt != 0) {
         const char *crypted;
-        
+
         if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
@@ -515,7 +515,7 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (crypto_md5 != 0) {
         const char *crypted;
-        
+
         if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
@@ -523,7 +523,7 @@ void pw_pgsql_check(AuthResult * const result,
     }
     if (crypto_sha1 != 0) {
         const char *crypted;
-        
+
         if ((crypted = (const char *) crypto_hash_sha1(password, 1)) != NULL &&
             strcmp(crypted, spwd) == 0) {
             goto auth_ok;
@@ -536,7 +536,7 @@ void pw_pgsql_check(AuthResult * const result,
         }
     }
     goto bye;
-    
+
     auth_ok:
     /*
      * do *NOT* accept root uid/gid - if the database is compromized, the FTP
@@ -545,7 +545,7 @@ void pw_pgsql_check(AuthResult * const result,
     result->uid = (uid_t) strtoul(uid, NULL, 10);
     if (result->uid <= (uid_t) 0) {
         struct passwd *pw;
-        
+
         if ((pw = getpwnam(uid)) == NULL || pw->pw_uid <= (uid_t) 0) {
             goto bye;
         }
@@ -554,21 +554,21 @@ void pw_pgsql_check(AuthResult * const result,
     result->gid = (gid_t) strtoul(gid, NULL, 10);
     if (result->gid <= (gid_t) 0) {
         struct group *gr;
-        
+
         if ((gr = getgrnam(gid)) == NULL || gr->gr_gid <= (gid_t) 0) {
             goto bye;
         }
         result->gid = gr->gr_gid;
-    }    
+    }
     result->dir = dir;
-    dir = NULL;    
+    dir = NULL;
 #ifdef QUOTAS
     if ((sqta_fs = pw_pgsql_getquery(id_sql_server, sqlreq_getqta_fs,
                                      escaped_account, escaped_ip,
                                      escaped_port, escaped_peer_ip,
                                      escaped_decimal_ip)) != NULL) {
         const unsigned long long q = strtoull(sqta_fs, NULL, 10);
-        
+
         if (q > 0ULL) {
             result->user_quota_files = q;
             result->quota_files_changed = 1;
@@ -579,20 +579,20 @@ void pw_pgsql_check(AuthResult * const result,
                                      escaped_port, escaped_peer_ip,
                                      escaped_decimal_ip)) != NULL) {
         const unsigned long long q = strtoull(sqta_sz, NULL, 10);
-        
+
         if (q > 0ULL) {
             result->user_quota_size = q * (1024UL * 1024UL);
             result->quota_size_changed = 1;
         }
     }
-#endif           
+#endif
 #ifdef RATIOS
     if ((ratio_ul = pw_pgsql_getquery(id_sql_server, sqlreq_getratio_ul,
                                       escaped_account, escaped_ip,
                                       escaped_port, escaped_peer_ip,
                                       escaped_decimal_ip)) != NULL) {
         const unsigned int q = (unsigned int) strtoul(ratio_ul, NULL, 10);
-        
+
         if (q > 0U) {
             result->ratio_upload = q;
             result->ratio_ul_changed = 1;
@@ -603,7 +603,7 @@ void pw_pgsql_check(AuthResult * const result,
                                       escaped_port, escaped_peer_ip,
                                       escaped_decimal_ip)) != NULL) {
         const unsigned int q = (unsigned int) strtoul(ratio_dl, NULL, 10);
-        
+
         if (q > 0U) {
             result->ratio_download = q;
             result->ratio_dl_changed = 1;
@@ -616,7 +616,7 @@ void pw_pgsql_check(AuthResult * const result,
                                           escaped_port, escaped_peer_ip,
                                           escaped_decimal_ip)) != NULL) {
         const unsigned long q = (unsigned long) strtoul(bandwidth_ul, NULL, 10);
-        
+
         if (q > 0UL) {
             result->throttling_bandwidth_ul = q * 1024UL;
             result->throttling_ul_changed = 1;
@@ -627,13 +627,13 @@ void pw_pgsql_check(AuthResult * const result,
                                           escaped_port, escaped_peer_ip,
                                           escaped_decimal_ip)) != NULL) {
         const unsigned long q = (unsigned long) strtoul(bandwidth_dl, NULL, 10);
-        
+
         if (q > 0UL) {
             result->throttling_bandwidth_dl = q * 1024UL;
             result->throttling_dl_changed = 1;
         }
     }
-#endif    
+#endif
     result->slow_tilde_expansion = 1;
     result->auth_ok = -result->auth_ok;
     bye:
@@ -655,15 +655,15 @@ void pw_pgsql_check(AuthResult * const result,
 #ifdef QUOTAS
     free((void *) sqta_fs);
     free((void *) sqta_sz);
-#endif    
+#endif
 #ifdef RATIOS
     free((void *) ratio_ul);
     free((void *) ratio_dl);
-#endif    
+#endif
 #ifdef THROTTLING
     free((void *) bandwidth_ul);
     free((void *) bandwidth_dl);
-#endif    
+#endif
     free((void *) escaped_account);
     free((void *) escaped_ip);
     free((void *) escaped_port);
@@ -675,9 +675,9 @@ void pw_pgsql_parse(const char * const file)
 {
     if (generic_parser(file, pgsql_config_keywords) != 0) {
         die(421, LOG_ERR, MSG_CONF_ERR ": " MSG_ILLEGAL_CONFIG_FILE_SQL ": %s" , file);
-    }    
+    }
     if (server == NULL ) {
-        die(421, LOG_ERR, MSG_SQL_MISSING_SERVER);        
+        die(421, LOG_ERR, MSG_SQL_MISSING_SERVER);
     }
     if (port_s != NULL) {
         port = atoi(port_s);
@@ -695,7 +695,7 @@ void pw_pgsql_exit(void)
 {
     ZFREE(server);
     ZFREE(port_s);
-    port = -1;    
+    port = -1;
     ZFREE(user);
     ZFREE(pw);
     ZFREE(db);
@@ -712,11 +712,11 @@ void pw_pgsql_exit(void)
 #endif
 #ifdef RATIOS
     ZFREE(sqlreq_getratio_ul);
-    ZFREE(sqlreq_getratio_dl);    
+    ZFREE(sqlreq_getratio_dl);
 #endif
 #ifdef THROTTLING
     ZFREE(sqlreq_getbandwidth_ul);
-    ZFREE(sqlreq_getbandwidth_dl);    
+    ZFREE(sqlreq_getbandwidth_dl);
 #endif
 }
 #else

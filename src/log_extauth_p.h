@@ -48,7 +48,7 @@ static ExtauthCallBack extauth_callbacks[] = {
     { EXTAUTH_REPLY_USER_QUOTA_FILES, callback_reply_user_quota_files },
     { EXTAUTH_REPLY_RATIO_UPLOAD, callback_reply_ratio_upload },
     { EXTAUTH_REPLY_RATIO_DOWNLOAD, callback_reply_ratio_download },
-    { EXTAUTH_REPLY_PER_USER_MAX, callback_reply_per_user_max },    
+    { EXTAUTH_REPLY_PER_USER_MAX, callback_reply_per_user_max },
     { EXTAUTH_REPLY_END, callback_reply_end },
     { NULL, callback_reply_end }
 };

@@ -101,13 +101,13 @@ static const char *illoptstring = "unknown option -- %s\n";
 static int pure_gcd(int a, int b)
 {
     int c;
-    
+
     c = a % b;
     while (c != 0) {
         a = b;
         b = c;
         c = a % b;
-    }    
+    }
     return b;
 }
 
@@ -116,12 +116,12 @@ static int pure_gcd(int a, int b)
  * from nonopt_end to opt_end (keeping the same order of arguments
  * in each block).
  */
-static void pure_permute_args(int panonopt_start, int panonopt_end, 
+static void pure_permute_args(int panonopt_start, int panonopt_end,
                               int opt_end, char * const *nargv)
 {
     int cstart, cyclelen, i, j, ncycle, nnonopts, nopts, pos;
     char *swap;
-    
+
     /*
      * compute lengths of blocks and number and size of cycles
      */
@@ -129,7 +129,7 @@ static void pure_permute_args(int panonopt_start, int panonopt_end,
     nopts = opt_end - panonopt_end;
     ncycle = pure_gcd(nnonopts, nopts);
     cyclelen = (opt_end - panonopt_start) / ncycle;
-    
+
     for (i = 0; i < ncycle; i++) {
         cstart = panonopt_end+i;
         pos = cstart;
@@ -159,25 +159,25 @@ static int pure_parse_long_options(char * const *nargv, const char *options,
     const char *current_argv, *has_equal;
     size_t current_argv_len;
     int i, match;
-    
+
     current_argv = pure_place;
     match = -1;
-    
+
     pure_optind++;
-    
+
     if ((has_equal = strchr(current_argv, '=')) != NULL) {
         /* argument found (--option=arg) */
         current_argv_len = has_equal - current_argv;
         has_equal++;
     } else
         current_argv_len = strlen(current_argv);
-    
+
     for (i = 0; long_options[i].name; i++) {
         /* find matching long option */
         if (strncmp(current_argv, long_options[i].name,
             current_argv_len))
             continue;
-        
+
         if (strlen(long_options[i].name) == current_argv_len) {
             /* exact match */
             match = i;
@@ -189,7 +189,7 @@ static int pure_parse_long_options(char * const *nargv, const char *options,
          */
         if (short_too && current_argv_len == 1)
             continue;
-        
+
         if (match == -1)    /* partial match */
             match = i;
         else {
@@ -278,17 +278,17 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
     char *oli;                /* option letter list index */
     int optchar, short_too;
     static int posixly_correct = -1;
-    
+
     if (options == NULL)
         return -1;
-    
+
     /*
      * XXX Some GNU programs (like cvs) set pure_optind to 0 instead of
      * XXX using pure_optreset.  Work around this braindamage.
      */
     if (pure_optind == 0)
-        pure_optind = pure_optreset = 1;    
-    
+        pure_optind = pure_optreset = 1;
+
     /*
      * Disable GNU extensions if POSIXLY_CORRECT is set or options
      * string begins with a '+'.
@@ -296,12 +296,12 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
     if (posixly_correct == -1 || pure_optreset)
         posixly_correct = (getenv("POSIXLY_CORRECT") != NULL);
     if (*options == '-')
-        flags |= FLAG_ALLARGS;    
+        flags |= FLAG_ALLARGS;
     else if (posixly_correct || *options == '+')
         flags &= ~FLAG_PERMUTE;
     if (*options == '+' || *options == '-')
         options++;
-        
+
     pure_optarg = NULL;
     if (pure_optreset)
         nonopt_start = nonopt_end = -1;
@@ -383,7 +383,7 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
             return -1;
         }
     }
-    
+
     /*
      * Check long options if:
      *  1) we were passed some
@@ -397,7 +397,7 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
             pure_place++;        /* --foo long option */
         else if (*pure_place != ':' && strchr(options, *pure_place) != NULL)
             short_too = 1;        /* could be short option too */
-        
+
         optchar = pure_parse_long_options(nargv, options, long_options,
                                           idx, short_too);
         if (optchar != -1) {
@@ -405,10 +405,10 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
             return optchar;
         }
     }
-    
+
     if ((optchar = (int) *pure_place++) == ':' ||
         (optchar == '-' && *pure_place) != '\0' ||
-        (oli = strchr(options, optchar)) == NULL) { 
+        (oli = strchr(options, optchar)) == NULL) {
          /*
           * If the user didn't specify '-' as an option,
           * assume it means -1 as POSIX specifies.
@@ -472,7 +472,7 @@ static int pure_getopt_internal(int nargc, char * const *nargv,
  */
 int pure_getopt(int nargc, char * const *nargv, const char *options)
 {
-    
+
     /*
      * We don't pass FLAG_PERMUTE to pure_getopt_internal() since
      * the BSD getopt(3) (unlike GNU) has never done this.

@@ -7,7 +7,7 @@ int main(void)
 {
     puts("Please compile the server with --with-extauth\n"
          "to use this feature. Thank you.");
-    
+
     return 0;
 }
 #else
@@ -29,7 +29,7 @@ static void setcloexec(const int fd)
 static int closedesc_all(const int closestdin)
 {
     int fodder;
-    
+
     if (closestdin != 0) {
         (void) close(0);
         if ((fodder = open("/dev/null", O_RDONLY)) == -1) {
@@ -47,14 +47,14 @@ static int closedesc_all(const int closestdin)
     (void) dup2(1, 2);
     if (fodder > 2) {
         (void) close(fodder);
-    }    
+    }
     return 0;
 }
 
 static void dodaemonize(void)
 {
     pid_t child;
-    
+
     if (daemonize != 0) {
         if ((child = fork()) == (pid_t) -1) {
             perror("Daemonization failed - fork");
@@ -76,20 +76,20 @@ static int init(void)
 {
 #ifndef NON_ROOT_FTP
     if (geteuid() != (uid_t) 0) {
-        fprintf(stderr, 
+        fprintf(stderr,
         "Sorry, but you have to be r00t to run this program\n");
         return -1;
     }
 #endif
-    
+
     return 0;
 }
 
 static void usage(void)
 {
-#ifndef NO_GETOPT_LONG    
+#ifndef NO_GETOPT_LONG
     const struct option *options = long_options;
-    
+
     do {
         printf("-%c\t--%s\t%s\n", options->val, options->name,
                options->has_arg ? "<opt>" : "");
@@ -108,7 +108,7 @@ static int parseoptions(int argc, char *argv[])
 
     while ((fodder =
 #ifndef NO_GETOPT_LONG
-            getopt_long(argc, argv, GETOPT_OPTIONS, long_options, 
+            getopt_long(argc, argv, GETOPT_OPTIONS, long_options,
             &option_index)
 #else
             getopt(argc, argv, GETOPT_OPTIONS)
@@ -122,14 +122,14 @@ static int parseoptions(int argc, char *argv[])
         case 'g': {
             const char *nptr;
             char *endptr;
-            
+
             nptr = optarg;
             endptr = NULL;
             gid = (gid_t) strtoul(nptr, &endptr, 10);
             if (!nptr || !*nptr || !endptr || *endptr) {
                 perror("Illegal GID - Must be a number\n");
             }
-            break;            
+            break;
         }
         case 'p': {
             if ((authd_pid_file = strdup(optarg)) == NULL) {
@@ -146,18 +146,18 @@ static int parseoptions(int argc, char *argv[])
             if ((script = strdup(optarg)) == NULL) {
                 perror("Oh no ! More memory !");
             }
-            break;            
+            break;
         }
         case 's': {
             if ((socketpath = strdup(optarg)) == NULL) {
                 perror("Oh no ! More memory !");
             }
-            break;            
+            break;
         }
         case 'u': {
             const char *nptr;
             char *endptr;
-            
+
             nptr = optarg;
             endptr = NULL;
             uid = (uid_t) strtoul(nptr, &endptr, 10);
@@ -166,7 +166,7 @@ static int parseoptions(int argc, char *argv[])
             }
             break;
         }
-        default: 
+        default:
             usage();
         }
     }
@@ -176,7 +176,7 @@ static int parseoptions(int argc, char *argv[])
 static int changeuidgid(void)
 {
 #ifndef NON_ROOT_FTP
-    if (        
+    if (
 # ifdef HAVE_SETGROUPS
         setgroups(1U, &gid) ||
 # endif
@@ -192,7 +192,7 @@ static void newenv_str(const char * const var, const char * const str)
 {
     size_t s;
     char *v;
-    
+
     if (str == NULL || *str == 0) {
         return;
     }
@@ -206,7 +206,7 @@ static void newenv_str(const char * const var, const char * const str)
     }
 #ifdef HAVE_PUTENV
     putenv(v);
-#endif    
+#endif
 }
 
 static void updatepidfile(void)
@@ -214,8 +214,8 @@ static void updatepidfile(void)
     int fd;
     char buf[42];
     size_t buf_len;
-    
-    if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n", 
+
+    if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n",
                          (unsigned long) getpid()), sizeof buf)) {
         return;
     }
@@ -277,7 +277,7 @@ static void process(const int clientfd)
     pid_t pid;
     int pfds[2];
     char line[4096];
-    
+
     while ((readnb = read(clientfd, line, sizeof line - 1U)) < (ssize_t) 0 &&
            (errno == EINTR || errno == EIO));
     if (readnb <= (ssize_t) 0) {
@@ -292,7 +292,7 @@ static void process(const int clientfd)
         close(pfds[0]);
         close(pfds[1]);
         return;
-    }    
+    }
     if (pid != (pid_t) 0) {
         close(pfds[1]);         /* close the output side of the pipe */
         if ((readnb = safe_read(pfds[0], line,
@@ -316,7 +316,7 @@ static void process(const int clientfd)
     while ((crpoint = strchr(linepnt, '\n')) != NULL) {
         const ExtauthdCallBack *scanned;
         size_t keyword_len;
-        
+
         *crpoint = 0;
         scanned = extauthd_callbacks;
         while (scanned->keyword != NULL) {
@@ -327,14 +327,14 @@ static void process(const int clientfd)
             }
             scanned++;
         }
-        linepnt = crpoint + 1;        
+        linepnt = crpoint + 1;
     }
     if (ended == 0) {
         close(pfds[1]);
         _exit(EXIT_FAILURE);
     }
     if (dup2(pfds[1], 1) == -1) {
-        close(pfds[1]);        
+        close(pfds[1]);
         _exit(EXIT_FAILURE);
     }
     close(pfds[1]);
@@ -342,18 +342,18 @@ static void process(const int clientfd)
     (void) alarm(AUTHD_SCRIPT_TIMEOUT);
 #endif
     (void) execl(script, script, (char *) NULL);
-    
+
     _exit(EXIT_SUCCESS);
 }
 
 int listencnx(void)
 {
-    struct sockaddr_un *saddr;    
+    struct sockaddr_un *saddr;
     int clientfd;
     int ret = -1;
     const size_t socketpath_len = strlen(socketpath);
-        
-    if ((saddr = malloc(sizeof(*saddr) + socketpath_len + 
+
+    if ((saddr = malloc(sizeof(*saddr) + socketpath_len +
                         (size_t) 1U)) == NULL) {
         perror("No more memory to listen to anything");
         goto bye;
@@ -361,7 +361,7 @@ int listencnx(void)
     memcpy(saddr->sun_path, socketpath, socketpath_len + (size_t) 1U);
     saddr->sun_family = AF_UNIX;
     (void) unlink(socketpath);
-    (void) umask(077);    
+    (void) umask(077);
     if ((kindy = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         perror("Unable to create a local socket");
         goto bye;
@@ -370,7 +370,7 @@ int listencnx(void)
     if (bind(kindy, (struct sockaddr *) saddr, SUN_LEN(saddr)) != 0) {
         perror("Unable to bind a local socket");
         goto bye;
-    }    
+    }
     if (chmod(socketpath, 0600) != 0) {
         perror("Unable to change perms on the local socket");
         goto bye;
@@ -392,7 +392,7 @@ int listencnx(void)
         close(clientfd);
     } while (exit_authd == 0);
     ret = 0;
-    
+
     bye:
     if (kindy != -1) {
         close(kindy);
@@ -400,25 +400,25 @@ int listencnx(void)
     }
     (void) unlink(socketpath);
     free(saddr);
-    
+
     return ret;
 }
 
 static RETSIGTYPE sigterm(int sig)
-{    
+{
     (void) sig;
-    
+
     exit_authd = 1;
     if (kindy != -1) {
-        close(kindy);        
+        close(kindy);
         kindy = -1;
     }
 }
 
 int main(int argc, char *argv[])
-{    
+{
     int err;
-    
+
 #ifdef HAVE_SETLOCALE
 # ifdef LC_MESSAGES
     (void) setlocale(LC_MESSAGES, "");
@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
     if (init() < 0) {
         return -1;
     }
-    (void) signal(SIGTERM, sigterm);    
+    (void) signal(SIGTERM, sigterm);
     (void) signal(SIGQUIT, sigterm);
     (void) signal(SIGINT, sigterm);
 #ifdef SIGXCPU
@@ -461,13 +461,13 @@ int main(int argc, char *argv[])
     }
 #ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
-#endif    
+#endif
 #ifdef SIGCHLD
     signal(SIGCHLD, SIG_DFL);
-#endif    
-    err = listencnx();    
-    (void) unlink(authd_pid_file);    
-    
+#endif
+    err = listencnx();
+    (void) unlink(authd_pid_file);
+
     return err;
 }
 

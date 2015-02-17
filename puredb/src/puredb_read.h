@@ -37,7 +37,7 @@ int puredb_open(PureDB * const db, const char *dbfile);
 int puredb_close(PureDB * const db);
 
 int puredb_find(PureDB * const db, const char * const tofind,
-                const size_t tofind_len, off_t * const retpos, 
+                const size_t tofind_len, off_t * const retpos,
                 size_t * const retlen);
 
 int puredb_find_s(PureDB * const db, const char * const tofind,

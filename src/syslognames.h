@@ -37,49 +37,49 @@ struct {
 # endif
 # ifdef LOG_NEWS
     { "news", LOG_NEWS },
-# endif      
+# endif
 # ifdef LOG_AUTH
     { "security", LOG_AUTH },        /* DEPRECATED */
-# endif      
+# endif
 # ifdef LOG_SYSLOG
     { "syslog", LOG_SYSLOG },
 # endif
 # ifdef LOG_USER
     { "user", LOG_USER },
-# endif      
+# endif
 # ifdef LOG_UUCP
     { "uucp", LOG_UUCP },
-# endif      
+# endif
 # ifdef LOG_LOCAL0
     { "local0", LOG_LOCAL0 },
-# endif      
-# ifdef LOG_LOCAL1      
+# endif
+# ifdef LOG_LOCAL1
     { "local1", LOG_LOCAL1 },
-# endif            
-# ifdef LOG_LOCAL2      
+# endif
+# ifdef LOG_LOCAL2
     { "local2", LOG_LOCAL2 },
-# endif            
+# endif
 # ifdef LOG_LOCAL3
     { "local3", LOG_LOCAL3 },
-# endif            
-# ifdef LOG_LOCAL4            
+# endif
+# ifdef LOG_LOCAL4
     { "local4", LOG_LOCAL4 },
-# endif            
-# ifdef LOG_LOCAL5            
+# endif
+# ifdef LOG_LOCAL5
     { "local5", LOG_LOCAL5 },
-# endif            
-# ifdef LOG_LOCAL6            
+# endif
+# ifdef LOG_LOCAL6
     { "local6", LOG_LOCAL6 },
-# endif            
-# ifdef LOG_LOCAL7            
+# endif
+# ifdef LOG_LOCAL7
     { "local7", LOG_LOCAL7 },
-# endif            
+# endif
 # ifdef LOG_LOCAL8
     { "local8", LOG_LOCAL8 },
-# endif            
-# ifdef LOG_LOCAL9            
+# endif
+# ifdef LOG_LOCAL9
     { "local9", LOG_LOCAL9 },
-# endif            
+# endif
     { NULL, -1 }
   };
 

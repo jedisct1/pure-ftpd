@@ -44,24 +44,24 @@ static void oom(void)
 
 static int init_tz(void)
 {
-    char stbuf[10];                                                             
-    struct tm *tm;                                                              
-    time_t now;                                                                 
-    
+    char stbuf[10];
+    struct tm *tm;
+    time_t now;
+
 #ifdef HAVE_TZSET
     tzset();
 #endif
-#ifdef HAVE_PUTENV    
-    time(&now);                                                                 
+#ifdef HAVE_PUTENV
+    time(&now);
     if ((tm = localtime(&now)) == NULL ||
         strftime(stbuf, sizeof stbuf, "%z", tm) != (size_t) 5U) {
         return -1;
     }
     snprintf(default_tz_for_putenv, sizeof default_tz_for_putenv,
-             "TZ=UTC%c%c%c:%c%c", (*stbuf == '-' ? '+' : '-'),                                       
+             "TZ=UTC%c%c%c:%c%c", (*stbuf == '-' ? '+' : '-'),
              stbuf[1], stbuf[2], stbuf[3], stbuf[4]);
     putenv(default_tz_for_putenv);
-#endif   
+#endif
     return 0;
 }
 
@@ -133,7 +133,7 @@ static int traversal(const char * const s)
     slen = strlen(s) + (size_t) 2U;
     while ((de = readdir(d)) != NULL) {
         size_t wanted_sizeof_buf;
-        
+
         if ((de->d_name[0] == '.' && de->d_name[1] == 0) ||
             (de->d_name[0] == '.' && de->d_name[1] == '.' &&
              de->d_name[2] == 0)) {
@@ -141,7 +141,7 @@ static int traversal(const char * const s)
         }
         if (strcmp(de->d_name, QUOTA_FILE) == 0) {
             continue;
-        }        
+        }
         wanted_sizeof_buf = slen + strlen(de->d_name);
         if (wanted_sizeof_buf > sizeof_buf) {
             if ((buf = realloc(buf, wanted_sizeof_buf)) == NULL) {
@@ -161,7 +161,7 @@ static int traversal(const char * const s)
             }
         }
     }
-    free(buf);    
+    free(buf);
     closedir(d);
 
     return 0;
@@ -188,13 +188,13 @@ static int doinitsupgroups(const char *user, const uid_t uid, const gid_t gid)
 # else
     (void) gid;
 # endif
-# ifdef HAVE_INITGROUPS            
+# ifdef HAVE_INITGROUPS
     if (user == NULL) {
         const struct passwd * const lpwd = getpwuid(uid);
-        
+
         if (lpwd != NULL && lpwd->pw_name != NULL) {
             user = lpwd->pw_name;
-        } else {        
+        } else {
             return -1;
         }
     }
@@ -206,7 +206,7 @@ static int doinitsupgroups(const char *user, const uid_t uid, const gid_t gid)
 #else
     (void) user;
     (void) uid;
-    (void) gid;    
+    (void) gid;
 #endif
     return 0;
 }
@@ -280,14 +280,14 @@ int main(int argc, char *argv[])
     } else {
         uid = geteuid();
         gid = getegid();
-    }    
+    }
     if (argc < 0) {
         return -1;
     }
     if (argc < 2) {
         help();
     }
-    
+
 #ifdef HAVE_SETLOCALE
 # ifdef LC_MESSAGES
     (void) setlocale(LC_MESSAGES, "");
@@ -298,10 +298,10 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif           
+#endif
 
     init_tz();
-	
+
     while ((fodder = getopt(argc, argv, "d:g:u:h")) != -1) {
         switch(fodder) {
         case 'h':
@@ -367,12 +367,12 @@ int main(int argc, char *argv[])
         return -2;
     }
     if (isroot != 0) {
-        if (doinitsupgroups(NULL, uid, gid) 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)            
+        if (doinitsupgroups(NULL, uid, gid)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
             & 0
 #endif
             != 0 ||
-            chdir(startpath) != 0 || 
+            chdir(startpath) != 0 ||
             chroot(startpath) != 0 || chdir("/") != 0) {
             fprintf(stderr, "Can't chroot to [%s]: [%s]\n",
                     startpath, strerror(errno));
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
         if (changeuidgid() < 0) {
             fprintf(stderr, "Can't switch uid/gid: [%s]\n", strerror(errno));
             return -3;
-        }        
+        }
     } else if (chdir(startpath) != 0) {
         fprintf(stderr, "Can't enter directory [%s]: [%s]\n",
                 startpath, strerror(errno));
@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Unable to traverse [%s]: [%s]\n",
                 startpath, strerror(errno));
         free(nodes);
-        
+
         return -4;
     }
     free(nodes);

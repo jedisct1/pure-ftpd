@@ -20,7 +20,7 @@
 #endif
 
 typedef enum PrivSepCmd_ {
-    PRIVSEPCMD_NONE, 
+    PRIVSEPCMD_NONE,
     PRIVSEPCMD_ANSWER_ERROR, PRIVSEPCMD_ANSWER_FD,
     PRIVSEPCMD_BINDRESPORT, PRIVSEPCMD_ANSWER_BINDRESPORT
 #ifdef FTPWHO
@@ -50,7 +50,7 @@ typedef union PrivSepQuery_ {
 #ifdef FTPWHO
     PrivSepQuery_RemoveFtpwhoEntry removeftpwhoentry;
 #endif
-    PrivSepQuery_Cmd cmd;    
+    PrivSepQuery_Cmd cmd;
 } PrivSepQuery;
 
 #ifdef FTPWHO
@@ -67,7 +67,7 @@ typedef union PrivSepAnswer_ {
 #ifdef FTPWHO
     PrivSepAnswer_RemoveFtpwhoEntry removeftpwhoentry;
 #endif
-    PrivSepAnswer_Cmd cmd;    
+    PrivSepAnswer_Cmd cmd;
 } PrivSepAnswer;
 
 static int psfd = -1;

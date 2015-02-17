@@ -13,7 +13,7 @@ int getloadavg(double loadavg[], int nelem)
         nelem--;
         loadavg[nelem] = 0.0;
     } while (nelem != 0);
-    
+
     return nelem;
 }
 #else

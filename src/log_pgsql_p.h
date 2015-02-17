@@ -35,7 +35,7 @@ static ConfigKeywords pgsql_config_keywords[] = {
     { "PGSQLPort", &port_s },
     { "PGSQLUser", &user },
     { "PGSQLPassword", &pw },
-    { "PGSQLDatabase", &db },    
+    { "PGSQLDatabase", &db },
     { "PGSQLCrypt", &crypto },
     { "PGSQLGetPW", &sqlreq_getpw },
     { "PGSQLGetUID", &sqlreq_getuid },
@@ -44,7 +44,7 @@ static ConfigKeywords pgsql_config_keywords[] = {
     { "PGSQLDefaultGID", &sql_default_gid },
     { "PGSQLGetDir", &sqlreq_getdir },
 #ifdef QUOTAS
-    { "PGSQLGetQTAFS", &sqlreq_getqta_fs },    
+    { "PGSQLGetQTAFS", &sqlreq_getqta_fs },
     { "PGSQLGetQTASZ", &sqlreq_getqta_sz },
 #endif
 #ifdef RATIOS

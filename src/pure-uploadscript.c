@@ -7,7 +7,7 @@ int main(void)
 {
     puts("Please compile the server with --with-uploadscript\n"
          "to use this feature. Thank you.");
-    
+
     return 0;
 }
 #else
@@ -31,7 +31,7 @@ static int upload_pipe_ropen(void)
     struct stat st;
     int upload_pipe_fd;
     unsigned int tries = OPEN_TRIES;
-        
+
     again:
     if ((upload_pipe_fd =
          open(UPLOAD_PIPE_FILE, O_RDONLY | O_NOFOLLOW)) == -1) {
@@ -62,12 +62,12 @@ static int readchar(const int upload_file_fd)
 {
     ssize_t ret;
     unsigned char c;
-    
+
     while ((ret = read(upload_file_fd, &c, (size_t) 1U)) < (ssize_t) 0 &&
            errno == EINTR);
     if (ret <= (ssize_t) 0) {
         return EOF;
-    } 
+    }
     return (int) c;
 }
 
@@ -78,10 +78,10 @@ static int readpipe(const int upload_file_fd,
     static char file[PATH_MAX + VHOST_PREFIX_MAX_LEN];
     const char * const whoend = &who[sizeof who];
     const char * const fileend = &file[sizeof file];
-    char *whopnt = who;    
+    char *whopnt = who;
     char *filepnt = file;
     int c;
-    
+
     *r_who = NULL;
     *r_file = NULL;
     do {
@@ -101,7 +101,7 @@ static int readpipe(const int upload_file_fd,
         }
         *whopnt = (char) c;
         whopnt++;
-    }    
+    }
     while (filepnt != fileend) {
         c = readchar(upload_file_fd);
         if (c == EOF || (c != 0 && ISCTRLCODE(c))) {
@@ -115,11 +115,11 @@ static int readpipe(const int upload_file_fd,
     }
     *r_who = who;
     *r_file = file;
-    
+
     return 0;
 }
 
-/* 
+/*
  * When we are using virtual hosts, the file looks like :
  * <ip address>:<path>
  */
@@ -128,25 +128,25 @@ static char *checkvirtual(char *path)
 {
     static char buf[PATH_MAX + 1];
     char *path_pnt;
-    
+
     if (path == NULL || *path == '/' ||
         (path_pnt = strstr(path, ":/")) == NULL) {
         return path;
     }
     *path_pnt = 0;
-    if (SNCHECK(snprintf(buf, sizeof buf, VHOST_PATH "/%s%s", 
+    if (SNCHECK(snprintf(buf, sizeof buf, VHOST_PATH "/%s%s",
                          path, path_pnt + 1), sizeof buf)) {
         /* Better avoid processing than risking a security flaw */
         return NULL;
     }
-    
+
     return buf;
 }
 
 static int closedesc_all(const int closestdin)
 {
     int fodder;
-    
+
     if (closestdin != 0) {
         (void) close(0);
         if ((fodder = open("/dev/null", O_RDONLY)) == -1) {
@@ -164,14 +164,14 @@ static int closedesc_all(const int closestdin)
     (void) dup2(1, 2);
     if (fodder > 2) {
         (void) close(fodder);
-    }    
+    }
     return 0;
 }
 
 static void dodaemonize(void)
 {
     pid_t child;
-    
+
     if (daemonize != 0) {
         if ((child = fork()) == (pid_t) -1) {
             perror("Daemonization failed - fork");
@@ -198,15 +198,15 @@ static int init(void)
         return -1;
     }
 #endif
-    
+
     return 0;
 }
 
 static void usage(void)
 {
-#ifndef NO_GETOPT_LONG    
+#ifndef NO_GETOPT_LONG
     const struct option *options = long_options;
-    
+
     do {
         printf("-%c\t--%s\t%s\n", options->val, options->name,
                options->has_arg ? "<opt>" : "");
@@ -244,14 +244,14 @@ static int parseoptions(int argc, char *argv[])
         case 'g': {
             const char *nptr;
             char *endptr;
-            
+
             nptr = optarg;
             endptr = NULL;
             gid = (gid_t) strtoul(nptr, &endptr, 10);
             if (!nptr || !*nptr || !endptr || *endptr) {
                 perror("Illegal GID - Must be a number\n");
             }
-            break;            
+            break;
         }
 #ifndef NO_GETOPT_LONG
         case 'h': {
@@ -262,12 +262,12 @@ static int parseoptions(int argc, char *argv[])
             if ((script = strdup(optarg)) == NULL) {
                 perror("Oh no ! More memory !");
             }
-            break;            
+            break;
         }
         case 'u': {
             const char *nptr;
             char *endptr;
-            
+
             nptr = optarg;
             endptr = NULL;
             uid = (uid_t) strtoul(nptr, &endptr, 10);
@@ -276,7 +276,7 @@ static int parseoptions(int argc, char *argv[])
             }
             break;
         }
-        default: 
+        default:
             usage();
         }
     }
@@ -285,7 +285,7 @@ static int parseoptions(int argc, char *argv[])
 
 static int changeuidgid(void)
 {
-#ifndef NON_ROOT_FTP    
+#ifndef NON_ROOT_FTP
     if (
 #ifdef HAVE_SETGROUPS
         setgroups(1U, &gid) ||
@@ -303,7 +303,7 @@ static void newenv_ull(const char * const var, const unsigned long long val)
 {
     size_t s;
     char *v;
-    
+
     s = strlen(var) + (size_t) 42U;
     if ((v = malloc(s)) == NULL) {
         return;
@@ -319,7 +319,7 @@ static void newenv_uo(const char * const var, const unsigned int val)
 {
     size_t s;
     char *v;
-    
+
     s = strlen(var) + (size_t) 8U;
     if ((v = malloc(s)) == NULL) {
         return;
@@ -335,7 +335,7 @@ static void newenv_str(const char * const var, const char * const str)
 {
     size_t s;
     char *v;
-    
+
     if (str == NULL || *str == 0) {
         return;
     }
@@ -353,10 +353,10 @@ static void newenv_str(const char * const var, const char * const str)
 
 static void fillenv(const char * const who, const struct stat * const st)
 {
-#ifdef HAVE_PUTENV    
+#ifdef HAVE_PUTENV
     struct passwd *pwd;
     struct group *grp;
-    
+
     pwd = getpwuid(st->st_uid);
     grp = getgrgid(st->st_gid);
     newenv_ull("UPLOAD_SIZE", (unsigned long long) st->st_size);
@@ -377,12 +377,12 @@ static void fillenv(const char * const who, const struct stat * const st)
 #endif
 }
 
-static int run(const char * const who, const char * const file, 
+static int run(const char * const who, const char * const file,
                const int upload_pipe_fd)
 {
     struct stat st;
     pid_t pid;
-    
+
     if (script == NULL || *script == 0 ||
         file == NULL || *file == 0 ||
         lstat(file, &st) < 0 ||
@@ -406,13 +406,13 @@ static int run(const char * const who, const char * const file,
 #else
         {
             pid_t foundpid;
-            
+
             while ((foundpid = wait3(NULL, 0, NULL)) != (pid_t) -1 &&
                    foundpid != pid);
         }
 #endif
     }
-    
+
     return 0;
 }
 
@@ -421,8 +421,8 @@ static void updatepidfile(void)
     char buf[42];
     size_t buf_len;
     int fd;
-    
-    if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n", 
+
+    if (SNCHECK(snprintf(buf, sizeof buf, "%lu\n",
                          (unsigned long) getpid()), sizeof buf)) {
         return;
     }
@@ -445,7 +445,7 @@ int main(int argc, char *argv[])
     int upload_pipe_fd;
     char *who;
     char *file;
-    
+
 #ifdef HAVE_SETLOCALE
 # ifdef LC_MESSAGES
     (void) setlocale(LC_MESSAGES, "");
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
     (void) setlocale(LC_COLLATE, "");
 # endif
 #endif
-    
+
     if (init() < 0) {
         return -1;
     }
@@ -490,7 +490,7 @@ int main(int argc, char *argv[])
         if (readpipe(upload_pipe_fd, &who, &file) != 0) {
             (void) sleep(1);
             continue;
-        }        
+        }
         file = checkvirtual(file);
         if (file != NULL && who != NULL) {
             run(who, file, upload_pipe_fd);
@@ -501,7 +501,7 @@ int main(int argc, char *argv[])
     close(upload_pipe_fd);
     (void) unlink(uploadscript_pid_file);
 #endif
-    
+
     return 0;
 }
 

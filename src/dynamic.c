@@ -16,8 +16,8 @@ static IPTrack *iptrack_list;
 void iptrack_delete_pid(const pid_t pid)
 {
     unsigned int c = 0U;
-    
-    if (iptrack_list == NULL) { 
+
+    if (iptrack_list == NULL) {
         return;
     }
     do {
@@ -26,7 +26,7 @@ void iptrack_delete_pid(const pid_t pid)
             return;
         }
         c++;
-    } while (c < maxusers);    
+    } while (c < maxusers);
 }
 
 void iptrack_free(void)
@@ -39,9 +39,9 @@ static unsigned int iptrack_find_ip_or_shift
     (const struct sockaddr_storage * const ip)
 {
     unsigned int c = 0U;
-    
+
     do {
-        if (iptrack_list[c].pid != (pid_t) 0 && 
+        if (iptrack_list[c].pid != (pid_t) 0 &&
             STORAGE_FAMILY(iptrack_list[c].ip) != STORAGE_FAMILY(*ip)) {
             if (STORAGE_FAMILY(iptrack_list[c].ip) == AF_INET &&
                 STORAGE_SIN_ADDR(iptrack_list[c].ip) == STORAGE_SIN_ADDR(*ip)) {
@@ -67,12 +67,12 @@ unsigned int iptrack_get(const struct sockaddr_storage * const ip)
 {
     unsigned int c = 0U;
     unsigned int nb = 0U;
-    
-    if (iptrack_list == NULL) { 
+
+    if (iptrack_list == NULL) {
         return 0U;
     }
     do {
-        if (iptrack_list[c].pid != (pid_t) 0 && 
+        if (iptrack_list[c].pid != (pid_t) 0 &&
             STORAGE_FAMILY(iptrack_list[c].ip) == STORAGE_FAMILY(*ip)) {
             if (STORAGE_FAMILY(iptrack_list[c].ip) == AF_INET &&
                 STORAGE_SIN_ADDR(iptrack_list[c].ip) == STORAGE_SIN_ADDR(*ip)) {
@@ -94,10 +94,10 @@ void iptrack_add(const struct sockaddr_storage * const ip,
                  const pid_t pid)
 {
     unsigned int c = 0U;
-    
+
     if (iptrack_list == NULL) {
         unsigned int ci = 0U;
-        
+
         if ((iptrack_list = malloc(maxusers * sizeof *iptrack_list)) == NULL) {
             return;
         }
@@ -105,7 +105,7 @@ void iptrack_add(const struct sockaddr_storage * const ip,
             iptrack_list[ci].pid = (pid_t) 0;
             ci++;
         } while (ci < maxusers);
-    }     
+    }
     do {
         if (iptrack_list[c].pid == (pid_t) 0U) {
             force:
@@ -114,7 +114,7 @@ void iptrack_add(const struct sockaddr_storage * const ip,
             return;
         }
         c++;
-    } while (c < maxusers);    
+    } while (c < maxusers);
     c = iptrack_find_ip_or_shift(ip);
     goto force;
 }

@@ -23,16 +23,16 @@ static signed char auth_finalized;
 void pw_extauth_parse(const char * const file)
 {
     size_t file_len;
-    
+
     if (file == NULL || (file_len = strlen(file)) <= (size_t) 0U) {
         return;
     }
-    if ((saddr = malloc(sizeof(*saddr) + file_len + 
+    if ((saddr = malloc(sizeof(*saddr) + file_len +
                         (size_t) 1U)) == NULL) {
         die_mem();
     }
     memcpy(saddr->sun_path, file, file_len + (size_t) 1U);
-    saddr->sun_family = AF_UNIX;    
+    saddr->sun_family = AF_UNIX;
 }
 
 void pw_extauth_exit(void)
@@ -121,7 +121,7 @@ static void callback_reply_ratio_upload(const char *str, AuthResult * const resu
     (void) str;
     (void) result;
 #endif
-}   
+}
 
 static void callback_reply_ratio_download(const char *str, AuthResult * const result)
 {
@@ -167,7 +167,7 @@ void pw_extauth_check(AuthResult * const result,
     char peer_hbuf[NI_MAXHOST];
     char line[4096];
     size_t line_len;
-    
+
     result->auth_ok = 0;
     if (getnameinfo((struct sockaddr *) sa, STORAGE_LEN(*sa),
                     sa_hbuf, sizeof sa_hbuf,
@@ -195,7 +195,7 @@ void pw_extauth_check(AuthResult * const result,
         }
         goto bye;
     }
-    if (SNCHECK(snprintf(line, sizeof line, 
+    if (SNCHECK(snprintf(line, sizeof line,
                          EXTAUTH_CLIENT_ACCOUNT "%s\n"
                          EXTAUTH_CLIENT_PASSWORD "%s\n"
                          EXTAUTH_CLIENT_SA_HOST "%s\n"
@@ -211,16 +211,16 @@ void pw_extauth_check(AuthResult * const result,
     line_len = strlen(line);
     if (safe_write(kindy, line, line_len, -1) != (ssize_t) line_len) {
         goto bye;
-    }    
+    }
     result->uid = (uid_t) 0;
     result->gid = (gid_t) 0;
     result->dir = NULL;
-    result->slow_tilde_expansion = 1;    
+    result->slow_tilde_expansion = 1;
     auth_finalized = 0;
     if ((readnb = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {
         goto bye;
     }
-    line[readnb] = 0;    
+    line[readnb] = 0;
     linepnt = line;
     while ((crpoint = strchr(linepnt, '\n')) != NULL) {
         const ExtauthCallBack *scanned;
@@ -236,11 +236,11 @@ void pw_extauth_check(AuthResult * const result,
             }
             scanned++;
         }
-        linepnt = crpoint + 1;        
+        linepnt = crpoint + 1;
     }
     if (auth_finalized == 0 ||
-        (result->auth_ok == 1 && 
-         (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0 || 
+        (result->auth_ok == 1 &&
+         (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0 ||
           result->dir == NULL))) {
         result->auth_ok = -1;
     }

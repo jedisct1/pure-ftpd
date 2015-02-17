@@ -19,7 +19,7 @@ int hasquota(void)
         (user_quota_files >= ULONG_LONG_MAX &&
          user_quota_size >= ULONG_LONG_MAX)) {
         return -1;
-    }    
+    }
     return 0;
 }
 
@@ -34,15 +34,15 @@ int quota_update(Quota *quota,
     struct flock lock;
     ssize_t readnb;
     int err = -1;
-    char buf[84];  
+    char buf[84];
     char *bufpnt = buf;
     int dummy_overflow;
     ssize_t left = (ssize_t) (sizeof buf - 1U);
     size_t buf_len;
-    
+
     if (hasquota() != 0 || chrooted == 0) {
         return -2;
-    }    
+    }
     if (overflow == NULL) {
         overflow = &dummy_overflow;
     }
@@ -51,7 +51,7 @@ int quota_update(Quota *quota,
     }
     *overflow = 0;
     *quota = old_quota;
-    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW, 
+    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW,
                    (mode_t) 0600)) == -1) {
         return -1;
     }
@@ -63,17 +63,17 @@ int quota_update(Quota *quota,
     while (fcntl(fd, F_SETLKW, &lock) < 0) {
         if (errno != EINTR) {
             goto byenounlock;
-        }    
+        }
     }
     do {
-        while ((readnb = read(fd, bufpnt, left)) < (ssize_t) 0 && 
+        while ((readnb = read(fd, bufpnt, left)) < (ssize_t) 0 &&
                errno == EINTR);
         if (readnb < (ssize_t) 0) {
-            goto bye;        
+            goto bye;
         }
         bufpnt += readnb;
         left -= readnb;
-    } while (left > (ssize_t) 0 && readnb != (ssize_t) 0);    
+    } while (left > (ssize_t) 0 && readnb != (ssize_t) 0);
     *bufpnt = 0;
     if ((bufpnt = strchr(buf, ' ')) == NULL) {
         goto skipparse;
@@ -114,7 +114,7 @@ int quota_update(Quota *quota,
                           quota->files, quota->size), sizeof buf) &&
         lseek(fd, (off_t) 0, SEEK_SET) != (off_t) -1 &&
         ftruncate(fd, (off_t) 0) == 0) {
-        
+
         buf_len = strlen(buf);
         if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
             (void) ftruncate(fd, (off_t) 0);
@@ -123,13 +123,13 @@ int quota_update(Quota *quota,
     }
     okbye:
     err = 0;
-    
+
     bye:
     lock.l_type = F_UNLCK;
     while (fcntl(fd, F_SETLK, &lock) < 0 && errno == EINTR);
     byenounlock:
     close(fd);
-    
+
     return err;
 }
 
@@ -137,7 +137,7 @@ void displayquota(Quota * const quota_)
 {
     Quota quota;
     double pct;
-    
+
     if (hasquota() != 0) {
         return;
     }
@@ -156,7 +156,7 @@ void displayquota(Quota * const quota_)
     if (user_quota_size < ULONG_LONG_MAX) {
         pct = (double) quota.size * 100.0 / (double) user_quota_size;
         addreply(0, MSG_QUOTA_SIZE,
-                 quota.size / 1024ULL, (int) pct, 
+                 quota.size / 1024ULL, (int) pct,
                  (unsigned long long) user_quota_size / 1024ULL);
     }
 }

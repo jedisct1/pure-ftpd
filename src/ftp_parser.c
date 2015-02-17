@@ -24,10 +24,10 @@ static void antiidle(void)
         if ((time(NULL) - noopidle) > (time_t) idletime_noop) {
             die(421, LOG_INFO, MSG_TIMEOUT_NOOP, (unsigned long) idletime_noop);
         }
-    }    
+    }
 }
 
-/* 
+/*
  * Introduce a random delay, to avoid guessing existing user names by
  * mesuring delay. It's especially true when LDAP is used.
  * No need to call usleep2() because we are root at this point.
@@ -38,7 +38,7 @@ static void randomdelay(void)
     usleep(rand() % 15000UL);          /* dummy... no need for arc4 */
 }
 
-/* 
+/*
  * Simple but fast command-line reader. We break the FTP protocol here,
  * because we deny access to files with strange characters in their name.
  * Now, I seriously doubt that clients should be allowed to upload files
@@ -48,12 +48,12 @@ static void randomdelay(void)
  * results on some filesystems, etc. So control chars are replaced by "_".
  * Better be safe than 100% RFC crap compliant but unsafe. If you really want
  * RFC compliance, define RFC_CONFORMANT_PARSER. But I will hate you.
- * 
+ *
  * RFC_CONFORMANT_LINES is another thing that clients should implement
  * properly (and it's trivial to do) : lines must be ended with \r\n .
- * Guess what ? 
+ * Guess what ?
  * Some broken clients are just sending \n ... Grrrrrrrrrrrr !!!!!!!!!!!!!!!
- * 
+ *
  * -Frank.
  */
 
@@ -73,9 +73,9 @@ int sfgets(void)
     int pollret;
     ssize_t readnb;
     signed char seen_r = 0;
-    
+
     if (scanned > (size_t) 0U) {       /* support pipelining */
-        readnbd -= scanned;        
+        readnbd -= scanned;
         memmove(cmd, cmd + scanned, readnbd);   /* safe */
         scanned = (size_t) 0U;
     }
@@ -155,13 +155,13 @@ int sfgets(void)
             }
 #else
             /* replace control chars with _ */
-            cmd[scanned] = '_';                
+            cmd[scanned] = '_';
 #endif
         }
         scanned++;
     }
     die(421, LOG_WARNING, MSG_LINE_TOO_LONG);   /* don't remove this */
-    
+
     return 0;                         /* to please GCC */
 }
 
@@ -174,7 +174,7 @@ static char *revealextraspc(char * const s_)
 {
     unsigned char *s = (unsigned char *) s_;
     unsigned char *sn;
-    
+
     if (s == NULL) {
         return s_;
     }
@@ -190,13 +190,13 @@ static char *revealextraspc(char * const s_)
         sn++;
     } while (*sn != 0U);
     do {
-        sn--;        
+        sn--;
         if (!isspace(*sn)) {
             break;
         }
         *sn = '_';
     } while (sn != s);
-    
+
     return s_;
 }
 #endif
@@ -206,7 +206,7 @@ char *charset_client2fs(const char * const string)
 {
     char *output = NULL, *output_;
     size_t inlen, outlen, outlen_;
-    
+
     inlen = strlen(string);
     outlen_ = outlen = inlen * (size_t) 4U + (size_t) 1U;
     if (outlen <= inlen ||
@@ -226,8 +226,8 @@ char *charset_client2fs(const char * const string)
     } else {
         strncpy(output, string, outlen);
     }
-    output[outlen - 1] = 0;    
-    
+    output[outlen - 1] = 0;
+
     return output;
 }
 #endif
@@ -312,11 +312,11 @@ void parser(void)
             addreply_noformat(500, "?");
             continue;
         }
-#ifdef SKIP_COMMAND_TRAILING_SPACES        
+#ifdef SKIP_COMMAND_TRAILING_SPACES
         while (isspace((unsigned char) cmd[n]) && n < cmdsize) {
             cmd[n++] = 0;
         }
-        arg = cmd + n;        
+        arg = cmd + n;
         while (cmd[n] != 0 && n < cmdsize) {
             n++;
         }
@@ -345,7 +345,7 @@ void parser(void)
         }
 #ifdef WITH_RFC2640
         narg = charset_client2fs(arg);
-	arg = narg;
+        arg = narg;
 #endif
         /*
          * antiidle() is called with dummy commands, usually used by clients
@@ -353,7 +353,7 @@ void parser(void)
          * When we jump to wayout, the idle timer is not zeroed. It means that
          * we didn't issue an 'active' command like RETR.
          */
-        
+
 #ifndef MINIMAL
         if (!strcmp(cmd, "noop")) {
             antiidle();
@@ -438,16 +438,16 @@ void parser(void)
             dotype(arg);
             goto wayout;
         } else if (!strcmp(cmd, "mode")) {
-            antiidle();                
+            antiidle();
             domode(arg);
             goto wayout;
 #ifndef MINIMAL
         } else if (!strcmp(cmd, "feat")) {
             dofeat();
             goto wayout;
-	} else if (!strcmp(cmd, "opts")) {
-	    doopts(arg);
-	    goto wayout;
+        } else if (!strcmp(cmd, "opts")) {
+            doopts(arg);
+            goto wayout;
 #endif
         } else if (!strcmp(cmd, "stru")) {
             dostru(arg);
@@ -461,8 +461,8 @@ void parser(void)
             debug++;
             addreply(200, MSG_XDBG_OK, debug);
             goto wayout;
-#endif            
-        } else if (loggedin == 0) {            
+#endif
+        } else if (loggedin == 0) {
             /* from this point, all commands need authentication */
             addreply_noformat(530, MSG_NOT_LOGGED_IN);
             goto wayout;
@@ -483,11 +483,11 @@ void parser(void)
             } else if (!strcmp(cmd, "estp")) {
                 doestp();
 #endif
-            } else if (disallow_passive == 0 && 
+            } else if (disallow_passive == 0 &&
                        (!strcmp(cmd, "pasv") || !strcmp(cmd, "p@sw"))) {
                 dopasv(0);
-            } else if (disallow_passive == 0 && 
-                       (!strcmp(cmd, "epsv") && 
+            } else if (disallow_passive == 0 &&
+                       (!strcmp(cmd, "epsv") &&
                        (broken_client_compat == 0 ||
                         STORAGE_FAMILY(ctrlconn) == AF_INET6))) {
                 if (!strcasecmp(arg, "all")) {
@@ -498,7 +498,7 @@ void parser(void)
                 } else {
                     dopasv(1);
                 }
-#ifndef MINIMAL            
+#ifndef MINIMAL
             } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
                 dopasv(2);
             } else if (!strcmp(cmd, "allo")) {
@@ -506,9 +506,9 @@ void parser(void)
                     addreply_noformat(501, MSG_STAT_FAILURE);
                 } else {
                     const off_t size = (off_t) strtoull(arg, NULL, 10);
-                    
+
                     if (size < (off_t) 0) {
-                        addreply_noformat(501, MSG_STAT_FAILURE);                        
+                        addreply_noformat(501, MSG_STAT_FAILURE);
                     } else {
                         doallo(size);
                     }
@@ -516,17 +516,17 @@ void parser(void)
 #endif
             } else if (!strcmp(cmd, "pwd") || !strcmp(cmd, "xpwd")) {
 #ifdef WITH_RFC2640
-		char *nwd;
+                char *nwd;
 #endif
                 antiidle();
 #ifdef WITH_RFC2640
-		nwd = charset_fs2client(wd);
-		addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, nwd);
-		free(nwd);
+                nwd = charset_fs2client(wd);
+                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, nwd);
+                free(nwd);
 #else
                 addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, wd);
 #endif
-                goto wayout;                
+                goto wayout;
             } else if (!strcmp(cmd, "cdup") || !strcmp(cmd, "xcup")) {
                 docwd("..");
             } else if (!strcmp(cmd, "retr")) {
@@ -566,7 +566,7 @@ void parser(void)
                     if (enforce_tls_auth == 3 &&
                         data_protection_level != CPL_PRIVATE) {
                         addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                    } else 
+                    } else
 #endif
                     {
                         dostor(arg, 0, autorename);
@@ -581,7 +581,7 @@ void parser(void)
                     if (enforce_tls_auth == 3 &&
                         data_protection_level != CPL_PRIVATE) {
                         addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                    } else 
+                    } else
 #endif
                     {
                         dostor(arg, 1, 0);
@@ -595,10 +595,10 @@ void parser(void)
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
                     addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                } else 
+                } else
 #endif
                 {
-            	     dostou();
+                     dostou();
                 }
 #endif
 #ifndef DISABLE_MKD_RMD
@@ -639,7 +639,7 @@ void parser(void)
                     donlist(arg, 0, 1, 0, 1);
                 }
             } else if (!strcmp(cmd, "nlst")) {
-#ifndef MINIMAL                
+#ifndef MINIMAL
                 modern_listings = 0;
 #endif
 #ifdef WITH_TLS
@@ -709,7 +709,7 @@ void parser(void)
                     dositetime();
                 } else if (!strcasecmp(arg, "help")) {
                     help_site:
-                    
+
                     addreply_noformat(214, MSG_SITE_HELP CRLF
 # ifdef WITH_DIRALIASES
                                       " ALIAS" CRLF
@@ -719,7 +719,7 @@ void parser(void)
                 } else if (!strcasecmp(arg, "chmod")) {
                     char *sitearg2;
                     mode_t mode;
-                    
+
                     parsechmod:
                     if (sitearg == NULL || *sitearg == 0) {
                         addreply_noformat(501, MSG_MISSING_ARG);
@@ -728,10 +728,10 @@ void parser(void)
                     sitearg2 = sitearg;
                     while (*sitearg2 != 0 && !isspace((unsigned char) *sitearg2)) {
                         sitearg2++;
-                    }                    
+                    }
                     while (*sitearg2 != 0 && isspace((unsigned char) *sitearg2)) {
                         sitearg2++;
-                    }                    
+                    }
                     if (*sitearg2 == 0) {
                         addreply_noformat(550, MSG_NO_FILE_NAME);
                         goto chmod_wayout;
@@ -746,11 +746,11 @@ void parser(void)
                     (void) 0;
                 } else if (!strcasecmp(arg, "utime")) {
                     char *sitearg2;
-                    
+
                     if (sitearg == NULL || *sitearg == 0) {
                         addreply_noformat(501, MSG_NO_FILE_NAME);
                         goto utime_wayout;
-                    }		    
+                    }
                     if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
                         sitearg2 == sitearg) {
                         addreply_noformat(501, MSG_MISSING_ARG);
@@ -758,7 +758,7 @@ void parser(void)
                     }
                     if (strcasecmp(sitearg2, " UTC") != 0) {
                         parse_file_time_change(sitearg);
-                        goto utime_wayout;			
+                        goto utime_wayout;
                     }
                     *sitearg2-- = 0;
                     if ((sitearg2 = strrchr(sitearg, ' ')) == NULL ||
@@ -779,18 +779,18 @@ void parser(void)
                     }
                     *sitearg2++ = 0;
                     if (*sitearg2 == 0) {
-                        goto utime_no_arg;			
+                        goto utime_no_arg;
                     }
                     doutime(sitearg, sitearg2);
                     utime_wayout:
                     (void) 0;
-# ifdef WITH_DIRALIASES		    
+# ifdef WITH_DIRALIASES
                 } else if (!strcasecmp(arg, "alias")) {
                     if (sitearg == NULL || *sitearg == 0) {
                         print_aliases();
                     } else {
                         const char *alias;
-                        
+
                         if ((alias = lookup_alias(sitearg)) != NULL) {
                             addreply(214, MSG_ALIASES_ALIAS, sitearg, alias);
                         } else {

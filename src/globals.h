@@ -162,7 +162,7 @@ GLOBAL0(signed char be_customer_proof);
 
 #ifdef WITH_TLS
 GLOBAL0(signed char enforce_tls_auth);
-GLOBAL0(int data_protection_level); 
+GLOBAL0(int data_protection_level);
 GLOBAL(const char *tlsciphersuite, NULL);
 GLOBAL0(signed char ssl_disabled);
 #endif
@@ -172,7 +172,7 @@ GLOBAL0(char *atomic_prefix);
 #endif
 
 #ifdef WITH_RFC2640
-GLOBAL(signed char utf8, 0);	/* 0: ascii 1: utf-8 */
+GLOBAL(signed char utf8, 0);    /* 0: ascii 1: utf-8 */
 GLOBAL(char *charset_fs, NULL);
 GLOBAL(char *charset_client, NULL);
 GLOBAL(iconv_t iconv_fd_fs2client, (iconv_t) -1);

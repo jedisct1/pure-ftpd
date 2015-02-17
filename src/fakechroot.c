@@ -17,7 +17,7 @@ static size_t chroot_len;
 int fakechroot(const char *path)
 {
     char *z;
-    
+
     if (path == NULL || *path == 0) {
 # ifdef EINVAL
         errno = EINVAL;
@@ -50,15 +50,15 @@ int fakechroot(const char *path)
 # endif
         return -1;
     }
-    
+
     return 0;
 }
 
 char *fakegetcwd(char *dir, size_t size)
 {
     char *curdirchr;
-    size_t s;     
-    
+    size_t s;
+
     if (chroot_base == NULL) {
         return getcwd(dir, size);
     }
@@ -75,13 +75,13 @@ char *fakegetcwd(char *dir, size_t size)
     }
     {
         char *sp = curdirchr + s - 1U;
-        
+
         while (sp != curdirchr && *sp == '/') {
             *sp = 0;
             s--;
         }
     }
-    s++;     
+    s++;
     if (s > size || s < (size_t) 2U) {
 # ifdef ENAMETOOLONG
         errno = ENAMETOOLONG;
@@ -89,15 +89,15 @@ char *fakegetcwd(char *dir, size_t size)
         return NULL;
     }
     memcpy(dir, curdirchr, s);
-    
+
     return curdirchr;
 }
 
 static int fakexlate(char *curdirtmp, size_t sizeof_curdirtmp, const char *dir)
 {
-    char *sl;     
+    char *sl;
     size_t curdirlen;
-    
+
     if ((curdirlen = strlen(curdir)) >= sizeof_curdirtmp) {
         return -1;
     }
@@ -126,9 +126,9 @@ static int fakexlate(char *curdirtmp, size_t sizeof_curdirtmp, const char *dir)
     } else if (*dir != 0) {
         size_t dirlen;
         size_t curdirtmplen;
-        
+
         if ((dir[0] == '.' && dir[1] == '.' &&
-             (dir[2] == 0 || dir[2] == '/')) ||            
+             (dir[2] == 0 || dir[2] == '/')) ||
             strstr(dir, "/../") != NULL) {
             perm:
 # ifdef EPERM
@@ -151,9 +151,9 @@ static int fakexlate(char *curdirtmp, size_t sizeof_curdirtmp, const char *dir)
         }
         curdirtmp[curdirtmplen] = '/';
         memcpy(curdirtmp + curdirtmplen + 1U, dir, dirlen);
-    }     
+    }
     simplify(curdirtmp);
-    
+
     return 0;
 }
 
@@ -161,7 +161,7 @@ int fakechdir(const char *dir)
 {
     char curdirtmp[PATH_MAX];
     size_t curdirtmplen;
-    
+
     if (chroot_base == NULL) {
         return chdir(dir);
     }
@@ -175,14 +175,14 @@ int fakechdir(const char *dir)
         return -1;
     }
     memcpy(curdir, curdirtmp, curdirtmplen + (size_t) 1U);
-    
+
     return 0;
 }
 
 int fakestat(const char *file, struct stat *st)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return stat(file, st);
     }
@@ -195,7 +195,7 @@ int fakestat(const char *file, struct stat *st)
 int fakelstat(const char *file, struct stat *st)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return lstat(file, st);
     }
@@ -208,7 +208,7 @@ int fakelstat(const char *file, struct stat *st)
 FILE *fakefopen(const char *file, const char *mode)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return fopen(file, mode);
     }
@@ -221,7 +221,7 @@ FILE *fakefopen(const char *file, const char *mode)
 int fakeaccess(const char *file, mode_t mode)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return access(file, mode);
     }
@@ -234,7 +234,7 @@ int fakeaccess(const char *file, mode_t mode)
 int fakeunlink(const char *file)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return unlink(file);
     }
@@ -247,7 +247,7 @@ int fakeunlink(const char *file)
 DIR *fakeopendir(const char *file)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return opendir(file);
     }
@@ -260,7 +260,7 @@ DIR *fakeopendir(const char *file)
 int fakechmod(const char *file, mode_t mode)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return chmod(file, mode);
     }
@@ -273,7 +273,7 @@ int fakechmod(const char *file, mode_t mode)
 int fakemkdir(const char *file, mode_t mode)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return mkdir(file, mode);
     }
@@ -286,7 +286,7 @@ int fakemkdir(const char *file, mode_t mode)
 int fakermdir(const char *file)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return rmdir(file);
     }
@@ -300,7 +300,7 @@ int fakermdir(const char *file)
 int fakeutime(const char *file, struct utimbuf *buf)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return utime(file, buf);
     }
@@ -315,7 +315,7 @@ int fakeutime(const char *file, struct utimbuf *buf)
 int fakeutimes(const char *file, struct timeval *buf)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return utimes(file, buf);
     }
@@ -329,7 +329,7 @@ int fakeutimes(const char *file, struct timeval *buf)
 int fakechown(const char *file, uid_t uid, gid_t gid)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return chown(file, uid, gid);
     }
@@ -343,7 +343,7 @@ int fakechown(const char *file, uid_t uid, gid_t gid)
 int fakemkfifo(const char *file, mode_t mode)
 {
      char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return mkfifo(file, mode);
     }
@@ -358,7 +358,7 @@ int fakemkfifo(const char *file, mode_t mode)
 int fakemknod(const char *file, mode_t mode, dev_t dev)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return mknod(file, mode, dev);
     }
@@ -372,8 +372,8 @@ int fakemknod(const char *file, mode_t mode, dev_t dev)
 int fakelink(const char *oldpath, const char *newpath)
 {
     char curdirtmp[PATH_MAX];
-    char curdirtmp2[PATH_MAX];     
-    
+    char curdirtmp2[PATH_MAX];
+
     if (chroot_base == NULL) {
         return link(oldpath, newpath);
     }
@@ -387,8 +387,8 @@ int fakelink(const char *oldpath, const char *newpath)
 int fakesymlink(const char *oldpath, const char *newpath)
 {
     char curdirtmp[PATH_MAX];
-    char curdirtmp2[PATH_MAX];     
-    
+    char curdirtmp2[PATH_MAX];
+
     if (chroot_base == NULL) {
         return symlink(oldpath, newpath);
     }
@@ -402,7 +402,7 @@ int fakesymlink(const char *oldpath, const char *newpath)
 int fakereadlink(const char *file, char *buf, size_t bufsiz)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return readlink(file, buf, bufsiz);
     }
@@ -415,8 +415,8 @@ int fakereadlink(const char *file, char *buf, size_t bufsiz)
 int fakerename(const char *oldpath, const char *newpath)
 {
     char curdirtmp[PATH_MAX];
-    char curdirtmp2[PATH_MAX];     
-    
+    char curdirtmp2[PATH_MAX];
+
     if (chroot_base == NULL) {
         return rename(oldpath, newpath);
     }
@@ -427,7 +427,7 @@ int fakerename(const char *oldpath, const char *newpath)
     return rename(curdirtmp, curdirtmp2);
 }
 
-/* 
+/*
  * Promotion of mode_t is problematic. For instance, on MacOS X,
  * mode_t is an unsigned short.
  */
@@ -449,7 +449,7 @@ int fakeopen(const char *file, int flags, ...)
     va_list va;
     mode_t mode;
     char curdirtmp[PATH_MAX];
-    
+
     va_start(va, flags);
     if (chroot_base == NULL) {
         if ((flags & O_CREAT) != 0) {
@@ -466,18 +466,18 @@ int fakeopen(const char *file, int flags, ...)
     }
     if ((flags & O_CREAT) != 0) {
         mode = va_arg(va, VA_ARG_MODE_T);
-        va_end(va);          
+        va_end(va);
         return open(curdirtmp, flags, mode);
     }
     va_end(va);
-    
+
     return open(curdirtmp, flags);
 }
 
 char *fakerealpath(const char *file, char *resolved_path)
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return realpath(file, resolved_path);
     }
@@ -490,20 +490,20 @@ char *fakerealpath(const char *file, char *resolved_path)
 # if STATFS_TYPE == 1
 int fakestatvfs64(const char *path, STATFS_STRUCT *str)
 # elif STATFS_TYPE == 2
-int fakestatvfs(const char *path, STATFS_STRUCT *str)        
+int fakestatvfs(const char *path, STATFS_STRUCT *str)
 # elif STATFS_TYPE == 3
 int fakestatfs(const char *path, STATFS_STRUCT *str)
-# endif            
+# endif
 # if STATFS_TYPE > 0
 {
     char curdirtmp[PATH_MAX];
-    
+
     if (chroot_base == NULL) {
         return STATFS(path, str);
     }
     if (fakexlate(curdirtmp, sizeof curdirtmp, path) != 0) {
         return -1;
-    }    
+    }
     return STATFS(curdirtmp, str);
 }
 # endif

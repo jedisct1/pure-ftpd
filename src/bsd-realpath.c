@@ -76,7 +76,7 @@ static size_t strlcpy(char *dst, const char * const src, const size_t siz)
     char *d = dst;
     const char *s = src;
     size_t n = siz;
-    
+
     /* Copy as many bytes as will fit */
     if (n != 0 && --n != 0) {
         do {
@@ -85,7 +85,7 @@ static size_t strlcpy(char *dst, const char * const src, const size_t siz)
             }
         } while (--n != 0);
     }
-    
+
     /* Not enough room in dst, add NUL and traverse rest of src */
     if (n == 0) {
         if (siz != 0) {
@@ -93,7 +93,7 @@ static size_t strlcpy(char *dst, const char * const src, const size_t siz)
         }
         while (*s++) {
         }
-    }    
+    }
     return s - src - 1; /* count does not include NUL */
 }
 #endif
@@ -112,13 +112,13 @@ static size_t strlcat(char *dst, const char * const src, const size_t siz)
     const char *s = src;
     size_t n = siz;
     size_t dlen;
-    
+
     /* Find the end of dst and adjust bytes left but don't go past end */
     while (n-- != 0 && *d != '\0') {
         d++;
     }
     dlen = d - dst;
-    n = siz - dlen;    
+    n = siz - dlen;
     if (n == 0) {
         return dlen + strlen(s);
     }
@@ -130,7 +130,7 @@ static size_t strlcat(char *dst, const char * const src, const size_t siz)
         s++;
     }
     *d = '\0';
-    
+
     return dlen + (s - src);    /* count does not include NUL */
 }
 #endif
@@ -171,7 +171,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
         errno = ENAMETOOLONG;
         return NULL;
     }
-    
+
     /*
      * Iterate over path components in `left'.
      */
@@ -215,7 +215,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
             }
             continue;
         }
-        
+
         /*
          * Append the next path component and lstat() it.
          */
@@ -247,7 +247,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
                 *q = '\0';
                 resolved_len = q - resolved;
             }
-            
+
             /*
              * If there are any path components left, then
              * append them to symlink. The result is placed
@@ -274,7 +274,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
             return NULL;
         }
     }
-    
+
     /*
      * Remove trailing slash except when the resolved pathname
      * is a single "/".

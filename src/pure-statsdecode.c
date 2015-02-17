@@ -20,13 +20,13 @@ int main(int argc, char *argv[])
     FILE *fp;
     time_t date;
     struct tm *tm;
-    char timestamp[42];    
-    
+    char timestamp[42];
+
     if (argc != 2) {
         usage();
         return 1;
     }
-    
+
 #ifdef HAVE_SETLOCALE
 # ifdef LC_MESSAGES
     (void) setlocale(LC_MESSAGES, "");
@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
-#endif            
-    
+#endif
+
     file = argv[1];
     if (*file == '-' && file[1] == 0) {
         fp = stdin;
@@ -76,9 +76,9 @@ int main(int argc, char *argv[])
         if (c == '\n') {
             fflush(fp);
             instamp = 0;
-        }        
+        }
     }
     fclose(fp);
-    
+
     return 0;
 }

@@ -46,18 +46,18 @@ static ConfigKeywords mysql_config_keywords[] = {
     { "MYSQLSocket", &socket_path },
     { "MYSQLUser", &user },
     { "MYSQLPassword", &pw },
-    { "MYSQLDatabase", &db },    
+    { "MYSQLDatabase", &db },
     { "MYSQLCrypt", &crypto },
-    { "MYSQLTransactions", &transactions },    
+    { "MYSQLTransactions", &transactions },
     { "MYSQLGetPW", &sqlreq_getpw },
-    { "MYSQLGetUID", &sqlreq_getuid },    
+    { "MYSQLGetUID", &sqlreq_getuid },
     { "MYSQLDefaultUID", &sql_default_uid },
     { "MYSQLGetGID", &sqlreq_getgid },
     { "MYSQLDefaultGID", &sql_default_gid },
     { "MYSQLGetDir", &sqlreq_getdir },
     { "MYSQLForceTildeExpansion", &tildexp_s },
 #ifdef QUOTAS
-    { "MYSQLGetQTAFS", &sqlreq_getqta_fs },    
+    { "MYSQLGetQTAFS", &sqlreq_getqta_fs },
     { "MYSQLGetQTASZ", &sqlreq_getqta_sz },
 #endif
 #ifdef RATIOS

@@ -2,7 +2,7 @@
 /*
  * This is a tiny basic parser, used for LDAP, MySQL, and Postgres configuration
  * files, but it may be useful for future extensions as well.
- * -Jedi. 
+ * -Jedi.
  */
 
 #include <config.h>
@@ -23,8 +23,8 @@ int generic_parser(const char * const file,
     char *linepnt2;
     FILE *fp;
     ConfigKeywords *config_keywords_pnt;
-    char line[LINE_MAX];    
-    
+    char line[LINE_MAX];
+
     if (file == NULL || (fp = fopen(file, "r")) == NULL) {
         return -1;
     }
@@ -40,7 +40,7 @@ int generic_parser(const char * const file,
         config_keywords_pnt = config_keywords;
         do {
             size_t keyword_len;
-            
+
             keyword_len = strlen(config_keywords_pnt->keyword);
             if (strncasecmp(config_keywords_pnt->keyword,
                             linepnt, keyword_len) == 0) {
@@ -54,7 +54,7 @@ int generic_parser(const char * const file,
                 }
                 linepnt2 = linepnt + strlen(linepnt) - 1U;
                 while (linepnt2 != linepnt &&
-                       (isspace((unsigned char) *linepnt2) || 
+                       (isspace((unsigned char) *linepnt2) ||
                         ISCTRLCODE(*linepnt2))) {
                     linepnt2--;
                 }
@@ -72,8 +72,8 @@ int generic_parser(const char * const file,
             return -1;
         }
     }
-    fclose(fp);    
-    
+    fclose(fp);
+
     return 0;
 }
 #else

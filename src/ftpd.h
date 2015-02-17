@@ -277,7 +277,7 @@ typedef struct AuthResult_ {
     unsigned long throttling_bandwidth_ul;
     unsigned long throttling_bandwidth_dl;
     int throttling_ul_changed;
-    int throttling_dl_changed;    
+    int throttling_dl_changed;
 #endif
 #ifdef QUOTAS
     unsigned long long user_quota_size;
@@ -373,7 +373,7 @@ void opendata(void);
 void closedata(void);
 void client_fflush(void);
 void client_printf(const char * const format, ...)
-    __attribute__ ((format(printf, 1, 2)));    
+    __attribute__ ((format(printf, 1, 2)));
 void addreply(const int code, const char * const line, ...)
     __attribute__ ((format(printf, 2, 3)));
 void addreply_noformat(const int code, const char * const line);
@@ -381,7 +381,7 @@ void doreply(void);
 void sighandler(int sig);
 void prevent(char *arg);
 unsigned int daemons(in_port_t server_port);
-void logfile(const int facility, const char *format, ...) 
+void logfile(const int facility, const char *format, ...)
     __attribute__ ((format(printf, 2, 3)));
 char *skip_telnet_controls(const char *str);
 void die(const int err, const int priority, const char * const format, ...)
@@ -468,7 +468,7 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 
 /*
  * Some operating systems (at least Solaris > 2.7 and FreeBSD) have strange
- * troubles with reusing TCP ports, even when SO_REUSEADDR is enabled. 
+ * troubles with reusing TCP ports, even when SO_REUSEADDR is enabled.
  * As a workaround, we try several unassigned privileged ports.
  * The last way is to let the OS assign a port.
  * For egress filtering, you can accept connections from ports <= 20
@@ -486,14 +486,14 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 #  define PATH_MAX 65536U
 Warning: neither PATH_MAX nor MAXPATHLEN were found.
 Remove these lines if you really want to compile the server, but
-the server may be insecure if a wrong value is set here.    
+the server may be insecure if a wrong value is set here.
 # endif
 #endif
 #if (PATH_MAX) >= (INT_MAX)
 Your platform has a very large PATH_MAX, we should not trust it.
 #endif
 
-#ifndef DEFAULT_MAX_USERS    
+#ifndef DEFAULT_MAX_USERS
 # define DEFAULT_MAX_USERS 50
 #endif
 #ifndef DEFAULT_FTP_DATA_PORT
@@ -512,7 +512,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #ifndef MAX_SITE_IDLE
 # define MAX_SITE_IDLE (42UL * 60UL)
 #endif
-#ifndef DEFAULT_MAX_LS_FILES    
+#ifndef DEFAULT_MAX_LS_FILES
 # define DEFAULT_MAX_LS_FILES 10000U
 #endif
 #ifndef DEFAULT_MAX_LS_DEPTH
@@ -524,7 +524,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #ifndef MAX_CPU_TIME
 # define MAX_CPU_TIME (4 * 60 * 60)           /* Max allowed CPU time per session */
 #endif
-#ifndef MAX_SESSION_XFER_IDLE    
+#ifndef MAX_SESSION_XFER_IDLE
 # define MAX_SESSION_XFER_IDLE (24 * 60 * 60)   /* Max duration of a transfer */
 #endif
 #ifndef MAX_USER_LENGTH
@@ -551,7 +551,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 # undef CONF_TCP_SO_SNDBUF
 # define CONF_TCP_SO_SNDBUF 65536
 #endif
-    
+
 #ifndef DL_MIN_CHUNK_SIZE
 # define DL_MIN_CHUNK_SIZE (8 * 1024)
 #endif
@@ -589,14 +589,14 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #endif
 #ifndef UL_MAX_CHUNK_SIZE
 # define UL_MAX_CHUNK_SIZE (512 * 1024UL)
-#endif    
+#endif
 
-#define VHOST_PREFIX_MAX_LEN 64    
+#define VHOST_PREFIX_MAX_LEN 64
 
-#define PUREFTPD_TMPFILE_PREFIX ".pureftpd-"    
+#define PUREFTPD_TMPFILE_PREFIX ".pureftpd-"
 #define ATOMIC_PREFIX_PREFIX PUREFTPD_TMPFILE_PREFIX "upload."
 #define WIN32_ANON_DIR "/ftp"
-    
+
 #define STORAGE_PORT(X)  (*storage_port(&(X)))
 #define STORAGE_PORT6(X) (*storage_port6(&(X)))
 #define STORAGE_SIN_ADDR(X) (storage_sin_addr(&(X))->s_addr)
@@ -664,7 +664,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #ifdef HAVE_NDIR_H
 # include <ndir.h>
 #endif
-       
+
 #ifdef STAT_MACROS_BROKEN
 # undef S_ISBLK
 # undef S_ISCHR
@@ -677,7 +677,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 # undef S_ISREG
 # undef S_ISSOCK
 #endif                            /* STAT_MACROS_BROKEN.  */
-    
+
 #ifndef S_IFMT
 # define S_IFMT 0170000
 #endif
@@ -709,11 +709,11 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #if !defined(S_ISNWK) && defined(S_IFNWK)    /* HP/UX */
 # define S_ISNWK(m) (((m) & S_IFMT) == S_IFNWK)
 #endif
-    
+
 #ifndef S_IEXEC
 # define S_IEXEC S_IXUSR
 #endif
-    
+
 #ifndef S_IXUSR
 # define S_IXUSR S_IEXEC
 #endif
@@ -732,7 +732,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #else
 # define ISCTRLCODE(X) ((X) == 0x7f || ((unsigned char) (X)) < 32U)
 #endif
-    
+
 #ifndef HAVE_MUNMAP
 # define munmap(A, B) (0)
 #endif
@@ -772,9 +772,9 @@ Your platform has a very large PATH_MAX, we should not trust it.
 
 #ifndef offsetof
 # define offsetof(type, member) ((size_t) &((type*) NULL)->member)
-#endif    
-    
-#include "bsd-realpath.h"    
+#endif
+
+#include "bsd-realpath.h"
 #include "fakechroot.h"
-        
+
 #endif

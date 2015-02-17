@@ -33,7 +33,7 @@ void pw_unix_check(AuthResult * const result,
     }
     if (strcasecmp(pw.pw_shell, FAKE_SHELL) != 0) {
         const char *shell;
-        
+
         setusershell();
         while ((shell = (char *) getusershell()) != NULL &&
                strcmp(pw.pw_shell, shell) != 0);
@@ -41,7 +41,7 @@ void pw_unix_check(AuthResult * const result,
         if (shell == NULL) {
             return;
         }
-    }    
+    }
 #endif
     if ((dir = strdup(pw.pw_dir)) == NULL) {
         return;
@@ -70,7 +70,7 @@ void pw_unix_check(AuthResult * const result,
     }
     {
         const char *crypted;
-        
+
         if (cpwd == NULL ||
             (crypted = (const char *) crypt(password, cpwd)) == NULL ||
             strcmp(cpwd, crypted) != 0) {
@@ -83,7 +83,7 @@ void pw_unix_check(AuthResult * const result,
     result->slow_tilde_expansion = 0;
     result->auth_ok = -result->auth_ok;
     return;
-    
+
     bye:
     free(dir);
 }

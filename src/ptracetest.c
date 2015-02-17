@@ -3,16 +3,16 @@
  * This little program checks whether your operating system allows a process
  * to attach to another process whose uid is only identical because it
  * revoked its privileges.
- * 
+ *
  * If it detects that your operating system may be unsafe, then it's probably
  * better to avoid usage of privilege separation if untrusted users have
  * shell access.
  *
  * Compile and run with :
- * 
+ *
  * make ptracetest
  * ./ptracetest
- * 
+ *
  * (C)opyleft 2003-2009 Jedi/Sector One <j at pureftpd dot org>.
  */
 
@@ -32,7 +32,7 @@
 int main(void)
 {
     fputs("Sorry, this test can't be compiled in this platform\n", stderr);
-    
+
     return 255;
 }
 
@@ -71,20 +71,20 @@ int main(void)
             t++;
         } while (t < sizeof ZIPPER - (size_t) 1U);
         putchar('\n');
-        
+
         _exit(0);
     } else {
         int status;
-        long ret;        
+        long ret;
 
 # ifdef PT_ATTACH
         ret = ptrace(PT_ATTACH, pid, NULL, NULL);
 # else
-        ret = ptrace(PTRACE_ATTACH, pid, NULL, NULL);        
+        ret = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
 # endif
-        
+
         while (wait(&status) != pid);
-        
+
         if (ret < 0L) {
             puts("\n"
                  "*** YOUR OPERATING SYSTEM LOOKS SAFE ***\n"
@@ -98,9 +98,9 @@ int main(void)
                  "\n"
                  "Enabling privilege separation is ok as long as untrusted\n"
                  "users don't have shell access.");
-        }        
+        }
     }
-    
+
     return rtn;
 }
 

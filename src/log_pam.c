@@ -1,6 +1,6 @@
 /*
  * Changed qmail-pop3 to pure-ftpd ...
- * 
+ *
  * Program:    Pluggable Authentication Modules login services
  *
  * Author:    Michael K. Johnson
@@ -97,22 +97,22 @@ static int PAM_conv(int num_msg,
                 reply[replies].resp_retcode = PAM_BUF_ERR;
 #endif
                 PAM_error = 1;
-                return PAM_CONV_ERR;                
+                return PAM_CONV_ERR;
             }
             reply[replies++].resp_retcode = PAM_SUCCESS;
             /* PAM frees resp */
             break;
         case PAM_PROMPT_ECHO_OFF:
             GET_MEM;
-            memset(&reply[replies], 0, sizeof reply[replies]);            
+            memset(&reply[replies], 0, sizeof reply[replies]);
             if ((reply[replies].resp = strdup(PAM_password)) == NULL) {
 #ifdef PAM_BUF_ERR
                 reply[replies].resp_retcode = PAM_BUF_ERR;
-#endif                
-                PAM_error = 1;                
+#endif
+                PAM_error = 1;
                 return PAM_CONV_ERR;
             }
-            reply[replies++].resp_retcode = PAM_SUCCESS;            
+            reply[replies++].resp_retcode = PAM_SUCCESS;
             /* PAM frees resp */
             break;
         case PAM_TEXT_INFO:
@@ -127,7 +127,7 @@ static int PAM_conv(int num_msg,
         }
     }
     *resp = reply;
-    
+
     return PAM_SUCCESS;
 }
 
@@ -154,7 +154,7 @@ void pw_pam_check(AuthResult * const result,
     int pam_error;
     struct passwd pw, *pw_;
     char *dir = NULL;
-    
+
     (void) sa;
     (void) peer;
     result->auth_ok = 0;
@@ -186,12 +186,12 @@ void pw_pam_check(AuthResult * const result,
     if ((dir = strdup(pw.pw_dir)) == NULL) {
         goto bye;
     }
-    result->auth_ok--;                  /* -1 */    
+    result->auth_ok--;                  /* -1 */
 # ifdef HAVE_INITGROUPS
     (void) initgroups(pw.pw_name, pw.pw_gid);
 # endif
     pam_error = pam_setcred(pamh, PAM_CRED_ESTABLISH);
-    PAM_BAIL;    
+    PAM_BAIL;
 
     /*
      * Handle session entries. PAM is instructed to shut up for now.
@@ -207,9 +207,9 @@ void pw_pam_check(AuthResult * const result,
     result->gid = pw.pw_gid;
     result->slow_tilde_expansion = 0;
     result->auth_ok = -result->auth_ok;  /* 1 */
-    
-    bye:        
-    (void) pam_end(pamh, result->auth_ok == 0 ? 0 : PAM_SUCCESS);    
+
+    bye:
+    (void) pam_end(pamh, result->auth_ok == 0 ? 0 : PAM_SUCCESS);
 }
 #else
 extern signed char v6ready;

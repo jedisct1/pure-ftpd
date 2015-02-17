@@ -27,7 +27,7 @@ static char *hexify(char * const result, const unsigned char *digest,
     static const char * const hexchars = "0123456789abcdef";
     char *result_pnt = result;
 
-    /* 
+    /*
      * Unless developpers are drunk, the following tests are just
      * paranoid bloat. But ehm... yeah, sometimes, they *are* drunk,
      * so...
@@ -50,12 +50,12 @@ static char *hexify(char * const result, const unsigned char *digest,
 /* Encode a buffer to Base64 */
 
 static char *base64ify(char * const result, const unsigned char *digest,
-                       const size_t size_result, size_t size_digest)     
+                       const size_t size_result, size_t size_digest)
 {
     static const char * const b64chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *result_pnt = result;
-    
+
     if (size_result < (((size_digest + 2U) / 3U) * 4U + 1U)) {
         return NULL;
     }
@@ -63,13 +63,13 @@ static char *base64ify(char * const result, const unsigned char *digest,
         const unsigned char t0 = (unsigned char) *digest++;
         const unsigned char t1 = (unsigned char) *digest++;
         const unsigned char t2 = (unsigned char) *digest++;
-        
+
         *result_pnt++ = b64chars[(t0 >> 2) & 63];
         *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
         *result_pnt++ = b64chars[((t1 << 2) & 60) | ((t2 >> 6) & 3)];
         *result_pnt++ = b64chars[t2 & 63];
         size_digest -= (size_t) 3U;
-    }    
+    }
     if (size_digest > (size_t) 0U) {
         const unsigned char t0 = (unsigned char) digest[0];
 
@@ -79,14 +79,14 @@ static char *base64ify(char * const result, const unsigned char *digest,
             *result_pnt++ = '=';
         } else {
             const unsigned char t1 = (unsigned char) digest[1];
-            
+
             *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
-            *result_pnt++ = b64chars[((t1 << 2) & 60)];            
+            *result_pnt++ = b64chars[((t1 << 2) & 60)];
         }
-        *result_pnt++ = '=';        
+        *result_pnt++ = '=';
     }
     *result_pnt = 0;
-    
+
     return result;
 }
 
@@ -109,10 +109,10 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
     size_t ch = size_encoded;
     char *result_pnt = result;
     int extra = 0;
-        
+
     if (size_result < (((size_encoded + 3U) / 4U) * 3U + 1U)) {
         return NULL;
-    }    
+    }
     while (ch > (size_t) 0U) {
         if (encoded[--ch] > 'z') {
             return NULL;
@@ -121,8 +121,8 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
     while (size_encoded > (size_t) 3U) {
         const unsigned char t1 = rev64chars[encoded[1]];
         const unsigned char t2 = rev64chars[encoded[2]];
-        const unsigned char t3 = rev64chars[encoded[3]];        
-        /* 
+        const unsigned char t3 = rev64chars[encoded[3]];
+        /*
          * I'm very proud : bit shifts and masks were done without writing
          * down anything on a piece of paper, and the first try worked :)
          */
@@ -136,13 +136,13 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
                 extra = 1;
             }
             break;
-        }        
+        }
         encoded += 4;
-        size_encoded -= (size_t) 4U;        
+        size_encoded -= (size_t) 4U;
     }
     *size_decoded = (size_t) (result_pnt - result) - extra;
     *result_pnt = 0;
-    
+
     return result;
 }
 
@@ -150,10 +150,10 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
 
 char *crypto_hash_sha1(const char *string, const int hex)
 {
-    SHA1_CTX ctx;    
+    SHA1_CTX ctx;
     unsigned char digest[20];
     static char result[41];
-    
+
     SHA1Init(&ctx);
     if (string != NULL && *string != 0) {
         SHA1Update(&ctx, (const unsigned char *) string,
@@ -172,10 +172,10 @@ char *crypto_hash_sha1(const char *string, const int hex)
 
 char *crypto_hash_md5(const char *string, const int hex)
 {
-    MD5_CTX ctx;    
+    MD5_CTX ctx;
     unsigned char digest[16];
-    static char result[33];    
-    
+    static char result[33];
+
     MD5Init(&ctx);
     if (string != NULL && *string != 0) {
         MD5Update(&ctx, (const unsigned char *) string,
@@ -196,12 +196,12 @@ char *crypto_hash_ssha1(const char *string, const char *stored)
 {
     SHA1_CTX ctx;
     const char *salt;
-    unsigned char digest[20];    
-    size_t decoded_len;  
+    unsigned char digest[20];
+    size_t decoded_len;
     char *hash_and_salt;
     size_t sizeof_hash_and_salt;
     static char decoded[512];
-    
+
     if (debase64ify(decoded, (const unsigned char *) stored,
                     sizeof decoded, strlen(stored), &decoded_len) == NULL) {
         return NULL;                   /* huge salt, better abort */
@@ -210,29 +210,29 @@ char *crypto_hash_ssha1(const char *string, const char *stored)
         return NULL;                   /* corrupted hash result, abort */
     }
     salt = decoded + sizeof digest;
-    decoded_len -= sizeof digest;    
+    decoded_len -= sizeof digest;
     SHA1Init(&ctx);
     if (string != NULL && *string != 0) {
-        SHA1Update(&ctx, (const unsigned char *) string, 
+        SHA1Update(&ctx, (const unsigned char *) string,
                    (unsigned int) strlen(string));
     }
     if (decoded_len > (size_t) 0U) {
         SHA1Update(&ctx, (const unsigned char *) salt, decoded_len);
     }
-    SHA1Final(digest, &ctx);    
+    SHA1Final(digest, &ctx);
     sizeof_hash_and_salt = sizeof digest + decoded_len;
     if ((hash_and_salt = ALLOCA(sizeof_hash_and_salt)) == NULL) {
         return NULL;
     }
     memcpy(hash_and_salt, digest, sizeof digest);   /* no possible overflow */
     memcpy(hash_and_salt + sizeof digest, salt, decoded_len);   /* no possible overflow */
-    if (base64ify(decoded, (const unsigned char *) hash_and_salt, 
+    if (base64ify(decoded, (const unsigned char *) hash_and_salt,
                   sizeof decoded, sizeof_hash_and_salt) == NULL) {
-        ALLOCA_FREE(hash_and_salt);        
+        ALLOCA_FREE(hash_and_salt);
         return NULL;
-    }    
+    }
     ALLOCA_FREE(hash_and_salt);
-    
+
     return decoded;
 }
 
@@ -242,12 +242,12 @@ char *crypto_hash_smd5(const char *string, const char *stored)
 {
     MD5_CTX ctx;
     const char *salt;
-    unsigned char digest[20];    
-    size_t decoded_len;  
+    unsigned char digest[20];
+    size_t decoded_len;
     char *hash_and_salt;
     size_t sizeof_hash_and_salt;
     static char decoded[512];
-    
+
     if (debase64ify(decoded, (const unsigned char *) stored,
                     sizeof decoded, strlen(stored), &decoded_len) == NULL) {
         return NULL;                   /* huge salt, better abort */
@@ -256,29 +256,29 @@ char *crypto_hash_smd5(const char *string, const char *stored)
         return NULL;                   /* corrupted hash result, abort */
     }
     salt = decoded + sizeof digest;
-    decoded_len -= sizeof digest;    
+    decoded_len -= sizeof digest;
     MD5Init(&ctx);
     if (string != NULL && *string != 0) {
-        MD5Update(&ctx, (const unsigned char *) string, 
+        MD5Update(&ctx, (const unsigned char *) string,
                   (unsigned int) strlen(string));
     }
     if (decoded_len > (size_t) 0U) {
         MD5Update(&ctx, (const unsigned char *) salt, decoded_len);
     }
-    MD5Final(digest, &ctx);    
+    MD5Final(digest, &ctx);
     sizeof_hash_and_salt = sizeof digest + decoded_len;
     if ((hash_and_salt = ALLOCA(sizeof_hash_and_salt)) == NULL) {
         return NULL;
     }
     memcpy(hash_and_salt, digest, sizeof digest);   /* no possible overflow */
     memcpy(hash_and_salt + sizeof digest, salt, decoded_len);   /* no possible overflow */
-    if (base64ify(decoded, (const unsigned char *) hash_and_salt, 
+    if (base64ify(decoded, (const unsigned char *) hash_and_salt,
                   sizeof decoded, sizeof_hash_and_salt) == NULL) {
-        ALLOCA_FREE(hash_and_salt);        
+        ALLOCA_FREE(hash_and_salt);
         return NULL;
-    }    
+    }
     ALLOCA_FREE(hash_and_salt);
-    
+
     return decoded;
 }
 
