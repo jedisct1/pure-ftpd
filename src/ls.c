@@ -771,8 +771,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
             }
             if (chdir("..")) {    /* defensive in the extreme... */
                 if (chdir(wd) || chdir(name)) {    /* someone rmdir()'d it? */
-                    die(421, LOG_ERR, "chdir: %s" ,
-                        strerror(errno));
+                    die(421, LOG_ERR, "chdir: %s", strerror(errno));
                 }
             }
         }
@@ -980,7 +979,9 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
                         }
                         if (!chdir(*path)) {
                             listdir(0U, c, tls_fd, *path);
-                            chdir(wd);
+                            if (chdir(wd)) {
+                                die(421, LOG_ERR, "chdir: %s", strerror(errno));
+                            }
                         }
                     }
                     path++;
@@ -1033,6 +1034,8 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     } else {
         addreply(226, MSG_LS_SUCCESS, matches);
     }
-    end:
-    chdir(wd);
+end:
+    if (chdir(wd)) {
+        die(421, LOG_ERR, "chdir: %s", strerror(errno));
+    }
 }
