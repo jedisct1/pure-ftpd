@@ -149,7 +149,7 @@ static int parseoptions(int argc, char *argv[])
             break;
         }
         case 's': {
-            if ((socketpath = strdup(optarg)) == NULL) {
+            if (socketpath == NULL && (socketpath = strdup(optarg)) == NULL) {
                 perror("Oh no ! More memory !");
             }
             break;
