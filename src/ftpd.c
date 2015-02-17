@@ -5606,13 +5606,14 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
 #ifdef WITH_RFC2640
         case '8': {
-            if ((charset_fs = strdup(optarg)) == NULL) {
+            if (charset_fs == NULL && (charset_fs = strdup(optarg)) == NULL) {
                 die_mem();
             }
             break;
         }
         case '9': {
-            if ((charset_client = strdup(optarg)) == NULL) {
+            if (charset_client == NULL &&
+                (charset_client = strdup(optarg)) == NULL) {
                 die_mem();
             }
             break;
