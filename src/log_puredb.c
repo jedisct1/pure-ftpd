@@ -117,9 +117,10 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             memset(&hints, 0, sizeof hints);
             hints.ai_family = AF_INET;
             hints.ai_addr = NULL;
-            if ((on = getaddrinfo(pattern, NULL, &hints, &res)) != 0 ||
-                res->ai_family != AF_INET) {
+            if ((on = getaddrinfo(pattern, NULL, &hints, &res)) != 0) {
                 logfile(LOG_WARNING, "puredb: [%s] => [%d]", pattern, on);
+            } else if (res->ai_family != AF_INET) {
+                freeaddrinfo(res);
             } else {
                 const unsigned char * const ip_raw =
                     (const unsigned char *) &
