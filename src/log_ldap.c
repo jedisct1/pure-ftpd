@@ -474,8 +474,8 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if ((pwret.pw_dir =
          pw_ldap_getvalue(ld, res, ldap_homedirectory)) == NULL ||
         *pwret.pw_dir == 0) {
-        if (ldap_default_home_directory == NULL &&
-            *ldap_default_home_directory != 0) {
+        if (ldap_default_home_directory == NULL ||
+            *ldap_default_home_directory == 0) {
             goto error;
         }
         if ((pwret.pw_dir = strdup(ldap_default_home_directory)) == NULL) {
