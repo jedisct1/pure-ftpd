@@ -209,9 +209,6 @@ void pw_pam_check(AuthResult * const result,
     result->auth_ok = -result->auth_ok;  /* 1 */
     
     bye:        
-    if (dir != NULL) {
-        dir = NULL;
-    }
     (void) pam_end(pamh, result->auth_ok == 0 ? 0 : PAM_SUCCESS);    
 }
 #else
