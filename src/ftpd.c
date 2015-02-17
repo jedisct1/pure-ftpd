@@ -5421,6 +5421,7 @@ static void standalone_server(void)
                        (char *) &on, sizeof on) != 0) {
             int old_errno;
 
+            freeaddrinfo(res);
             cant_bind:
             old_errno = errno;
             perror(MSG_STANDALONE_FAILED);
@@ -5431,6 +5432,7 @@ static void standalone_server(void)
         if (bind(listenfd, res->ai_addr, (socklen_t) res->ai_addrlen) != 0 ||
             listen(listenfd, maxusers > 0U ?
                    3U + maxusers / 8U : DEFAULT_BACKLOG) != 0) {
+            freeaddrinfo(res);
             goto cant_bind;
         }
         freeaddrinfo(res);
@@ -5443,6 +5445,7 @@ static void standalone_server(void)
                                     SOCK_STREAM, IPPROTO_TCP)) == -1 ||
                 setsockopt(listenfd6, SOL_SOCKET, SO_REUSEADDR,
                            (char *) &on, sizeof on) != 0) {
+                freeaddrinfo(res6);
                 goto cant_bind;
             }
 # if defined(IPPROTO_IPV6) && defined(IPV6_V6ONLY)
@@ -5453,6 +5456,7 @@ static void standalone_server(void)
                      (socklen_t) res6->ai_addrlen) != 0 ||
                 listen(listenfd6, maxusers > 0U ?
                        3U + maxusers / 8U : DEFAULT_BACKLOG) != 0) {
+                freeaddrinfo(res6);
                 goto cant_bind;
             }
             freeaddrinfo(res6);
