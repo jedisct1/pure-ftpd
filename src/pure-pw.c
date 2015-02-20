@@ -240,7 +240,7 @@ static char *best_crypt(const char * const pwd)
     }
     return hash;
 #else
-    if ((crypted = (const char *)      /* Blowfish */
+    if ((crypted = (const char *)      /* bcrypt */
          crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
         strcmp(crypted,
                "$2a$08$123456789012345678901uBdmsfIXjJcWQwz1wT/IZrWhimJ6xy6a")
@@ -281,27 +281,9 @@ static char *best_crypt(const char * const pwd)
         } while (c > 3);
 
         return (char *) crypt(pwd, salt);
-    } else if ((crypted = (const char *)    /* Extended DES */
-                crypt("test", "_.../1234")) != NULL &&
-               strcmp(crypted, "_.../1234PAPUVmqGzpU") == 0) {
-        char salt[] = "_.../0000";
-        int c = 8;
-
-        do {
-            c--;
-            salt[c] = crcars[pw_zrand() & 63];
-        } while (c > 5);
-
-        return (char *) crypt(pwd, salt);
-    }
-    /* Simple DES */
-    {
-        char salt[] = "00";
-
-        salt[0] = crcars[pw_zrand() & 63];
-        salt[1] = crcars[pw_zrand() & 63];
-
-        return (char *) crypt(pwd, salt);
+    } else {
+        fprintf(stderr, "No useable password hashing function found\n");
+        exit(EXIT_FAILURE);
     }
 #endif
 }
