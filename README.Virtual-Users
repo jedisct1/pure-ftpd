@@ -3,8 +3,6 @@
        ------------------------ VIRTUAL USERS ------------------------
 
 
-Since release 0.99.2, Pure-FTPd supports virtual users.
-
 Virtual users is a simple mechanism to store a list of users, with their
 password, name, uid, directory, etc. It's just like /etc/passwd. But it's
 not /etc/passwd. It's a different file, only for FTP.
