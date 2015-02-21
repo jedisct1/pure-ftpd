@@ -388,7 +388,7 @@ void parser(void)
             addreply_noformat(215, "UNIX Type: L8");
             goto wayout;
 #ifdef WITH_TLS
-        } else if (enforce_tls_auth > 0 &&
+        } else if (enforce_tls_auth > 0 && loggedin == 0 &&
                    !strcmp(cmd, "auth") && !strcasecmp(arg, "tls")) {
             addreply_noformat(234, "AUTH TLS OK.");
             doreply();
@@ -399,6 +399,17 @@ void parser(void)
             goto wayout;
         } else if (!strcmp(cmd, "pbsz")) {
             addreply_noformat(tls_cnx == NULL ? 503 : 200, "PBSZ=0");
+        } else if (!strcmp(cmd, "ccc")) {
+            if (loggedin == 0 || tls_cnx == NULL) {
+                addreply_noformat(534, "CCC not allowed at this point");
+                goto wayout;
+            }
+            addreply_noformat(200, "Control connection unencrypted");
+            doreply();
+            tls_close_session(&tls_cnx);
+            tls_cnx = NULL;
+            flush_cmd();
+            goto wayout;
         } else if (!strcmp(cmd, "prot")) {
             if (tls_cnx == NULL) {
                 addreply_noformat(503, MSG_PROT_BEFORE_PBSZ);
