@@ -187,7 +187,7 @@ Let's try with joe:
                               
 
 Login              : joe
-Password           : $1$LX/3.F60$bYdYwsQOYIaWq.Ko.hfI3.
+Password           : $7$C6..../....swVShTUX9kLJepm0vvj7dUXPqtULzQ9G3GT/GAO3bd3$GMHJRyUdSRwNROunwtRbEDHlx5t3eNQew7bb1dz29K2
 UID                : 500 (ftpuser)
 GID                : 101 (ftpgroup)
 Directory          : /home/ftpusers/joe/./
