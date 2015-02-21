@@ -206,7 +206,6 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 int tls_init_library(void)
 {
     unsigned int rnd;
-    long options;
 
     tls_cnx_handshaked = 0;
     tls_data_cnx_handshaked = 0;
@@ -221,15 +220,26 @@ int tls_init_library(void)
         tls_error(__LINE__, 0);
     }
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    options = SSL_OP_NO_SSLv2 | SSL_OP_ALL |
-        SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION;
-# else
-    options = SSL_OP_NO_SSLv2 | SSL_OP_ALL;
+    SSL_CTX_set_options(tls_ctx,
+                        SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 # endif
-    if (ssl_disabled != 0) {
-        options |= SSL_OP_NO_SSLv3;
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2);
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv3);
+# ifdef SSL_OP_NO_TLSv1
+    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1);
+# endif
+# ifdef SSL_OP_NO_TLSv1_1
+    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_1);
+# endif
+# ifdef SSL_OP_NO_TLSv1_2
+    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_2);
+# endif
+    if (tlsciphersuite != NULL) {
+        if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
+            logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
+            _EXIT(EXIT_FAILURE);
+        }
     }
-    SSL_CTX_set_options(tls_ctx, options);
     if (SSL_CTX_use_certificate_chain_file(tls_ctx,
                                            TLS_CERTIFICATE_FILE) != 1) {
         die(421, LOG_ERR,
@@ -251,12 +261,6 @@ int tls_init_library(void)
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
 
-    if (tlsciphersuite != NULL) {
-        if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
-            logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
-            _EXIT(EXIT_FAILURE);
-        }
-    }
 # ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
     SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, NULL);
@@ -316,7 +320,7 @@ int tls_init_new_session(void)
 
         logfile(LOG_INFO, MSG_TLS_INFO, SSL_CIPHER_get_version(cipher),
                 SSL_CIPHER_get_name(cipher), strength_bits);
-        if (bits < MINIMAL_CIPHER_STRENGTH_BITS) {
+        if (strength_bits < MINIMAL_CIPHER_STRENGTH_BITS) {
             die(534, LOG_ERR, MSG_TLS_WEAK);
         }
     }
@@ -362,15 +366,11 @@ int tls_init_data_session(const int fd, const int passive)
     }
 # endif
     if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
-        int alg_bits;
-        int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
+        int strength_bits = SSL_CIPHER_get_bits(cipher, NULL);
 
-        if (alg_bits < bits) {
-            bits = alg_bits;
-        }
         logfile(LOG_INFO, MSG_TLS_INFO, SSL_CIPHER_get_version(cipher),
-                SSL_CIPHER_get_name(cipher), bits);
-        if (bits < MINIMAL_CIPHER_KEY_LEN) {
+                SSL_CIPHER_get_name(cipher), strength_bits);
+        if (strength_bits < MINIMAL_CIPHER_STRENGTH_BITS) {
             die(534, LOG_ERR, MSG_TLS_WEAK);
         }
     }
