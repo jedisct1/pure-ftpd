@@ -1,10 +1,10 @@
 
 
-   ------------------------ MACOS X SPECIFIC NOTES ------------------------
+     ------------------------ OSX SPECIFIC NOTES ------------------------
 
 
-  To get Pure-FTPd authenticate against system users on MacOS X, you
-need to use PAM.
+  To get Pure-FTPd authenticate against system users on OSX, you have to
+use PAM.
        
 $ ./configure --with-pam <your other favorite options like --with-everything>
 $ make install-strip
