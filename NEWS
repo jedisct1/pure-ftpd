@@ -2,6 +2,7 @@
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid
 client certificates mandatory. This is no longer a compile-time option.
+ - The Clear Command Channel (CCC) command is now supported.
  - SSL (v2, v3) is refused by default.
  - The PureDB backend supports the scrypt function in order to hash
 passwords. This is the preferred algorithm, but requires the presence
