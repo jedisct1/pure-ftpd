@@ -218,11 +218,6 @@ static void no_mem(void)
     exit(EXIT_FAILURE);
 }
 
-static unsigned int pw_zrand(void)
-{
-    return (unsigned int) alt_arc4random();
-}
-
 static char *best_crypt(const char * const pwd)
 {
 #ifdef HAVE_LIBSODIUM
@@ -250,7 +245,7 @@ static char *best_crypt(const char * const pwd)
 
         do {
             c--;
-            salt[c] = crcars[pw_zrand() & 63];
+            salt[c] = crcars[alt_arc4random() & 63];
         } while (c > 7);
 
         return (char *) crypt(pwd, salt);
@@ -265,7 +260,7 @@ static char *best_crypt(const char * const pwd)
 
         do {
             c--;
-            salt[c] = crcars[pw_zrand() & 63];
+            salt[c] = crcars[alt_arc4random() & 63];
         } while (c > 3);
 
         return (char *) crypt(pwd, salt);
@@ -277,7 +272,7 @@ static char *best_crypt(const char * const pwd)
 
         do {
             c--;
-            salt[c] = crcars[pw_zrand() & 63];
+            salt[c] = crcars[alt_arc4random() & 63];
         } while (c > 3);
 
         return (char *) crypt(pwd, salt);
