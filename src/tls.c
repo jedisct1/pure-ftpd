@@ -65,8 +65,8 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 
 #  if DISABLE_SSL_RENEGOTIATION == 1
     if ((where & SSL_CB_HANDSHAKE_START) != 0) {
-        if ((cnx == tls_cnx && tls_cnx_handshaked != 0) ||
-            (cnx == tls_data_cnx && tls_data_cnx_handshaked != 0)) {
+        if ((cnx == tls_cnx && tls_cnx_handshook != 0) ||
+            (cnx == tls_data_cnx && tls_data_cnx_handshook != 0)) {
             die(400, LOG_ERR, "SSL/TLS renegociation");
         }
         return;
@@ -74,9 +74,9 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 #  endif
     if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
         if (cnx == tls_cnx) {
-            tls_cnx_handshaked = 1;
+            tls_cnx_handshook = 1;
         } else if (cnx == tls_data_cnx) {
-            tls_data_cnx_handshaked = 1;
+            tls_data_cnx_handshook = 1;
         }
 #  if DISABLE_SSL_RENEGOTIATION == 0
         cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
@@ -93,8 +93,8 @@ int tls_init_library(void)
 {
     unsigned int rnd;
 
-    tls_cnx_handshaked = 0;
-    tls_data_cnx_handshaked = 0;
+    tls_cnx_handshook = 0;
+    tls_data_cnx_handshook = 0;
     SSL_library_init();
     SSL_load_error_strings();
     OpenSSL_add_all_algorithms();
@@ -284,9 +284,9 @@ void tls_close_session(SSL ** const cnx)
     }
     SSL_free(*cnx);
     if (*cnx == tls_cnx) {
-        tls_cnx_handshaked = 0;
+        tls_cnx_handshook = 0;
     } else if (*cnx == tls_data_cnx) {
-        tls_data_cnx_handshaked = 0;
+        tls_data_cnx_handshook = 0;
     }
     *cnx = NULL;
 }

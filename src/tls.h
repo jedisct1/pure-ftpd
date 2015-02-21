@@ -26,7 +26,7 @@ extern
 # ifndef IN_TLS_C
 extern
 # endif
-    int tls_cnx_handshaked;
+    int tls_cnx_handshook;
 
 # ifndef IN_TLS_C
 extern
@@ -36,7 +36,7 @@ extern
 # ifndef IN_TLS_C
 extern
 # endif
-    int tls_data_cnx_handshaked;
+    int tls_data_cnx_handshook;
 
 /* The minimal number of bits we accept for a cipher */
 # define MINIMAL_CIPHER_STRENGTH_BITS 128
