@@ -148,7 +148,7 @@ int tls_init_library(void)
 # ifdef DISABLE_SSL_RENEGOTIATION
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
-
+    SSL_CTX_set_verify_depth(tls_ctx, 6);
 # ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
     SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER, NULL);
