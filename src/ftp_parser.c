@@ -309,7 +309,6 @@ void parser(void)
         }
         if (n == (size_t) 0U) {
             nop:
-            addreply_noformat(500, "?");
             continue;
         }
 #ifdef SKIP_COMMAND_TRAILING_SPACES
