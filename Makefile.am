@@ -10,7 +10,6 @@ EXTRA_DIST = \
 	README.MySQL \
 	README.PGSQL \
 	README.Contrib \
-	README.Debian \
 	README.Virtual-Users \
 	README.Authentication-Modules \
 	README.Windows \
