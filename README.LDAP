@@ -8,9 +8,8 @@ point: http://www.openldap.org/
        ------------------------ LDAP SUPPORT ------------------------
 
 
-Since release 0.95, Pure-FTPd has a built-in support for LDAP directories.
-When LDAP is enabled, all account info is fetched from a central LDAP
-directory.
+Pure-FTPd has a built-in support for LDAP directories. When LDAP is
+enabled, all account info is fetched from a central LDAP directory.
 
 To compile the server with LDAP support, you first have to build and install
 OpenLDAP. OpenLDAP is freely available from http://www.openldap.org/ and
@@ -169,11 +168,11 @@ userPassword: {crypt}wl6AOU6KgWUz6
 
 'userPassword' is the hashed password, with the system 'crypt' function,
 MD5, SHA, SMD5 or SSHA digests. Modern LDAP clients should handle all,
-anyway (or get GQ from http://biot.com/gq/) .
+anyway.
 
-SSHA is believed to be the most secure one-way hashing method, but it's also
-the slowest and it can be time-consuming if you're accepting a lot of
-users.
+Do not use MD5, SHA or SMD5 except if you really have to. Use {crypt}
+with the strongest algorithm supported by your implementation. Or SSHA
+as a last resort.
 
 Please note that a login can only contains common characters: A...Z, a...z,
 0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
@@ -258,9 +257,3 @@ will refuse to log them in.
 
 Without this preventive restriction, if your LDAP server ever gets
 compromised, the attacker could also easily compromise the FTP server.
-
-
-
-
-          -Frank DENIS <j at pureftpd dot org>.
-          -Ben Gertzfield <che at debian dot org>.

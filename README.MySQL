@@ -8,7 +8,6 @@ starting point: http://www.mysql.com/ .
        ------------------------ MYSQL SUPPORT ------------------------
 
 
-Since release 0.99.1, Pure-FTPd has a built-in support for MySQL databases.
 When MySQL is enabled, all account info is fetched from a central MySQL
 database.
 
@@ -95,11 +94,9 @@ You just have to have fields with the following info:
 format. Pure-FTPd also accepts the "any" value for the MySQLCrypt field.
 With "any", all hashing functions (not plaintext) are tried.
 
-* RECOMMENDATION: On Solaris systems and on very old C libraries, use MySQL
-MD5 hashing. On all other systems, better use crypt(), which adds a salt.
-Avoid password() whose hash function is rather weak, not portable, and it is
-supposed to be only used for internal accounts of MySQL servers. password() is
-no more supported by Pure-FTPd with MySQL 4.1.0 and later.
+* RECOMMENDATION: Do not use SHA1, MD5, or, obviously, plaintext. Unless your
+system provides a decent crypt() function supporting bcrypt or scrypt,
+use a MySQL UDF to verify the hashed password.
 
 - The system uid to map the user to. This can be a numeric id or a user
 name, looked up at run-time.
@@ -145,8 +142,7 @@ You can mix all of these to store info in various tables. For instance, with
 won't be the same account than joe@domain2 . And with \R, you can restrict
 one account to one specific address.
 
-With MySQL 4.1 and later, multiple statements can be used using a semicolumn
-(";") as a delimiter.
+Multiple statements can be used using a semicolumn (";") as a delimiter.
 
 Please note that a login can only contains common characters: A...Z, a...z,
 0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
@@ -252,8 +248,3 @@ compromised, the attacker could also easily compromise the FTP server.
 Security barriers are also implemented to avoid bad implications if wrong
 data types (eg. binary blobs instead of plain text) are fetched with SQL
 queries.
-
-
-
-
-          -Frank DENIS <j at pureftpd dot org>.

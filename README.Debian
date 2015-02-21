@@ -9,6 +9,3 @@ preferred repository.
  - pure-ftpd-common
  - pure-ftpd-ldap
  - pure-ftpd-mysql
- 
-  Have fun with "aptitude" and please report any bug in order to improve these
-packages.

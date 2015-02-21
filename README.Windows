@@ -3,20 +3,13 @@
  ------------------------ WINDOWS PORT OF PURE-FTPD ------------------------
  
  
-  Before all: Pure-FTPd was designed on Unix and for Unix. The Windows port
-has been done because some people are forced to work on Win32 by their
-pointy hairy boss. For these people, Apache is a nice alternative to IIS.
-But when it comes to FTP servers, most of them are designed for warez
-trading rather than being secure. And closed-source doesn't help.
+  Before all: Pure-FTPd was designed on Unix and for Unix.
 
-  So a Windows port of Pure-FTPd makes sense. As long as Cygwin32 is able to
-compile and run this piece of software without any change to the source
-code, Win32 binaries will be provided. But don't expect any Windows-specific
-change or optimization. Also, a great part of the server security relies on
-Cygwin's libraries emulation functions. So Pure-FTPd on Win32 should be
-considered experimental and unsupported. And some features may just not work.
+  A great part of the server security relies on Cygwin's libraries
+emulation functions. So Pure-FTPd on Win32 should be considered
+experimental and unsupported. And some features may just not work.
 
-  On the good side, initial testing showed that the server was immune to
+  On the positive side, initial testing showed that the server was immune to
 common attacks other Windows FTP daemons were vulnerable to (directory
 traversals, device opening, etc) .
 
@@ -96,7 +89,7 @@ env LDFLAGS="-static -s" \
   All these switches (except --with-everything and --with-tls) are highly
 recommended to compile Pure-FTPd on Windows.                
 
-  Needed packages are: base, gcc (+ dependencies), make and the crypt
-library. All of these can be installed with the standard Cygwin32
-installer (http://www.cygwin.com/) .
-
+  Required packages are: base, gcc (+ dependencies), make and the crypt
+library. libsodium is also recommended if you are using PureDB.
+  All of these can be installed with the standard Cygwin32 installer
+(http://www.cygwin.com/) .

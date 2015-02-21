@@ -3,8 +3,8 @@
   ------------------------ AUTHENTICATION MODULES ------------------------
 
 
-Since release 1.0.8, anyone can add new custom authentication methods to
-Pure-FTPd without recompiling anything, using "authentication modules".
+Anybody can add new custom authentication methods to Pure-FTPd without
+recompiling anything, using "authentication modules".
 
 To enable it, you must ./configure with --with-extauth, or
 --with-everything. Linux binary packages have it enabled by default.

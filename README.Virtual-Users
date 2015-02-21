@@ -104,13 +104,13 @@ in the /etc/pureftpd.passwd file (you can of course change this with -f
 
 Let's have a look at its content:
 
-joe:$1$LX/3.F60$bYdYwsQOYIaWq.Ko.hfI3.:500:101::/home/ftpusers/joe/./:::::::::::::
+joe:$7$C6..../....swVShTUX9kLJepm0vvj7dUXPqtULzQ9G3GT/GAO3bd3$GMHJRyUdSRwNROunwtRbEDHlx5t3eNQew7bb1dz29K2:500:101::/home/ftpusers/joe/./:::::::::::::
 
-Passwords are hashed with the best hash function your system supports.
+Passwords are hashed with the most secure hash function your system supports.
 Hashes are tried in this order: scrypt, bcrypt, SHA-512, MD5.
 
 scrypt is the recommended function, and requires pure-ftpd to be compiled
-with libsodium.
+in presence of libsodium.
 
 
        ------------------------ CHANGING INFO ------------------------
@@ -130,7 +130,7 @@ files and 10 Megabytes.
 
 Let's have a look at /etc/pureftpd.passwd:
 
-joe:$1$LX/3.F60$bYdYwsQOYIaWq.Ko.hfI3.:500:101::/home/ftpusers/joe/./::::::1000:10485760::::::
+joe:$7$C6..../....swVShTUX9kLJepm0vvj7dUXPqtULzQ9G3GT/GAO3bd3$GMHJRyUdSRwNROunwtRbEDHlx5t3eNQew7bb1dz29K2:500:101::/home/ftpusers/joe/./::::::1000:10485760::::::
 
 As you can see, the size quota is stored in bytes in the file.
 

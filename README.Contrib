@@ -52,7 +52,7 @@ mind.
 * Pure-FTPd PHP User Manager
 http://ppum.sourceforge.net/
 
-ppum (PureFTPD PHP User Manager) is a PureFTPD PHP User Management System
+ppum (PureFTPd PHP User Manager) is a PureFTPD PHP User Management System
 designed for an easy Web-based administration of SQL stored and
 authenticated FTP users.
 

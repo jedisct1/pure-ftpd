@@ -2,19 +2,19 @@
 
        ------------------------ SSL/TLS SUPPORT ------------------------  
 
-  Pure-FTPd has experimental support for encryption of the control and data
-channels using SSL/TLS security mechanisms. Support for encrypted commands
-began with version 1.0.16, and encryption of the data channel has been
+  Pure-FTPd supports encryption of the control and data channels using
+TLS security mechanisms. Support for encrypted commands began with
+version 1.0.16, and encryption of the data channel has been
 implemented in version 1.0.22.
 
   When this extra security layer is enabled, login and passwords are no more
-sent cleartext. Neither are other commands sent by your client nor replies
+sent as cleartext. Neither are other commands sent by your client nor replies
 made by the server.
 
 
          ------------------------ COMPILATION ------------------------
 
-  To support SSL/TLS, the OpenSSL library must already be installed on your
+  To support TLS, the OpenSSL library must already be installed on your
 system. This is a common requirement so your operating system probably already
 ships with it.
 
@@ -26,14 +26,10 @@ compilation :
 
   If something goes wrong, try to bring your OpenSSL library up-to-date.  
 
-  If your system does not have a working randomness device like /dev/urandom,
-or /dev/random, please have a look at the OpenSSL FAQ in order to properly
-seed the PRNG for your operating system.
-
 
         ------------------------ CERTIFICATES ------------------------
 
-  To use SSL/TLS, you must provide a file called /etc/ssl/private/pure-ftpd.pem
+  To use TLS, you must provide a file called /etc/ssl/private/pure-ftpd.pem
 with a private key for your host and the related certificate.
 
   The location can be changed at compile-time with the --with-certfile option
@@ -43,8 +39,8 @@ passed to ./configure.
 personal info, then you have some trusted third-party bash an official stamp
 onto it to confirm its validity.
 
-  If you already have an SSL certificate for another service on the same host
-(commonly for HTTPS), you can use it as well with Pure-FTPd and other
+  If you already have a certificate for another service on the same host
+(commonly for HTTPS/HTTP2), you can use it as well with Pure-FTPd and other
 SSL-enabled services.
 
   If you don't have any certificate, you have to get one. Make a Google search
@@ -55,21 +51,8 @@ valid "official" signatures.
 to connect to your host with no further question.
 
   You can also avoid these third-party authorities and put your own stamp. You
-will get a so called "self-signed certificate".
-
-  With a self-signed certificate, only you can tell whether the certificate is
-valid or not. If bad dudes are able to take on your server (ex: man-in-the
-middle attacks), clients won't notice. Also some client software will ask the
-user whether he's willing to accept your certificate.
-
-  On the other hand, self-signed certificates are free and ready to serve.
-  
-  To summarize : if you are an ISP, buy a certificate or lousy customers will
-call your support before clicking on "accept this certificate". If you are
-paranoid, if a man-in-the-middle attack would be a disaster for your business
-and if you don't trust the hops between clients and servers, buy a
-certificate. Or better, use ssh. In all other cases, a self-certificate is
-probably good enough.
+will get a so called "self-signed certificate". When using a
+self-signed certificate, the public
 
   To create a self-signed certificate, you can use the following commands :
 
@@ -133,12 +116,8 @@ mFCaj3/lD880kHnTaTwo3Kg0SQy/Axe2LhX3zj+kSD2A9k6wtGcKttjrt4kNGaFc
 BlhkOrwnAhqbm5N3VQCB63CRpuuCVmYz
 -----END CERTIFICATE-----
 
-  Note: theorically, a client should always connect using a valid, verifiable
-certificate. In the real world this is rarely the case. Most clients just use
-invalid certificates. It's why Pure-FTPd doesn't require client certificates
-to be valid, but if you absolutely need this feature and you know what you are
-doing, define the REQUIRE_VALID_CLIENT_CERTIFICATE macro before compiling the
-server.
+  If you need client certificate verification, define the
+REQUIRE_VALID_CLIENT_CERTIFICATE macro before compiling the server.
 
   If you changed the installation prefix when pure-ftpd was compiled, the
 certificate must be in the <prefix sysconf dir>/ssl/private/pure-ftpd.pem file.
@@ -168,7 +147,7 @@ When SSL/TLS has been successfully negociated for a connection, you'll see
 something similar to this in log files :
 
 <<
-SSL/TLS: Enabled TLSv1/SSLv3 with AES256-SHA, 256 secret bits cipher
+SSL/TLS: Enabled TLSv1.2 with AES256-SHA, 256 secret bits cipher
 >>
 
       ------------------------ COMPATIBLE CLIENTS ------------------------
