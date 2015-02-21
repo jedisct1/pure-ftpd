@@ -3,6 +3,7 @@ compiler:
  - clang
  - gcc
 before_script:
+ - sudo apt-get install libldap2-dev libmysqlclient-dev libpq-dev libssl-dev
  - ./autogen.sh
- - ./configure --disable-dependency-tracking
+ - ./configure --disable-dependency-tracking --with-everything --with-ldap --with-mysql --with-pgsql --with-tls --with-rfc2640
 script: make check
