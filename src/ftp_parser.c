@@ -202,7 +202,7 @@ static char *revealextraspc(char * const s_)
 #endif
 
 #ifdef WITH_RFC2640
-char *charset_client2fs(const char * const string)
+static char *charset_client2fs(const char * const string)
 {
     char *output = NULL, *output_;
     size_t inlen, outlen, outlen_;
