@@ -113,7 +113,7 @@ the compilation:
 
 
 /--------------------
-"--with-" switches
+ "--with-" switches
  --------------------/
 
 
@@ -303,7 +303,7 @@ The protocol is incompatible with FTP and listens to another port by default
 
 
 /-----------------------
-"--without-" switches
+ "--without-" switches
  -----------------------/
 
 --without-privsep: disable privilege separation (see notes about this later),
