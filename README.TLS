@@ -75,17 +75,13 @@ probably good enough.
 
 mkdir -p /etc/ssl/private
 
-openssl req -x509 -nodes -newkey rsa:1024 -keyout \
+openssl req -x509 -nodes -newkey rsa:2048 -keyout \
   /etc/ssl/private/pure-ftpd.pem \
   -out /etc/ssl/private/pure-ftpd.pem
 
 chmod 600 /etc/ssl/private/*.pem
 
-  In this example, 1024 is the number of bits used for authentication. In some
-countries, using or exporting keys whose size is more than 512 bits is
-prohibited. Take care of this. There's no need to use huge keys either. A key
-of 1024 bits is considered extremely secure. And to be fair, even a 512 bits
-key is extremely long to brute-force with standard hardware.
+  In this example, 2048 is the number of bits used for the RSA key.
 
   Here's what the /etc/ssl/private/pure-ftpd.pem should look like :
   
