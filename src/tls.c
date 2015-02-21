@@ -172,18 +172,6 @@ static void tls_init_cache(void)
     SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
 }
 
-static int tls_add_entropy(void)
-{
-    struct timeval tv;
-
-    if (gettimeofday(&tv, NULL) != 0) {
-        die(400, LOG_ERR, "gettimeofday()");
-    }
-    RAND_add(&tv, sizeof tv, 0.0);
-
-    return 0;
-}
-
 # ifdef DISABLE_SSL_RENEGOTIATION
 static void ssl_info_cb(const SSL *cnx, int where, int ret)
 {
@@ -303,7 +291,6 @@ int tls_init_new_session(void)
     int ret;
     int ret_;
 
-    tls_add_entropy();
     if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
         tls_error(__LINE__, 0);
     }
