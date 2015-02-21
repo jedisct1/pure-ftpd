@@ -154,8 +154,7 @@ int tls_init_library(void)
                        SSL_VERIFY_PEER, NULL);
     if (SSL_CTX_load_verify_locations(tls_ctx,
                                       TLS_CERTIFICATE_FILE, NULL) != 1) {
-        logfile(LOG_ERR, "TLS: Verifiable client certificate required");
-        _EXIT(EXIT_FAILURE);
+        tls_error(__LINE__, 0);
     }
 # endif
 
