@@ -15,8 +15,8 @@ whatever he likes to do in his directory, regardless of who owns the file in
 it. If you want to have immutable files, check for such a feature in your
 operating system.
 
-For instance, on Linux and ext2/ext3 filesystems, "chattr +i <file>" does
-the trick. On BSD systems, try "chflags schg <file>" .
+For instance, on Linux filesystems, "chattr +i <file>" does the trick.
+On BSD systems, try "chflags schg <file>" .
 
 
 
