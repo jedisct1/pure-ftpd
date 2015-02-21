@@ -28,14 +28,14 @@ static void antiidle(void)
 }
 
 /*
- * Introduce a random delay, to avoid guessing existing user names by
+ * Introduce a random delay, to mitigate guessing existing user names by
  * mesuring delay. It's especially true when LDAP is used.
  * No need to call usleep2() because we are root at this point.
  */
 
 static void randomdelay(void)
 {
-    usleep(rand() % 15000UL);          /* dummy... no need for arc4 */
+    usleep(rand() % 15000UL);
 }
 
 /*
