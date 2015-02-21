@@ -225,10 +225,6 @@ static unsigned int pw_zrand(void)
 
 static char *best_crypt(const char * const pwd)
 {
-    static const char crcars[64] =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
-    const char *crypted;
-
 #ifdef HAVE_LIBSODIUM
     static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
 
@@ -240,6 +236,10 @@ static char *best_crypt(const char * const pwd)
     }
     return hash;
 #else
+    static const char crcars[64] =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
+    const char *crypted;
+
     if ((crypted = (const char *)      /* bcrypt */
          crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
         strcmp(crypted,
