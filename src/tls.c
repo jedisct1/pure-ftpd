@@ -300,7 +300,7 @@ int tls_init_new_session(void)
     SSL_set_accept_state(tls_cnx);
     for (;;) {
         ret = SSL_accept(tls_cnx);
-        if (ret <= 0) {
+        if (ret != 1) {
             ret_ = SSL_get_error(tls_cnx, ret);
             if (ret == -1 &&
                 (ret_ == SSL_ERROR_WANT_READ ||
@@ -312,15 +312,11 @@ int tls_init_new_session(void)
         break;
     }
     if ((cipher = SSL_get_current_cipher(tls_cnx)) != NULL) {
-        int alg_bits;
-        int bits = SSL_CIPHER_get_bits(cipher, &alg_bits);
+        int strength_bits = SSL_CIPHER_get_bits(cipher, NULL);
 
-        if (alg_bits < bits) {
-            bits = alg_bits;
-        }
         logfile(LOG_INFO, MSG_TLS_INFO, SSL_CIPHER_get_version(cipher),
-                SSL_CIPHER_get_name(cipher), bits);
-        if (bits < MINIMAL_CIPHER_KEY_LEN) {
+                SSL_CIPHER_get_name(cipher), strength_bits);
+        if (bits < MINIMAL_CIPHER_STRENGTH_BITS) {
             die(534, LOG_ERR, MSG_TLS_WEAK);
         }
     }
