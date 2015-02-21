@@ -1,5 +1,3 @@
-CLEANFILES = \
-	pure-ftpd.spec
     
 EXTRA_DIST = \
 	THANKS \
