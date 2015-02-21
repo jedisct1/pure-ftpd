@@ -40,7 +40,7 @@ argv = sys.argv[1:]
 try:
     conffile = argv.pop(0)
 except IndexError:
-    print "Usage:", sys.argv[0], "<configuration file> [extra options]"
+    print("Usage:", sys.argv[0], "<configuration file> [extra options]")
     sys.exit(1)
 
 comment = re.compile("[ ]*#+.*")
@@ -182,6 +182,6 @@ if __name__ == '__main__':
     args = parse_filename()
 
     if os.isatty(1):
-        print "Running:", args + argv
+        print("Running:", args + argv)
 
     os.execv(pureftpd, args + argv)
