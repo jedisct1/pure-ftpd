@@ -537,10 +537,14 @@ Your platform has a very large PATH_MAX, we should not trust it.
 # define DEFAULT_FACILITY LOG_LOCAL2
 #endif
 
-#if defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL)
-# define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need more */
-#else
-# define MAX_DATA_SIZE (8 * 1024 * 1024)       /* Max memory usage */
+#ifndef MAX_DATA_SIZE
+# ifdef HAVE_LIBSODIUM
+#  define MAX_DATA_SIZE (24 * 1024 * 1024)
+# elif defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL)
+#  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need more */
+# else
+#  define MAX_DATA_SIZE (8 * 1024 * 1024)       /* Max memory usage */
+# endif
 #endif
 
 #if CONF_TCP_SO_RCVBUF < 65536
