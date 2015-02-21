@@ -1,4 +1,16 @@
 
+* Version 1.0.37:
+ - The -C: prefix can be added to the cipher suite in order to make valid
+client certificates mandatory. This is no longer a compile-time option.
+ - pure-config.py is compatible with Python 3.
+ - SSL (v2, v3) is refused by default.
+ - The PureDB backend supports the scrypt function in order to hash
+passwords. This is the preferred algorithm, but requires the presence
+of libsodium.
+ - DES-hashed passwords are not supported any more.
+ - LDAP uid and gid values can over overridden in the LDAP configuration file.
+ - RC4 was killed.
+
 * Version 1.0.36:
  - The safe_write()/safe_read() factorization broke extauth. Using
 safe_read_partial() to read from the extauth pipe wasn't enough.
