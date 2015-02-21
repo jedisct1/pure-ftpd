@@ -271,6 +271,7 @@ void tls_close_session(SSL ** const cnx)
     }
     switch (SSL_shutdown(*cnx)) {
     case 0:
+        SSL_shutdown(*cnx);
     case SSL_SENT_SHUTDOWN:
     case SSL_RECEIVED_SHUTDOWN:
         break;
