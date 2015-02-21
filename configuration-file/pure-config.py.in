@@ -168,7 +168,8 @@ def parse(file_obj):
 
     return args
 
-def parse_filename(filename = conffile):
+
+def parse_filename(filename=conffile):
     """parse/extract a pure-ftpd from a named file
     filename: text path to file
 
