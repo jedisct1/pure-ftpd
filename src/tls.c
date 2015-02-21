@@ -40,7 +40,7 @@ static void tls_error(const int line, int err)
         err = ERR_get_error();
     }
     if (err != 0) {
-        logfile(LOG_ERR, "SSL/TLS [%s](%d): %s",
+        logfile(LOG_ERR, "TLS [%s](%d): %s",
                 TLS_CERTIFICATE_FILE, line,
                 ERR_error_string(err, NULL));
     }
@@ -67,7 +67,7 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
     if ((where & SSL_CB_HANDSHAKE_START) != 0) {
         if ((cnx == tls_cnx && tls_cnx_handshook != 0) ||
             (cnx == tls_data_cnx && tls_data_cnx_handshook != 0)) {
-            die(400, LOG_ERR, "SSL/TLS renegociation");
+            die(400, LOG_ERR, "TLS renegociation");
         }
         return;
     }
@@ -154,7 +154,8 @@ int tls_init_library(void)
                        SSL_VERIFY_PEER, NULL);
     if (SSL_CTX_load_verify_locations(tls_ctx,
                                       TLS_CERTIFICATE_FILE, NULL) != 1) {
-        tls_error(__LINE__, 0);
+        logfile(LOG_ERR, "TLS: Verifiable client certificate required");
+        _EXIT(EXIT_FAILURE);
     }
 # endif
 
