@@ -142,7 +142,7 @@ int tls_init_library(void)
     SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
 # endif
 # ifdef SSL_CTRL_SET_ECDH_AUTO
-    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL)
+    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
 # endif
     tls_init_cache();
 # ifdef DISABLE_SSL_RENEGOTIATION
