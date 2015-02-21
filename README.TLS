@@ -226,14 +226,6 @@ and Robert Vasvari.
   SSL/TLS is automatically detected and works out of the box.
 
 
-* FileZilla (Windows, OSX, Linux)
-  URL: http://filezilla-project.org/
-  
-  SSL/TLS works. In the "Site details" dialog box, pick "FTP over TLS
-(explicit encryption)" as the "Servertype".
-  Reported by Philip Hallstrom.
-  
-
 * Cyberduck (OSX)
   http://cyberduck.ch/
   
