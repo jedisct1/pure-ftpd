@@ -3,14 +3,14 @@
 #  Original pure-config.py by Frank Denis <j at pureftpd dot org>
 #  Copyright 2001 by Joshua Rodman <joshua_rodman at yahoo dot com>,
 #  Modifications Copyright 2001-2009 by Matthias Andree
-#  
+#
 #                All Rights Reserved
-# 
+#
 # Permission to use, copy, modify, and distribute this software
 # in original or modified form for any purpose and without fee
 # is hereby granted, provided that the above copyright notice
 # appear in all copies.
-# 
+#
 # Joshua Rodman DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
 # SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
 # AND FITNESS, IN NO EVENT SHALL Joshua Rodman BE LIABLE FOR
@@ -18,7 +18,7 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
 # WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE. 
+# PERFORMANCE OF THIS SOFTWARE.
 
 """Pure-FTPd configuration parser.
 
@@ -54,9 +54,9 @@ comment = re.compile("[ ]*#+.*")
 
 option_tuple = (
     ["IPV4Only[\s]+yes",                   "-4"                  ],
-    ["IPV6Only[\s]+yes",                   "-6"                  ],    
+    ["IPV6Only[\s]+yes",                   "-6"                  ],
     ["FileSystemCharset\s+(\S+)",          "-8", None            ],
-    ["ClientCharset\s+(\S+)",              "-9", None            ],    
+    ["ClientCharset\s+(\S+)",              "-9", None            ],
     ["ChrootEveryone[\s]+yes",             "-A"                  ],
     ["TrustedGID[\s]+([\d]+)",             "-a", None            ],
     ["BrokenClientsCompatibility[\s]+yes", "-b"                  ],
@@ -76,7 +76,7 @@ option_tuple = (
     ["MySQLConfigFile\s+(\S+)",            "-l", "mysql:",  None ],
     ["PGSQLConfigFile\s+(\S+)",            "-l", "pgsql:",  None ],
     ["PureDB\s+(\S+)",                     "-l", "puredb:", None ],
-    ["ExtAuth\s+(\S+)",                    "-l", "extauth:",None ],    
+    ["ExtAuth\s+(\S+)",                    "-l", "extauth:",None ],
     ["PAMAuthentication\s+yes",            "-l", "pam"           ],
     ["UnixAuthentication\s+yes",           "-l", "unix"          ],
     ["LimitRecursion\s+(\d+)\s+(\d+)",     "-L", None, ":", None ],
@@ -110,7 +110,7 @@ option_tuple = (
     ["CreateHomeDir\s+yes",                "-j"                  ],
     ["NoRename\s+yes",                     "-G"                  ],
     ["CustomerProof\s+yes",                "-Z"                  ],
-    ["NoTruncate\s+yes",                   "-0"                  ],    
+    ["NoTruncate\s+yes",                   "-0"                  ],
     ["PIDFile\s+(\S+)",                    "-g", None            ],
     ["TLSCipherSuite\s+(\S+)",             "-J", None            ],
     ["PerUserLimits\s+([:0-9]+)",          "-y", None            ],

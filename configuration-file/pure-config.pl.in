@@ -18,7 +18,7 @@ my $PUREFTPD;
 
 my %simple_switch_for = (
         IPV4Only                        => "-4",
-        IPV6Only                        => "-6",        
+        IPV6Only                        => "-6",
         ChrootEveryone                  => "-A",
         BrokenClientsCompatibility      => "-b",
         Daemonize                       => "-B",
@@ -60,7 +60,7 @@ my %string_switch_for = (
         AltLog                  => "-O",
         PIDFile                 => "-g",
         TLSCipherSuite          => "-J",
-); 
+);
 
 my %numeric_switch_for = (
         MaxIdleTime             => "-I",
