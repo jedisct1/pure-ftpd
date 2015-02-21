@@ -116,8 +116,13 @@ mFCaj3/lD880kHnTaTwo3Kg0SQy/Axe2LhX3zj+kSD2A9k6wtGcKttjrt4kNGaFc
 BlhkOrwnAhqbm5N3VQCB63CRpuuCVmYz
 -----END CERTIFICATE-----
 
-  If you need client certificate verification, define the
-REQUIRE_VALID_CLIENT_CERTIFICATE macro before compiling the server.
+  If you need client certificate verification, prefix the list of
+ciphers (-J/--tlsciphersuite) with -C:
+
+pure-ftpd --tlsciphersuite=-C:HIGH -Y2 ...
+
+  In order to verify client certificates, the clients public keys must
+be included in the pure-ftpd.pem file.
 
   If you changed the installation prefix when pure-ftpd was compiled, the
 certificate must be in the <prefix sysconf dir>/ssl/private/pure-ftpd.pem file.

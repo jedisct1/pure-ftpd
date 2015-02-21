@@ -423,10 +423,14 @@ CustomerProof              yes
 # TLS                      1
 
 
-# List of ciphers that will be accepted for SSL/TLS connections
-# Prefix with -S: in order to totally disable SSL but not TLS.
+# OpenSSL ciphers suite for TLS sessions.
+# Prefix with -C: in order to require valid client certificates.
+# If -C: is used, make sure that clients' public keys are installed
+# on the server.
+# SSL is disabled by default. TLS 1.0, 1.1 and 1.2 are availale by
+# default.
 
-# TLSCipherSuite           HIGH:MEDIUM:+TLSv1:!SSLv2:+SSLv3
+# TLSCipherSuite           HIGH
 
 
 

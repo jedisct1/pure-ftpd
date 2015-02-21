@@ -149,15 +149,14 @@ int tls_init_library(void)
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
     SSL_CTX_set_verify_depth(tls_ctx, 6);
-# ifdef REQUIRE_VALID_CLIENT_CERTIFICATE
-    SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
-                       SSL_VERIFY_PEER, NULL);
-    if (SSL_CTX_load_verify_locations(tls_ctx,
-                                      TLS_CERTIFICATE_FILE, NULL) != 1) {
-        tls_error(__LINE__, 0);
+    if (ssl_verify_client_cert) {
+        SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
+                           SSL_VERIFY_PEER, NULL);
+        if (SSL_CTX_load_verify_locations(tls_ctx,
+                                          TLS_CERTIFICATE_FILE, NULL) != 1) {
+            tls_error(__LINE__, 0);
+        }
     }
-# endif
-
     return 0;
 }
 

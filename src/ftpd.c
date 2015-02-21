@@ -5800,6 +5800,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         case 'J': {
             if (strncmp(optarg, "-S:", sizeof "-S:" - (size_t) 1U) == 0) {
                 optarg += sizeof "-S:" - (size_t) 1U;
+            } else if (strncmp(optarg, "-C:", sizeof "-C:" - (size_t) 1U) == 0) {
+                optarg += sizeof "-C:" - (size_t) 1U;
+                ssl_verify_client_cert = 1;
             }
             if (tlsciphersuite == NULL &&
                 (tlsciphersuite = strdup(optarg)) == NULL) {
