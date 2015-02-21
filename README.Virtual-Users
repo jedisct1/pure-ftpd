@@ -10,13 +10,18 @@ not /etc/passwd. It's a different file, only for FTP.
 It means that you can easily create FTP-only accounts without messing up
 your system accounts.
 
-Additionnaly, virtual users files can store individual quotas, ratios,
+In addition, virtual users files can store individual quotas, ratios,
 bandwidth, etc. System accounts can't do this.
 
 Thousands of virtual users can share the same system user, as long as they
 all are chrooted and they have their own home directory.
 
-So a good thing to do before using virtual users is to create a system user
+*IMPORTANT* If you are planning to use the virtual users feature, and
+unless your operating system already provides a secure password
+hashing function, please install libsodium (http://doc.libsodium.org)
+before compiling Pure-FTPd.
+
+A good thing to do before using virtual users is to create a system user
 for this. Of course, you can use any existing account like "nobody" (but not
 root), but it's better to have a dedicated account.
 
