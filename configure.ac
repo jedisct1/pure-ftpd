@@ -435,7 +435,7 @@ AC_ARG_WITH(minimal,
     AC_DEFINE(NO_FTP_USERS)
     AC_DEFINE(WITHOUT_ASCII)    
     AC_DEFINE(BORING_MODE)
-    CFLAGS="$CFLAGS -Os -fomit-frame-pointer -fgcse -falign-functions=2 -falign-jumps=2 -fno-unroll-loops "
+    CFLAGS="$CFLAGS -Os -fomit-frame-pointer -fno-unroll-loops "
     LDFLAGS="$LDFLAGS -s "
   fi ])
 
