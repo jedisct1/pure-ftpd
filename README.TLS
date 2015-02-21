@@ -1,6 +1,6 @@
 
 
-       ------------------------ SSL/TLS SUPPORT ------------------------  
+       ------------------------ SSL/TLS SUPPORT ------------------------
 
   Pure-FTPd supports encryption of the control and data channels using
 TLS security mechanisms. Support for encrypted commands began with
@@ -24,7 +24,7 @@ compilation :
   ./configure --with-tls ...
   make install-strip
 
-  If something goes wrong, try to bring your OpenSSL library up-to-date.  
+  If something goes wrong, try to bring your OpenSSL library up-to-date.
 
 
         ------------------------ CERTIFICATES ------------------------
@@ -67,7 +67,7 @@ chmod 600 /etc/ssl/private/*.pem
   In this example, 2048 is the number of bits used for the RSA key.
 
   Here's what the /etc/ssl/private/pure-ftpd.pem should look like :
-  
+
 -----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDV8A/fexof9ttn
 uqpwCxXN3C019v40ByGqlfmg8SbTnkjtyt5FLw3ICoxBbQtQ65aYSAv5KtiGQbuc
@@ -129,7 +129,7 @@ certificate must be in the <prefix sysconf dir>/ssl/private/pure-ftpd.pem file.
 
 
    ------------------------ ACCEPTING TLS SESSIONS ------------------------
-      
+
 Once the certificate has been installed, you need to start a TLS-enabled
 pure-ftpd daemon with the -Y (or --tls=) switch. Example :
 
@@ -144,8 +144,8 @@ TLS without having too much angry customers.
 - With "--tls=2", cleartext sessions are refused and only SSL/TLS compatible
 clients are accepted.
 
-- With "--tls=3", cleartext sessions are refused and only SSL/TLS compatible 
-clients are accepted. Clear data connections are also refused, so private 
+- With "--tls=3", cleartext sessions are refused and only SSL/TLS compatible
+clients are accepted. Clear data connections are also refused, so private
 data connections are enforced. This is an extreme setting.
 
 When SSL/TLS has been successfully negociated for a connection, you'll see
@@ -161,10 +161,18 @@ Pure-FTPd was reported to be fully compatible with the following clients with
 the SSL/TLS encryption layer turned on :
 
 
+* Transmit (OSX)
+  URL: http://panic.com/transmit/
+
+  TLS works out of the box, both in implicit and explicit modes.
+  CCC support has some issues, but Transmit quickly recovers and keeps
+working.
+
+
 * CoreFTP Lite (Windows)
   URL: http://www.coreftp.com/
-  
-  SSL/TLS perfectly works when "AUTH TLS" is enabled. CoreFTP Lite has some
+
+  TLS perfectly works when "AUTH TLS" is enabled. CoreFTP Lite has some
 neat features like IPv6 support, remote file searching, .htaccess editing,
 queueing, bandwidth control, etc.
 
@@ -178,44 +186,44 @@ queueing, bandwidth control, etc.
 useful features (!= bloat) . And it's free for personal, educational and non-
 commercial use. And it detects Pure-FTPd :)
 
-  SSL/TLS perfectly works when the "FTP over SSL (explicit)" protocol is
+  TLS perfectly works when the "FTP over SSL (explicit)" protocol is
 selected and when the data connection mode (Tools->Settings->SSL) is set to
 "clear data connection" while the AUTH mode (also in Tools->Settings->SSL) is
 set to "TLS".
-  
+
 
 * IglooFTP Pro (Windows, Linux)
   URL: http://www.iglooftp.com/
 
-  SSL/TLS is automatically detected and works when Preferences->Security->
+  TLS is automatically detected and works when Preferences->Security->
 Encrypt is set to "Commands [if possible], Transfers [if possible]".
 
 
 * FlashFXP (Windows)
   URL: http://www.flashfxp.com/
-  
-  SSL/TLS works. In the "Quick connect" dialog box, pick the "SSL"
+
+  TLS works. In the "Quick connect" dialog box, pick the "SSL"
 tab and :
  - enable Auth TLS
  - disable Secure File Listing
  - disable Secure File Transfers
- 
+
 
 * SDI FTP (Windows)
   URL: http://www.sdisw.com/
-  
-  SSL/TLS works. In the "Connection" tab, just pick "SSL Support: TLSv1".
+
+  TLS works. In the "Connection" tab, just pick "SSL Support: TLSv1".
 
 
 * LFTP (Unix, MacOS X)
   URL: http://lftp.yar.ru/
-  
-  SSL/TLS is automatically detected and works out of the box.
+
+  TLS is automatically detected and works out of the box.
 
 
 * RBrowser (MacOS X)
   URL: http://www.rbrowser.com/
-  
+
   A cute graphical client for MacOS that was reported to work by Jason Rust
 and Robert Vasvari.
 
@@ -223,15 +231,15 @@ and Robert Vasvari.
 * Glub Tech Secure FTP Client (at least Unix, MacOS X and Windows)
   URL: http://secureftp.glub.com/
 
-  SSL/TLS is automatically detected and works out of the box.
+  TLS is automatically detected and works out of the box.
 
 
 * Cyberduck (OSX)
   http://cyberduck.ch/
-  
-  SSL/TLS works out of the box.
-  
-  
+
+  TLS works out of the box.
+
+
 * WinSCP (Windows)
   WinSCP should be configured with "File protocol" set to "FTP" with
 "TLS Explicit encryption".
