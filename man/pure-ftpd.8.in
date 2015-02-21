@@ -851,6 +851,7 @@ Here are the FTP commands supported by this server.
 .B ALLO
 .B APPE
 .B AUTH TLS
+.B CCC
 .B CDUP
 .B CWD
 .B DELE
@@ -1018,5 +1019,6 @@ Contributors:
 
 .BR "RFC 959" ,
 .BR "RFC 2228",
-.BR "RFC 2389" " and"
-.BR "RFC 2428" .
+.BR "RFC 2389",
+.BR "RFC 2428" " and"
+.BR "RFC 4217" .
