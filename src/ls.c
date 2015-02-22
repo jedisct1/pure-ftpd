@@ -530,6 +530,7 @@ static void outputfiles(int f, void * const tls_fd)
             wrstr(f, tls_fd, pad);
             q = q->right;
             free(tmp);
+            tmp = NULL;
         }
     }
 
