@@ -282,12 +282,12 @@ void tls_close_session(SSL ** const cnx)
         }
         tls_error(__LINE__, 0);
     }
-    SSL_free(*cnx);
     if (*cnx == tls_cnx) {
         tls_cnx_handshook = 0;
     } else if (*cnx == tls_data_cnx) {
         tls_data_cnx_handshook = 0;
     }
+    SSL_free(*cnx);
     *cnx = NULL;
 }
 
