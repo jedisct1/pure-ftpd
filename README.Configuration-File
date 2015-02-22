@@ -32,8 +32,7 @@ chmod 755 pure-config.pl
 This is a simple Perl script that will run /usr/local/sbin/pure-ftpd with
 the right options, according to the configuration file.
 
-And because there's a Python vs. Perl friendly war since ages, we also
-provide a Python version of this program ('pure-config.py').
+We also provide a Python version of this program ('pure-config.py').
 
 Should any of these config tools contain a wrong path or fail otherwise,
 please file a bug report.

@@ -51,8 +51,7 @@ valid "official" signatures.
 to connect to your host with no further question.
 
   You can also avoid these third-party authorities and put your own stamp. You
-will get a so called "self-signed certificate". When using a
-self-signed certificate, the public
+will get a so called "self-signed certificate".
 
   To create a self-signed certificate, you can use the following commands :
 
