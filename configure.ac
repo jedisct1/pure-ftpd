@@ -1351,7 +1351,7 @@ AC_ARG_WITH(pgsql,
   fi ])
 
 AC_ARG_WITH(tls,
-[AS_HELP_STRING(--with-tls,Enable SSL/TLS support (experimental, needs OpenSSL))],
+[AS_HELP_STRING(--with-tls,Enable TLS support)],
 [ if test "x$withval" = "xyes" ; then
     with_tls="yes"
   fi ])
