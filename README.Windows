@@ -3,15 +3,10 @@
  ------------------------ WINDOWS PORT OF PURE-FTPD ------------------------
  
  
-  Before all: Pure-FTPd was designed on Unix and for Unix.
+  Pure-FTPd was designed for Unix-like systems. Still, it is possible
+to run it on Windows using Cygwin.
 
-  A great part of the server security relies on Cygwin's libraries
-emulation functions. So Pure-FTPd on Win32 should be considered
-experimental and unsupported. And some features may just not work.
-
-  On the positive side, initial testing showed that the server was immune to
-common attacks other Windows FTP daemons were vulnerable to (directory
-traversals, device opening, etc) .
+  This should be considered experimental and unsupported.
 
 
        ------------------------ INSTALLATION ------------------------
@@ -79,17 +74,17 @@ define the directory for public files.
   ------------------------ COMPILATION ENVIRONMENT ------------------------
   
 
-  The Win32 version of Pure-FTPd has been configured with the following
-command-line, using the Cygnus Win32 environment:
+  Pure-FTPd can be compiled on Cygwin with the following command:
 
 env LDFLAGS="-static -s" \
     ./configure --with-everything --with-brokenrealpath \
                 --without-shadow  --with-nonroot --with-tls
-                
+
   All these switches (except --with-everything and --with-tls) are highly
 recommended to compile Pure-FTPd on Windows.                
 
   Required packages are: base, gcc (+ dependencies), make and the crypt
 library. libsodium is also recommended if you are using PureDB.
-  All of these can be installed with the standard Cygwin32 installer
+
+  All of these can be installed with the standard Cygwin installer
 (http://www.cygwin.com/) .
