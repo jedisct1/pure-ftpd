@@ -2,58 +2,58 @@
 
        ------------------------ SSL/TLS SUPPORT ------------------------
 
-  Pure-FTPd supports encryption of the control and data channels using
+Pure-FTPd supports encryption of the control and data channels using
 TLS security mechanisms. Support for encrypted commands began with
 version 1.0.16, and encryption of the data channel has been
 implemented in version 1.0.22.
 
-  When this extra security layer is enabled, login and passwords are no more
+When this extra security layer is enabled, login and passwords are no more
 sent as cleartext. Neither are other commands sent by your client nor replies
 made by the server.
 
 
          ------------------------ COMPILATION ------------------------
 
-  To support TLS, the OpenSSL library must already be installed on your
-system. This is a common requirement so your operating system probably already
-ships with it.
+To support TLS, the OpenSSL library must already be installed on your
+system. This is a common requirement so your operating system probably
+already ships with it.
 
-  Pure-FTPd also has to be configured with the --with-tls switch before
+Pure-FTPd also has to be configured with the --with-tls switch before
 compilation :
 
   ./configure --with-tls ...
   make install-strip
 
-  If something goes wrong, try to bring your OpenSSL library up-to-date.
+If something goes wrong, try to bring your OpenSSL library up-to-date.
 
 
         ------------------------ CERTIFICATES ------------------------
 
-  To use TLS, you must provide a file called /etc/ssl/private/pure-ftpd.pem
+To use TLS, you must provide a file called /etc/ssl/private/pure-ftpd.pem
 with a private key for your host and the related certificate.
 
-  The location can be changed at compile-time with the --with-certfile option
+The location can be changed at compile-time with the --with-certfile option
 passed to ./configure.
 
-  A certificate is similar to an identity card. You fill a form with a set of
+A certificate is similar to an identity card. You fill a form with a set of
 personal info, then you have some trusted third-party bash an official stamp
 onto it to confirm its validity.
 
-  If you already have a certificate for another service on the same host
+If you already have a certificate for another service on the same host
 (commonly for HTTPS/HTTP2), you can use it as well with Pure-FTPd and other
 SSL-enabled services.
 
-  If you don't have any certificate, you have to get one. Make a Google search
+If you don't have any certificate, you have to get one. Make a Google search
 for "SSL certificates" to find authorities that will sell you certificates with
 valid "official" signatures.
 
-  Once you have a valid and stamped certificate, clients will usually be able
+Once you have a valid and stamped certificate, clients will usually be able
 to connect to your host with no further question.
 
-  You can also avoid these third-party authorities and put your own stamp. You
+You can also avoid these third-party authorities and put your own stamp. You
 will get a so called "self-signed certificate".
 
-  To create a self-signed certificate, you can use the following commands :
+To create a self-signed certificate, you can use the following commands :
 
 mkdir -p /etc/ssl/private
 
@@ -63,9 +63,9 @@ openssl req -x509 -nodes -newkey rsa:2048 -sha256 -keyout \
 
 chmod 600 /etc/ssl/private/*.pem
 
-  In this example, 2048 is the number of bits used for the RSA key.
+In this example, 2048 is the number of bits used for the RSA key.
 
-  Here's what the /etc/ssl/private/pure-ftpd.pem should look like :
+Here's what the /etc/ssl/private/pure-ftpd.pem should look like :
 
 -----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDV8A/fexof9ttn
@@ -115,15 +115,15 @@ mFCaj3/lD880kHnTaTwo3Kg0SQy/Axe2LhX3zj+kSD2A9k6wtGcKttjrt4kNGaFc
 BlhkOrwnAhqbm5N3VQCB63CRpuuCVmYz
 -----END CERTIFICATE-----
 
-  If you need client certificate verification, prefix the list of
+If you need client certificate verification, prefix the list of
 ciphers (-J/--tlsciphersuite) with -C:
 
 pure-ftpd --tlsciphersuite=-C:HIGH -Y2 ...
 
-  In order to verify client certificates, the clients public keys must
+In order to verify client certificates, the clients public keys must
 be included in the pure-ftpd.pem file.
 
-  If you changed the installation prefix when pure-ftpd was compiled, the
+If you changed the installation prefix when pure-ftpd was compiled, the
 certificate must be in the <prefix sysconf dir>/ssl/private/pure-ftpd.pem file.
 
 
@@ -242,4 +242,3 @@ and Robert Vasvari.
 * WinSCP (Windows)
   WinSCP should be configured with "File protocol" set to "FTP" with
 "TLS Explicit encryption".
-
