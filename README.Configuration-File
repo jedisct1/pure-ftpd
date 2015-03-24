@@ -1,6 +1,7 @@
 Unlike many daemons, Pure-FTPd doesn't read any configuration file (but for
 LDAP and SQL). Instead, it uses command-line options. For instance, the '-H'
-flag is designed to speed up highly loaded servers, by avoiding DNS lookups.
+flag recommended and avoids DNS lookups.
+
 To enable this, just add it to the server name:
 
 /usr/local/sbin/pure-ftpd -H
