@@ -47,10 +47,39 @@ static void tls_error(const int line, int err)
     _EXIT(EXIT_FAILURE);
 }
 
+static int tls_init_ecdh_curve(void)
+{
+# ifndef SSL_OP_SINGLE_ECDH_USE
+    errno = ENOTSUP;
+    return -1;
+# else
+    const char *curve_name;
+    EC_KEY     *curve;
+    int         nid;
+
+    curve_name = TLS_DEFAULT_ECDH_CURVE;
+    if ((nid = OBJ_sn2nid(curve_name)) == 0) {
+        logfile(LOG_INFO, "Curve [%s] not supported", curve_name);
+        errno = ENOTSUP;
+        return -1;
+    }
+    if ((curve = EC_KEY_new_by_curve_name(nid)) == NULL) {
+        logfile(LOG_INFO, "Curve [%s] is not usable", curve_name);
+        errno = ENOTSUP;
+        return -1;
+    }
+    SSL_CTX_set_options(tls_ctx, SSL_OP_SINGLE_ECDH_USE);
+    SSL_CTX_set_tmp_ecdh(tls_ctx, curve);
+    EC_KEY_free(curve);
+
+    return 0;
+# endif
+}
+
 static int tls_init_dhparams(void)
 {
     BIO *bio;
-    DH *dh;
+    DH  *dh;
 
     if ((bio = BIO_new_file(TLS_DHPARAMS_FILE, "r")) == NULL) {
         logfile(LOG_INFO,
@@ -168,6 +197,7 @@ int tls_init_library(void)
 # ifdef SSL_CTRL_SET_ECDH_AUTO
     SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
 # endif
+    tls_init_ecdh_curve();
     tls_init_dhparams();
     tls_init_cache();
 # ifdef DISABLE_SSL_RENEGOTIATION
