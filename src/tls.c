@@ -58,7 +58,7 @@ static int tls_init_ecdh_curve(void)
     int         nid;
 
     curve_name = TLS_DEFAULT_ECDH_CURVE;
-    if ((nid = OBJ_sn2nid(curve_name)) == 0) {
+    if ((nid = OBJ_sn2nid(curve_name)) == NID_undef) {
         logfile(LOG_INFO, "Curve [%s] not supported", curve_name);
         errno = ENOTSUP;
         return -1;
@@ -191,15 +191,16 @@ int tls_init_library(void)
     if (SSL_CTX_check_private_key(tls_ctx) != 1) {
         tls_error(__LINE__, 0);
     }
+    tls_init_cache();
+# ifdef SSL_CTRL_SET_ECDH_AUTO
+    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
+# else
+    tls_init_ecdh_curve();
+# endif
 # ifdef SSL_CTRL_SET_DH_AUTO
     SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
 # endif
-# ifdef SSL_CTRL_SET_ECDH_AUTO
-    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
-# endif
-    tls_init_ecdh_curve();
     tls_init_dhparams();
-    tls_init_cache();
 # ifdef DISABLE_SSL_RENEGOTIATION
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
