@@ -1,6 +1,7 @@
 
 * Version 1.0.38:
- - TLS forward secrecy support was added.
+ - TLS forward secrecy support was added. Diffie-Hellman parameters
+are loaded from the /etc/ssl/private/pure-ftpd-dhparams.pem file.
 
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid
