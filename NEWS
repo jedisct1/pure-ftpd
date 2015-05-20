@@ -1,4 +1,8 @@
 
+* Version 1.0.38:
+ - Diffie-Hellman parameters can be specified in a
+/etc/ssl/private/dhparams.pem file
+
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid
 client certificates mandatory. This is no longer a compile-time option.
