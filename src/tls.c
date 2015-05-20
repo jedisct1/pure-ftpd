@@ -47,6 +47,25 @@ static void tls_error(const int line, int err)
     _EXIT(EXIT_FAILURE);
 }
 
+static int tls_init_dhparams(void)
+{
+    BIO *bio;
+    DH *dh;
+
+    if ((bio = BIO_new_file(TLS_DHPARAMS_FILE, "r")) == NULL) {
+        errno = ENOENT;
+        return -1;
+    }
+    if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL) {
+        die(400, LOG_ERR, "Invalid DH parameters file " TLS_DHPARAMS_FILE);
+    }
+    SSL_CTX_set_tmp_dh(tls_ctx, dh);
+    DH_free(dh);
+    BIO_free(bio);
+
+    return 0;
+}
+
 static void tls_init_cache(void)
 {
     static const char *tls_ctx_id = "pure-ftpd";
@@ -144,6 +163,7 @@ int tls_init_library(void)
 # ifdef SSL_CTRL_SET_ECDH_AUTO
     SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
 # endif
+    tls_init_dhparams();
     tls_init_cache();
 # ifdef DISABLE_SSL_RENEGOTIATION
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);

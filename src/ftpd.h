@@ -418,6 +418,9 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifndef TLS_CERTIFICATE_FILE
 #  define TLS_CERTIFICATE_FILE "/etc/ssl/private/pure-ftpd.pem"
 # endif
+# ifndef TLS_DHPARAMS_FILE
+#  define TLS_DHPARAMS_FILE "/etc/ssl/private/dhparams.pem"
+# endif
 #endif
 
 #define FAKE_SHELL "ftp"
