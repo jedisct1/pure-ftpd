@@ -126,6 +126,9 @@ int tls_init_library(void)
     if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
+# ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+    SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
+# endif
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
     SSL_CTX_set_options(tls_ctx,
                         SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
