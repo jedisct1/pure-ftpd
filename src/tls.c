@@ -198,9 +198,12 @@ int tls_init_library(void)
     tls_init_ecdh_curve();
 # endif
 # ifdef SSL_CTRL_SET_DH_AUTO
-    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
-# endif
+    if (tls_init_dhparams() != 0) {
+        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
+    }
+# else
     tls_init_dhparams();
+# endif
 # ifdef DISABLE_SSL_RENEGOTIATION
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
 # endif
