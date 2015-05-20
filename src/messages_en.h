@@ -217,7 +217,7 @@
 #define MSG_IPV6_OK "IPv6 connections are also welcome on this server."
 #define MSG_TLS_INFO "SSL/TLS: Enabled %s with %s, %d secret bits cipher"
 #define MSG_TLS_WEAK "SSL/TLS: Cipher too weak"
-#define MSG_TLS_NEEDED "Sorry, cleartext sessions are not accepted on this server.\n" \
+#define MSG_TLS_NEEDED "Sorry, cleartext sessions and weak ciphers are not accepted on this server.\n" \
     "Please reconnect using SSL/TLS security mechanisms."
 #define MSG_ILLEGAL_CHARSET "Illegal charset"
 #define MSG_TLS_NO_CTX "SSL/TLS: Context not found. Exiting."
