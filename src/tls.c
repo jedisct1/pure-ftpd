@@ -53,6 +53,8 @@ static int tls_init_dhparams(void)
     DH *dh;
 
     if ((bio = BIO_new_file(TLS_DHPARAMS_FILE, "r")) == NULL) {
+        logfile(LOG_INFO,
+                "Couldn't load the DH parameters file " TLS_DHPARAMS_FILE);
         errno = ENOENT;
         return -1;
     }
