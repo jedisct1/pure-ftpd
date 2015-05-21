@@ -10,7 +10,6 @@
 # include "ftpwho-update.h"
 # include "globals.h"
 # include "messages.h"
-# include "globals.h"
 # include "alt_arc4random.h"
 
 # ifndef DISABLE_SSL_RENEGOTIATION
