@@ -62,7 +62,7 @@ static void SHA1Transform(crypto_uint4 state[5],
     } CHAR64LONG16;
     CHAR64LONG16 *block;
 #ifdef SHA1HANDSOFF
-    static CHAR64LONG16 workspace;
+    CHAR64LONG16 workspace;
 
     block = &workspace;
     memcpy(block, buffer, 64);
@@ -232,9 +232,6 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX * context)
     pure_memzero(context->state, 20);
     pure_memzero(context->count, 8);
     pure_memzero(&finalcount, 8);
-# ifdef SHA1HANDSOFF            /* make SHA1Transform overwrite it's own static vars */
-    SHA1Transform(context->state, context->buffer);
-# endif
 }
 
 #else
