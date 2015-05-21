@@ -19,6 +19,7 @@
 #include "ftpd.h"
 #include "crypto.h"
 #include "crypto-sha1.h"
+#include "utils.h"
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -161,8 +162,6 @@ static void SHA1Transform(crypto_uint4 state[5],
     state[2] += c;
     state[3] += d;
     state[4] += e;
-    /* Wipe variables */
-    a = b = c = d = e = 0;
 }
 
 
@@ -228,17 +227,14 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX * context)
                 ((context->state[i >> 2] >> ((3 - (i & 3)) * 8)) & 255);
         }
     }
-#if 0
     /* Wipe variables */
-    i = 0;
-    memset(context->buffer, 0, 64);
-    memset(context->state, 0, 20);
-    memset(context->count, 0, 8);
-    memset((volatile void *) &finalcount, 0, 8);
+    pure_memzero(context->buffer, 64);
+    pure_memzero(context->state, 20);
+    pure_memzero(context->count, 8);
+    pure_memzero(&finalcount, 8);
 # ifdef SHA1HANDSOFF            /* make SHA1Transform overwrite it's own static vars */
     SHA1Transform(context->state, context->buffer);
 # endif
-#endif
 }
 
 #else

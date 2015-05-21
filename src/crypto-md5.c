@@ -30,6 +30,7 @@ documentation and/or software.
 #include "ftpd.h"
 #include "crypto.h"
 #include "crypto-md5.h"
+#include "utils.h"
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -58,15 +59,12 @@ documentation and/or software.
 static void MD5Transform(crypto_uint4[4], const unsigned char[64]);
 
 #ifndef WORDS_BIGENDIAN
-# define Encode MD5_memcpy
-# define Decode MD5_memcpy
+# define Encode memcpy
+# define Decode memcpy
 #else
 static void Encode(unsigned char *, const crypto_uint4 *, unsigned int);
 static void Decode(crypto_uint4 *, const unsigned char *, unsigned int);
 #endif
-
-#define MD5_memcpy    memcpy
-#define MD5_memset    memset
 
 static unsigned char PADDING[64] = {
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -145,7 +143,7 @@ void MD5Update(MD5_CTX * context, const unsigned char *input,
     /* Transform as many times as possible.
      */
     if (inputLen >= partLen) {
-        MD5_memcpy
+        memcpy
             ((void *) &context->buffer[index], (const void *) input,
              partLen);
         MD5Transform(context->state, context->buffer);
@@ -158,7 +156,7 @@ void MD5Update(MD5_CTX * context, const unsigned char *input,
         i = 0;
 
     /* Buffer remaining input */
-    MD5_memcpy
+    memcpy
         ((void *) &context->buffer[index], (const void *) &input[i],
          inputLen - i);
 }
@@ -189,7 +187,7 @@ void MD5Final(unsigned char digest[16], MD5_CTX * context)
 
         /* Zeroize sensitive information.
          */
-        MD5_memset((void *) context, 0, sizeof (*context));
+        pure_memzero(context, sizeof (*context));
     }
 }
 
@@ -282,7 +280,7 @@ static void MD5Transform(crypto_uint4 state[4],
 
     /* Zeroize sensitive information.
      */
-    MD5_memset((volatile void *) x, 0, sizeof x);
+    pure_memzero(x, sizeof x);
 }
 
 #ifdef WORDS_BIGENDIAN

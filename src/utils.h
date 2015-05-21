@@ -2,6 +2,7 @@
 #define __UTILS_H__ 1
 
 #ifdef HAVE_LIBSODIUM
+# include <sodium.h>
 # define pure_memzero(P, L) sodium_memzero((P), (L))
 # define pure_memcmp(A, B, L) sodium_memcmp((A), (B), (L))
 #else

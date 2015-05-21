@@ -32,6 +32,7 @@
 #include "safe_rw.h"
 #include "alt_arc4random.h"
 #include "alt_arc4random_p.h"
+#include "utils.h"
 
 #if SIZEOF_INT < 4
 # error Unsupported architecture
@@ -58,17 +59,6 @@ static int random_data_source_fd = -1;
 #endif
 
 static void _rs_rekey(unsigned char *dat, size_t datlen);
-
-static void
-_rs_memzero(void * const pnt, const size_t len)
-{
-    volatile unsigned char *pnt_ = (volatile unsigned char *) pnt;
-    size_t                     i = (size_t) 0U;
-
-    while (i < len) {
-        pnt_[i++] = 0U;
-    }
-}
 
 static void
 _rs_init(unsigned char *buf, size_t n)
@@ -148,11 +138,11 @@ _rs_stir(void)
     } else {
         _rs_rekey(rnd, sizeof rnd);
     }
-    _rs_memzero(rnd, sizeof rnd);
+    pure_memzero(rnd, sizeof rnd);
 
     /* invalidate rs_buf */
     rs_have = 0;
-    _rs_memzero(rs_buf, RSBUFSZ);
+    pure_memzero(rs_buf, RSBUFSZ);
 
     rs_count = 1600000;
 }
@@ -174,7 +164,7 @@ static void
 _rs_rekey(unsigned char *dat, size_t datlen)
 {
 #ifndef KEYSTREAM_ONLY
-    _rs_memzero(rs_buf, RSBUFSZ);
+    pure_memzero(rs_buf, RSBUFSZ);
 #endif
     /* fill rs_buf with the keystream */
     chacha_encrypt_bytes(&rs, rs_buf, rs_buf, RSBUFSZ);
@@ -193,7 +183,7 @@ _rs_rekey(unsigned char *dat, size_t datlen)
     }
     /* immediately reinit for backtracking resistance */
     _rs_init(rs_buf, KEYSZ + IVSZ);
-    _rs_memzero(rs_buf, KEYSZ + IVSZ);
+    pure_memzero(rs_buf, KEYSZ + IVSZ);
     rs_have = RSBUFSZ - KEYSZ - IVSZ;
 }
 
@@ -212,7 +202,7 @@ _rs_random_buf(void *_buf, size_t n)
                 m = rs_have;
             }
             memcpy(buf, rs_buf + RSBUFSZ - rs_have, m);
-            _rs_memzero(rs_buf + RSBUFSZ - rs_have, m);
+            pure_memzero(rs_buf + RSBUFSZ - rs_have, m);
             buf += m;
             n -= m;
             rs_have -= m;
@@ -231,7 +221,7 @@ _rs_random_u32(crypto_uint4 *val)
         _rs_rekey(NULL, 0);
     }
     memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
-    _rs_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
+    pure_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
     rs_have -= sizeof(*val);
 }
 

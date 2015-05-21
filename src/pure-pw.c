@@ -5,6 +5,7 @@
 #include "safe_rw.h"
 #include "alt_arc4random.h"
 #include "../puredb/src/puredb_write.h"
+#include "utils.h"
 #ifdef HAVE_POSIX_TERMIOS
 # include <termios.h>
 #elif defined(HAVE_TERMIO_H)
@@ -697,10 +698,10 @@ static char *do_get_passwd(void)
     puts("");
     if (strcmp(pwd, pwd2) != 0) {
         if (*pwd2 != 0) {
-            memset((volatile void *) pwd2, 0, strlen(pwd2));
+            pure_memzero(pwd2, strlen(pwd2));
         }
         if (*pwd != 0) {
-            memset((volatile void *) pwd, 0, strlen(pwd));
+            pure_memzero(pwd, strlen(pwd));
         }
         puts("You didn't enter the same password");
         if (--tries > 0) {
@@ -711,7 +712,7 @@ static char *do_get_passwd(void)
         return NULL;
     }
     if (*pwd2 != 0) {
-        memset((volatile void *) pwd2, 0, strlen(pwd2));
+        pure_memzero(pwd2, strlen(pwd2));
     }
     enable_echo();
 
@@ -791,7 +792,7 @@ static int do_useradd(const char * const file,
 
         pwinfo.pwd = best_crypt(cleartext);
         if (*cleartext != 0) {
-            memset((volatile void *) cleartext, 0, strlen(cleartext));
+            pure_memzero(cleartext, strlen(cleartext));
         }
     }
     if ((file2 = newpasswd_filename(file)) == NULL) {
@@ -860,7 +861,7 @@ static int do_usermod(const char * const file,
 
         fetched_info.pwd = best_crypt(cleartext);
         if (*cleartext != 0) {
-            memset((volatile void *) cleartext, 0, strlen(cleartext));
+            pure_memzero(cleartext, strlen(cleartext));
         }
     }
     if (pwinfo->uid > (uid_t) 0) {
