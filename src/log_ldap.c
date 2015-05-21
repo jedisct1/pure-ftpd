@@ -10,6 +10,7 @@
 # include "log_ldap.h"
 # include "messages.h"
 # include "crypto.h"
+# include "utils.h"
 
 # ifdef WITH_DMALLOC
 #  include <dmalloc.h>
@@ -597,7 +598,7 @@ void pw_ldap_check(AuthResult * const result,
                 return;
             }
         }
-        if (strcmp(cpwd, spwd) != 0) {
+        if (pure_strcmp(cpwd, spwd) != 0) {
             return;
         }
     }

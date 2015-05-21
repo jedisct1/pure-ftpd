@@ -19,23 +19,27 @@
 # include <dmalloc.h>
 #endif
 
-/* Convert a buffer to an hex string. size_digest must be an even number */
+/* Convert a buffer to an hex string.
+ * size_digest is the output length including the trailing \0
+ */
 
+#ifdef HAVE_LIBSODIUM
+static char *hexify(char * const result, const unsigned char *digest,
+                    const size_t size_result, size_t size_digest)
+{
+    return sodium_bin2hex(result, size_result, digest, size_digest);
+}
+#else
 static char *hexify(char * const result, const unsigned char *digest,
                     const size_t size_result, size_t size_digest)
 {
     static const char * const hexchars = "0123456789abcdef";
     char *result_pnt = result;
 
-    /*
-     * Unless developpers are drunk, the following tests are just
-     * paranoid bloat. But ehm... yeah, sometimes, they *are* drunk,
-     * so...
-     */
-    if (size_digest < (size_t) 2U ||
+    if (size_digest <= (size_t) 0 ||
         size_result <= (size_digest * (size_t) 2U)) {
         return NULL;
-    }                                  /* end of the drunk section :) */
+    }
     do {
         *result_pnt++ = hexchars[(*digest >> 4) & 0xf];
         *result_pnt++ = hexchars[*digest & 0xf];
@@ -46,6 +50,7 @@ static char *hexify(char * const result, const unsigned char *digest,
 
     return result;
 }
+#endif
 
 /* Encode a buffer to Base64 */
 

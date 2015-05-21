@@ -25,6 +25,7 @@
 #include "bsd-glob.h"
 #include "getloadavg.h"
 #include "safe_rw.h"
+#include "utils.h"
 #ifndef WITHOUT_PRIVSEP
 # include "privsep.h"
 #endif
@@ -1741,17 +1742,7 @@ void dopass(char *password)
         return;
     }
     authresult = pw_check(account, password, &ctrlconn, &peer);
-#ifdef HAVE_LIBSODIUM
-    sodium_memzero(password, strlen(password));
-#else
-    {
-        volatile char *password_ = (volatile char *) password;
-
-        while (*password_ != 0) {
-            *password_++ = 0;
-        }
-    }
-#endif
+    pure_memzero(password, strlen(password));
     if (authresult.auth_ok != 1) {
         tapping++;
         randomsleep(tapping);

@@ -7,6 +7,7 @@
 #include "log_puredb.h"
 #include "pure-pw.h"
 #include "../puredb/src/puredb_read.h"
+#include "utils.h"
 
 #ifdef HAVE_LIBSODIUM
 # include <sodium.h>
@@ -238,7 +239,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
 #endif
         {
             ret = - ((crypted = (const char *) crypt(pwd, line)) == NULL ||
-                     strcmp(line, crypted) != 0);
+                     pure_strcmp(line, crypted) != 0);
             if (ret != 0) {
                 return -1;
             }

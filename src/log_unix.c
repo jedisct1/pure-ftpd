@@ -2,6 +2,7 @@
 
 #include "ftpd.h"
 #include "log_unix.h"
+#include "utils.h"
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
@@ -73,7 +74,7 @@ void pw_unix_check(AuthResult * const result,
 
         if (cpwd == NULL ||
             (crypted = (const char *) crypt(password, cpwd)) == NULL ||
-            strcmp(cpwd, crypted) != 0) {
+            pure_strcmp(cpwd, crypted) != 0) {
             goto bye;
         }
     }

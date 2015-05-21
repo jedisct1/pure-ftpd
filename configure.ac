@@ -986,7 +986,7 @@ AC_CHECK_FUNCS(setusershell setgroups snprintf vsnprintf vfprintf gethostname)
 AC_CHECK_FUNCS(setlocale timegm)
 AC_CHECK_FUNCS(tzset utime utimes mknod mkfifo)
 AC_CHECK_FUNCS(random srandomdev arc4random arc4random_stir arc4random_addrandom)
-AC_CHECK_FUNCS(closefrom)
+AC_CHECK_FUNCS(closefrom explicit_bzero)
 
 AC_MSG_CHECKING([whether statvfs64() is defined])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[

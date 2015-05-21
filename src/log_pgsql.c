@@ -11,6 +11,7 @@
 #include "messages.h"
 #include "crypto.h"
 #include "alt_arc4random.h"
+#include "utils.h"
 
 #ifdef HAVE_LIBSODIUM
 # include <sodium.h>
@@ -525,7 +526,7 @@ void pw_pgsql_check(AuthResult * const result,
         const char *crypted;
 
         if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
-            strcmp(crypted, spwd) == 0) {
+            pure_strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
@@ -533,7 +534,7 @@ void pw_pgsql_check(AuthResult * const result,
         const char *crypted;
 
         if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
-            strcmp(crypted, spwd) == 0) {
+            pure_strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
@@ -541,13 +542,13 @@ void pw_pgsql_check(AuthResult * const result,
         const char *crypted;
 
         if ((crypted = (const char *) crypto_hash_sha1(password, 1)) != NULL &&
-            strcmp(crypted, spwd) == 0) {
+            pure_strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }
     }
     if (crypto_plain != 0) {
         if (*password != 0 &&    /* refuse null cleartext passwords */
-            strcmp(password, spwd) == 0) {
+            pure_strcmp(password, spwd) == 0) {
             goto auth_ok;
         }
     }

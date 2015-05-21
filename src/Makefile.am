@@ -125,7 +125,9 @@ libpureftpd_a_SOURCES = \
 	tls.h \
 	tls.c \
 	upload-pipe.c \
-	upload-pipe.h
+	upload-pipe.h \
+	utils.c \
+	utils.h
 
 pure_ftpd_DEPENDS = \
 	libpureftpd.a \
