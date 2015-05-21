@@ -12,7 +12,11 @@
 # include "crypto.h"
 # include "utils.h"
 
-# ifdef WITH_DMALLOC
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
+
+#ifdef WITH_DMALLOC
 #  include <dmalloc.h>
 # endif
 
@@ -559,6 +563,17 @@ void pw_ldap_check(AuthResult * const result,
         free(result->backend_data);
         result->backend_data = NULL;
         spwd = pw->pw_passwd;
+#ifdef HAVE_LIBSODIUM
+        if (strncasecmp(spwd, PASSWD_LDAP_SCRYPT_PREFIX,
+                        sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U);
+            if (crypto_pwhash_scryptsalsa208sha256_str_verify
+                (spwd, password, strlen(password)) == 0) {
+                goto pwd_ok;
+            }
+            return;
+        } else
+#endif
         if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
                         sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
@@ -602,6 +617,8 @@ void pw_ldap_check(AuthResult * const result,
             return;
         }
     }
+
+pwd_ok:
     result->uid = pw->pw_uid;
     result->gid = pw->pw_gid;
     if (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0) {

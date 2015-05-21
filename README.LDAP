@@ -163,23 +163,23 @@ uid: joe
 uidNumber: 500
 gidNumber: 100
 homeDirectory: /home/joe
-userPassword: {crypt}wl6AOU6KgWUz6
+userPassword: {scrypt}$7$C6..../....YzvCLmJDYJpH76BxlZB9fCpCEj2AbGQHoLiG9I/VRO1$/enQ.o1BNtmxjxNc/8hbZq8W0JAqR5YpufJXGAdzmf3
 
 
-'userPassword' is the hashed password, with the system 'crypt' function,
-MD5, SHA, SMD5 or SSHA digests. Modern LDAP clients should handle all,
-anyway.
+'userPassword' is the password hashed with the system 'crypt' function,
+MD5, SHA, SMD5, SSHA or SCRYPT.
 
-Do not use MD5, SHA or SMD5 except if you really have to. Use {crypt}
-with the strongest algorithm supported by your implementation. Or SSHA
-as a last resort.
+Do not use MD5, SHA, SMD5 or SSHA except if you really have to. Use {crypt}
+with the strongest algorithm supported by your implementation. Or better,
+use {scrypt}.
 
 Please note that a login can only contains common characters: A...Z, a...z,
-0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
+0...9, -, ., _, space, :, @ and ' . For paranoia purposes, other characters
 are forbidden.
 
 If you don't want to use posixAccount objects, you can edit src/log_ldap.h
 to customize attribute names.
+
 
   ----------- EXTENDED LDAP SCHEMA (QUOTAS, THROTTLING, RATIOS) ----------
 

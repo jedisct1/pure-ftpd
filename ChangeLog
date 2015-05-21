@@ -5,7 +5,8 @@
 TLS_DHPARAMS_FILE, if present. ECDH is also supported - Default curve
 is prime256v1 (TLS_DEFAULT_ECDH_CURVE). The best curve is automatically
 selected when using LibreSSL.
- - scrypt hashed passwords can be used in MySQL and PostgreSQL.
+ - scrypt hashed passwords can be used in the MySQL, PostgreSQL and
+LDAP backends.
 
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid

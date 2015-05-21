@@ -2,8 +2,8 @@
 * Version 1.0.38:
  - TLS forward secrecy support was added. Diffie-Hellman parameters
 are loaded from the /etc/ssl/private/pure-ftpd-dhparams.pem file.
- - Passwords hashed using scrypt can be used in the MySQL and PostgreSQL
-backends.
+ - Passwords hashed using scrypt can be used in the MySQL, PostgreSQL
+and LDAP backends.
 
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid
