@@ -43,7 +43,7 @@ int pure_memcmp(const void * const b1_, const void * const b2_, size_t len)
 
 #endif
 
-int pure_strcmp(const char * const s1, const const * const s2)
+int pure_strcmp(const char * const s1, const char * const s2)
 {
     return pure_memcmp(s1, s2, strlen(s1) + 1U);
 }

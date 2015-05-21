@@ -8,7 +8,7 @@
 #else
 void pure_memzero(void * const pnt, const size_t len);
 int pure_memcmp(const void * const b1_, const void * const b2_, size_t len);
-int pure_strcmp(const char * const s1, const const * const s2);
+int pure_strcmp(const char * const s1, const char * const s2);
 #endif
 
 #endif
