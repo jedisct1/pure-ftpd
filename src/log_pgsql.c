@@ -12,6 +12,10 @@
 #include "crypto.h"
 #include "alt_arc4random.h"
 
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
+
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
 #endif
@@ -404,7 +408,8 @@ void pw_pgsql_check(AuthResult * const result,
     char *escaped_decimal_ip = NULL;
     char *scrambled_password = NULL;
     int committed = 1;
-    int crypto_crypt = 0, crypto_md5 = 0, crypto_sha1 = 0, crypto_plain = 0;
+    int crypto_scrypt = 0, crypto_crypt = 0, crypto_md5 = 0, crypto_sha1 = 0,
+        crypto_plain = 0;
     unsigned long decimal_ip_num = 0UL;
     char decimal_ip[42];
     char hbuf[NI_MAXHOST];
@@ -493,9 +498,12 @@ void pw_pgsql_check(AuthResult * const result,
     }
     result->auth_ok--;                  /* -1 */
     if (strcasecmp(crypto, PASSWD_SQL_ANY) == 0) {
+        crypto_scrypt++;
         crypto_crypt++;
         crypto_md5++;
         crypto_sha1++;
+    } else if (strcasecmp(crypto, PASSWD_SQL_SCRYPT) == 0) {
+        crypto_scrypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_CRYPT) == 0) {
         crypto_crypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_MD5) == 0) {
@@ -505,6 +513,14 @@ void pw_pgsql_check(AuthResult * const result,
     } else {                           /* default to plaintext */
         crypto_plain++;
     }
+#ifdef HAVE_LIBSODIUM
+    if (crypto_scrypt != 0) {
+        if (crypto_pwhash_scryptsalsa208sha256_str_verify
+            (spwd, password, strlen(password)) == 0) {
+            goto auth_ok;
+        }
+    }
+#endif
     if (crypto_crypt != 0) {
         const char *crypted;
 

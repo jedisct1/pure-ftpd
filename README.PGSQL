@@ -83,13 +83,14 @@ You just have to have fields with the following info:
 
 - The user's login.
 
-- The user's password, in plaintext, crypt()ed format, MD5 or SHA1.
+- The user's password, hashed using scrypt or crypt(3). SHA1 and MD5
+are also supported for legacy reasons, but shouldn't be used any more.
 Pure-FTPd also accepts the "any" value for the PGSQLCrypt field.
-With "any", all hashing functions (not plaintext) are tried.
+With "any", all hash functions are sequentially tried.
 
 * RECOMMENDATION: Do not use SHA1, MD5, or, obviously, plaintext. Unless your
-system provides a decent crypt() function supporting bcrypt or scrypt,
-use a PostgreSQL function to verify the hashed password.
+system provides a decent crypt() function, use a PostgreSQL function to verify
+the hashed password or use scrypt.
 
 - The system uid to map the user to. This can be a numeric id or a user
 name, looked up at run-time.

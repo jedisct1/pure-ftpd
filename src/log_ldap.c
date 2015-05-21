@@ -561,7 +561,6 @@ void pw_ldap_check(AuthResult * const result,
         if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
                         sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
-
             if (strlen(spwd) >= 32U) {
                 nocase++;
             }
