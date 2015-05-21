@@ -220,7 +220,9 @@ pure_pw_SOURCES = \
 	pure-pw.c \
 	pure-pw.h \
 	safe_rw.c \
-	safe_rw.h
+	safe_rw.h \
+	utils.c \
+	utils.h
 
 pure_pwconvert_SOURCES = \
 	fakesnprintf.h \
