@@ -152,6 +152,19 @@ PGSQLDefaultGID 1000
 Using these directives overrides PGSQLGetUID and PGSQLGetGID.
 
 
+           ------------------------ SCRYPT ------------------------
+
+
+Password hashed with scrypt can be used, provided that pure-ftpd was linked to
+libsodium.
+
+They are expected to be provided in escrypt format, as returned by the
+crypto_pwhash_scryptsalsa208sha256_str() function or by its bindings.
+
+For example, the string $7$C6..../....YzvCLmJDYJpH76BxlZB9fCpCEj2AbGQHoLiG9I/VRO1$/enQ.o1BNtmxjxNc/8hbZq8W0JAqR5YpufJXGAdzmf3
+would verify the password "test".
+
+
      ------------------------ PER-USER SETTINGS ------------------------
 
 
