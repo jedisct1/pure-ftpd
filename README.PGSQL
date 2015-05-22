@@ -14,7 +14,7 @@ the development packages if they are available separately.
 Then, configure Pure-FTPd with --with-pgsql and your favorite extra gadgets:
 
 
-    ./configure --with-pgsql --with-cookie --with-throttling --with-ratios
+    ./configure --with-pgsql --with-everything
 
 
 If your PostgreSQL libraries are installed in a special path, you can specify

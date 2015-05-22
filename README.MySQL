@@ -20,7 +20,7 @@ the development packages if they are available separately.
 Then, configure Pure-FTPd with --with-mysql and your favorite extra gadgets:
 
 
-    ./configure --with-mysql --with-cookie --with-throttling --with-ratios
+    ./configure --with-mysql --with-everything
 
 
 If your MySQL libraries are installed in a special path, you can specify it
