@@ -4,22 +4,22 @@
 
 #ifdef WITH_PGSQL
 
-#include "ftpd.h"
-#include "parser.h"
-#include "log_pgsql_p.h"
-#include "log_pgsql.h"
-#include "messages.h"
-#include "crypto.h"
-#include "alt_arc4random.h"
-#include "utils.h"
+# include "ftpd.h"
+# include "parser.h"
+# include "log_pgsql_p.h"
+# include "log_pgsql.h"
+# include "messages.h"
+# include "crypto.h"
+# include "alt_arc4random.h"
+# include "utils.h"
 
-#ifdef HAVE_LIBSODIUM
-# include <sodium.h>
-#endif
+# ifdef HAVE_LIBSODIUM
+#  include <sodium.h>
+# endif
 
-#ifdef WITH_DMALLOC
-# include <dmalloc.h>
-#endif
+# ifdef WITH_DMALLOC
+#  include <dmalloc.h>
+# endif
 
 static int pw_pgsql_validate_name(const char *name)
 {
