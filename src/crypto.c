@@ -14,6 +14,9 @@
 #else
 # include <md5.h>
 #endif
+#ifdef HAVE_LIBSODIUM
+# include <sodium.h>
+#endif
 
 #ifdef WITH_DMALLOC
 # include <dmalloc.h>
