@@ -20,7 +20,7 @@ are available separately.
 Then, configure Pure-FTPd with --with-ldap and your favorite extra gadgets:
 
 
-    ./configure --with-ldap --with-cookie --with-throttling --with-ratios
+    ./configure --with-ldap --with-everything
 
 
 If your LDAP libraries are installed in a special path, you can specify it
