@@ -1,8 +1,11 @@
 
 * Version 1.0.38:
- - Support for TLS forward secrecy was added.
  - Passwords hashed using scrypt can be used in the MySQL, PostgreSQL
 and LDAP backends.
+ - Support for TLS forward secrecy was added. If you are upgrading and
+using TLS, please run the following command prior to launching the new
+version:
+# openssl dhparam -out /etc/ssl/private/pure-ftpd-dhparams.pem 2048
 
 * Version 1.0.37:
  - The -C: prefix can be added to the cipher suite in order to make valid
