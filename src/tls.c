@@ -372,21 +372,36 @@ int tls_init_data_session(const int fd, const int passive)
 
 void tls_close_session(SSL ** const cnx)
 {
+    unsigned int retries = 10U;
+
     if (*cnx == NULL) {
         return;
     }
+retry:
     switch (SSL_shutdown(*cnx)) {
     case 0:
         SSL_shutdown(*cnx);
     case SSL_SENT_SHUTDOWN:
     case SSL_RECEIVED_SHUTDOWN:
         break;
-
-    default:
+    default: {
+        switch (SSL_get_error(*cnx, -1)) {
+        case SSL_ERROR_WANT_READ:
+        case SSL_ERROR_WANT_WRITE: {
+            struct pollfd pfd;
+            pfd.fd = SSL_get_fd(*cnx);
+            pfd.events = POLLIN | POLLOUT | POLLERR | POLLHUP;
+            pfd.revents = 0;
+            if (poll(&pfd, 1U, idletime * 1000UL) > 0 && retries-- > 0U) {
+                goto retry;
+            }
+          }
+        }
         if (SSL_clear(*cnx) == 1) {
             break;
         }
         tls_error(__LINE__, 0);
+      }
     }
     if (*cnx == tls_cnx) {
         tls_cnx_handshook = 0;
