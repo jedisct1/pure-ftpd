@@ -1,4 +1,8 @@
 
+* Version 1.0.39:
+ - Compilation fix for ancien versions of OpenSSL.
+ - TLS sockets shutdown fixed in order to prevent incomplete transfers.
+
 * Version 1.0.38:
  - Passwords hashed using scrypt can be used in the MySQL, PostgreSQL
 and LDAP backends.
