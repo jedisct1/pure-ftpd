@@ -1,6 +1,6 @@
 
 * Version 1.0.39:
- - Compilation fix for ancien versions of OpenSSL.
+ - Compilation fix for ancient versions of OpenSSL.
  - TLS sockets shutdown fixed in order to prevent incomplete transfers.
 
 * Version 1.0.38:
