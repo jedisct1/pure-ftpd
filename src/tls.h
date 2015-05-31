@@ -6,6 +6,7 @@
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
+# include <openssl/ec.h>
 
 int tls_init_library(void);
 void tls_free_library(void);
