@@ -46,10 +46,11 @@ static void disable_echo(void)
             return;
         }
         p.c_lflag &= ~ECHO;
-#  ifndef TCSAFLUSH
-#   define TCSAFLUSH 0
-#  endif
+#  if defined(TCSASOFT) && defined(TCSAFLUSH)
+        tcsetattr(0, TCSASOFT | TCSAFLUSH, &p);
+#  elif defined(TCSAFLUSH)
         tcsetattr(0, TCSAFLUSH, &p);
+#  endif
     }
 # elif defined(HAVE_TERMIO_H) && defined(TCGETA)
     {
@@ -89,8 +90,10 @@ static void enable_echo(void)
             return;
         }
         p.c_lflag |= ECHO;
-#  ifndef TCSAFLUSH
-#   define TCSAFLUSH 0
+#  if defined(TCSASOFT) && defined(TCSAFLUSH)
+        tcsetattr(0, TCSASOFT | TCSAFLUSH, &p);
+#  elif defined(TCSAFLUSH)
+        tcsetattr(0, TCSAFLUSH, &p);
 #  endif
         tcsetattr(0, TCSAFLUSH, &p);
     }
