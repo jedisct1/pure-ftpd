@@ -152,9 +152,11 @@ _rs_stir_if_needed(size_t len)
 {
     pid_t pid = getpid();
 
-    if (rs_count <= len || !rs_initialized || rs_stir_pid != pid) {
+    if (rs_count <= len || !rs_initialized) {
         rs_stir_pid = pid;
         _rs_stir();
+    } else if (rs_stir_pid != pid) {
+        abort();
     } else {
         rs_count -= len;
     }
