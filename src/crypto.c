@@ -130,10 +130,7 @@ static char *debase64ify(char * const result, const unsigned char *encoded,
         const unsigned char t1 = rev64chars[encoded[1]];
         const unsigned char t2 = rev64chars[encoded[2]];
         const unsigned char t3 = rev64chars[encoded[3]];
-        /*
-         * I'm very proud : bit shifts and masks were done without writing
-         * down anything on a piece of paper, and the first try worked :)
-         */
+
         *result_pnt++ = (char) ((rev64chars[encoded[0]] << 2) | ((t1 & 48) >> 4));
         *result_pnt++ = (char) (((t1 & 15) << 4) | ((t2 & 60) >> 2));
         *result_pnt++ = (char) (((t2 & 3) << 6) | t3);
