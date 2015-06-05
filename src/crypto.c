@@ -57,45 +57,47 @@ static char *hexify(char * const result, const unsigned char *digest,
 
 /* Encode a buffer to Base64 */
 
-static char *base64ify(char * const result, const unsigned char *digest,
-                       const size_t size_result, size_t size_digest)
+char *base64ify(char * const b64, const unsigned char *bin,
+                size_t b64_maxlen, size_t bin_len)
 {
+#define B64_PAD '='
+
     static const char const b64chars[64] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    char *result_pnt = result;
+    char *b64_w = b64;
 
-    if (size_result < (((size_digest + 2U) / 3U) * 4U + 1U)) {
+    if (b64_maxlen < (((bin_len + 2U) / 3U) * 4U + 1U)) {
         return NULL;
     }
-    while (size_digest > (size_t) 2U) {
-        const unsigned char t0 = (unsigned char) *digest++;
-        const unsigned char t1 = (unsigned char) *digest++;
-        const unsigned char t2 = (unsigned char) *digest++;
+    while (bin_len > (size_t) 2U) {
+        const unsigned char t0 = (unsigned char) *bin++;
+        const unsigned char t1 = (unsigned char) *bin++;
+        const unsigned char t2 = (unsigned char) *bin++;
 
-        *result_pnt++ = b64chars[(t0 >> 2) & 63];
-        *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
-        *result_pnt++ = b64chars[((t1 << 2) & 60) | ((t2 >> 6) & 3)];
-        *result_pnt++ = b64chars[t2 & 63];
-        size_digest -= (size_t) 3U;
+        *b64_w++ = b64chars[(t0 >> 2) & 63];
+        *b64_w++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
+        *b64_w++ = b64chars[((t1 << 2) & 60) | ((t2 >> 6) & 3)];
+        *b64_w++ = b64chars[t2 & 63];
+        bin_len -= (size_t) 3U;
     }
-    if (size_digest > (size_t) 0U) {
-        const unsigned char t0 = (unsigned char) digest[0];
+    if (bin_len > (size_t) 0U) {
+        const unsigned char t0 = (unsigned char) bin[0];
 
-        *result_pnt++ = b64chars[(t0 >> 2) & 63];
-        if (size_digest == 1U) {
-            *result_pnt++ = b64chars[((t0 << 4) & 48)];
-            *result_pnt++ = '=';
+        *b64_w++ = b64chars[(t0 >> 2) & 63];
+        if (bin_len == 1U) {
+            *b64_w++ = b64chars[((t0 << 4) & 48)];
+            *b64_w++ = B64_PAD;
         } else {
-            const unsigned char t1 = (unsigned char) digest[1];
+            const unsigned char t1 = (unsigned char) bin[1];
 
-            *result_pnt++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
-            *result_pnt++ = b64chars[((t1 << 2) & 60)];
+            *b64_w++ = b64chars[((t0 << 4) & 48) | ((t1 >> 4) & 15)];
+            *b64_w++ = b64chars[((t1 << 2) & 60)];
         }
-        *result_pnt++ = '=';
+        *b64_w++ = B64_PAD;
     }
-    *result_pnt = 0;
+    *b64_w = 0;
 
-    return result;
+    return b64;
 }
 
 /* Decode a Base64 encoded string */
