@@ -62,7 +62,7 @@ char *base64ify(char * const b64, const unsigned char *bin,
 {
 #define B64_PAD '='
 
-    static const char const b64chars[64] =
+    static const char b64chars[64] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *b64_w = b64;
 
