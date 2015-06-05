@@ -60,7 +60,7 @@ static char *hexify(char * const result, const unsigned char *digest,
 static char *base64ify(char * const result, const unsigned char *digest,
                        const size_t size_result, size_t size_digest)
 {
-    static const char * const b64chars =
+    static const char const b64chars[64] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *result_pnt = result;
 
@@ -100,55 +100,70 @@ static char *base64ify(char * const result, const unsigned char *digest,
 
 /* Decode a Base64 encoded string */
 
-static char *debase64ify(char * const result, const unsigned char *encoded,
-                         const size_t size_result, size_t size_encoded,
-                         size_t *size_decoded)
+static unsigned char *
+debase64ify(unsigned char * const bin, const char *b64,
+            size_t bin_maxlen, size_t b64_len, size_t * const bin_len_p)
 {
-    const unsigned char rev64chars[] = {
-        0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U,
-        0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U,
-        0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 62U, 0U, 0U, 0U, 63U, 52U, 53U,
-        54U, 55U, 56U, 57U, 58U, 59U, 60U, 61U, 0U, 0U, 0U, 255U, 0U, 0U, 0U,
-        0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 9U, 10U, 11U, 12U, 13U, 14U, 15U,
-        16U, 17U, 18U, 19U, 20U, 21U, 22U, 23U, 24U, 25U, 0U, 0U, 0U, 0U, 0U,
-        0U, 26U, 27U, 28U, 29U, 30U, 31U, 32U, 33U, 34U, 35U, 36U, 37U, 38U,
-        39U, 40U, 41U, 42U, 43U, 44U, 45U, 46U, 47U, 48U, 49U, 50U, 51U
-    };
-    size_t ch = size_encoded;
-    char *result_pnt = result;
-    int extra = 0;
+#define REV64_EOT      128U
+#define REV64_NONE     64U
+#define REV64_PAD      '='
 
-    if (size_result < (((size_encoded + 3U) / 4U) * 3U + 1U)) {
+    static const unsigned char rev64chars[256] = {
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, 62U, REV64_NONE, REV64_NONE, REV64_NONE, 63U, 52U, 53U, 54U, 55U, 56U, 57U, 58U, 59U, 60U, 61U, REV64_NONE, REV64_NONE, REV64_NONE, REV64_EOT, REV64_NONE, REV64_NONE, REV64_NONE, 0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U,
+        8U, 9U, 10U, 11U, 12U, 13U, 14U, 15U, 16U, 17U, 18U, 19U, 20U, 21U, 22U, 23U, 24U, 25U, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, 26U, 27U, 28U, 29U, 30U, 31U, 32U, 33U, 34U, 35U, 36U, 37U, 38U, 39U, 40U, 41U, 42U,
+        43U, 44U, 45U, 46U, 47U, 48U, 49U, 50U, 51U, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE,
+        REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE, REV64_NONE
+    };
+    const unsigned char *b64_u = (const unsigned char *) b64;
+    unsigned char       *bin_w = bin;
+    unsigned char        mask;
+    unsigned char        t0, t1, t2, t3;
+    uint32_t             t;
+    size_t               i;
+
+    if (b64_len % 4U != 0U || (i = b64_len / 4U) <= 0U ||
+        bin_maxlen < i * 3U -
+        (b64_u[b64_len - 1U] == REV64_PAD) - (b64_u[b64_len - 2U] == REV64_PAD)) {
         return NULL;
     }
-    while (ch > (size_t) 0U) {
-        if (encoded[--ch] > 'z') {
-            return NULL;
-        }
-    }
-    while (size_encoded > (size_t) 3U) {
-        const unsigned char t1 = rev64chars[encoded[1]];
-        const unsigned char t2 = rev64chars[encoded[2]];
-        const unsigned char t3 = rev64chars[encoded[3]];
-
-        *result_pnt++ = (char) ((rev64chars[encoded[0]] << 2) | ((t1 & 48) >> 4));
-        *result_pnt++ = (char) (((t1 & 15) << 4) | ((t2 & 60) >> 2));
-        *result_pnt++ = (char) (((t2 & 3) << 6) | t3);
-        if (t3 == 255U) {
-            if (t2 == 255U) {
-                extra = 2;
-            } else {
-                extra = 1;
+    while (i-- > 0U) {
+        t0 = rev64chars[*b64++];
+        t1 = rev64chars[*b64++];
+        t2 = rev64chars[*b64++];
+        t3 = rev64chars[*b64++];
+        t = ((uint32_t) t3) | ((uint32_t) t2 << 6) |
+            ((uint32_t) t1 << 12) | ((uint32_t) t0 << 18);
+        mask = t0 | t1 | t2 | t3;
+        if ((mask & (REV64_NONE | REV64_EOT)) != 0U) {
+            if ((mask & REV64_NONE) != 0U || i > 0U) {
+                return NULL;
             }
             break;
         }
-        encoded += 4;
-        size_encoded -= (size_t) 4U;
+        *bin_w++ = (unsigned char) (t >> 16);
+        *bin_w++ = (unsigned char) (t >> 8);
+        *bin_w++ = (unsigned char) t;
     }
-    *size_decoded = (size_t) (result_pnt - result) - extra;
-    *result_pnt = 0;
-
-    return result;
+    if ((mask & REV64_EOT) != 0U) {
+        if (((t0 | t1) & REV64_EOT) != 0U || t3 != REV64_EOT) {
+            return NULL;
+        }
+        *bin_w++ = t >> 16;
+        if (t2 != REV64_EOT) {
+            *bin_w++ = t >> 8;
+        }
+    }
+    if (bin_len_p != NULL) {
+        *bin_len_p = (size_t) (bin_w - bin);
+    }
+    return bin;
 }
 
 /* Compute a simple hex SHA1 digest of a C-string */
@@ -207,8 +222,8 @@ char *crypto_hash_ssha1(const char *string, const char *stored)
     size_t sizeof_hash_and_salt;
     static char decoded[512];
 
-    if (debase64ify(decoded, (const unsigned char *) stored,
-                    sizeof decoded, strlen(stored), &decoded_len) == NULL) {
+    if (debase64ify(decoded, stored, sizeof decoded,
+                    strlen(stored), &decoded_len) == NULL) {
         return NULL;                   /* huge salt, better abort */
     }
     if (decoded_len < sizeof digest) {
@@ -253,8 +268,8 @@ char *crypto_hash_smd5(const char *string, const char *stored)
     size_t sizeof_hash_and_salt;
     static char decoded[512];
 
-    if (debase64ify(decoded, (const unsigned char *) stored,
-                    sizeof decoded, strlen(stored), &decoded_len) == NULL) {
+    if (debase64ify(decoded, stored, sizeof decoded,
+                    strlen(stored), &decoded_len) == NULL) {
         return NULL;                   /* huge salt, better abort */
     }
     if (decoded_len < sizeof digest) {
