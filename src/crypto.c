@@ -157,9 +157,9 @@ debase64ify(unsigned char * const bin, const char *b64,
         if (((t0 | t1) & REV64_EOT) != 0U || t3 != REV64_EOT) {
             return NULL;
         }
-        *bin_w++ = t >> 16;
+        *bin_w++ = (unsigned char) (t >> 16);
         if (t2 != REV64_EOT) {
-            *bin_w++ = t >> 8;
+            *bin_w++ = (unsigned char) (t >> 8);
         }
     }
     if (bin_len_p != NULL) {
