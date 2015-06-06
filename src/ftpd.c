@@ -335,6 +335,7 @@ void client_printf(const char * const format, ...)
         client_fflush();
     }
     if (len > replybuf_left) {
+        va_end(va);
         abort();
     }
     memcpy(replybuf_pos, buf, len);
@@ -624,6 +625,7 @@ void logfile(const int crit, const char *format, ...)
     char line[MAX_SYSLOG_LINE];
 
     if (no_syslog != 0) {
+        va_end(va);
         return;
     }
     va_start(va, format);
