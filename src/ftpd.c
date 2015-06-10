@@ -5422,6 +5422,13 @@ static void standalone_server(void)
                     strerror(old_errno));
             return;
         }
+# ifdef TCP_FASTOPEN
+        {
+            int tfo = maxusers > 0U ? 3U + maxusers / 8U : DEFAULT_BACKLOG;
+            setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN,
+                       (void *) &tfo, sizeof *tfo);
+        }
+# endif
         if (bind(listenfd, res->ai_addr, (socklen_t) res->ai_addrlen) != 0 ||
             listen(listenfd, maxusers > 0U ?
                    3U + maxusers / 8U : DEFAULT_BACKLOG) != 0) {
@@ -5444,6 +5451,13 @@ static void standalone_server(void)
 # if defined(IPPROTO_IPV6) && defined(IPV6_V6ONLY)
             (void) setsockopt(listenfd6, IPPROTO_IPV6, IPV6_V6ONLY,
                               (char *) &on, sizeof on);
+# endif
+# ifdef TCP_FASTOPEN
+            {
+                int tfo = maxusers > 0U ? 3U + maxusers / 8U : DEFAULT_BACKLOG;
+                setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN,
+                           (void *) &tfo, sizeof *tfo);
+            }
 # endif
             if (bind(listenfd6, res6->ai_addr,
                      (socklen_t) res6->ai_addrlen) != 0 ||
