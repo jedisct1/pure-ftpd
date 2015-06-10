@@ -459,7 +459,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     free((void *) pw_uid_s);
     pw_uid_s = NULL;
     /* only force the gid if default_gid has been set */
-    if (!force_default_gid && default_uid > 0) {
+    if (!force_default_gid && default_gid > 0) {
         if ((pw_gid_s = pw_ldap_getvalue(ld, res, LDAP_FTPGID)) == NULL ||
             *pw_gid_s == 0 ||
             (pwret.pw_gid = (gid_t) strtoul(pw_gid_s, NULL, 10)) <= (gid_t) 0) {
