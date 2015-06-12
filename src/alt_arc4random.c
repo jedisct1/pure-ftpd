@@ -145,6 +145,7 @@ _rs_stir(void)
     pure_memzero(rs_buf, RSBUFSZ);
 
     rs_count = 1600000;
+    rs_stir_pid = getpid();
 }
 
 static inline void
@@ -153,7 +154,6 @@ _rs_stir_if_needed(size_t len)
     pid_t pid = getpid();
 
     if (rs_count <= len || !rs_initialized) {
-        rs_stir_pid = pid;
         _rs_stir();
     } else if (rs_stir_pid != pid) {
         abort();
