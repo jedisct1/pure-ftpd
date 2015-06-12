@@ -5425,8 +5425,8 @@ static void standalone_server(void)
 # ifdef TCP_FASTOPEN
         {
             int tfo = maxusers > 0U ? 3U + maxusers / 8U : DEFAULT_BACKLOG;
-            setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN,
-                       (void *) &tfo, sizeof *tfo);
+            setsockopt(listenfd, IPPROTO_TCP, TCP_FASTOPEN,
+                       (void *) &tfo, sizeof tfo);
         }
 # endif
         if (bind(listenfd, res->ai_addr, (socklen_t) res->ai_addrlen) != 0 ||
@@ -5455,8 +5455,8 @@ static void standalone_server(void)
 # ifdef TCP_FASTOPEN
             {
                 int tfo = maxusers > 0U ? 3U + maxusers / 8U : DEFAULT_BACKLOG;
-                setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN,
-                           (void *) &tfo, sizeof *tfo);
+                setsockopt(listenfd6, IPPROTO_TCP, TCP_FASTOPEN,
+                           (void *) &tfo, sizeof tfo);
             }
 # endif
             if (bind(listenfd6, res6->ai_addr,
