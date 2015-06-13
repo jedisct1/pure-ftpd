@@ -151,9 +151,6 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
     Char *bufnext, *bufend, patbuf[PATH_MAX];
     struct glob_lim limit = { 0, 0, 0 };
 
-    if (strlen(pattern) >= PATH_MAX) {
-        return GLOB_NOMATCH;
-    }
     pglob->gl_maxdepth = maxdepth;
     pglob->gl_maxfiles = maxfiles;
     patnext = (unsigned char *) pattern;
@@ -173,6 +170,9 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
         pglob->gl_offs >= INT_MAX || pglob->gl_pathc >= INT_MAX ||
         pglob->gl_pathc >= INT_MAX - pglob->gl_offs - 1) {
         return GLOB_NOSPACE;
+    }
+    if (strlen(pattern) >= PATH_MAX) {
+        return GLOB_NOMATCH;
     }
     bufnext = patbuf;
     bufend = bufnext + PATH_MAX - 1;
