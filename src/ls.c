@@ -924,6 +924,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             /* Expand ~ here if needed */
 
             alarm(GLOB_TIMEOUT);
+            memset(&g, 0, sizeof g);
             a = sglob(arg,
                       opt_a ? (GLOB_PERIOD | GLOB_LIMIT) : GLOB_LIMIT,
                       NULL, &g, max_ls_files + 2, max_ls_depth * 2);
