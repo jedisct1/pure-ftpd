@@ -173,7 +173,7 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
     }
     if (strlen(pattern) >= PATH_MAX) {
         return GLOB_NOMATCH;
-    }    
+    }
     bufnext = patbuf;
     bufend = bufnext + PATH_MAX - 1;
     if (flags & GLOB_NOESCAPE) {
