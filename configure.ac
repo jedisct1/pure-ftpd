@@ -142,7 +142,7 @@ AC_CHECK_HEADERS(stdarg.h varargs.h)
 AC_CHECK_HEADERS(windows.h io.h)
 AC_CHECK_HEADERS(crypt.h)
 AC_CHECK_HEADERS(utime.h)
-AC_CHECK_HEADERS(openssl/ssl.h)
+AC_CHECK_HEADERS(openssl/ssl.h openssl/ec.h)
 AC_CHECK_HEADERS(CoreFoundation/CoreFoundation.h)
 AC_CHECK_HEADERS(iconv.h)
 AC_SYS_POSIX_TERMIOS

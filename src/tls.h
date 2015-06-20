@@ -6,7 +6,9 @@
 # include <openssl/ssl.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
-# include <openssl/ec.h>
+# ifdef HAVE_OPENSSL_EC_H
+#  include <openssl/ec.h>
+# endif
 
 int tls_init_library(void);
 void tls_free_library(void);
