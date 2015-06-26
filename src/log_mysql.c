@@ -49,21 +49,26 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
     char *to;
     unsigned long tolen;
     unsigned int t;
-    unsigned char t1, t2;
+    unsigned char t1, t2, t3, t4;
 
     if (from == NULL) {
         return NULL;
     }
     from_len = strlen(from);
     to_len = from_len * 2U + (size_t) 1U;
-    if ((to = malloc(to_len + (size_t) 2U)) == NULL) {
+    if ((to = malloc(to_len + (size_t) 4U)) == NULL) {
         return NULL;
     }
     t = zrand();
     t1 = t & 0xff;
     t2 = (t >> 8) & 0xff;
+    t = zrand();
+    t3 = t & 0xff;
+    t4 = (t >> 8) & 0xff;
     to[to_len] = (char) t1;
     to[to_len + 1] = (char) t2;
+    to[to_len + 2] = (char) t3;
+    to[to_len + 3] = (char) t4;
     /*
      * I really hate giving a buffer without any size to a 3rd party function.
      * The "to" buffer is allocated on the heap, not on the stack, if
@@ -73,15 +78,12 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
      * possible instead of doing anything with the heap. We'll end up with
      * a segmentation violation, but without any possible exploit.
      */
-#ifdef HAVE_MYSQL_REAL_ESCAPE_STRING
     tolen = mysql_real_escape_string(id_sql_server, to, from, from_len);
-#else
-    /* MySQL 3 is obsolete. */
-    tolen = mysql_escape_string(to, from, from_len);
-#endif
     if (tolen >= to_len ||
         (unsigned char) to[to_len] != t1 ||
-        (unsigned char) to[to_len + 1] != t2) {
+        (unsigned char) to[to_len + 1] != t2 ||
+        (unsigned char) to[to_len + 2] != t3 ||
+        (unsigned char) to[to_len + 3] != t4) {
         for (;;) {
             *to++ = 0;
         }
