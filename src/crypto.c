@@ -27,14 +27,14 @@
  */
 
 #ifdef HAVE_LIBSODIUM
-static char *hexify(char * const result, const unsigned char *digest,
-                    const size_t size_result, size_t size_digest)
+char *hexify(char * const result, const unsigned char *digest,
+	     const size_t size_result, size_t size_digest)
 {
     return sodium_bin2hex(result, size_result, digest, size_digest);
 }
 #else
-static char *hexify(char * const result, const unsigned char *digest,
-                    const size_t size_result, size_t size_digest)
+char *hexify(char * const result, const unsigned char *digest,
+	     const size_t size_result, size_t size_digest)
 {
     static const char * const hexchars = "0123456789abcdef";
     char *result_pnt = result;
