@@ -1290,15 +1290,19 @@ AC_ARG_WITH(mysql,
       LDFLAGS="$LDFLAGS -L${withval}/lib -L${withval}/lib/mysql -L${withval}/mysql/lib"
       CPPFLAGS="$CPPFLAGS -I${withval}/include -I${withval}/include/mysql -I${withval}/mysql/include"
     else
-      CFLAGS="$CFLAGS `mysql_config --cflags || mariadb_config --cflags`"
-      LDFLAGS="$LDFLAGS `mysql_config --libs || mariadb_config --libs`"
+      CFLAGS="$CFLAGS `mariadb_config --cflags 2> /dev/null || mysql_config --cflags`"
+      LDFLAGS="$LDFLAGS `mariadb_config --libs 2> /dev/null || mysql_config --libs`"
     fi
     AC_CHECK_LIB(m, floor)
     AC_CHECK_LIB(z, gzclose)
     with_mysql="yes"
     AC_DEFINE(WITH_MYSQL,,[with mysql])
-    AC_CHECK_LIB(mysqlclient, mysql_init, ,
-      [AC_MSG_ERROR(libmysqlclient is needed for MySQL support)])
+    AC_CHECK_FUNC(mysql_init, , [
+      AC_CHECK_LIB(mariadb, mysql_init, , [
+        AC_CHECK_LIB(mysqlclient, mysql_init, ,
+          [AC_MSG_ERROR(libmysqlclient is needed for MySQL support)])
+      ])
+    ])
     AC_MSG_CHECKING(whether mysql clients can run)
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
       #include <stdio.h>
