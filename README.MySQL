@@ -11,7 +11,8 @@ install the MySQL client libraries. MariaDB is freely available from
 https://mariadb.org/ and binary packages are included in many major
 distributions. But if you choose a binary form, don't forget to also install
 the development packages if they are available separately. For example, on
-Debian/Ubuntu systems, the package to install is called libmariadbd-dev.
+Debian/Ubuntu systems, the package to install is called
+libmariadb-client-lgpl-dev.
 
 Then, configure Pure-FTPd with --with-mysql and your favorite extra gadgets:
 
