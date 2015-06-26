@@ -1,4 +1,10 @@
 
+* Version 1.0.41:
+ - MariaDB and MySQL 5.5+ are now fully supported
+ - MySQL <= 4.0.0 is not supported any more
+ - Some Linux distributions ship a version of OpenSSH without support
+for ECC. Pure-FTPd can now be compiled on these.
+
 * Version 1.0.40:
  - Support for TCP_FASTOPEN added on Linux
  - The LDAP configuration file didn't allow a default gid without also
