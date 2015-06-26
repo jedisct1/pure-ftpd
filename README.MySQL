@@ -1,21 +1,17 @@
 
-If you never heard about MySQL before, *DON'T* enable MySQL support in
-Pure-FTPd. MySQL is useless if you don't have to manage many shared
-accounts. But well... if you want to learn about MySQL anyway, here's a good
-starting point: http://www.mysql.com/ .
 
-
-       ------------------------ MYSQL SUPPORT ------------------------
+    ------------------------ MYSQL/MARIADB SUPPORT ------------------------
 
 
 When MySQL is enabled, all account info is fetched from a central MySQL
-database.
+or MariaDB database.
 
-To compile the server with MySQL support, you first have to build and
-install the MySQL client libraries. MySQL is freely available from
-http://www.mysql.com/ and binary packages are included in many major
+To compile the server with MySQL/MariaDB support, you first have to build and
+install the MySQL client libraries. MariaDB is freely available from
+https://mariadb.org/ and binary packages are included in many major
 distributions. But if you choose a binary form, don't forget to also install
-the development packages if they are available separately.
+the development packages if they are available separately. For example, on
+Debian/Ubuntu systems, the package to install is called libmariadbd-dev.
 
 Then, configure Pure-FTPd with --with-mysql and your favorite extra gadgets:
 
