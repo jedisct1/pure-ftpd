@@ -455,14 +455,6 @@ void pw_mysql_check(AuthResult * const result,
         }
     }
     if (crypto_mysql != 0) {
-#if defined(USE_OLD_MYSQL_SCRAMBLING)
-        unsigned long hash_res[2];
-        char scrambled_password[MYSQL_CRYPT_LEN];
-
-        hash_password(hash_res, password, strlen(password));
-        snprintf(scrambled_password, sizeof scrambled_password, "%08lx%08lx",
-                 hash_res[0], hash_res[1]);
-#else
         char scrambled_password[42]; /* 2 * 20 (sha1 hash size) + 2 */
 
 # ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
@@ -471,7 +463,6 @@ void pw_mysql_check(AuthResult * const result,
 # else
         make_scrambled_password(scrambled_password, password);
 # endif
-#endif
         if (pure_strcmp(scrambled_password, spwd) == 0) {
             goto auth_ok;
         }
