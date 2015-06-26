@@ -1290,8 +1290,8 @@ AC_ARG_WITH(mysql,
       LDFLAGS="$LDFLAGS -L${withval}/lib -L${withval}/lib/mysql -L${withval}/mysql/lib"
       CPPFLAGS="$CPPFLAGS -I${withval}/include -I${withval}/include/mysql -I${withval}/mysql/include"
     else
-      CFLAGS="$CFLAGS `mysql_config --cflags`"
-      LDFLAGS="$LDFLAGS `mysql_config --libs`"
+      CFLAGS="$CFLAGS `mysql_config --cflags || mariadb_config --cflags`"
+      LDFLAGS="$LDFLAGS `mysql_config --libs || mariadb_config --libs`"
     fi
     AC_CHECK_LIB(m, floor)
     AC_CHECK_LIB(z, gzclose)
