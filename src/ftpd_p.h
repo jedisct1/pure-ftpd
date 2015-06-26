@@ -112,12 +112,15 @@ static const char *GETOPT_OPTIONS =
 static struct option long_options[] = {
     { "notruncate", 0, NULL, '0' },
     { "logpid", 0, NULL, '1' },
+# ifdef WITH_TLS
+    { "certfile", 1, NULL, '2' },
+# endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },
-#ifdef WITH_RFC2640
+# ifdef WITH_RFC2640
     { "fscharset", 1, NULL, '8' },
     { "clientcharset", 1, NULL, '9' },
-#endif
+# endif
     { "chrooteveryone", 0, NULL, 'A' },
     { "trustedgid", 1, NULL, 'a' },
     { "brokenclientscompatibility", 0, NULL, 'b' },
@@ -189,7 +192,6 @@ static struct option long_options[] = {
 # ifdef WITH_TLS
     { "tls", 1, NULL, 'Y' },
     { "tlsciphersuite", 1, NULL, 'J' },
-    { "certfile", 1, NULL, '2' },
 # endif
     { "allowdotfiles", 0, NULL, 'z' },
     { "customerproof", 0, NULL, 'Z' },
