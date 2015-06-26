@@ -460,8 +460,10 @@ void pw_mysql_check(AuthResult * const result,
 # ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
         my_make_scrambled_password(scrambled_password, password,
                                    strlen(password));
-# else
+# elif defined(HAVE_MAKE_SCRAMBLED_PASSWORD)
         make_scrambled_password(scrambled_password, password);
+# else
+        memset(scrambled_password, 0, sizeof scrambled_password);
 # endif
         if (pure_strcmp(scrambled_password, spwd) == 0) {
             goto auth_ok;
