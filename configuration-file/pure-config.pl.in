@@ -60,6 +60,7 @@ my %string_switch_for = (
         AltLog                  => "-O",
         PIDFile                 => "-g",
         TLSCipherSuite          => "-J",
+        CertFile                => "-2",
 );
 
 my %numeric_switch_for = (

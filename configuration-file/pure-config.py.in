@@ -114,6 +114,7 @@ option_tuple = (
     ["PIDFile\s+(\S+)",                    "-g", None            ],
     ["TLSCipherSuite\s+(\S+)",             "-J", None            ],
     ["PerUserLimits\s+([:0-9]+)",          "-y", None            ],
+    ["CertFile\s+(\S+)",                   "-2", None            ],
     ["TLS\s+(\d)",                         "-Y", None            ])
 
 for option in option_tuple:
