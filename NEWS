@@ -4,6 +4,8 @@
  - MySQL <= 4.0.0 is not supported any more
  - Some Linux distributions ship a version of OpenSSH without support
 for ECC. Pure-FTPd can now be compiled on these.
+ - New command-line switch: -2/--certfile= to set the path to the
+certificate file when using TLS.
 
 * Version 1.0.40:
  - Support for TCP_FASTOPEN added on Linux
