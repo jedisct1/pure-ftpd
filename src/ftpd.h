@@ -418,8 +418,8 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifndef TLS_CONFDIR
 #  define TLS_CONFDIR "/etc/ssl/private"
 # endif
-# ifndef TLS_CERTIFICATE_FILE
-#  define TLS_CERTIFICATE_FILE TLS_CONFDIR "/pure-ftpd.pem"
+# ifndef DEFAULT_CERT_FILE
+#  define DEFAULT_CERT_FILE TLS_CONFDIR "/pure-ftpd.pem"
 # endif
 # ifndef TLS_DHPARAMS_FILE
 #  define TLS_DHPARAMS_FILE TLS_CONFDIR "/pure-ftpd-dhparams.pem"

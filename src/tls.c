@@ -40,8 +40,7 @@ static void tls_error(const int line, int err)
     }
     if (err != 0) {
         logfile(LOG_ERR, "TLS [%s](%d): %s",
-                TLS_CERTIFICATE_FILE, line,
-                ERR_error_string(err, NULL));
+                cert_file, line, ERR_error_string(err, NULL));
     }
     _EXIT(EXIT_FAILURE);
 }
@@ -224,12 +223,11 @@ int tls_init_library(void)
             _EXIT(EXIT_FAILURE);
         }
     }
-    if (SSL_CTX_use_certificate_chain_file(tls_ctx,
-                                           TLS_CERTIFICATE_FILE) != 1) {
+    if (SSL_CTX_use_certificate_chain_file(tls_ctx, cert_file) != 1) {
         die(421, LOG_ERR,
-            MSG_FILE_DOESNT_EXIST ": [%s]", TLS_CERTIFICATE_FILE);
+            MSG_FILE_DOESNT_EXIST ": [%s]", cert_file);
     }
-    if (SSL_CTX_use_PrivateKey_file(tls_ctx, TLS_CERTIFICATE_FILE,
+    if (SSL_CTX_use_PrivateKey_file(tls_ctx, cert_file,
                                     SSL_FILETYPE_PEM) != 1) {
         tls_error(__LINE__, 0);
     }
@@ -258,8 +256,7 @@ int tls_init_library(void)
     if (ssl_verify_client_cert) {
         SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                            SSL_VERIFY_PEER, NULL);
-        if (SSL_CTX_load_verify_locations(tls_ctx,
-                                          TLS_CERTIFICATE_FILE, NULL) != 1) {
+        if (SSL_CTX_load_verify_locations(tls_ctx, cert_file, NULL) != 1) {
             tls_error(__LINE__, 0);
         }
     }

@@ -653,11 +653,13 @@ transfered.
 
 - '-1': log the PID of each session in syslog output.
 
+- '-2 <file>': when using TLS, set the path to the certificate file.
+
 - '-4': only listen to IPv4 connections.
 
 - '-6': don't listen to IPv4, only listen to IPv6.
 
-- '-a <gid>': Authenticated users will be granted access to their home
+- '-a <gid>': authenticated users will be granted access to their home
 directory and nothing else (chroot) . This is especially useful for users
 without shell access, for instance, WWW-hosting services shared by several
 customers. Only member of group number <gid> will have unrestricted access

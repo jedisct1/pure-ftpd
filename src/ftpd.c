@@ -5798,6 +5798,11 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
 #endif
 #ifdef WITH_TLS
+        case '2':
+            if ((cert_file = strdup(optarg)) == NULL) {
+                die_mem();
+            }
+            break;
         case 'Y': {
             if ((enforce_tls_auth = atoi(optarg)) < 0 || enforce_tls_auth > 3) {
                 die(421, LOG_ERR, MSG_CONF_ERR ": TLS");
