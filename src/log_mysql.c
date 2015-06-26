@@ -8,6 +8,7 @@
 # include "log_mysql.h"
 # include "messages.h"
 # include "crypto.h"
+# include "crypto-sha1.h"
 # include "alt_arc4random.h"
 # include "utils.h"
 
@@ -465,7 +466,21 @@ void pw_mysql_check(AuthResult * const result,
 # elif defined(HAVE_MAKE_SCRAMBLED_PASSWORD)
         make_scrambled_password(scrambled_password, password);
 # else
-        memset(scrambled_password, 0, sizeof scrambled_password);
+	{
+	    SHA1_CTX      ctx;
+	    unsigned char h0[20], h1[20];
+
+	    SHA1Init(&ctx);
+	    SHA1Update(&ctx, password, strlen(password));
+	    SHA1Final(h0, &ctx);
+	    SHA1Init(&ctx);
+	    SHA1Update(&ctx, h0, sizeof h0);
+	    pure_memzero(h0, sizeof h0);
+	    SHA1Final(h1, &ctx);
+	    *scrambled_password = '*';
+	    hexify(scrambled_password + 1U, h1,
+		   (sizeof scrambled_password) - 1U, sizeof h1);
+	}
 # endif
         if (pure_strcmp(scrambled_password, spwd) == 0) {
             goto auth_ok;
