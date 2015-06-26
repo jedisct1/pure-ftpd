@@ -455,29 +455,21 @@ void pw_mysql_check(AuthResult * const result,
         }
     }
     if (crypto_mysql != 0) {
-#if MYSQL_VERSION_ID < 40100 || defined(USE_OLD_MYSQL_SCRAMBLING)
+#if defined(USE_OLD_MYSQL_SCRAMBLING)
         unsigned long hash_res[2];
         char scrambled_password[MYSQL_CRYPT_LEN];
 
-# if MYSQL_VERSION_ID < 40100
-        hash_password(hash_res, password);
-# else
         hash_password(hash_res, password, strlen(password));
-# endif
         snprintf(scrambled_password, sizeof scrambled_password, "%08lx%08lx",
                  hash_res[0], hash_res[1]);
 #else
         char scrambled_password[42]; /* 2 * 20 (sha1 hash size) + 2 */
 
-# if MYSQL_VERSION_ID >= 40100 && MYSQL_VERSION_ID < 40101
-        make_scrambled_password(scrambled_password, password, 1, NULL);
-# else
-#  ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
+# ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
         my_make_scrambled_password(scrambled_password, password,
                                    strlen(password));
-#  else
+# else
         make_scrambled_password(scrambled_password, password);
-#  endif
 # endif
 #endif
         if (pure_strcmp(scrambled_password, spwd) == 0) {
