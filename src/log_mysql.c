@@ -47,7 +47,7 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
     size_t from_len;
     size_t to_len;
     char *to;
-    unsigned long tolen;
+    unsigned long escaped_len;
     unsigned int t;
     unsigned char t1, t2, t3, t4;
 
@@ -78,8 +78,8 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
      * possible instead of doing anything with the heap. We'll end up with
      * a segmentation violation, but without any possible exploit.
      */
-    tolen = mysql_real_escape_string(id_sql_server, to, from, from_len);
-    if (tolen >= to_len ||
+    escaped_len = mysql_real_escape_string(id_sql_server, to, from, from_len);
+    if (escaped_len >= to_len ||
         (unsigned char) to[to_len] != t1 ||
         (unsigned char) to[to_len + 1] != t2 ||
         (unsigned char) to[to_len + 2] != t3 ||
@@ -88,7 +88,7 @@ static char *pw_mysql_escape_string(MYSQL * const id_sql_server,
             *to++ = 0;
         }
     }
-    to[tolen] = 0;
+    to[escaped_len] = 0;
 
     return to;
 }
