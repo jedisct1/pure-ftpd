@@ -427,7 +427,7 @@ CustomerProof              yes
 # Prefix with -C: in order to require valid client certificates.
 # If -C: is used, make sure that clients' public keys are installed
 # on the server.
-# SSL is disabled by default. TLS 1.0, 1.1 and 1.2 are availale by
+# SSL is disabled by default. TLS 1.0, 1.1 and 1.2 are available by
 # default.
 
 # TLSCipherSuite           HIGH
