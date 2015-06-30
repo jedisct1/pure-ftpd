@@ -129,10 +129,10 @@ Save the configuration file anywhere. Let's say /etc/pureftpd-ldap.conf .
 
 Then, you have to run the pure-ftpd command with '-l ldap:' (it's an 'ell'
 not a 'one') followed by the path of that configuration file. Here's an
-example with tcpserver:
+example:
 
 
-tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd -l ldap:/etc/pureftpd-ldap.conf &
+pure-ftpd -l ldap:/etc/pureftpd-ldap.conf -B
 
 You can mix different authentication methods. For instance, if you want to
 use system (/etc/passwd) accounts when an account is not found in a LDAP

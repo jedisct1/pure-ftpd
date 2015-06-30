@@ -64,10 +64,9 @@ Save the configuration file anywhere. Let's say /etc/pureftpd-pgsql.conf .
 
 Then, you have to run the pure-ftpd command with '-l pgsql:' (it's an 'ell'
 not a 'one') followed by the path of that configuration file. Here's an
-example with tcpserver:
+example:
 
-
-tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd -l pgsql:/etc/pureftpd-pgsql.conf &
+pure-ftpd -l pgsql:/etc/pureftpd-pgsql.conf -B
 
 
 You can mix different authentication methods. For instance, if you want to

@@ -568,10 +568,8 @@ killall -USR2 xinetd
 **** Usage with TCPserver ****
 
 
-TCPServer is part of the ucspi-tcp package by Dan Bernstein. It's less
-bloated than inetd, less D.O.S.-prone and has interesting filtering
-abilities. The simplest way of running Pure-FTPd with TCPserver is the
-following command:
+TCPServer is part of the ucspi-tcp package by Dan Bernstein.
+The simplest way of running Pure-FTPd with TCPserver is the following command:
 
 tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd &
 
