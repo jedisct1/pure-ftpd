@@ -25,8 +25,8 @@ void pure_memzero(void * const pnt, const size_t len)
     while (i < len) {
         pnt_[i++] = 0U;
     }
-}
 # endif
+}
 
 int pure_memcmp(const void * const b1_, const void * const b2_, size_t len)
 {
