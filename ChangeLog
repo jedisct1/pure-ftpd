@@ -1,4 +1,8 @@
 
+* Version 1.0.42 (not released yet):
+ - Compilation fix for OpenBSD and Bitrig when pure-ftpd is not
+compiled with libsodium.
+
 * Version 1.0.41:
  - libmariadb is looked for in addition to libmysqlclient
  - MySQL: my_make_scrambled_password() is not always an exported
