@@ -441,7 +441,9 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
         goto error;
     }
     /* only force the uid if default_uid has been set */
-    if (!force_default_uid && default_uid > 0) {
+    if (force_default_uid != 0 && default_uid > (uid_t) 0) {
+        pwret.pw_uid = default_uid;
+    } else {
         if ((pw_uid_s = pw_ldap_getvalue(ld, res, LDAP_FTPUID)) == NULL ||
             *pw_uid_s == 0 ||
             (pwret.pw_uid = (uid_t) strtoul(pw_uid_s, NULL, 10)) <= (uid_t) 0) {
@@ -453,13 +455,13 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
                 pwret.pw_uid = default_uid;
             }
         }
-    } else {
-        pwret.pw_uid = default_uid;
     }
     free((void *) pw_uid_s);
     pw_uid_s = NULL;
     /* only force the gid if default_gid has been set */
-    if (!force_default_gid && default_gid > 0) {
+    if (force_default_gid != 0 && default_gid > (gid_t) 0) {
+        pwret.pw_gid = default_gid;
+    } else {
         if ((pw_gid_s = pw_ldap_getvalue(ld, res, LDAP_FTPGID)) == NULL ||
             *pw_gid_s == 0 ||
             (pwret.pw_gid = (gid_t) strtoul(pw_gid_s, NULL, 10)) <= (gid_t) 0) {
@@ -471,8 +473,6 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
                 pwret.pw_gid = default_gid;
             }
         }
-    } else {
-        pwret.pw_gid = default_gid;
     }
     free((void *) pw_gid_s);
     pw_gid_s = NULL;
