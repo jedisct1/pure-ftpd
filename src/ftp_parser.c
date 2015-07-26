@@ -699,7 +699,7 @@ void parser(void)
                        !strcmp(cmd, "options") ||
                        !strcmp(cmd, "post") ||
                        !strcmp(cmd, "put")) {
-                die(500, LOG_INFO, "HTTP command");
+                die(500, LOG_INFO, "HTTP command: [%s]", cmd);
             } else if (!strcmp(cmd, "site")) {
                 if ((sitearg = arg) != NULL) {
                     while (*sitearg != 0 && !isspace((unsigned char) *sitearg)) {
