@@ -1,4 +1,13 @@
 
+* Version 1.0.42:
+ - Compilation fix for OpenBSD and Bitrig when Pure-FTPd is not
+compiled with libsodium.
+ - The connection is now dropped if HTTP commands are received.
+ - LDAP force_default_gid and force_default_uid now work as documented.
+ - The ONLY_ACCEPT_REUSED_SSL_SESSIONS switch (introduced in Pure-FTPd
+1.0.22 circa 2009, but disabled back then due to client compatibility
+concerns) is now on by default, except in broken clients compatibility mode.
+
 * Version 1.0.41:
  - MariaDB and MySQL 5.5+ are now fully supported
  - MySQL <= 4.0.0 is not supported any more

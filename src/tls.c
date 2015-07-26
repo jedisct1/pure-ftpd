@@ -25,12 +25,11 @@
 # endif
 
 /*
- * Unfortunately disabled by default, because it looks like a lot of clients
- * don't support this properly yet.
- * Feel free to enable it if none of your customers complains.
+ * Enabled by default since pure-ftpd 1.0.42, except in broken clients
+ * compatibility mode.
  */
 # ifndef ONLY_ACCEPT_REUSED_SSL_SESSIONS
-#  define ONLY_ACCEPT_REUSED_SSL_SESSIONS 0
+#  define ONLY_ACCEPT_REUSED_SSL_SESSIONS 1
 # endif
 
 static void tls_error(const int line, int err)
@@ -351,7 +350,7 @@ int tls_init_data_session(const int fd, const int passive)
         break;
     }
 # if ONLY_ACCEPT_REUSED_SSL_SESSIONS
-    if (SSL_session_reused(tls_data_cnx) == 0) {
+    if (broken_client_compat == 0 && SSL_session_reused(tls_data_cnx) == 0) {
         tls_error(__LINE__, 0);
     }
 # endif
