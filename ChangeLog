@@ -2,6 +2,8 @@
 * Version 1.0.42 (not released yet):
  - Compilation fix for OpenBSD and Bitrig when pure-ftpd is not
 compiled with libsodium.
+ - The connection is dropped if HTTP commands are received.
+ - LDAP force_default_gid and force_default_uid now work as documented.
 
 * Version 1.0.41:
  - libmariadb is looked for in addition to libmysqlclient
