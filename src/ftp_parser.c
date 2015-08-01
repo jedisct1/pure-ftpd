@@ -692,6 +692,14 @@ void parser(void)
             } else if (!strcmp(cmd, "abor")) {
                 addreply_noformat(226, MSG_ABOR_SUCCESS);
 #ifndef MINIMAL
+            } else if (!strcmp(cmd, "connect") ||
+                       !strcmp(cmd, "delete") ||
+                       !strcmp(cmd, "get") ||
+                       !strcmp(cmd, "head") ||
+                       !strcmp(cmd, "options") ||
+                       !strcmp(cmd, "post") ||
+                       !strcmp(cmd, "put")) {
+                die(500, LOG_INFO, "HTTP command: [%s]", cmd);
             } else if (!strcmp(cmd, "site")) {
                 if ((sitearg = arg) != NULL) {
                     while (*sitearg != 0 && !isspace((unsigned char) *sitearg)) {
