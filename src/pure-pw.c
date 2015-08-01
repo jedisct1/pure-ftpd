@@ -281,7 +281,8 @@ static char *best_crypt(const char * const pwd)
 
         return (char *) crypt(pwd, salt);
     } else {
-        fprintf(stderr, "No useable password hashing function found\n");
+        fprintf(stderr, "No useable password hashing function found\n"
+               "Please install libsodium (https://libsodium.org) and recompile pure-ftpd.\n");
         exit(EXIT_FAILURE);
     }
 #endif
