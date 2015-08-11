@@ -445,7 +445,7 @@ IPv6 addresses are of course supported.
 With previous command lines, the server will run in the default
 configuration. Anonymous FTP logins will be allowed if there's a system
 account called 'ftp' and every user of your system will be able to access
-the FTP server using his regular login/password pair.
+the FTP server using their regular login/password pair.
 
 If you need to tweak that default configuration, other command-lines options
 can be added. For instance:
@@ -1128,11 +1128,15 @@ aliases are available. You can get this list at any time by typing
 ------------------------ SETTING UP AN ANONYMOUS FTP ------------------------
     
     
-If a 'ftp' user exists and its home directory is reachable, Pure-FTPd will
-accept anonymous login, as 'ftp' or 'anonymous'. Files have to be located in
-the home FTP directory. There's no need for 'bin', 'lib', 'etc' and 'dev'
-directories, nor any external program. Don't chown the public files to
-'ftp', just writable directories ('incoming') .
+If a 'ftp' user exists and its home directory exists, Pure-FTPd will
+accept anonymous login, as 'ftp' or 'anonymous'.
+
+The root directory of the files served when logged as 'anonymous' is
+the home directory of the 'ftp' user.
+
+There's no need for 'bin', 'lib', 'etc' and 'dev' directories, nor any
+external program. Don't chown the public files to 'ftp', just writable
+directories such as 'incoming'.
 
 
     ------------------------ DISPLAYING BANNERS ------------------------
