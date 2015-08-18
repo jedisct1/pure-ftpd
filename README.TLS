@@ -140,7 +140,7 @@ pure-ftpd daemon with the -Y (or --tls=) switch. Example :
 
 - With "--tls=1", clients can connect either the traditional way or through an
 SSL/TLS layer. This is probably the setting you need if you want to enable
-TLS without having too much angry customers.
+TLS without having too many angry customers.
 
 - With "--tls=2", cleartext sessions are refused and only SSL/TLS compatible
 clients are accepted.
