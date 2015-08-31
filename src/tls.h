@@ -4,6 +4,8 @@
 #ifdef WITH_TLS
 
 # include <openssl/ssl.h>
+# include <openssl/dh.h>
+# include <openssl/bn.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
 # ifdef HAVE_OPENSSL_EC_H
