@@ -2,8 +2,8 @@
        ----------------------- PostgreSQL SUPPORT ------------------------
 
 
-When PostgreSQL is enabled, all account info is fetched from a central Potgres
-database.
+When PostgreSQL is enabled, all account info are fetched from a central
+Postgres database.
 
 To compile the server with PostgreSQL support, you first have to build and
 install the PostgreSQL client libraries. PostgreSQL is freely available from
