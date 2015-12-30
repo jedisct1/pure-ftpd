@@ -710,14 +710,10 @@ nospace:
                 free(pglob->gl_statv[i]);
             }
         }
-        if (pglob->gl_pathv) {
-            free(pglob->gl_pathv);
-            pglob->gl_pathv = NULL;
-        }
-        if (pglob->gl_statv) {
-            free(pglob->gl_statv);
-            pglob->gl_statv = NULL;
-        }
+        free(pglob->gl_pathv);
+        pglob->gl_pathv = NULL;
+        free(pglob->gl_statv);
+        pglob->gl_statv = NULL;
         return GLOB_NOSPACE;
     }
 
