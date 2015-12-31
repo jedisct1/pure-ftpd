@@ -224,7 +224,16 @@ static void no_mem(void)
 
 static char *best_crypt(const char * const pwd)
 {
-#ifdef HAVE_LIBSODIUM
+#if defined(crypto_pwhash_INTERACTIVE)
+    static char hash[crypto_pwhash_STRBYTES];
+
+    if (crypto_pwhash_str(hash, pwd, strlen(pwd),
+                          crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                          crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0) {
+        no_mem();
+    }
+    return hash;
+#elif defined(crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE)
     static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
 
     if (crypto_pwhash_scryptsalsa208sha256_str
