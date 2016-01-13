@@ -409,8 +409,8 @@ void pw_pgsql_check(AuthResult * const result,
     char *escaped_decimal_ip = NULL;
     char *scrambled_password = NULL;
     int committed = 1;
-    int crypto_scrypt = 0, crypto_crypt = 0, crypto_md5 = 0, crypto_sha1 = 0,
-        crypto_plain = 0;
+    int crypto_argon2i = 0, crypto_scrypt = 0, crypto_crypt = 0, crypto_md5 = 0,
+        crypto_sha1 = 0, crypto_plain = 0;
     unsigned long decimal_ip_num = 0UL;
     char decimal_ip[42];
     char hbuf[NI_MAXHOST];
@@ -499,10 +499,13 @@ void pw_pgsql_check(AuthResult * const result,
     }
     result->auth_ok--;                  /* -1 */
     if (strcasecmp(crypto, PASSWD_SQL_ANY) == 0) {
+        crypto_argon2i++;
         crypto_scrypt++;
         crypto_crypt++;
         crypto_md5++;
         crypto_sha1++;
+    } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2I) == 0) {
+        crypto_argon2i++;
     } else if (strcasecmp(crypto, PASSWD_SQL_SCRYPT) == 0) {
         crypto_scrypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_CRYPT) == 0) {
@@ -515,6 +518,13 @@ void pw_pgsql_check(AuthResult * const result,
         crypto_plain++;
     }
 #ifdef HAVE_LIBSODIUM
+# ifdef crypto_pwhash_STRPREFIX
+    if (crypto_argon2i != 0) {
+        if (crypto_pwhash_str_verify(spwd, password, strlen(password)) == 0) {
+            goto auth_ok;
+        }
+    }
+# endif
     if (crypto_scrypt != 0) {
         if (crypto_pwhash_scryptsalsa208sha256_str_verify
             (spwd, password, strlen(password)) == 0) {

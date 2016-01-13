@@ -229,6 +229,15 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
         int         ret = -1;
 
 #ifdef HAVE_LIBSODIUM
+# ifdef crypto_pwhash_STRPREFIX
+        if (strncmp(crypto_pwhash_STRPREFIX, line,
+                    (sizeof crypto_pwhash_STRPREFIX) - 1U) == 0) {
+            ret = crypto_pwhash_str_verify(line, pwd, strlen(pwd));
+            if (ret != 0) {
+                return -1;
+            }
+        } else
+# endif
         if (line[0] == '$' && line[1] == '7' && line[2] == '$') {
             ret = crypto_pwhash_scryptsalsa208sha256_str_verify
                 (line, pwd, strlen(pwd));

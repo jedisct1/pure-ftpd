@@ -112,10 +112,10 @@ Let's have a look at its content:
 joe:$7$C6..../....swVShTUX9kLJepm0vvj7dUXPqtULzQ9G3GT/GAO3bd3$GMHJRyUdSRwNROunwtRbEDHlx5t3eNQew7bb1dz29K2:500:101::/home/ftpusers/joe/./:::::::::::::
 
 Passwords are hashed with the most secure hash function your system supports.
-Hashes are tried in this order: scrypt, bcrypt, SHA-512, MD5.
+Hashes are tried in this order: argon2i, scrypt, bcrypt, SHA-512, MD5.
 
-scrypt is the recommended function, and requires pure-ftpd to be compiled
-in presence of libsodium.
+Argon2i and scrypt are the recommended functions, and require pure-ftpd to be
+compiled in presence of libsodium.
 
 
        ------------------------ CHANGING INFO ------------------------
