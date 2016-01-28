@@ -180,6 +180,9 @@ static const BN_ULONG dh2048_256_q[] = {
 # endif
     SSL_CTX_set_tmp_dh(tls_ctx, dh);
     DH_free(dh);
+# ifdef SSL_OP_SINGLE_DH_USE
+    SSL_CTX_set_options(tls_ctx, SSL_OP_SINGLE_DH_USE);
+# endif
 
     return 0;
 }
