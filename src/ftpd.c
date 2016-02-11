@@ -5818,8 +5818,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
                     ssl_verify_client_cert = 1;
                 }
             }
-            if (tlsciphersuite == NULL &&
-                (tlsciphersuite = strdup(optarg)) == NULL) {
+            if ((tlsciphersuite = strdup(optarg)) == NULL) {
                 die_mem();
             }
             break;
