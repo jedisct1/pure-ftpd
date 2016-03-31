@@ -224,7 +224,7 @@ static void no_mem(void)
 
 static char *best_crypt(const char * const pwd)
 {
-#if defined(crypto_pwhash_INTERACTIVE)
+#if defined(crypto_pwhash_OPSLIMIT_INTERACTIVE)
     static char hash[crypto_pwhash_STRBYTES];
 
     if (crypto_pwhash_str(hash, pwd, strlen(pwd),
