@@ -1,4 +1,6 @@
 
+* Version 1.0.43: [NOT RELEASED YET]
+
 * Version 1.0.42:
  - Compilation fix for OpenBSD and Bitrig when Pure-FTPd is not
 compiled with libsodium.
