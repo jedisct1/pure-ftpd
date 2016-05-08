@@ -23,9 +23,15 @@ void pw_unix_check(AuthResult * const result,
     (void) sa;
     (void) peer;
     result->auth_ok = 0;
+#ifdef HAVE_GETPWNAM_SHADOW
+    if ((pw_ = getpwnam_shadow(account)) == NULL) {
+        return;
+    }
+#else
     if ((pw_ = getpwnam(account)) == NULL) {
         return;
     }
+#endif
     pw = *pw_;
     result->auth_ok--;
 #ifdef HAVE_SETUSERSHELL
