@@ -2236,7 +2236,7 @@ void dopasv(int psvtype)
          * messages */
 
         addreply(227, "Entering Passive Mode (%lu,%lu,%lu,%lu,%u,%u)",
-                 (a >> 24) & 255, (a >> 16) & 255, (a >> 8) & 255, a & 255,
+                 (a >> 24) & 255UL, (a >> 16) & 255UL, (a >> 8) & 255UL, a & 255UL,
                  (p >> 8) & 255, p & 255);
         break;
     case 1:
