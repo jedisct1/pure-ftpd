@@ -19,7 +19,7 @@ virtual domains, built-in 'ls', anti-warez system, configurable ports for
 passive downloads, FXP protocol, bandwidth throttling, ratios,
 LDAP / MySQL / PostgreSQL-based authentication, fortune files, Apache-like
 log files, fast standalone mode, text / HTML / XML real-time status report,
-virtual users, virtual quotas, privilege separation, SSL/TLS and more.
+virtual users, virtual quotas, privilege separation, TLS and more.
 
 
       ------------------------ WHO'S USING IT? ------------------------
@@ -135,7 +135,7 @@ properly on your system, try to recompile with this switch.
 
 --with-tls: enable TLS support. Read README.TLS for more about this feature.
 
---with-certfile=<file>: the file with the SSL certificate (see README.TLS). The
+--with-certfile=<file>: the file with the TLS certificate (see README.TLS). The
 default is /etc/ssl/private/pure-ftpd.pem .
 
 --with-cookie: display a fortune or a customized banner when a user logs
@@ -297,7 +297,7 @@ by default.
 over the iconv library and it requires a little more CPU time. See the -8
 and -9 switches.
 
---with-implicittls: build a FTPS server (SSL/TLS is implicitely enabled).
+--with-implicittls: build a FTPS server (TLS is implicitely enabled).
 The protocol is incompatible with FTP and listens to another port by default
 (port 990, ftps). Never enable this option unless you know what you're doing.
 
@@ -750,8 +750,7 @@ because with that feature, he'll be able to create/chown directories anywhere
 on the server's filesystem.
 
 - '-J <ciphers>': Sets the list of ciphers that will be accepted for
-SSL/TLS connections.
-For example: -J HIGH:MEDIUM
+TLS connections.
 
 - '-k <percentage>': Don't allow uploads if the partition is more than
 <percentage>% full. For instance, "-k 95" will ensure your disks will never
@@ -959,13 +958,13 @@ Here, we allow:
   
 With such a setup, a single user can't easily fill all slots.  
 
-- '-Y 0': Disable the SSL/TLS encryption layer (default).
+- '-Y 0': Disable the TLS encryption layer (default).
   '-Y 1': Accept both standard and encrypted sessions.
-  '-Y 2': Refuse connections that aren't using SSL/TLS security mechanisms,
+  '-Y 2': Refuse connections that aren't using TLS security mechanisms,
 including anonymous sessions. The server must have been compiled with
 --with-tls and a valid certificate must be in place to get this feature.
-See the README.TLS file for more info about SSL/TLS.
-  '-Y 3': Cleartext sessions are refused and only SSL/TLS compatible 
+See the README.TLS file for more info about TLS.
+  '-Y 3': Cleartext sessions are refused and only TLS compatible 
 clients are accepted. Clear data connections are also refused, so private 
 data connections are enforced.
 

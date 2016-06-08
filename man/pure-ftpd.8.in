@@ -284,7 +284,7 @@ permissions are set according to the current directory mask. To avoid local
 attacks, the parent directory should never belong to an untrusted user.
 .TP
 .B \-J ciphers
-Set the list of ciphers that will be accepted for SSL/TLS connections.
+Set the list of ciphers that will be accepted for TLS connections.
 .TP
 .B \-k percentage
 Disallow upload if the partition is more than
@@ -539,20 +539,20 @@ login. The second one is the maximum number of anonoymous sessions.
 .TP
 .B \-Y tls behavior
 \fB\-Y 0\fR
-(default) disables SSL/TLS security mechanisms.
+(default) disables TLS security mechanisms.
 .br
 \fB\-Y 1\fR
-Accept both normal sessions and SSL/TLS ones.
+Accept both normal sessions and TLS ones.
 .br
 \fB\-Y 2\fR
-refuses connections that aren't using SSL/TLS security mechanisms, including
+refuses connections that aren't using TLS security mechanisms, including
 anonymous ones.
 .br
 \fB\-Y 3\fR
-refuses connections that aren't using SSL/TLS security mechanisms, and refuse
+refuses connections that aren't using TLS security mechanisms, and refuse
 cleartext data channels as well.
 .br
-The server must have been compiled with SSL/TLS support and a valid certificate
+The server must have been compiled with TLS support and a valid certificate
 must be in place to accept encrypted sessions.
 .TP
 .B \-z

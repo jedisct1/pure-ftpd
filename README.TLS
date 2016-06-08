@@ -1,6 +1,6 @@
 
 
-       ------------------------ SSL/TLS SUPPORT ------------------------
+         ------------------------ TLS SUPPORT ------------------------
 
 Pure-FTPd supports encryption of the control and data channels using
 TLS security mechanisms. Support for encrypted commands began with
@@ -41,10 +41,10 @@ onto it to confirm its validity.
 
 If you already have a certificate for another service on the same host
 (commonly for HTTPS/HTTP2), you can use it as well with Pure-FTPd and other
-SSL-enabled services.
+TLS-enabled services.
 
 If you don't have any certificate, you have to get one. Make a Google search
-for "SSL certificates" to find authorities that will sell you certificates with
+for "SSL certificates" to find authorities that will provide certificates with
 valid "official" signatures.
 
 Once you have a valid and stamped certificate, clients will usually be able
@@ -136,30 +136,30 @@ pure-ftpd daemon with the -Y (or --tls=) switch. Example :
 
 /usr/local/sbin/pure-ftpd --tls=1 &
 
-- With "--tls=0", support for SSL/TLS is disabled. This is the default.
+- With "--tls=0", support for TLS is disabled. This is the default.
 
 - With "--tls=1", clients can connect either the traditional way or through an
-SSL/TLS layer. This is probably the setting you need if you want to enable
+TLS layer. This is probably the setting you need if you want to enable
 TLS without having too many angry customers.
 
-- With "--tls=2", cleartext sessions are refused and only SSL/TLS compatible
+- With "--tls=2", cleartext sessions are refused and only TLS compatible
 clients are accepted.
 
-- With "--tls=3", cleartext sessions are refused and only SSL/TLS compatible
+- With "--tls=3", cleartext sessions are refused and only TLS compatible
 clients are accepted. Clear data connections are also refused, so private
 data connections are enforced. This is an extreme setting.
 
-When SSL/TLS has been successfully negociated for a connection, you'll see
+When TLS has been successfully negociated for a connection, you'll see
 something similar to this in log files :
 
 <<
-SSL/TLS: Enabled TLSv1.2 with AES256-SHA, 256 secret bits cipher
+TLS: Enabled TLSv1.2 with AES256-SHA, 256 secret bits cipher
 >>
 
       ------------------------ COMPATIBLE CLIENTS ------------------------
 
 Pure-FTPd was reported to be fully compatible with the following clients with
-the SSL/TLS encryption layer turned on :
+the TLS encryption layer turned on :
 
 
 * Transmit (OSX)
