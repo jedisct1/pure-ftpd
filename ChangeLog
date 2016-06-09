@@ -1,7 +1,6 @@
 
-* Version 1.0.43: [NOT RELEASED YET]
+* Version 1.0.43:
  - Passwords can now be hashed using Argon2.
- - getpwnam_shadow() is used on OpenBSD 6.0+.
  - The -J switch didn't work any more in 1.0.42. This has been fixed.
  - The default cipher suite was simplified.
  - Authentication against system accounts is compatible with OpenBSD 6.0.

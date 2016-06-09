@@ -1,5 +1,11 @@
 
-* Version 1.0.43: [NOT RELEASED YET]
+* Version 1.0.43:
+ - Passwords can now be hashed using Argon2i, which is now the default
+algorithm for puredb accounts.
+ - Authentication against system accounts is compatible with OpenBSD
+6.0.
+ - The -J switch didn't work properly in version 1.0.42. This has been
+fixed.
 
 * Version 1.0.42:
  - Compilation fix for OpenBSD and Bitrig when Pure-FTPd is not
