@@ -351,20 +351,12 @@ void die(const int err, const int priority, const char * const format, ...)
     char line[MAX_SYSLOG_LINE];
 
     disablesignals();
+    logging = 0;
     va_start(va, format);
     vsnprintf(line, sizeof line, format, va);
+    addreply(err, "%s", line);
     va_end(va);
-#ifdef WITH_TLS
-    if (tls_cnx != NULL) {
-        char buf[MAX_SERVER_REPLY_LEN];
-        snprintf(buf, sizeof buf, "%d %s\r\n", err, line);
-        SSL_write(tls_cnx, buf, strlen(buf));
-    } else
-#endif
-    {
-        client_printf("%d %s\r\n", err, line);
-        client_fflush();
-    }
+    doreply();
     logfile(priority, "%s", line);
     _EXIT(-priority - 1);
 }
