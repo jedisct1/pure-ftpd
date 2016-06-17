@@ -4,6 +4,7 @@
  - The -J switch didn't work any more in 1.0.42. This has been fixed.
  - The default cipher suite was simplified.
  - Authentication against system accounts is compatible with OpenBSD 6.0.
+ - Fixed: protocol conformance when TLS sessions are refused.
 
 * Version 1.0.42:
  - Compilation fix for OpenBSD and Bitrig when Pure-FTPd is not
