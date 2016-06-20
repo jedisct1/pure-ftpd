@@ -48,12 +48,11 @@ for "SSL certificates" to find authorities that will provide certificates with
 valid "official" signatures.
 
 Once you have a valid and stamped certificate, clients will usually be able
-to connect to your host with no further question.
+to seamlessly connect to your host.
 
-You can also avoid these third-party authorities and put your own stamp. You
-will get a so called "self-signed certificate".
+Both RSA and ECDSA signatures are supported, but not simultaneously.
 
-To create a self-signed certificate, you can use the following commands :
+For testing purposes, a self-signed certificate can be created as follows:
 
 mkdir -p /etc/ssl/private
 
