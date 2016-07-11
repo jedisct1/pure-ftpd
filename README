@@ -84,20 +84,7 @@ Your server is ready. Just type 'ftp localhost' to test it. If you want to
 automatically run the server when the system boots, add the previous command
 to /etc/rc.d/rc.local or /etc/rc.d/boot.local . Don't forget the '&' sign.
 
-Note 1:
-
-To compile under Irix, you have to issue this before typing ./configure:
-
-export CC=cc
-export CFLAGS=-I/usr/freeware/include
-export LDFLAGS=-L/usr/freeware/lib32
-
-To compile under Solaris, use GNU Make, not Solaris make. Then do:
-
-export PATH=/usr/ccs/bin:$PATH
-export MAKE=gmake
-
-Nota 2:
+Note:
 
 To deinstall Pure-FTPd (no, do you really want to do this?), use:
 ./configure
