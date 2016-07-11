@@ -2,6 +2,19 @@
 
      ------------------------ OSX SPECIFIC NOTES ------------------------
 
+The easiest way to install Pure-FTPd is to use Homebrew:
+
+$ brew install pure-ftpd
+
+Available options are:
+
+--with-mysql
+	Build with mysql support
+--with-postgresql
+	Build with postgresql support
+--with-virtualchroot
+	Follow symbolic links even for chrooted accounts
+
 
 To get Pure-FTPd authenticate against system users on OSX, you have to
 use PAM.
