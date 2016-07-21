@@ -65,14 +65,14 @@ static int init_tz(void)
     return 0;
 }
 
-static int traversal(const char * const s)
+static int traverse(const char * const s)
 {
     DIR *d;
     struct dirent *de;
     struct stat st;
     size_t slen;
     Node *nodes_pnt = nodes;
-    size_t nodes_cnt = nodes_size;
+    size_t nodes_sizeleft = nodes_size;
     int fd;
     char *buf = NULL;
     size_t sizeof_buf = (size_t) 0U;
@@ -99,12 +99,12 @@ static int traversal(const char * const s)
         (void) fchmod(fd, (mode_t) (st.st_mode | 0500)); /* if it fails, try anyway */
     }
     close(fd);
-    while (nodes_cnt > (size_t) 0U) {
+    while (nodes_sizeleft > (size_t) 0U) {
         if (nodes_pnt->inode == st.st_ino && nodes_pnt->device == st.st_dev) {
             return -1;
         }
         nodes_pnt++;
-        nodes_cnt -= sizeof *nodes_pnt;
+        nodes_sizeleft -= sizeof *nodes_pnt;
     }
     if (nodes == NULL) {
         if ((nodes = malloc(sizeof *nodes)) == NULL) {
@@ -152,7 +152,7 @@ static int traversal(const char * const s)
         snprintf(buf, sizeof_buf, "%s/%s", s, de->d_name);
         if (stat(buf, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {
-                if (traversal(buf) == 0) {
+                if (traverse(buf) == 0) {
                     total_files++;
                 }
             } else if (S_ISREG(st.st_mode)) {
@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
                 startpath, strerror(errno));
         return -3;
     }
-    if (traversal(isroot != 0 ? "/" : "./") < 0) {
+    if (traverse(isroot != 0 ? "/" : "./") < 0) {
         fprintf(stderr, "Unable to traverse [%s]: [%s]\n",
                 startpath, strerror(errno));
         free(nodes);
