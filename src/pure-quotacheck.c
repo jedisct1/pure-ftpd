@@ -78,7 +78,7 @@ static int traverse(const char * const s)
     char *path = NULL;
     size_t sizeof_path = (size_t) 0U;
 
-    if ((fd = open(s, O_RDONLY | O_DIRECTORY)) == -1) {
+    if ((fd = open(s, O_RDONLY | O_DIRECTORY | O_NONBLOCK)) == -1) {
         if (errno != EACCES) {
             return -1;
         }
@@ -88,7 +88,7 @@ static int traverse(const char * const s)
         }
         (void) fchmod(fd, st.st_mode | 0500);
         close(fd);
-        if ((fd = open(s, O_RDONLY | O_DIRECTORY)) == -1) {
+        if ((fd = open(s, O_RDONLY | O_DIRECTORY | O_NONBLOCK)) == -1) {
             return -1;
         }
     }
@@ -228,7 +228,7 @@ static int writequota(const char * const quota_file)
     char buf[84];
     const char *bufpnt = buf;
 
-    if ((fd = open("/", O_RDONLY | O_DIRECTORY)) == -1) {
+    if ((fd = open("/", O_RDONLY | O_DIRECTORY | O_NONBLOCK)) == -1) {
         return -1;
     }
     if (fstat(fd, &st) != 0 || !S_ISDIR(st.st_mode)) {
