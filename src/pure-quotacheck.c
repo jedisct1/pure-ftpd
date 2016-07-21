@@ -72,10 +72,11 @@ static int traverse(const char * const s)
     struct stat st;
     size_t slen;
     Node *nodes_pnt = nodes;
+    Node *found_node;
     size_t nodes_sizeleft = nodes_size;
     int fd;
-    char *buf = NULL;
-    size_t sizeof_buf = (size_t) 0U;
+    char *path = NULL;
+    size_t sizeof_path = (size_t) 0U;
 
     if ((fd = open(s, O_RDONLY | O_DIRECTORY)) == -1) {
         if (errno != EACCES) {
@@ -119,20 +120,17 @@ static int traverse(const char * const s)
         }
         nodes = new_nodes;
     }
-    {
-        Node * const node =
-            (Node *) (void *) (((unsigned char *) nodes) + nodes_size);
-
-        node->inode = st.st_ino;
-        node->device = st.st_dev;
-    }
+    found_node =
+        (Node *) (void *) (((unsigned char *) nodes) + nodes_size);
+    found_node->inode = st.st_ino;
+    found_node->device = st.st_dev;
     nodes_size += sizeof *nodes_pnt;
     if ((d = opendir(s)) == NULL) {
         return -1;
     }
     slen = strlen(s) + (size_t) 2U;
     while ((de = readdir(d)) != NULL) {
-        size_t wanted_sizeof_buf;
+        size_t wanted_sizeof_path;
 
         if ((de->d_name[0] == '.' && de->d_name[1] == 0) ||
             (de->d_name[0] == '.' && de->d_name[1] == '.' &&
@@ -142,17 +140,17 @@ static int traverse(const char * const s)
         if (strcmp(de->d_name, QUOTA_FILE) == 0) {
             continue;
         }
-        wanted_sizeof_buf = slen + strlen(de->d_name);
-        if (wanted_sizeof_buf > sizeof_buf) {
-            if ((buf = realloc(buf, wanted_sizeof_buf)) == NULL) {
+        wanted_sizeof_path = slen + strlen(de->d_name);
+        if (wanted_sizeof_path > sizeof_path) {
+            if ((path = realloc(path, wanted_sizeof_path)) == NULL) {
                 oom();
             }
-            sizeof_buf = wanted_sizeof_buf;
+            sizeof_path = wanted_sizeof_path;
         }
-        snprintf(buf, sizeof_buf, "%s/%s", s, de->d_name);
-        if (stat(buf, &st) == 0) {
+        snprintf(path, sizeof_path, "%s/%s", s, de->d_name);
+        if (stat(path, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {
-                if (traverse(buf) == 0) {
+                if (traverse(path) == 0) {
                     total_files++;
                 }
             } else if (S_ISREG(st.st_mode)) {
@@ -161,7 +159,7 @@ static int traverse(const char * const s)
             }
         }
     }
-    free(buf);
+    free(path);
     closedir(d);
 
     return 0;
