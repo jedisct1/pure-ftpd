@@ -33,8 +33,8 @@ typedef struct Node_ {
     dev_t device;
 } Node;
 
-Node *nodes;
-size_t nodes_size;
+static Node *nodes;
+static size_t nodes_size;
 
 static void oom(void)
 {
