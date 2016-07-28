@@ -178,8 +178,7 @@ char *crypto_hash_sha1(const char *string, const int hex)
 
     SHA1Init(&ctx);
     if (string != NULL && *string != 0) {
-        SHA1Update(&ctx, (const unsigned char *) string,
-                   (unsigned int) strlen(string));
+        SHA1Update(&ctx, (const unsigned char *) string, strlen(string));
     }
     SHA1Final(digest, &ctx);
 
@@ -200,8 +199,7 @@ char *crypto_hash_md5(const char *string, const int hex)
 
     MD5Init(&ctx);
     if (string != NULL && *string != 0) {
-        MD5Update(&ctx, (const unsigned char *) string,
-                  (unsigned int) strlen(string));
+        MD5Update(&ctx, (const unsigned char *) string, strlen(string));
     }
     MD5Final(digest, &ctx);
 
@@ -235,8 +233,7 @@ char *crypto_hash_ssha1(const char *string, const char *stored)
     decoded_len -= sizeof digest;
     SHA1Init(&ctx);
     if (string != NULL && *string != 0) {
-        SHA1Update(&ctx, (const unsigned char *) string,
-                   (unsigned int) strlen(string));
+        SHA1Update(&ctx, (const unsigned char *) string, strlen(string));
     }
     if (decoded_len > (size_t) 0U) {
         SHA1Update(&ctx, (const unsigned char *) salt, decoded_len);
@@ -281,8 +278,7 @@ char *crypto_hash_smd5(const char *string, const char *stored)
     decoded_len -= sizeof digest;
     MD5Init(&ctx);
     if (string != NULL && *string != 0) {
-        MD5Update(&ctx, (const unsigned char *) string,
-                  (unsigned int) strlen(string));
+        MD5Update(&ctx, (const unsigned char *) string, strlen(string));
     }
     if (decoded_len > (size_t) 0U) {
         MD5Update(&ctx, (const unsigned char *) salt, decoded_len);

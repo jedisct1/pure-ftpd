@@ -62,8 +62,8 @@ static void MD5Transform(crypto_uint4[4], const unsigned char[64]);
 # define Encode memcpy
 # define Decode memcpy
 #else
-static void Encode(unsigned char *, const crypto_uint4 *, unsigned int);
-static void Decode(crypto_uint4 *, const unsigned char *, unsigned int);
+static void Encode(unsigned char *, const crypto_uint4 *, size_t);
+static void Decode(crypto_uint4 *, const unsigned char *, size_t);
 #endif
 
 static unsigned char PADDING[64] = {
@@ -125,12 +125,12 @@ void MD5Init(MD5_CTX * context)
   context.
  */
 void MD5Update(MD5_CTX * context, const unsigned char *input,
-               unsigned int inputLen)
+               size_t inputLen)
 {
-    unsigned int i, index, partLen;
+    size_t i, index, partLen;
 
     /* Compute number of bytes mod 64 */
-    index = (unsigned int) ((context->count[0] >> 3) & 0x3F);
+    index = (size_t) ((context->count[0] >> 3) & 0x3F);
 
     /* Update number of bits */
     if ((context->count[0] += ((crypto_uint4) inputLen << 3))
@@ -167,14 +167,14 @@ void MD5Update(MD5_CTX * context, const unsigned char *input,
 void MD5Final(unsigned char digest[16], MD5_CTX * context)
 {
     unsigned char bits[8];
-    unsigned int index, padLen;
+    size_t index, padLen;
 
     /* Save number of bits */
     Encode(bits, context->count, 8);
 
     /* Pad out to 56 mod 64.
      */
-    index = (unsigned int) ((context->count[0] >> 3) & 0x3f);
+    index = (size_t) ((context->count[0] >> 3) & 0x3f);
     padLen = (index < 56) ? (56 - index) : (120 - index);
     MD5Update(context, PADDING, padLen);
 
@@ -289,9 +289,9 @@ static void MD5Transform(crypto_uint4 state[4],
   a multiple of 4.
  */
 static void Encode(unsigned char *output, const crypto_uint4 * input,
-                   unsigned int len)
+                   size_t len)
 {
-    unsigned int i, j;
+    size_t i, j;
 
     for (i = 0, j = 0; j < len; i++, j += 4) {
         output[j] = (unsigned char) (input[i] & 0xff);
@@ -305,9 +305,9 @@ static void Encode(unsigned char *output, const crypto_uint4 * input,
   a multiple of 4.
  */
 static void Decode(crypto_uint4 * output, const unsigned char *input,
-                   unsigned int len)
+                   size_t len)
 {
-    unsigned int i, j;
+    size_t i, j;
 
     for (i = 0, j = 0; j < len; i++, j += 4)
         output[i] =

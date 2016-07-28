@@ -58,7 +58,7 @@ static void SHA1Transform(crypto_uint4 state[5],
     crypto_uint4 a, b, c, d, e;
     typedef union {
         unsigned char c[64];
-        unsigned int l[16];
+        crypto_uint4  l[16];
     } CHAR64LONG16;
     CHAR64LONG16 *block;
 #ifdef SHA1HANDSOFF
@@ -182,10 +182,10 @@ void SHA1Init(SHA1_CTX * context)
 /* Run your data through this. */
 
 void SHA1Update(SHA1_CTX * context, const unsigned char *data,
-                unsigned int len)
+                size_t len)
 {
-    unsigned int i;
-    unsigned int j;
+    size_t i;
+    size_t j;
 
     j = context->count[0];
     if ((context->count[0] += len << 3) < j)
@@ -208,7 +208,7 @@ void SHA1Update(SHA1_CTX * context, const unsigned char *data,
 
 void SHA1Final(unsigned char digest[20], SHA1_CTX * context)
 {
-    unsigned int i;
+    size_t i;
     unsigned char finalcount[8];
 
     for (i = 0; i < 8; i++) {
