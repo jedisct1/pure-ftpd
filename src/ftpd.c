@@ -5054,7 +5054,7 @@ static void doit(void)
             }
         } else {
             altlog_fd = open(altlog_filename,
-                             O_CREAT | O_WRONLY | O_NOFOLLOW, (mode_t) 0600);
+                             O_CREAT | O_WRONLY, (mode_t) 0600);
         }
         if (altlog_fd == -1) {
             logfile(LOG_ERR, "altlog %s: %s", altlog_filename, strerror(errno));
