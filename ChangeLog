@@ -5,6 +5,7 @@
  - The default cipher suite was simplified.
  - Authentication against system accounts is compatible with OpenBSD 6.0.
  - Fixed: protocol conformance when TLS sessions are refused.
+ - Altlog records can now be sent to `stdout`/`stderr`.
 
 * Version 1.0.42:
  - Compilation fix for OpenBSD and Bitrig when Pure-FTPd is not
