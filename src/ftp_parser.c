@@ -643,7 +643,7 @@ void parser(void)
                     modern_listings = 0;
                     donlist(arg, 1, 1, 1, 1);
                 } else {
-                    addreply_noformat(211, "http://www.pureftpd.org/");
+                    addreply_noformat(211, "https://www.pureftpd.org/");
                 }
 #endif
             } else if (!strcmp(cmd, "list")) {
