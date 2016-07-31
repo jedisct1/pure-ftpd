@@ -334,10 +334,6 @@ int main(int argc, char *argv[])
             {
                 struct passwd *pw;
 
-                if (uid > (uid_t) 0) {
-                    fprintf(stderr, "You already gave an uid\n");
-                    return -1;
-                }
                 if ((pw = getpwnam(optarg)) != NULL) {
                     uid = pw->pw_uid;
                     if (gid == (gid_t) 0) {
