@@ -36,6 +36,9 @@ static int altlog_write(const char *str)
 # ifdef ESPIPE
         && errno != ESPIPE
 # endif
+# ifdef EBADF
+        && errno != EBADF
+# endif
         ) {
         return -1;
     }
