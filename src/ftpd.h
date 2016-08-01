@@ -508,6 +508,9 @@ the server may be insecure if a wrong value is set here.
 Your platform has a very large PATH_MAX, we should not trust it.
 #endif
 
+#ifndef MAX_PASSWORD_LEN
+# define MAX_PASSWORD_LEN 512
+#endif
 #ifndef DEFAULT_MAX_USERS
 # define DEFAULT_MAX_USERS 50
 #endif

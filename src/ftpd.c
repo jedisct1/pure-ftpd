@@ -1735,6 +1735,10 @@ void dopass(char *password)
         addreply_noformat(530, MSG_WHOAREYOU);
         return;
     }
+    if (strlen(password) >= MAX_PASSWORD_LEN) {
+        addreply_noformat(530, MSG_LINE_TOO_LONG);
+        return;
+    }
     authresult = pw_check(account, password, &ctrlconn, &peer);
     pure_memzero(password, strlen(password));
     if (authresult.auth_ok != 1) {
