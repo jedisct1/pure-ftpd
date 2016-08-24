@@ -12,18 +12,18 @@
 # include "crypto.h"
 # include "utils.h"
 
-#ifdef HAVE_LIBSODIUM
-# include <sodium.h>
-#endif
+# ifdef HAVE_LIBSODIUM
+#  include <sodium.h>
+# endif
 
-#ifdef WITH_DMALLOC
+# ifdef WITH_DMALLOC
 #  include <dmalloc.h>
 # endif
 
 void pw_ldap_parse(const char * const file)
 {
     if (generic_parser(file, ldap_config_keywords) != 0) {
-        illegal_config:
+illegal_config:
         die(421, LOG_ERR, MSG_CONF_ERR ": " MSG_ILLEGAL_CONFIG_FILE_LDAP
             ": %s" , file == NULL ? "-" : file);
     }
@@ -239,7 +239,7 @@ static LDAPMessage *pw_ldap_uid_search(LDAP * const ld,
         return NULL;
     }
     if (SNCHECK(snprintf(alloca_filter, filter_size, ldap_filter, uid),
-        filter_size)) {
+                filter_size)) {
         ALLOCA_FREE(alloca_filter);
         return NULL;
     }
@@ -286,13 +286,11 @@ static int pw_ldap_validate_name(const char *name)
         return -1;
     }
     do {
-        if ((*name >= 'a' && *name <= 'z') ||
-            (*name >= 'A' && *name <= 'Z') ||
-            (*name >= '0' && *name <= '9') ||
-            *name == ' ' || *name == '-' || *name == '@' ||
-            *name == '_' || *name == '\'' || *name == '.') {
-            /* God bless the Perl 'unless' keyword */
-        } else {
+        if (!((*name >= 'a' && *name <= 'z') ||
+              (*name >= 'A' && *name <= 'Z') ||
+              (*name >= '0' && *name <= '9') ||
+              *name == ' ' || *name == '-' || *name == '@' ||
+              *name == '_' || *name == '\'' || *name == '.')) {
             return -1;
         }
         name++;
@@ -308,36 +306,36 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     LDAP *ld;
     LDAPMessage *res;
     char *attrs[] = {                  /* OpenLDAP forgot a 'const' ... */
-            LDAP_HOMEDIRECTORY,
-            LDAP_UIDNUMBER, LDAP_FTPUID, LDAP_GIDNUMBER, LDAP_FTPGID,
-            LDAP_USERPASSWORD, LDAP_LOGINSHELL, LDAP_FTPSTATUS,
+        LDAP_HOMEDIRECTORY,
+        LDAP_UIDNUMBER, LDAP_FTPUID, LDAP_GIDNUMBER, LDAP_FTPGID,
+        LDAP_USERPASSWORD, LDAP_LOGINSHELL, LDAP_FTPSTATUS,
 # ifdef QUOTAS
-            LDAP_QUOTAFILES, LDAP_QUOTAMBYTES,
+        LDAP_QUOTAFILES, LDAP_QUOTAMBYTES,
 # endif
 # ifdef RATIOS
-            LDAP_DOWNLOADRATIO, LDAP_UPLOADRATIO,
+        LDAP_DOWNLOADRATIO, LDAP_UPLOADRATIO,
 # endif
-#ifdef THROTTLING
-            LDAP_DOWNLOADBANDWIDTH, LDAP_UPLOADBANDWIDTH,
-#endif
-            NULL
+# ifdef THROTTLING
+        LDAP_DOWNLOADBANDWIDTH, LDAP_UPLOADBANDWIDTH,
+# endif
+        NULL
     };
     const char *pw_uid_s = NULL;
     const char *pw_gid_s = NULL;
     const char *pw_passwd_ldap = NULL;
     const char *pw_enabled = NULL;
-#ifdef QUOTAS
+# ifdef QUOTAS
     const char *quota_files = NULL;
     const char *quota_mbytes = NULL;
-#endif
-#ifdef RATIOS
+# endif
+# ifdef RATIOS
     const char *ratio_ul = NULL;
     const char *ratio_dl = NULL;
-#endif
-#ifdef THROTTLING
+# endif
+# ifdef THROTTLING
     const char *bandwidth_ul = NULL;
     const char *bandwidth_dl = NULL;
-#endif
+# endif
 
     memset(&pwret, 0, sizeof pwret);
     pwret.pw_name = pwret.pw_passwd = pwret.pw_gecos = pwret.pw_dir =
@@ -363,7 +361,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     }
     free((void *) pw_enabled);
     pw_enabled = NULL;
-#ifdef QUOTAS
+# ifdef QUOTAS
     if ((quota_files = pw_ldap_getvalue(ld, res, LDAP_QUOTAFILES)) != NULL) {
         const unsigned long long q = strtoull(quota_files, NULL, 10);
 
@@ -381,8 +379,8 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->quota_size_changed = 1;
         }
     }
-#endif
-#ifdef RATIOS
+# endif
+# ifdef RATIOS
     if ((ratio_dl = pw_ldap_getvalue(ld, res, LDAP_DOWNLOADRATIO)) != NULL) {
         const unsigned int q = strtoul(ratio_dl, NULL, 10);
 
@@ -399,10 +397,10 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->ratio_ul_changed = 1;
         }
     }
-#endif
-#ifdef THROTTLING
+# endif
+# ifdef THROTTLING
     if ((bandwidth_dl = pw_ldap_getvalue(ld, res, LDAP_DOWNLOADBANDWIDTH))
-    != NULL) {
+        != NULL) {
         const unsigned long q = (unsigned long) strtoul(bandwidth_dl, NULL, 10);
 
         if (q > 0UL) {
@@ -419,7 +417,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->throttling_ul_changed = 1;
         }
     }
-#endif
+# endif
 
     if (use_ldap_bind_method == 0) {
         if ((pw_passwd_ldap =
@@ -498,7 +496,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
 
     return &pwret;
 
-    error:
+error:
     if (res != NULL) {
         ldap_msgfree(res);
     }
@@ -508,18 +506,18 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     free((void *) pw_gid_s);
     free((void *) pw_passwd_ldap);
     free((void *) pw_enabled);
-#ifdef QUOTAS
+# ifdef QUOTAS
     free((void *) quota_files);
     free((void *) quota_mbytes);
-#endif
-#ifdef RATIOS
+# endif
+# ifdef RATIOS
     free((void *) ratio_ul);
     free((void *) ratio_dl);
-#endif
-#ifdef THROTTLING
+# endif
+# ifdef THROTTLING
     free((void *) bandwidth_ul);
     free((void *) bandwidth_dl);
-#endif
+# endif
     return NULL;
 }
 
@@ -563,8 +561,8 @@ void pw_ldap_check(AuthResult * const result,
         free(result->backend_data);
         result->backend_data = NULL;
         spwd = pw->pw_passwd;
-#ifdef HAVE_LIBSODIUM
-# ifdef crypto_pwhash_STRPREFIX
+# ifdef HAVE_LIBSODIUM
+#  ifdef crypto_pwhash_STRPREFIX
         if (strncasecmp(spwd, PASSWD_LDAP_ARGON2I_PREFIX,
                         sizeof PASSWD_LDAP_ARGON2I_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_ARGON2I_PREFIX - 1U);
@@ -573,7 +571,7 @@ void pw_ldap_check(AuthResult * const result,
             }
             return;
         } else
-# endif
+#  endif
         if (strncasecmp(spwd, PASSWD_LDAP_SCRYPT_PREFIX,
                         sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U);
@@ -583,7 +581,7 @@ void pw_ldap_check(AuthResult * const result,
             }
             return;
         } else
-#endif
+# endif
         if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
                         sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
