@@ -380,8 +380,8 @@ void parser(void)
                      (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
 #ifdef WITH_RFC2640
             free(narg);
-            return;
 #endif
+            return;
         } else if (!strcmp(cmd, "syst")) {
             antiidle();
             addreply_noformat(215, "UNIX Type: L8");
