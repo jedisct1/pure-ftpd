@@ -75,7 +75,7 @@ static int tls_init_ecdh_curve(void)
 
 static int tls_init_dhparams_default(void)
 {
-# ifdef HAVE_DH_get_2048_256
+# ifdef HAVE_DH_GET_2048_256
     DH *dh;
 
     if ((dh = DH_get_2048_256()) == NULL) {
