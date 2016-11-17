@@ -595,7 +595,7 @@ allows remote users to log in as root if the password is known and \-u
 not used.
 
 .SH "UNUSUAL FEATURES"
-If a user's home directory is \fB/path/to/home/./\fR, FTP sessions under that UID will be chroot()ed. In addition, if a users's home directory is \fB/path/to/home/./directory\fR the session will be chroot()ed to /path/to/home and the FTP session will start in 'directory'.
+If a user's home directory is \fB/path/to/home/./\fR, FTP sessions under that UID will be chroot()ed. In addition, if a users's home directory is \fB/path/to/home/./directory\fR the session will be chroot()ed to /path/to/home and the FTP session will start in 'directory'. Multiple \fB/./\fR result in chained chroot()s.
 .PP
 As noted above, this
 .B pure\-ftpd
