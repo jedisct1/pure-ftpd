@@ -1800,11 +1800,15 @@ void dopass(char *password)
         if (create_home_and_chdir(root_directory)) {
             die(421, LOG_ERR, MSG_NO_HOMEDIR);
         }
-        *++hd = 0;
-        hd++;
-        if (chroot(root_directory) || chdir(hd)) {
-            die(421, LOG_ERR, MSG_NO_HOMEDIR);
-        }
+        do {
+            *++hd = 0;
+            hd++;
+            if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
+                die(421, LOG_ERR, MSG_NO_HOMEDIR);
+            }
+            root_directory = hd;
+            hd = strstr(root_directory, "/./");
+        } while (hd);
         chrooted = 1;
 #ifdef RATIOS
         if (ratio_for_non_anon == 0) {
