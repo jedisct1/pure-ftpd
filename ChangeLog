@@ -1,4 +1,10 @@
 
+* Version 1.0.44:
+ - Pure-FTPd can now be linked against OpenSSL 1.1.x
+ - The QUIT command didn't work properly when the server was compiled
+without support for RFC2640. This has been fixed.
+ - 3DES was removed from the default cipher suite
+
 * Version 1.0.43:
  - Passwords can now be hashed using Argon2.
  - The -J switch didn't work any more in 1.0.42. This has been fixed.
