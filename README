@@ -348,7 +348,7 @@ and passwords) .
 
 --without-standalone: the FTP server can normally run in standalone-mode
 (without any super-server) . If you don't need that feature and if you want
-to save few code bytes, add this option. A super-server like g2s, xinetd
+to save few code bytes, add this option. A super-server such as xinetd
 or tcpserver will be mandatory to run the service. But the standalone mode is
 the recommended mode of operation.
 
