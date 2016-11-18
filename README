@@ -565,21 +565,6 @@ You can add that line to your system local startup scripts
 replace 'tcpserver' with its full path (eg. '/usr/local/bin/tcpserver') .
 
 
-**** Usage with G2S ****
-
-
-Add the following lines to your /etc/jnetd.cf file (or whatever configuration
-file you choose for G2S):
-
-{  
-    SERVICE ftp
-    DESCRIPTION "Pure-FTPd"
-    RUN /usr/local/sbin/pure-ftpd
-}
-
-Restart the 'jnetd' daemon and you're done.
-
-
           ------------------------ OPTIONS ------------------------
     
     
