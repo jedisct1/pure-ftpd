@@ -234,9 +234,9 @@ static int altlog_writexfer_clf(const int upload,
 /* WuFTPd-like log format */
 
 static int altlog_writexfer_xferlog(const int upload,
-                    const char * const filename,
-                    const off_t size,
-                    const double duration)
+                                    const char * const filename,
+                                    const off_t size,
+                                    const double duration)
 {
     char date[sizeof "Mon Apr 13 12:34:56 1975"];
     struct tm *tm;
