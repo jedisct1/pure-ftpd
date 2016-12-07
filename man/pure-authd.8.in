@@ -100,7 +100,7 @@ Fork in background (daemonization).
 \fB\-s\fR <\fI/path/to/socket\fP>
 Set the full path to the local Unix socket.
 .TP
-\fB\-R\fR <\fI/path/to/program\fP>
+\fB\-r\fR <\fI/path/to/program\fP>
 Set the full path to the authentication program.
 .TP
 \fB\-h\fR
