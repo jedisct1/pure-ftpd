@@ -92,14 +92,6 @@ AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
 
-AC_ARG_VAR(PERL,local path to the perl interpreter)
-perl_possible_path="/usr/bin:/usr/local/bin:/bin:/opt/perl/bin:/opt/perl/usr/bin:/opt/perl/usr/local/bin"
-AC_PATH_PROG(PERL,perl,/usr/bin/env perl,$perl_possible_path)
-
-AC_ARG_VAR(PYTHON,local path to the python interpreter)
-python_possible_path="/usr/bin:/usr/local/bin:/bin:/opt/python/bin:/opt/python/usr/bin:/opt/python/usr/local/bin"
-AC_PATH_PROG(PYTHON,python,/usr/bin/env python,$python_possible_path)
-
 if test -d /usr/local/include; then
   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
 fi
@@ -1468,9 +1460,8 @@ AH_VERBATIM([NDEBUG], [/* Never ever ignore assertions */
 #endif])
 
 AC_CONFIG_FILES(Makefile src/Makefile pam/Makefile man/Makefile
-gui/Makefile configuration-file/Makefile contrib/Makefile m4/Makefile
-configuration-file/pure-ftpd.conf configuration-file/pure-config.pl
-configuration-file/pure-config.py puredb/Makefile puredb/src/Makefile
+gui/Makefile contrib/Makefile m4/Makefile pure-ftpd.conf puredb/Makefile
+puredb/src/Makefile
 man/pure-ftpd.8 man/pure-ftpwho.8 man/pure-mrtginfo.8 man/pure-uploadscript.8
 man/pure-statsdecode.8 man/pure-quotacheck.8 man/pure-pw.8 man/pure-pwconvert.8
 man/pure-authd.8)

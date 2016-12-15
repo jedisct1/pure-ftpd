@@ -5,7 +5,6 @@ EXTRA_DIST = \
 	CONTACT \
 	FAQ \
 	Makefile.gui \
-	README.Configuration-File \
 	README.LDAP \
 	README.MySQL \
 	README.PGSQL \
@@ -29,5 +28,4 @@ SUBDIRS = \
 	man \
 	pam \
 	gui \
-	configuration-file \
 	m4
