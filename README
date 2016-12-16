@@ -467,7 +467,7 @@ always contains the PID of the main server process.
 
 If you want to stop the server, you can just kill the processes:
 
-pkill pure-ftpd
+pkill -x pure-ftpd
 
 Of course, don't use -9 unless the server is completely stuck. -9 doesn't
 let processes any chance to clean things up and should never be used except
@@ -521,7 +521,7 @@ ftp        stream        tcp        nowait        root        /usr/local/sbin/pu
 
 4) Restart the inetd daemon:
 
-pkill -HUP inetd
+pkill -x -s HUP inetd
 
 If 'pkill' is missing on your system, try this:
 
@@ -548,7 +548,7 @@ On Redhat systems, you can also put this in a /etc/xinetd.d/pure-ftpd file.
 
 Then, restart the server:
 
-killall -USR2 xinetd
+pkill -x -s USR2 xinetd
 
 
 
@@ -1356,7 +1356,7 @@ ftp.*   /var/log/ftp
 
 Then restart your syslogd daemon:
 
-killall -HUP syslogd
+pkill -x -s HUP syslogd
 
 You can also drop your old "syslogd" and "klogd" programs for Metalog, an
 efficient alternative: http://metalog.sourceforge.net/
