@@ -121,6 +121,9 @@ libpureftpd_a_SOURCES = \
 	quotas.c \
 	safe_rw.h \
 	safe_rw.c \
+	simpleconf.h \
+	simpleconf_ftpd.h \
+	simpleconf.c \
 	syslognames.h \
 	tls.h \
 	tls.c \

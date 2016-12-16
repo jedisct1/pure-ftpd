@@ -26,6 +26,10 @@
 #include "getloadavg.h"
 #include "safe_rw.h"
 #include "utils.h"
+#ifndef MINIMAL
+# include "simpleconf.h"
+# include "simpleconf_ftpd.h"
+#endif
 #ifndef WITHOUT_PRIVSEP
 # include "privsep.h"
 #endif
@@ -5577,6 +5581,17 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
     }
 # endif
+#endif
+
+#ifndef MINIMAL
+    if (argc == 2 && *argv[1] != '-') {
+        if (build_command_line_from_file(argv[1], simpleconf_options,
+                                         (sizeof simpleconf_options) /
+                                         (sizeof simpleconf_options[0]),
+                                         argv[0], &argc, &argv) != 0) {
+            die(421, LOG_ERR, MSG_CONF_ERR);
+        }
+    }
 #endif
 
     while ((fodder =
