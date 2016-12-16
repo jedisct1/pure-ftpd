@@ -239,7 +239,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             } else if (prefix_match(&in_pnt, "<any>")) {
                 expect_char = 1;
                 state = STATE_MATCH_ANY;
-            } else if (prefix_match(&in_pnt, "<any_unquoted>")) {
+            } else if (prefix_match(&in_pnt, "<any*>")) {
                 expect_char = 1;
                 state = STATE_MATCH_ANY_UNQUOTED;
             } else if (prefix_match(&in_pnt, "<bool>")) {
