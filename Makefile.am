@@ -8,6 +8,7 @@ EXTRA_DIST = \
 	README.LDAP \
 	README.MySQL \
 	README.PGSQL \
+	README.Configuration-File \
 	README.Contrib \
 	README.Virtual-Users \
 	README.Authentication-Modules \
