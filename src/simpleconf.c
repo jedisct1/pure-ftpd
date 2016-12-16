@@ -344,6 +344,13 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             state = STATE_RCHAR;
             continue;
         case STATE_MATCH_ANY_UNQUOTED:
+            if (isgraph(c)) {
+                expect_char = 0;
+                line_pnt++;
+            } else {
+                state = STATE_RCHAR;
+            }
+            continue;
         case STATE_MATCH_ANY_WITHOUTQUOTES:
             if (isprint(c)) {
                 expect_char = 0;
