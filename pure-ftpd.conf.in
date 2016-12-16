@@ -1,7 +1,7 @@
 
 ############################################################
 #                                                          #
-#         Configuration file for pure-ftpd wrappers        #
+#             Configuration file for pure-ftpd             #
 #                                                          #
 ############################################################
 
@@ -9,7 +9,7 @@
 # instead of command-line options, please run the
 # following command :
 #
-# @prefix@/sbin/pure-ftpd @prefix@/etc/pure-ftpd.conf
+# @prefix@/sbin/pure-ftpd @sysconfdir@/etc/pure-ftpd.conf
 #
 # Please don't forget to have a look at documentation at
 # http://www.pureftpd.org/documentation.shtml for a complete list of

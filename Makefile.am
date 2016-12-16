@@ -30,3 +30,6 @@ SUBDIRS = \
 	pam \
 	gui \
 	m4
+
+sysconf_DATA = \
+	pure-ftpd.conf
