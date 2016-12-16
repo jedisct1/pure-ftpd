@@ -9,7 +9,7 @@
 # instead of command-line options, please run the
 # following command :
 #
-# @prefix@/sbin/pure-config.pl @prefix@/etc/pure-ftpd.conf
+# @prefix@/sbin/pure-ftpd @prefix@/etc/pure-ftpd.conf
 #
 # Please don't forget to have a look at documentation at
 # http://www.pureftpd.org/documentation.shtml for a complete list of
@@ -451,6 +451,8 @@ CustomerProof              yes
 # By default, both IPv4 and IPv6 are enabled.
 
 # IPV6Only                 yes
+
+
 
 # UTF-8 support for file names (RFC 2640)
 # Define charset of the server filesystem and optionnally the default charset
