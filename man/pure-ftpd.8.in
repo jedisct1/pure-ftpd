@@ -1,6 +1,6 @@
 .\"
 .\" Troll-FTPd is Copyright 1995-2000 Trolltech AS, and Copyright 2001-2002 Arnt Gulbrandsen.
-.\" Pure-FTPd is (C)opyleft 2001-2015 by Frank DENIS <j at pureftpd dot org> and the Pure-FTPd team.
+.\" Pure-FTPd is (C)opyleft 2001-2016 by Frank DENIS <j at pureftpd dot org> and the Pure-FTPd team.
 .\"
 .\" Use, modification and distribution is allowed without limitation, warranty, or liability of any kind.
 .\"
@@ -12,7 +12,7 @@ pure\-ftpd \- simple File Transfer Protocol server
 .B pure\-ftpd [\-0] [\-1] [\-2] [\-4] [\-6] [\-a gid] [\-A] [\-b] [\-B] [\-c clients] [\-C cnx/ip] [\-d [\-d]] [\-D] [\-e] [\-E] [\-f facility] [\-F fortunes file] [\-g pidfile] [\-G] [\-H] [\-i] [\-I] [\-j] [\-J ciphers] [\-k percentage] [\-K] [\-l authentication[:config file]] [\-L max files:max depth] [\-m maxload] [\-M] [\-n maxfiles:maxsize] [\-N] [\-o] [\-O format:log file] [\-p first:last] [\-P ip address or host name] [\-q upload:download ratio] [\-Q upload:download ratio] [\-r] [\-R] [\-s] [\-S [address,][port]] [\-t upload bandwidth:download bandwidth] [\-T upload bandwidth:download bandwidth] [\-u uid] [\-U umask files:umask dirs] [\-v bonjour name] [\-V ip address] [\-w] [\-W] [\-x] [\-X] [\-y max user sessions:max anon sessions] [\-Y tls behavior] [\-z] [\-Z]
 
 .br
-Alternative style :
+Alternative style:
 .br
 \-0 \-\-notruncate
 .br
@@ -298,7 +298,7 @@ Allow users to resume and upload files, but NOT to delete them. Directories
 can be removed, but only if they are empty.
 .TP
 .B \-l authentication:file
-Enable a new authentication method. It can be one of :
+Enable a new authentication method. It can be one of:
 .I -l unix
 For standard (/etc/passwd) authentication.
 .I -l pam
@@ -377,7 +377,7 @@ Enable
 .TP
 .B \-O format:log file
 Record all file transfers into a specific log
-file, in an alternative format. Currently, three formats are supported : CLF,
+file, in an alternative format. Currently, three formats are supported: CLF,
 Stats, W3C and xferlog.
 .br
 If you add
@@ -924,7 +924,7 @@ Troll\-FTPd was written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 199
 Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
 22806380.
 .PP
-Pure\-FTPd is (C)opyleft 2001\-2015 by Frank DENIS <j at pureftpd dot org> and
+Pure\-FTPd is (C)opyleft 2001\-2016 by Frank DENIS <j at pureftpd dot org> and
 the Pure\-FTPd team.
 .PP
 This software is covered by the BSD license.

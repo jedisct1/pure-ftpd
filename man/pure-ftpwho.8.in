@@ -20,7 +20,7 @@ the program is called via a web server (CGI interface) . Output is a
 full HTML page with the initial content\-type header. This option is
 automatically enabled if an environment variable called GATEWAY_INTERFACE is
 found. This is the default if you can the program from a CGI\-enabled web
-server (Apache, Roxen, Caudium, WN, ...) .
+server.
 .TP 
 \fB\-h\fR
 Output help information and exit.

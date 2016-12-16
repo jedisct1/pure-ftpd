@@ -10,7 +10,7 @@ pure\-authd [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-u\fP uid] [\fI\-g\fP gid]
 .LP
 pure\-authd is a daemon that forks an authentication program, waits for an authentication reply, and feed them to an application server.
 .LP
-pure\-authd listens to a local Unix socket. A new connection to that socket should feed pure\-authd the following structure :
+pure\-authd listens to a local Unix socket. A new connection to that socket should feed pure\-authd the following structure:
 .IP
 account:xxx
 
@@ -26,7 +26,7 @@ end
 .LP
 (replace xxx with appropriate values) . localhost, localport and peer are numeric IP addresses and ports. peer is the IP address of the remote client.
 .LP
-These arguments are passed to the authentication program, as environment variables :
+These arguments are passed to the authentication program, as environment variables:
 .IP
 AUTHD_ACCOUNT
 
@@ -40,7 +40,7 @@ AUTHD_REMOTE_IP
 
 AUTHD_ENCRYPTED
 .LP
-The authentication program should take appropriate actions to fetch account info according to these arguments, and reply to the standard output a structure like the following one :
+The authentication program should take appropriate actions to fetch account info according to these arguments, and reply to the standard output a structure like the following one:
 .IP
 auth_ok:1
 
@@ -54,7 +54,7 @@ end
 
 .TP
 \fBauth_ok:\fRxxx
-If xxx is 0, the user was not found (the next authentication method passed to pure\-ftpd will be tried) . If xxx is \-1, the user was found, but there was a fatal authentication error : user is root, password is wrong, account has expired, etc (next authentication methods will not be tried) . If xxx is 1, the user was found and successfully authenticated.
+If xxx is 0, the user was not found (the next authentication method passed to pure\-ftpd will be tried) . If xxx is \-1, the user was found, but there was a fatal authentication error: user is root, password is wrong, account has expired, etc (next authentication methods will not be tried) . If xxx is 1, the user was found and successfully authenticated.
 .TP
 \fBuid:\fRxxx
 The system uid to be assigned to that user. Must be > 0.
@@ -113,7 +113,7 @@ pure\-authd \-s @LOCALSTATEDIR@/run/ftpd.sock \-r /usr/bin/my\-auth\-program &
 .LP
 pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/ftpd.sock &
 .TP
-/usr/bin/my\-auth\-program can be as simple as :
+/usr/bin/my\-auth\-program can be as simple as:
 #! /bin/sh
 
 echo 'auth_ok:1'

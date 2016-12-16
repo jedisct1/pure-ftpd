@@ -71,11 +71,11 @@ The full user name, or the virtual user name (127 chars max) .
 \- Two external programs/scripts can't run at the same time. Uploads are always processed sequentially, in chronological order. This is to avoid denial\-of\-services by issuing a lot of simultaneous STOR commands in order to launch a fork bomb on the server. For this reason, your programs shouldn't take a long time to complete (but they can run themselves in background) .
 .SH "EXAMPLES"
 .LP 
-A sample script could be :
+A sample script could be:
 .LP 
 #! /bin/sh
 .br 
-echo "$1 uploaded" | /usr/bin/mutt \-s "New upload : $1" \\
+echo "$1 uploaded" | /usr/bin/mutt \-s "New upload: $1" \\
 ftpadmin@dom.ai.n
 .LP 
 Never forget to quote (\fB"variable"\fR) all variables in all your shell scripts to avoid security flaws.
