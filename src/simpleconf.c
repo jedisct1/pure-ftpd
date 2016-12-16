@@ -312,7 +312,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
                 }
                 line_pnt++;
                 state = STATE_MATCH_ANY_WITHINQUOTES;
-            } else if (isprint(c)) {
+            } else if (isgraph(c)) {
                 expect_char = 0;
                 line_pnt++;
                 state = STATE_MATCH_ANY_WITHOUTQUOTES;
@@ -338,13 +338,14 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
                                    line_pnt) != 0) {
                     return err_mismatch(err_p, line, line);
                 }
+                match_start = NULL;
                 line_pnt++;
                 in_pnt++;
             }
             state = STATE_RCHAR;
             continue;
         case STATE_MATCH_ANY_UNQUOTED:
-            if (isgraph(c)) {
+            if (isprint(c)) {
                 expect_char = 0;
                 line_pnt++;
             } else {
@@ -352,7 +353,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             }
             continue;
         case STATE_MATCH_ANY_WITHOUTQUOTES:
-            if (isprint(c)) {
+            if (isgraph(c)) {
                 expect_char = 0;
                 line_pnt++;
             } else {
@@ -405,12 +406,13 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
     if (expect_char != 0) {
         return err_mismatch(err_p, line_pnt, line);
     }
-    if (d == ')') {
+    if (*in_pnt == ')') {
         if (match_start == NULL ||
             matches_len >= (sizeof matches) / (sizeof matches[0]) ||
             add_to_matches(matches, &matches_len, match_start, line_pnt) != 0) {
             return ENTRYRESULT_SYNTAX;
         }
+        match_start = NULL;
     }
     if (is_boolean != 0 && is_enabled == 0) {
         return ENTRYRESULT_IGNORE;
