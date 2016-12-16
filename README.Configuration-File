@@ -1,0 +1,31 @@
+Pure-FTPd strives to remain simple to operate, and keeps the number of
+knobs down to a minimum.
+
+Virtually everything can be set using command-line switches, so that a
+configuration file is not required.
+
+For example, the '-H' switch is recommended and avoids DNS lookups.
+
+To enable this feature, just add it right after the executable name:
+
+    /usr/local/sbin/pure-ftpd -H
+
+Long options are also supported. This is equivalent to the previous
+command:
+
+    /usr/local/sbin/pure-ftpd --dontresolve
+
+As an alternative to command-line switches, Pure-FTPd can use a
+configuration file. The set of supported features is the same no
+matter what way of configuring the server is beind used.
+
+A sample configuration file named pure-ftpd.conf should have been installed
+in /etc/, /usr/local/etc/ or another standard location derived from
+the package installation prefix.
+
+Tweak it according to your needs, and start the server using that file:
+
+    /usr/local/sbin/pure-ftpd /etc/pure-ftpd.conf
+
+Note the absence of switches. In order to avoid confusion, either a
+configuration file or a set of command-line switches can be used.
