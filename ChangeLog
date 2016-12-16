@@ -1,9 +1,11 @@
 
 * Version 1.0.44:
+ - The Perl and Python wrappers are gone. The daemon can now use a
+configuration file without requiring external dependencies.
  - Pure-FTPd can now be linked against OpenSSL 1.1.x
  - The QUIT command didn't work properly when the server was compiled
 without support for RFC2640. This has been fixed.
- - 3DES was removed from the default cipher suite
+ - 3DES was removed from the default cipher suite.
 
 * Version 1.0.43:
  - Passwords can now be hashed using Argon2.
