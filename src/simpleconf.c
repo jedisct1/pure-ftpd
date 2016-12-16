@@ -47,7 +47,8 @@ typedef enum EntryResult_ {
     ENTRYRESULT_E2BIG
 } EntryResult;
 
-static const char *skip_spaces(const char *str)
+static const char *
+skip_spaces(const char *str)
 {
     while (*str != 0 && isspace((unsigned char)*str)) {
         str++;
@@ -55,7 +56,8 @@ static const char *skip_spaces(const char *str)
     return str;
 }
 
-static int prefix_match(const char **str, const char *prefix)
+static int
+prefix_match(const char **str, const char *prefix)
 {
     size_t prefix_len = strlen(prefix);
     size_t str_len    = strlen(*str);
@@ -76,8 +78,9 @@ static int prefix_match(const char **str, const char *prefix)
     return 0;
 }
 
-static int add_to_matches(Match *const matches, size_t *matches_len,
-    const char *start, const char *end)
+static int
+add_to_matches(Match *const matches, size_t *matches_len,
+               const char *start, const char *end)
 {
     size_t len;
 
@@ -96,24 +99,25 @@ static int add_to_matches(Match *const matches, size_t *matches_len,
     return 0;
 }
 
-static EntryResult err_mismatch(const char **err_p, const char *line_pnt,
-    const char *line)
+static EntryResult
+err_mismatch(const char **err_p, const char *line_pnt, const char *line)
 {
     *err_p = *line_pnt != 0 ? line_pnt : line;
 
     return ENTRYRESULT_MISMATCH;
 }
 
-static EntryResult err_syntax(const char **err_p, const char *line_pnt,
-    const char *line)
+static EntryResult
+err_syntax(const char **err_p, const char *line_pnt, const char *line)
 {
     *err_p = *line_pnt != 0 ? line_pnt : line;
 
     return ENTRYRESULT_SYNTAX;
 }
 
-static EntryResult try_entry(const SimpleConfEntry *const entry,
-    const char *line, char **arg_p, const char **err_p)
+static EntryResult
+try_entry(const SimpleConfEntry *const entry, const char *line,
+          char **arg_p, const char **err_p)
 {
     const char *in_pnt;
     const char *line_pnt;
@@ -196,7 +200,7 @@ static EntryResult try_entry(const SimpleConfEntry *const entry,
                     return err_syntax(err_p, line_pnt, line);
                 }
                 wildcard_start = line_pnt;
-                state          = STATE_RCHAR;
+                state = STATE_RCHAR;
             }
             continue;
         case STATE_RCHAR:
@@ -208,8 +212,8 @@ static EntryResult try_entry(const SimpleConfEntry *const entry,
             } else if (d == ')') {
                 if (match_start == NULL ||
                     matches_len >= (sizeof matches) / (sizeof matches[0]) ||
-                    add_to_matches(
-                        matches, &matches_len, match_start, line_pnt) != 0) {
+                    add_to_matches(matches, &matches_len, match_start,
+                                   line_pnt) != 0) {
                     return err_mismatch(err_p, line, line);
                 }
                 in_pnt++;
@@ -309,16 +313,12 @@ static EntryResult try_entry(const SimpleConfEntry *const entry,
             }
             continue;
         case STATE_MATCH_BOOLEAN: {
-            if (prefix_match(&line_pnt, "yes") ||
-                prefix_match(&line_pnt, "on") ||
-                prefix_match(&line_pnt, "true") ||
-                prefix_match(&line_pnt, "1")) {
+            if (prefix_match(&line_pnt, "yes")  || prefix_match(&line_pnt, "on") ||
+                prefix_match(&line_pnt, "true") || prefix_match(&line_pnt, "1")) {
                 is_enabled = 1;
                 state      = STATE_RCHAR;
-            } else if (prefix_match(&line_pnt, "no") ||
-                       prefix_match(&line_pnt, "off") ||
-                       prefix_match(&line_pnt, "false") ||
-                       prefix_match(&line_pnt, "0")) {
+            } else if (prefix_match(&line_pnt, "no")    || prefix_match(&line_pnt, "off") ||
+                       prefix_match(&line_pnt, "false") || prefix_match(&line_pnt, "0")) {
                 is_enabled = 0;
                 state      = STATE_RCHAR;
             } else {
@@ -422,7 +422,8 @@ static EntryResult try_entry(const SimpleConfEntry *const entry,
     return ENTRYRESULT_OK;
 }
 
-static char *chomp(char *str)
+static char *
+chomp(char *str)
 {
     size_t i = strlen(str);
     int    c;
@@ -443,24 +444,35 @@ static char *chomp(char *str)
     return str;
 }
 
-static void argv_free(int argc, char *argv[], FILE *fp)
+void
+sc_argv_free(int argc, char *argv[])
+{
+    int i;
+
+    for (i = 0; i < argc; i++) {
+        free(argv[i]);
+    }
+    free(argv);
+}
+
+static void
+argv_fp_free(int argc, char *argv[], FILE *fp)
 {
     int errno_save = errno;
     int i;
 
     if (fp != NULL) {
-        fclose(fp);
+        (void) fclose(fp);
     }
-    for (i = 0; i < argc; i++) {
-        free(argv[i]);
-    }
-    free(argv);
+    sc_argv_free(argc, argv);
     errno = errno_save;
 }
 
-int build_command_line_from_file(const char *file_name,
-    const SimpleConfEntry entries[], size_t entries_count, char *app_name,
-    int *argc_p, char ***argv_p)
+int
+sc_build_command_line_from_file(const char *file_name,
+                                const SimpleConfEntry entries[],
+                                size_t entries_count, char *app_name,
+                                int *argc_p, char ***argv_p)
 {
     FILE *       fp;
     char *       arg;
@@ -482,7 +494,7 @@ int build_command_line_from_file(const char *file_name,
     }
     if ((argv = malloc(sizeof arg)) == NULL ||
         (app_name = strdup(app_name)) == NULL) {
-        argv_free(argc, argv, fp);
+        argv_fp_free(argc, argv, fp);
         return -1;
     }
     argv[argc++] = app_name;
@@ -498,13 +510,13 @@ int build_command_line_from_file(const char *file_name,
             case ENTRYRESULT_PROPNOTFOUND:
                 break;
             case ENTRYRESULT_E2BIG:
-                argv_free(argc, argv, fp);
+                argv_fp_free(argc, argv, fp);
                 return -1;
             case ENTRYRESULT_INVALID_ENTRY:
                 fprintf(stderr, "Bogus rule: [%s]\n", entries[i].in);
                 abort();
             case ENTRYRESULT_INTERNAL:
-                argv_free(argc, argv, fp);
+                argv_fp_free(argc, argv, fp);
                 return -1;
             case ENTRYRESULT_MISMATCH:
                 err = err_tmp;
@@ -519,7 +531,7 @@ int build_command_line_from_file(const char *file_name,
                     fprintf(stderr, "%s:%u:1: syntax error line %u: [%s].\n",
                         file_name, line_count, line_count, line);
                 }
-                argv_free(argc, argv, fp);
+                argv_fp_free(argc, argv, fp);
                 return -1;
             }
             case ENTRYRESULT_OK:
@@ -533,7 +545,7 @@ int build_command_line_from_file(const char *file_name,
                 }
                 if ((argv_tmp = realloc(argv, (sizeof arg) *
                                         ((size_t) argc + 1))) == NULL) {
-                    argv_free(argc, argv, fp);
+                    argv_fp_free(argc, argv, fp);
                     return -1;
                 }
                 argv         = argv_tmp;
@@ -555,11 +567,11 @@ int build_command_line_from_file(const char *file_name,
                 fprintf(stderr, "%s:%u:1: property not found line %u: [%s].\n",
                     file_name, line_count, line_count, line);
             }
-            argv_free(argc, argv, fp);
+            argv_fp_free(argc, argv, fp);
             return -1;
         }
     }
-    fclose(fp);
+    (void) fclose(fp);
     *argc_p = argc;
     *argv_p = argv;
 
