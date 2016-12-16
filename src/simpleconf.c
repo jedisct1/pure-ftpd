@@ -22,6 +22,10 @@ typedef enum State_ {
     STATE_MATCH_XDIGITS,
     STATE_MATCH_NOSPACE,
     STATE_MATCH_ANY,
+    STATE_MATCH_ANY_WITHINQUOTES,
+    STATE_MATCH_ANY_AFTERQUOTES,
+    STATE_MATCH_ANY_WITHOUTQUOTES,
+    STATE_MATCH_ANY_UNQUOTED,
     STATE_MATCH_SPACES,
     STATE_MATCH_BOOLEAN,
 
@@ -235,6 +239,9 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             } else if (prefix_match(&in_pnt, "<any>")) {
                 expect_char = 1;
                 state = STATE_MATCH_ANY;
+            } else if (prefix_match(&in_pnt, "<any_unquoted>")) {
+                expect_char = 1;
+                state = STATE_MATCH_ANY_UNQUOTED;
             } else if (prefix_match(&in_pnt, "<bool>")) {
                 if (is_enabled) {
                     return ENTRYRESULT_INVALID_ENTRY;
@@ -297,6 +304,47 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             }
             continue;
         case STATE_MATCH_ANY:
+            if (c == '"') {
+                if (match_start == line_pnt) {
+                    match_start++;
+                } else if (match_start != NULL) {
+                    return ENTRYRESULT_INVALID_ENTRY;
+                }
+                line_pnt++;
+                state = STATE_MATCH_ANY_WITHINQUOTES;
+            } else if (isprint(c)) {
+                expect_char = 0;
+                line_pnt++;
+                state = STATE_MATCH_ANY_WITHOUTQUOTES;
+            } else {
+                state = STATE_RCHAR;
+            }
+            continue;
+        case STATE_MATCH_ANY_WITHINQUOTES:
+            if (c == '"') {
+                state = STATE_MATCH_ANY_AFTERQUOTES;
+            } else if (isprint(c)) {
+                expect_char = 0;
+                line_pnt++;
+            } else {
+                return err_syntax(err_p, line_pnt, line);
+            }
+            continue;
+        case STATE_MATCH_ANY_AFTERQUOTES:
+            if (d == ')') {
+                if (match_start == NULL ||
+                    matches_len >= (sizeof matches) / (sizeof matches[0]) ||
+                    add_to_matches(matches, &matches_len, match_start,
+                                   line_pnt) != 0) {
+                    return err_mismatch(err_p, line, line);
+                }
+                line_pnt++;
+                in_pnt++;
+            }
+            state = STATE_RCHAR;
+            continue;
+        case STATE_MATCH_ANY_UNQUOTED:
+        case STATE_MATCH_ANY_WITHOUTQUOTES:
             if (isprint(c)) {
                 expect_char = 0;
                 line_pnt++;
@@ -338,6 +386,9 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
     case STATE_MATCH_XDIGITS:
     case STATE_MATCH_NOSPACE:
     case STATE_MATCH_ANY:
+    case STATE_MATCH_ANY_AFTERQUOTES:
+    case STATE_MATCH_ANY_WITHOUTQUOTES:
+    case STATE_MATCH_ANY_UNQUOTED:
     case STATE_MATCH_SPACES:
     case STATE_MATCH_BOOLEAN:
         break;
