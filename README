@@ -521,9 +521,9 @@ ftp        stream        tcp        nowait        root        /usr/local/sbin/pu
 
 4) Restart the inetd daemon:
 
-killall -HUP inetd
+pkill -HUP inetd
 
-If 'killall' is missing on your system, try this:
+If 'pkill' is missing on your system, try this:
 
 kill -HUP $(cat /var/run/inetd.pid)
 
