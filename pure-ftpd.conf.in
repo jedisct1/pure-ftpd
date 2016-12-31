@@ -5,179 +5,178 @@
 #                                                          #
 ############################################################
 
-# If you want to run Pure-FTPd with this configuration   
+# If you want to run Pure-FTPd with this configuration
 # instead of command-line options, please run the
 # following command :
 #
 # @prefix@/sbin/pure-ftpd @sysconfdir@/etc/pure-ftpd.conf
 #
-# Please don't forget to have a look at documentation at
-# http://www.pureftpd.org/documentation.shtml for a complete list of
-# options.
+# Online documentation:
+# https://www.pureftpd.org/project/pure-ftpd/doc
 
-# Cage in every user in his home directory
 
-ChrootEveryone              yes
+# Restrict users to their home directory
+
+ChrootEveryone               yes
 
 
 
 # If the previous option is set to "no", members of the following group
-# won't be caged. Others will be. If you don't want chroot()ing anyone,
+# won't be restricted. Others will be. If you don't want chroot()ing anyone,
 # just comment out ChrootEveryone and TrustedGID.
 
-# TrustedGID                    100
+# TrustedGID                   100
 
 
 
 # Turn on compatibility hacks for broken clients
 
-BrokenClientsCompatibility  no
+BrokenClientsCompatibility   no
 
 
 
 # Maximum number of simultaneous users
 
-MaxClientsNumber            50
+MaxClientsNumber             50
 
 
 
-# Fork in background
+# Run as a background process
 
-Daemonize                   yes
+Daemonize                    yes
 
 
 
-# Maximum number of sim clients with the same IP address
+# Maximum number of simultaneous clients with the same IP address
 
-MaxClientsPerIP             8
+MaxClientsPerIP              8
 
 
 
 # If you want to log all client commands, set this to "yes".
-# This directive can be duplicated to also log server responses.
+# This directive can be specified twice to also log server responses.
 
-VerboseLog                  no
+VerboseLog                   no
 
 
 
 # List dot-files even when the client doesn't send "-a".
 
-DisplayDotFiles             yes
+DisplayDotFiles              yes
 
 
 
-# Don't allow authenticated users - have a public anonymous FTP only.
+# Disallow authenticated users - Act only as a public FTP server.
 
-AnonymousOnly               no
+AnonymousOnly                no
 
 
 
-# Disallow anonymous connections. Only allow authenticated users.
+# Disallow anonymous connections. Only accept authenticated users.
 
-NoAnonymous                 no
+NoAnonymous                  no
 
 
 
 # Syslog facility (auth, authpriv, daemon, ftp, security, user, local*)
 # The default facility is "ftp". "none" disables logging.
 
-SyslogFacility              ftp
+SyslogFacility               ftp
 
 
 
 # Display fortune cookies
 
-# FortunesFile              /usr/share/fortune/zippy
+# FortunesFile                 /usr/share/fortune/zippy
 
 
 
-# Don't resolve host names in log files. Logs are less verbose, but 
-# it uses less bandwidth. Set this to "yes" on very busy servers or
-# if you don't have a working DNS.
+# Don't resolve host names in log files. Recommended unless you trust
+# reverse host names, and don't care about DNS resolution being possibly slow.
 
-DontResolve                 yes
+DontResolve                  yes
 
 
 
 # Maximum idle time in minutes (default = 15 minutes)
 
-MaxIdleTime                 15
+MaxIdleTime                  15
 
 
 
 # LDAP configuration file (see README.LDAP)
 
-# LDAPConfigFile                /etc/pureftpd-ldap.conf
+# LDAPConfigFile               /etc/pureftpd-ldap.conf
 
 
 
 # MySQL configuration file (see README.MySQL)
 
-# MySQLConfigFile               /etc/pureftpd-mysql.conf
+# MySQLConfigFile              /etc/pureftpd-mysql.conf
 
 
-# Postgres configuration file (see README.PGSQL)
+# PostgreSQL configuration file (see README.PGSQL)
 
-# PGSQLConfigFile               /etc/pureftpd-pgsql.conf
+# PGSQLConfigFile              /etc/pureftpd-pgsql.conf
 
 
 # PureDB user database (see README.Virtual-Users)
 
-# PureDB                        /etc/pureftpd.pdb
+# PureDB                       /etc/pureftpd.pdb
 
 
 # Path to pure-authd socket (see README.Authentication-Modules)
 
-# ExtAuth                       /var/run/ftpd.sock
+# ExtAuth                      /var/run/ftpd.sock
 
 
 
 # If you want to enable PAM authentication, uncomment the following line
 
-# PAMAuthentication             yes
+# PAMAuthentication            yes
 
 
 
 # If you want simple Unix (/etc/passwd) authentication, uncomment this
 
-# UnixAuthentication            yes
+# UnixAuthentication           yes
 
 
 
 # Please note that LDAPConfigFile, MySQLConfigFile, PAMAuthentication and
-# UnixAuthentication can be used only once, but they can be combined
+# UnixAuthentication can be used specified once, but can be combined
 # together. For instance, if you use MySQLConfigFile, then UnixAuthentication,
-# the SQL server will be asked. If the SQL authentication fails because the
-# user wasn't found, another try # will be done with /etc/passwd and
-# /etc/shadow. If the SQL authentication fails because the password was wrong,
-# the authentication chain stops here. Authentication methods are chained in
-# the order they are given. 
+# the SQL server will be used first. If the SQL authentication fails because the
+# user wasn't found, a new attempt will be done using system authentication.
+# If the SQL authentication fails because the password didn't match, the
+# authentication chain stops here. Authentication methods are chained in
+# the order they are given.
 
 
 
 # 'ls' recursion limits. The first argument is the maximum number of
-# files to be displayed. The second one is the max subdirectories depth
+# files to be displayed. The second one is the max subdirectories depth.
 
-LimitRecursion              10000 8
-
-
-
-# Are anonymous users allowed to create new directories ?
-
-AnonymousCanCreateDirs      no
+LimitRecursion               10000 8
 
 
 
-# If the system is more loaded than the following value,
-# anonymous users aren't allowed to download.
+# Are anonymous users allowed to create new directories?
 
-MaxLoad                     4
-
+AnonymousCanCreateDirs       no
 
 
-# Port range for passive connections replies. - for firewalling.
 
-# PassivePortRange          30000 50000
+# If the system load is greater than the given value, anonymous users
+# aren't allowed to download.
+
+MaxLoad                      4
+
+
+
+# Port range for passive connections - keep it as broad as possible.
+
+# PassivePortRange             30000 50000
 
 
 
@@ -185,170 +184,169 @@ MaxLoad                     4
 # Symbolic host names are also accepted for gateways with dynamic IP
 # addresses.
 
-# ForcePassiveIP                192.168.0.1
+# ForcePassiveIP               192.168.0.1
 
 
 
 # Upload/download ratio for anonymous users.
 
-# AnonymousRatio                1 10
+# AnonymousRatio               1 10
 
 
 
 # Upload/download ratio for all users.
-# This directive superscedes the previous one.
+# This directive supersedes the previous one.
 
-# UserRatio                 1 10
+# UserRatio                    1 10
 
 
 
-# Disallow downloading of files owned by "ftp", ie.
+# Disallow downloads of files owned by the "ftp" system user;
 # files that were uploaded but not validated by a local admin.
 
-AntiWarez                   yes
+AntiWarez                    yes
 
 
 
-# IP address/port to listen to (default=all IP and port 21).
+# IP address/port to listen to (default=all IP addresses, port 21).
 
-# Bind                      127.0.0.1,21
+# Bind                         127.0.0.1,21
 
 
 
 # Maximum bandwidth for anonymous users in KB/s
 
-# AnonymousBandwidth            8
+# AnonymousBandwidth           8
 
 
 
 # Maximum bandwidth for *all* users (including anonymous) in KB/s
-# Use AnonymousBandwidth *or* UserBandwidth, both makes no sense.
+# Use AnonymousBandwidth *or* UserBandwidth, not both.
 
-# UserBandwidth             8
+# UserBandwidth                8
 
 
 
 # File creation mask. <umask for files>:<umask for dirs> .
 # 177:077 if you feel paranoid.
 
-Umask                       133:022
+Umask                        133:022
 
 
 
 # Minimum UID for an authenticated user to log in.
 
-MinUID                      100
+MinUID                       100
 
 
 
 # Allow FXP transfers for authenticated users.
 
-AllowUserFXP                no
+AllowUserFXP                 no
 
 
 
 # Allow anonymous FXP for anonymous and non-anonymous users.
 
-AllowAnonymousFXP           no
+AllowAnonymousFXP            no
 
 
 
-# Users can't delete/write files beginning with a dot ('.')
-# even if they own them. If TrustedGID is enabled, this group
-# will have access to dot-files, though.
+# Users can't delete/write files starting with a dot ('.')
+# even if they own them. But if TrustedGID is enabled, that group
+# will exceptionally have access to dot-files.
 
-ProhibitDotFilesWrite       no
-
-
-
-# Prohibit *reading* of files beginning with a dot (.history, .ssh...)
-
-ProhibitDotFilesRead        no
+ProhibitDotFilesWrite        no
 
 
 
-# Never overwrite files. When a file whose name already exist is uploaded,
-# it get automatically renamed to file.1, file.2, file.3, ...
+# Prohibit *reading* of files starting with a dot (.history, .ssh...)
 
-AutoRename                  no
-
+ProhibitDotFilesRead         no
 
 
-# Disallow anonymous users to upload new files (no = upload is allowed)
 
-AnonymousCantUpload         no
+# Don't overwrite files. When a file whose name already exist is uploaded,
+# it gets automatically renamed to file.1, file.2, file.3, ...
+
+AutoRename                   no
+
+
+
+# Prevent anonymous users from uploading new files (no = upload is allowed)
+
+AnonymousCantUpload          no
 
 
 
 # Only connections to this specific IP address are allowed to be
 # non-anonymous. You can use this directive to open several public IPs for
 # anonymous FTP, and keep a private firewalled IP for remote administration.
-# You can also only allow a non-routable local IP (like 10.x.x.x) to
-# authenticate, and keep a public anon-only FTP server on another IP.
+# You can also only allow a non-routable local IP (such as 10.x.x.x) for
+# authenticated users, and run a public anon-only FTP server on another IP.
 
-#TrustedIP                  10.1.1.1
+# TrustedIP                    10.1.1.1
 
 
 
-# If you want to add the PID to every logged line, uncomment the following
-# line.
+# To add the PID to log entries, uncomment the following line.
 
-#LogPID                     yes
+# LogPID                       yes
 
 
 
 # Create an additional log file with transfers logged in a Apache-like format :
-# fw.c9x.org - jedi [13/Dec/1975:19:36:39] "GET /ftp/linux.tar.bz2" 200 21809338
-# This log file can then be processed by www traffic analyzers.
+# fw.c9x.org - jedi [13/Apr/2017:19:36:39] "GET /ftp/linux.tar.bz2" 200 21809338
+# This log file can then be processed by common HTTP traffic analyzers.
 
-# AltLog                     clf:/var/log/pureftpd.log
+# AltLog                       clf:/var/log/pureftpd.log
 
 
 
 # Create an additional log file with transfers logged in a format optimized
 # for statistic reports.
 
-# AltLog                     stats:/var/log/pureftpd.log
+# AltLog                       stats:/var/log/pureftpd.log
 
 
 
 # Create an additional log file with transfers logged in the standard W3C
-# format (compatible with most commercial log analyzers)
+# format (compatible with many HTTP log analyzers)
 
-# AltLog                     w3c:/var/log/pureftpd.log
-
-
-
-# Disallow the CHMOD command. Users can't change perms of their files.
-
-#NoChmod                     yes
+# AltLog                       w3c:/var/log/pureftpd.log
 
 
 
-# Allow users to resume and upload files, but *NOT* to delete them.
+# Disallow the CHMOD command. Users cannot change perms of their own files.
 
-#KeepAllFiles                yes
+# NoChmod                      yes
+
+
+
+# Allow users to resume/upload files, but *NOT* to delete them.
+
+# KeepAllFiles                 yes
 
 
 
 # Automatically create home directories if they are missing
 
-#CreateHomeDir               yes
+# CreateHomeDir                yes
 
 
 
-# Enable virtual quotas. The first number is the max number of files.
-# The second number is the max size of megabytes.
-# So 1000:10 limits every user to 1000 files and 10 Mb.
+# Enable virtual quotas. The first value is the max number of files.
+# The second value is the maximum size, in megabytes.
+# So 1000:10 limits every user to 1000 files and 10 MB.
 
-#Quota                       1000:10
+# Quota                        1000:10
 
 
 
 # If your pure-ftpd has been compiled with standalone support, you can change
 # the location of the pid file. The default is /var/run/pure-ftpd.pid
 
-#PIDFile                     /var/run/pure-ftpd.pid
+# PIDFile                      /var/run/pure-ftpd.pid
 
 
 
@@ -358,106 +356,100 @@ AnonymousCantUpload         no
 # spawn a script to handle the upload.
 # Don't enable this option if you don't actually use pure-uploadscript.
 
-#CallUploadScript yes
+# CallUploadScript             yes
 
 
 
-# This option is useful with servers where anonymous upload is 
-# allowed. As /var/ftp is in /var, it save some space and protect 
-# the log files. When the partition is more that X percent full,
+# This option is useful on servers where anonymous upload is
+# allowed. When the partition is more that percententage full,
 # new uploads are disallowed.
 
-MaxDiskUsage               99
+MaxDiskUsage                   99
 
 
 
-# Set to 'yes' if you don't want your users to rename files.
+# Set to 'yes' to prevent users from renaming files.
 
-#NoRename                  yes
-
-
-
-# Be 'customer proof' : workaround against common customer mistakes like
-# 'chmod 0 public_html', that are valid, but that could cause ignorant
-# customers to lock their files, and then keep your technical support busy
-# with silly issues. If you're sure all your users have some basic Unix
-# knowledge, this feature is useless. If you're a hosting service, enable it.
-
-CustomerProof              yes
+# NoRename                     yes
 
 
 
-# Per-user concurrency limits. It will only work if the FTP server has
-# been compiled with --with-peruserlimits (and this is the case on
-# most binary distributions) .
-# The format is : <max sessions per user>:<max anonymous sessions>
-# For instance, 3:20 means that the same authenticated user can have 3 active
-# sessions max. And there are 20 anonymous sessions max.
+# Be 'customer proof': forbids common customer mistakes such as
+# 'chmod 0 public_html', that are valid, but can cause customers to
+# unintentionally shoot themselves in the foot.
 
-# PerUserLimits            3:20
+CustomerProof                yes
 
 
 
-# When a file is uploaded and there is already a previous version of the file
+# Per-user concurrency limits. Will only work if the FTP server has
+# been compiled with --with-peruserlimits.
+# Format is: <max sessions per user>:<max anonymous sessions>
+# For example, 3:20 means that an authenticated user can have up to 3 active
+# sessions, and that up to 20 anonymous sessions are allowed.
+
+# PerUserLimits                3:20
+
+
+
+# When a file is uploaded and there was already a previous version of the file
 # with the same name, the old file will neither get removed nor truncated.
-# Upload will take place in a temporary file and once the upload is complete,
-# the switch to the new version will be atomic. For instance, when a large PHP
-# script is being uploaded, the web server will still serve the old version and
-# immediatly switch to the new one as soon as the full file will have been
+# The file will be stored under a temporary name and once the upload is
+# complete, it will be atomically renamed. For example, when a large PHP
+# script is being uploaded, the web server will keep serving the old version and
+# later switch to the new one as soon as the full file will have been
 # transfered. This option is incompatible with virtual quotas.
 
-# NoTruncate               yes
+# NoTruncate                   yes
 
 
 
-# This option can accept three values :
-# 0 : disable SSL/TLS encryption layer (default).
-# 1 : accept both traditional and encrypted sessions.
-# 2 : refuse connections that don't use SSL/TLS security mechanisms,
-#     including anonymous sessions.
-# Do _not_ uncomment this blindly. Be sure that :
-# 1) Your server has been compiled with SSL/TLS support (--with-tls),
+# This option accepts three values:
+# 0: disable SSL/TLS encryption layer (default).
+# 1: accept both cleartext and encrypted sessions.
+# 2: refuse connections that don't use the TLS security mechanism,
+#    including anonymous sessions.
+# Do _not_ uncomment this blindly. Double check that:
+# 1) The server has been compiled with TLS support (--with-tls),
 # 2) A valid certificate is in place,
 # 3) Only compatible clients will log in.
 
-# TLS                      1
+# TLS                          1
 
 
-# OpenSSL ciphers suite for TLS sessions.
+# Cipher suite for TLS sessions.
 # Prefix with -C: in order to require valid client certificates.
-# If -C: is used, make sure that clients' public keys are installed
-# on the server.
-# SSL is disabled by default. TLS 1.0, 1.1 and 1.2 are available by
-# default.
+# If -C: is used, make sure that clients' public keys are present on
+# the server.
 
-# TLSCipherSuite           HIGH
+# TLSCipherSuite               HIGH
 
 
 
 # Certificate file, for TLS
 
-# CertFile                 /etc/ssl/private/pure-ftpd.pem
+# CertFile                     /etc/ssl/private/pure-ftpd.pem
 
 
 
 # Listen only to IPv4 addresses in standalone mode (ie. disable IPv6)
 # By default, both IPv4 and IPv6 are enabled.
 
-# IPV4Only                 yes
+# IPV4Only                     yes
 
 
 
-# Listen only to IPv6 addresses in standalone mode (ie. disable IPv4)
+# Listen only to IPv6 addresses in standalone mode (i.e. disable IPv4)
 # By default, both IPv4 and IPv6 are enabled.
 
-# IPV6Only                 yes
+# IPV6Only                     yes
 
 
 
 # UTF-8 support for file names (RFC 2640)
-# Define charset of the server filesystem and optionnally the default charset
-# for remote clients if they don't use UTF-8.
+# Set the charset of the server filesystem and optionally the default charset
+# for remote clients that don't use UTF-8.
 # Works only if pure-ftpd has been compiled with --with-rfc2640
 
-# FileSystemCharset	big5
-# ClientCharset		big5
+# FileSystemCharset                big5
+# ClientCharset                    big5
