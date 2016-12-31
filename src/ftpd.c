@@ -5424,7 +5424,11 @@ static void standalone_server(void)
         }
 # ifdef TCP_FASTOPEN
         {
-            int tfo = maxusers > 0U ? 3U + maxusers / 8U : DEFAULT_BACKLOG;
+#  ifdef __APPLE__
+            int tfo = 1;
+#  else
+            int tfo = 5;
+#  endif
             setsockopt(listenfd, IPPROTO_TCP, TCP_FASTOPEN,
                        (void *) &tfo, sizeof tfo);
         }
