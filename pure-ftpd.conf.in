@@ -418,6 +418,8 @@ CustomerProof                yes
 
 
 # Cipher suite for TLS sessions.
+# The default suite is secure and setting this property is usually
+# only required to *lower* the security to cope with legacy clients.
 # Prefix with -C: in order to require valid client certificates.
 # If -C: is used, make sure that clients' public keys are present on
 # the server.
