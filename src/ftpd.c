@@ -1758,7 +1758,8 @@ void dopass(char *password)
         return;
     }
     if (authresult.uid < useruid) {
-        logfile(LOG_WARNING, MSG_ACCOUNT_DISABLED, account);
+        logfile(LOG_WARNING, MSG_ACCOUNT_DISABLED " (uid < %lu)",
+                account, (unsigned long) useruid);
         randomsleep(tapping);
         if (tapping >= MAX_PASSWD_TRIES) {
             addreply_noformat(530, MSG_AUTH_FAILED);
