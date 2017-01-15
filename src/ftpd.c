@@ -5590,7 +5590,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 
 #ifndef MINIMAL
     if (argc == 2 && *argv[1] != '-' &&
-        sc_build_command_line_from_file(argv[1], simpleconf_options,
+        sc_build_command_line_from_file(argv[1], NULL, simpleconf_options,
                                         (sizeof simpleconf_options) /
                                         (sizeof simpleconf_options[0]),
                                         argv[0], &argc, &argv) != 0) {

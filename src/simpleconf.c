@@ -8,6 +8,7 @@
 #include "simpleconf.h"
 
 #define MAX_ARG_LENGTH 65536
+#define MAX_RECURSION  16
 
 typedef enum State_ {
     STATE_UNDEFINED,
@@ -48,7 +49,8 @@ typedef enum EntryResult_ {
     ENTRYRESULT_SYNTAX,
     ENTRYRESULT_INVALID_ENTRY,
     ENTRYRESULT_INTERNAL,
-    ENTRYRESULT_E2BIG
+    ENTRYRESULT_E2BIG,
+    ENTRYRESULT_SPECIAL
 } EntryResult;
 
 static const char *
@@ -138,6 +140,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
     int         expect_char;
     int         is_boolean;
     int         is_enabled;
+    int         is_special;
     int         c = 0;
     int         d = 0;
 
@@ -152,8 +155,9 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
     prop_name   = in_pnt;
     matches_len = 0;
     expect_char = 0;
-    is_enabled  = 0;
     is_boolean  = 0;
+    is_enabled  = 0;
+    is_special  = 0;
     state       = STATE_PROPNAME;
     while (*in_pnt != 0 || *line_pnt != 0) {
         c = *(const unsigned char *)line_pnt;
@@ -163,8 +167,11 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             if (isspace(d)) {
                 in_pnt++;
                 state = STATE_AFTERPROPNAME;
-            } else if (d == '?') {
+            } else if (d == '?' && is_boolean == 0) {
                 is_boolean = 1;
+                in_pnt++;
+            } else if (d == '!' && is_special == 0) {
+                is_special = 1;
                 in_pnt++;
             } else if (c != 0 && d != 0 && tolower(c) == tolower(d)) {
                 in_pnt++;
@@ -479,6 +486,9 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
     arg[arg_len] = 0;
     *arg_p       = arg;
 
+    if (is_special) {
+        return ENTRYRESULT_SPECIAL;
+    }
     return ENTRYRESULT_OK;
 }
 
@@ -515,49 +525,32 @@ sc_argv_free(int argc, char *argv[])
     free(argv);
 }
 
-static void
-argv_fp_free(int argc, char *argv[], FILE *fp)
+static int
+append_to_command_line_from_file(const char *file_name,
+                                 const SimpleConfConfig *config,
+                                 const SimpleConfEntry entries[],
+                                 size_t entries_count,
+                                 int *argc_p, char ***argv_p,
+                                 unsigned int depth)
 {
-    int errno_save = errno;
-    int i;
+    char          line[MAX_ARG_LENGTH];
+    FILE         *fp = NULL;
+    char         *arg;
+    char        **argv_tmp;
+    const char   *err = NULL;
+    const char   *err_tmp;
+    size_t        i;
+    unsigned int  line_count = 0;
+    int           try_next   = 1;
 
-    if (fp != NULL) {
-        (void) fclose(fp);
+    if (depth >= MAX_RECURSION) {
+        fprintf(stderr, "[%s]: too many levels of recursion\n", file_name);
+        return -1;
     }
-    sc_argv_free(argc, argv);
-    errno = errno_save;
-}
-
-int
-sc_build_command_line_from_file(const char *file_name,
-                                const SimpleConfEntry entries[],
-                                size_t entries_count, char *app_name,
-                                int *argc_p, char ***argv_p)
-{
-    FILE *       fp;
-    char *       arg;
-    char **      argv = NULL;
-    char **      argv_tmp;
-    const char * err = NULL;
-    const char * err_tmp;
-    char         line[MAX_ARG_LENGTH];
-    unsigned int line_count = 0;
-    int          argc       = 0;
-    int          try_next   = 1;
-    size_t       i;
-
-    *argc_p = 0;
-    *argv_p = NULL;
     if ((fp = fopen(file_name, "r")) == NULL) {
         fprintf(stderr, "Unable to open [%s]: %s\n", file_name, strerror(errno));
         return -1;
     }
-    if ((argv = malloc(sizeof arg)) == NULL ||
-        (app_name = strdup(app_name)) == NULL) {
-        argv_fp_free(argc, argv, fp);
-        return -1;
-    }
-    argv[argc++] = app_name;
     while (fgets(line, (int)(sizeof line), fp) != NULL) {
         chomp(line);
         line_count++;
@@ -570,13 +563,13 @@ sc_build_command_line_from_file(const char *file_name,
             case ENTRYRESULT_PROPNOTFOUND:
                 break;
             case ENTRYRESULT_E2BIG:
-                argv_fp_free(argc, argv, fp);
+                fclose(fp);
                 return -1;
             case ENTRYRESULT_INVALID_ENTRY:
                 fprintf(stderr, "Bogus rule: [%s]\n", entries[i].in);
                 abort();
             case ENTRYRESULT_INTERNAL:
-                argv_fp_free(argc, argv, fp);
+                fclose(fp);
                 return -1;
             case ENTRYRESULT_MISMATCH:
                 err = err_tmp;
@@ -591,7 +584,7 @@ sc_build_command_line_from_file(const char *file_name,
                     fprintf(stderr, "%s:%u:1: syntax error line %u: [%s].\n",
                         file_name, line_count, line_count, line);
                 }
-                argv_fp_free(argc, argv, fp);
+                fclose(fp);
                 return -1;
             }
             case ENTRYRESULT_OK:
@@ -600,17 +593,49 @@ sc_build_command_line_from_file(const char *file_name,
                     free(arg);
                     break;
                 }
-                if (argc >= INT_MAX / (int)(sizeof arg)) {
+                if (*argc_p >= INT_MAX / (int)(sizeof *arg)) {
                     abort();
                 }
-                if ((argv_tmp = realloc(argv, (sizeof arg) *
-                                        ((size_t) argc + 1))) == NULL) {
-                    argv_fp_free(argc, argv, fp);
+                if ((argv_tmp = realloc(*argv_p, (sizeof arg) *
+                                        ((size_t) *argc_p + 1))) == NULL) {
+                    fclose(fp);
                     return -1;
                 }
-                argv         = argv_tmp;
-                argv[argc++] = arg;
+                *argv_p = argv_tmp;
+                (*argv_p)[(*argc_p)++] = arg;
                 break;
+            case ENTRYRESULT_SPECIAL: {
+                char                           *output = NULL;
+                SimpleConfSpecialHandlerResult  special_result;
+
+                try_next = 0;
+                if (config == NULL || config->special_handler == NULL) {
+                    fprintf(stderr, "Undefined handler for special keywords\n");
+                    abort();
+                }
+                special_result = config->special_handler((void **) &output, arg,
+                                                         config->user_data);
+                if (special_result == SC_SPECIAL_HANDLER_RESULT_NEXT) {
+                    free(arg);
+                    break;
+                } else if (special_result == SC_SPECIAL_HANDLER_RESULT_ERROR) {
+                    free(arg);
+                    fclose(fp);
+                    return -1;
+                } else if (special_result == SC_SPECIAL_HANDLER_RESULT_INCLUDE) {
+                    const int ret = append_to_command_line_from_file
+                        ((const char *) output, config, entries, entries_count,
+                         argc_p, argv_p, depth + 1U);
+                    free(output);
+                    free(arg);
+                    if (ret != 0) {
+                        fclose(fp);
+                        return -1;
+                    }
+                    break;
+                }
+                abort();
+            }
             default:
                 abort();
             }
@@ -627,11 +652,39 @@ sc_build_command_line_from_file(const char *file_name,
                 fprintf(stderr, "%s:%u:1: property not found line %u: [%s].\n",
                     file_name, line_count, line_count, line);
             }
-            argv_fp_free(argc, argv, fp);
+            fclose(fp);
             return -1;
         }
     }
     (void) fclose(fp);
+
+    return 0;
+}
+
+int
+sc_build_command_line_from_file(const char *file_name,
+                                const SimpleConfConfig *config,
+                                const SimpleConfEntry entries[],
+                                size_t entries_count, char *app_name,
+                                int *argc_p, char ***argv_p)
+{
+    char **argv = NULL;
+    int    argc = 0;
+
+    *argc_p = 0;
+    *argv_p = NULL;
+    if ((argv = malloc(sizeof *argv)) == NULL ||
+        (app_name = strdup(app_name)) == NULL) {
+        sc_argv_free(argc, argv);
+        return -1;
+    }
+    argv[argc++] = app_name;
+    if (append_to_command_line_from_file(file_name, config,
+                                         entries, entries_count,
+                                         &argc, &argv, 0U) != 0) {
+        sc_argv_free(argc, argv);
+        return -1;
+    }
     *argc_p = argc;
     *argv_p = argv;
 
