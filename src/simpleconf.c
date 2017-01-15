@@ -7,8 +7,12 @@
 
 #include "simpleconf.h"
 
-#define MAX_ARG_LENGTH 65536
-#define MAX_RECURSION  16
+#ifndef SC_MAX_ARG_LENGTH
+# define SC_MAX_ARG_LENGTH 65536
+#endif
+#ifndef SC_MAX_RECURSION
+# define SC_MAX_RECURSION  16
+#endif
 
 typedef enum State_ {
     STATE_UNDEFINED,
@@ -430,12 +434,12 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
         wildcard_len = (size_t) (line_pnt - wildcard_start);
     }
     out_pnt = entry->out;
-    if ((arg = malloc(MAX_ARG_LENGTH + 1)) == NULL) {
+    if ((arg = malloc(SC_MAX_ARG_LENGTH + 1)) == NULL) {
         return ENTRYRESULT_INTERNAL;
     }
     arg_len = 0;
     state   = STATE_TEMPLATE_RCHAR;
-    while (arg_len < MAX_ARG_LENGTH && *out_pnt != 0) {
+    while (arg_len < SC_MAX_ARG_LENGTH && *out_pnt != 0) {
         d = *(const unsigned char *)out_pnt;
         switch (state) {
         case STATE_TEMPLATE_RCHAR:
@@ -452,7 +456,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             if (d == '*') {
                 size_t i = 0;
 
-                while (arg_len < MAX_ARG_LENGTH && i < wildcard_len) {
+                while (arg_len < SC_MAX_ARG_LENGTH && i < wildcard_len) {
                     arg[arg_len++] = wildcard_start[i++];
                 }
                 out_pnt++;
@@ -465,7 +469,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
                     return ENTRYRESULT_INVALID_ENTRY;
                 }
                 while (
-                    arg_len < MAX_ARG_LENGTH && i < matches[match_id].str_len) {
+                    arg_len < SC_MAX_ARG_LENGTH && i < matches[match_id].str_len) {
                     arg[arg_len++] = matches[match_id].str[i++];
                 }
                 out_pnt++;
@@ -478,7 +482,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             abort();
         }
     }
-    if (arg_len >= MAX_ARG_LENGTH) {
+    if (arg_len >= SC_MAX_ARG_LENGTH) {
         free(arg);
         errno = E2BIG;
         return ENTRYRESULT_E2BIG;
@@ -533,7 +537,7 @@ append_to_command_line_from_file(const char *file_name,
                                  int *argc_p, char ***argv_p,
                                  unsigned int depth)
 {
-    char          line[MAX_ARG_LENGTH];
+    char          line[SC_MAX_ARG_LENGTH];
     FILE         *fp = NULL;
     char         *arg;
     char        **argv_tmp;
@@ -543,7 +547,7 @@ append_to_command_line_from_file(const char *file_name,
     unsigned int  line_count = 0;
     int           try_next   = 1;
 
-    if (depth >= MAX_RECURSION) {
+    if (depth >= SC_MAX_RECURSION) {
         fprintf(stderr, "[%s]: too many levels of recursion\n", file_name);
         return -1;
     }

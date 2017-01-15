@@ -16,7 +16,7 @@ typedef enum SimpleConfSpecialHandlerResult_ {
 } SimpleConfSpecialHandlerResult;
 
 typedef SimpleConfSpecialHandlerResult (*SimpleConfSpecialHandler)
-    (void **output, const char *arg, void *user_data);
+    (void **output_p, const char *arg, void *user_data);
 
 typedef struct SimpleConfConfig_ {
     void                     *user_data;
