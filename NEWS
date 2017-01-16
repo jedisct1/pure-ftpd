@@ -1,4 +1,9 @@
 
+* Version 1.0.45:
+ - TLS v1.0 sessions are now refused by default.
+ - Version 1.0.44 didn't properly parse the TLSCipherSuite directive.
+This has been fixed.
+
 * Version 1.0.44:
  - The Perl and Python wrappers are gone. The daemon can now use a
 configuration file without requiring external dependencies.
