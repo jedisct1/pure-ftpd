@@ -70,6 +70,7 @@ passwords. This is the preferred algorithm, but requires the presence
 of libsodium.
  - DES-hashed passwords are not supported any more.
  - LDAP uid and gid values can over overridden in the LDAP configuration file.
+ - New LDAPUseTLS directive for LDAP.
  - RC4 was killed.
 
 * Version 1.0.36:

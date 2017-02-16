@@ -66,6 +66,7 @@ client certificates mandatory. This is no longer a compile-time option.
 passwords. This is the preferred algorithm, but requires the presence
 of libsodium.
  - LDAP uid and gid values can over overridden in the LDAP configuration file.
+ - Support for LDAP over TLS (LDAPUseTLS in the configuratoin file) was added.
 
 * Version 1.0.36:
  - Support for external authentification handlers has been fixed.
