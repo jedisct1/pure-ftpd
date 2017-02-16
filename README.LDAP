@@ -115,6 +115,7 @@ needed with OpenLDAP servers. It is the default.
 - LDAPUseTLS can be True or False. True means that the server should use TLS
 to connect to the LDAP server over ldap protocol. This property has no effect
 when ldaps protocol is used, as the connection is inherently secured with TLS.
+This was introduced in pure-ftpd 1.0.37.
 
 - LDAPAuthMethod can be BIND (experimental, but default if there is no
 LDAPBindDN) or PASSWORD (default if a LDAPBindDN is set). The former tries
