@@ -101,7 +101,7 @@ close LOG;
 #PARSING  ARRAY IF NOT EMPTY
 if ($#loglist != -1)
 {
-	#GENERATE FILE EXTENSTION AS yearmonthmdayhourmin
+	#GENERATE FILE EXTENSION AS yearmonthmdayhourmin
 	@dlist = gmtime(time);
 	$ext = sprintf("%02d%02d%02d%02d%02d", $dlist[5], $dlist[4]+1, $dlist[3], $dlist[2]+2, $dlist[1]);
 	undef @dlist;

@@ -42,7 +42,7 @@ It's not very human-readable, but it's designed for easy parsing by shell script
 \fB\-v\fR
 Output an ASCII table (just like the default mode), with more info.
 The verbose output includes the local IP, the local port, the total size of
-transfered files and the current number of transfered bytes.
+transferred files and the current number of transferred bytes.
 .TP 
 \fB\-w\fR
 Output a complete HTML page (web mode).

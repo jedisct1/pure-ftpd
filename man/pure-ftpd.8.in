@@ -196,7 +196,7 @@ to use
 as primary overload protection. The default value is 50.
 .TP
 .B \-C max connection per ip
-Limit the number of simultanous connections
+Limit the number of simultaneous connections
 coming from the same IP address. This is yet another very effective way to
 prevent stupid denial of services and bandwidth starvation by a single user.
 It works only when the server is launched in standalone mode (if you use a
@@ -472,7 +472,7 @@ or
 .B \-T upload bandwidth:download bandwidth
 Enable process priority lowering and bandwidth throttling for *ALL*
 users.
-Pure\-FTPd should have been explicitely compiled with throttling support
+Pure\-FTPd should have been explicitly compiled with throttling support
 to have these flags work.
 It is possible to have different bandwidth limits for uploads and for
 downloads. '\-t' and '\-T' can indeed be followed by two numbers delimited by
@@ -565,7 +565,7 @@ Add safe guards against common customer mistakes (like chmod 0 on their own file
 .SH "AUTHENTICATION"
 Some of the complexities of older servers are left out.
 .PP
-This version of pure\-ftpd can use PAM for authentication. If you wan't it to
+This version of pure\-ftpd can use PAM for authentication. If you want it to
 consult any files like /etc/shells or /etc/ftpd/ftpusers consult pam
 docs. LDAP directories and SQL databases are also supported.
 .PP

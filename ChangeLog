@@ -200,7 +200,7 @@ old LIST and NLIST commands). Reported by Mime Cuvalo.
  - Properly handle custom paths in man pages. Thanks to Scott Haneda and
 Mathieu Parisot.
  - Have $localstatedir default to /var as it used to be unless
---localstatedir=... is explicitely passed to ./configure
+--localstatedir=... is explicitly passed to ./configure
  - Use @VERSION@ in man pages.
  - --without-pam disables PAM on OSX and iPhone.
  - Allow cross-compilation.
@@ -379,7 +379,7 @@ the right pid.
 can disable it.
     Correctly format %c and %% in fakesprintf().
     The connection socket is now created with the Nagle algorithm disabled.
-It was the trick to dramatically improve performance when transfering a lot
+It was the trick to dramatically improve performance when transferring a lot
 of small files.
     Updated getopt_long() and realpath() substitutes.
     Allow logging to named pipes (thanks to Steve Marple).
@@ -393,7 +393,7 @@ when a host is not found.
     The BSD getopt() update has been partly reverted.
 
 * Version 1.0.19:
-    Until OpenBSD has UBC, we need to explicitely call msync() to
+    Until OpenBSD has UBC, we need to explicitly call msync() to
 synchronize data written by mmap() and read by read().
     Real disk space is no more shown unless SHOW_REAL_DISK_SPACE is defined.
     Fygul's email address has changed.
@@ -415,7 +415,7 @@ because of a missing 'echo end' statement. Thanks to Peter Ahlert
     Max CPU time was bumped to 60 min.
     Disable hash_password() function call on MySQL 4.1.x and later.
     We now use two listening sockets (listenfd / listenfd6), one for IPv4, one
-for IPv6. The standalone_server() function has been reworked and splitted.
+for IPv6. The standalone_server() function has been reworked and split.
     New urlencode() function to escape characters in W3C and CLF altlog files.
 Based upon a suggestion and a patch by Volodin D.
     The xferlog format was also implemented by the way.
@@ -442,7 +442,7 @@ safe_fd_isset() and ignores descriptor -1 and it has been placed on the same
 places.
 
 * Version 1.0.17:
-    Some fixes were made to the traditionnal Chinese translation by Flaw Zero
+    Some fixes were made to the traditional Chinese translation by Flaw Zero
 <flawzero at eyou.com>.
     Autoconf was upgraded to 2.58.
     TLS_CERTIFICATE_PATH has been renamed TLS_CERTIFICATE_FILE.
@@ -539,7 +539,7 @@ readable. It fixes pure-uploadscript on some platforms like MacOS X.
 place of -y.
     MacOS X Panther has a lousy getnameinfo() implementation that doesn't fill
 the buffer when no DNS entry is found for a host and a numerical result wasn't
-explicitely asked. As a result, Pure-FTPd didn't even start on Panther (saying
+explicitly asked. As a result, Pure-FTPd didn't even start on Panther (saying
 "bad IP address") . We now check for EAI_NONAME if available and we retry with
 NI_NUMERICHOST if this is what getnameinfo() returns. Thanks to Yann Bizeul
 for his valuable help on this issue.
@@ -561,12 +561,12 @@ linker bugs (grrr...) .
 is a reserved keyword that needs quotes. Thanks to Henrik Edlund
 <henrik at edlund.org> .
     The maximal length of an account has been bumped a bit (42 chars),
-and that size is now consistent accross functions through the
+and that size is now consistent across functions through the
 MAX_USER_LENGTH macro. Thanks to Darth Vader (freddyke) for suggesting
 this.
     The comment about the location of the config file in the RedHat
 init script was synced with the new location.
-    Tokens in the configuration file are now case independant.
+    Tokens in the configuration file are now case independent.
     Automatic creation of home directories was fixed. Thanks to 
 Anthony DeRobertis for the fix.
     A typo in quota handling was fixed.
@@ -624,7 +624,7 @@ choke when the descriptor is -1. It fixes bus errors on FreeBSD.
 Passive IP addresses are now resolved in doit() for every new
 connection, by popular request. It means that "-P ftp.example.com" now
 works, even for dynamic addresses.
-    Split the funtion that creates an active data socket into two
+    Split the function that creates an active data socket into two
 parts : doport2() and doport3(). doport3() actually creates it,
 doport2() does other gadgets like checking for FXP, etc.
     Carefully check whether we have OpenBSD/MicroBSD-like MD5/SHA1
@@ -749,7 +749,7 @@ with the extauth module :)
 sysconf() . PAGE_SIZE and MAP_SIZE have become page_size and map_size.
 Thanks to brad at openbsd.org .
     Dutch translation updated - Johan Huisman <sietze.jan.huisman at 12move.nl>
-    Typo in log_extauth.h (bandwith -> bandwidth) . Fixes throttling with
+    Typo in log_extauth.h (bandwidth -> bandwidth) . Fixes throttling with
 extauth. Reported by iTooo <itooo at itooo.com> .
     Italian translation updates (Alex Dupre) .
     Workaround against Solaris streams bugs - Kenneth Stailey.
@@ -780,7 +780,7 @@ recursivity (makes Solaris happy) and faster processing.
     Use addreply_noformat() whenever possible (speedup).
     New switch : -Z (--customerproof) . Right now, it adds | 0600 or | 0700
 to chmod commands to avoid users locking their own files. Additionnaly, we
-now try a traditionnal chmod() call if fchmod() fails. There's a race here,
+now try a traditional chmod() call if fchmod() fails. There's a race here,
 but no security trouble to fear. Reported by Mark Reidel <mr at domainfactory.de>
     Spec file fixes, contributed by Jose Pedro Oliveira <jpo at di.uminho.pt>
     PureDB binary search could fail with -1 as a slot number - fixed.
@@ -894,7 +894,7 @@ Stailey <kstailey at yahoo.com> .
     Add a fake chroot wrapper for stat[v]fs[64]() and rm/mkdir.
     Check directory, not file for stat[v]fs[64]() - Option -k should really
 work now.
-    Dont count .ftpquota in pure-quotacheck. Reported by Jan Pavlik.
+    Don't count .ftpquota in pure-quotacheck. Reported by Jan Pavlik.
 
 * Version 1.0.6 :
     New fakechroot.{c,h} files. They contain wrappers for most I/O functions
@@ -1055,7 +1055,7 @@ any OS tweaking, it's simpler code, etc.
     -H is now a synonym for -n in pure-ftpwho.
     Use safe_write() when possible instead of plain write().
     Much efficient buffering code in ls.c .
-    New -m switch in pure-pw. New environement variables for the default path.
+    New -m switch in pure-pw. New environment variables for the default path.
     Refuse atomic replacement of files when quotas are enabled.
     Accept pure-pw mkdb without any further argument.
     New pid_file glob.
@@ -1230,7 +1230,7 @@ zones, zerofill hour/min/sec to 2 digits.
     Corrected the german translation for grammatical/spelling errors,
 translated missing messages. -Contributed by Bernhard Weisshuhn.
     Danish translation. -Contributed by Isak Lyberth.
-    Log login attemps with disabled accounts. Admin can still check what's
+    Log login attempts with disabled accounts. Admin can still check what's
 wrong even --with-paranoidmsg . The new message is MSG_DISABLED_ACCOUNT.
     Improved pure-config.pl.in : extra parameters can be added in command
 line.
@@ -1261,7 +1261,7 @@ Thanks to Vincent the Herisson
     Have RNTO work when the target file name already exists - Reported by
 Bernhard Weisshuhn.
     Allow transfers through sendfile() longer than <idletime> , needed for
-very large files transfered over slow links (odd idea, but why not) .
+very large files transferred over slow links (odd idea, but why not) .
     Changed the trustedgid behavior when the /./ trick is used : members of
 the trusted group *are* chrooted, but they have no ratio and dot-files are
 allowed.
@@ -1360,7 +1360,7 @@ to accept non-anonymous connections.
     Open the syslog as soon as possible (before accepting client
 connections) . It solves the nasty long-standing syslog-output-in-client-fd
 bug.
-    Dont localtime(NULL), it crashes under FreeBSD.
+    Don't localtime(NULL), it crashes under FreeBSD.
 
 * Version 0.98.3 :
     Close listenfd, but close(2) only if it's a tty (maybe it's an
@@ -1424,7 +1424,7 @@ xfer_date to the FTPWhoEntry structure.
     New output targets : shell (-s) and verbose ASCII (-v) .
     Paranoia : add more entropy to the zrand() function.
     Changed u_mask default to 133, uploaded files are now 777.
-    bandwidth_throttling was splitted into bandwidth_throttling_ul and
+    bandwidth_throttling was split into bandwidth_throttling_ul and
 bandwidth_throttling_dl.
     Syslog is now opened after forking. It fixes the nasty syslog-to-
 clientconn bug due to dup2() and/or syslog mutex internals.
@@ -1527,7 +1527,7 @@ can work without root privileges.
     Added --with-language.
     Fixed largefile+throttling compilation.
     Changed 'quota' to 'ratio' everywhere. Quotas will be something else.
-    Create /var/run/pure-ftpd.pid . Remove it when a signal is catched.
+    Create /var/run/pure-ftpd.pid . Remove it when a signal is caught.
     Added romanian translation from Claudiu Costin <claudiuc at kde.org>.
     Added german translation from Mathias Gumz <gumz at cs.uni-magdeburg.de>.
     Added french translation from Ping <ping at root42.net>.
@@ -1576,7 +1576,7 @@ stdin/stdout/stderr.
     Accept non-ascii (accents) file names (check if <32U in checknamesanity).
     Added dynamic.c for IP tracking. Yes, the code could be optimized for
 speed with two hashed tables (ip->number pid->link to the previous table).
-But it's simple and fast enough if you don't have 500000000 simultanous
+But it's simple and fast enough if you don't have 500000000 simultaneous
 users (and if you do, you have a high end machine, don't you?) .
     Added '-E' flag. anon_only = 0 (normal mode) -1 (no anon) or +1 (anon
 only) .
@@ -1672,7 +1672,7 @@ where we started if we reached a limit.
     Avoid loops in directory listings.
 
 * Version 0.96pre1 :
-    Added '-P' flag to explicitely set an IP address in reply to a PASV
+    Added '-P' flag to explicitly set an IP address in reply to a PASV
 command.
     Added '-A' flag to chroot() everyone. If '-A' is combined with '-a', the
 last option takes precedence.
@@ -1741,7 +1741,7 @@ reflect the change.
     Added a generic basic parser (parser.*), currently only used for LDAP.
     Disallow command-line options whose support isn't compiled-in.
     Documented Xinetd configuration and the Netfilter troubles.
-    Added a check for the 'guage' typo instead of 'gauge' on some old Dialog
+    Added a check for the 'gauge' typo instead of 'gauge' on some old Dialog
 versions.
 
 * Version 0.95-pre4 :
