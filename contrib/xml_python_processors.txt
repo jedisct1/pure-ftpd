@@ -12,7 +12,7 @@ Here's a python module that parses the XML pure-ftpwho data and returns
 a list of dicts, with each dict representing a connected client's
 attributes:
 
-    #! /usr/bin/python2
+    #! /usr/bin/env python2
 
     import os
     from xml.sax import handler, make_parser
@@ -58,8 +58,7 @@ client list into HTML output. The output resembles what you get with
 order, and sort the rows on multiple fields. You also can see bandwidth
 totals per account.
 
-    #! /usr/bin/python2
-    # vim: sw=4
+    #! /usr/bin/env python2
 
     import getopt
     import pure_ftpwho

@@ -78,17 +78,6 @@ foreach $sumentry (@sumlist)
 	$total_download += $sbytes_dl;
 }
 
-#DEBUG# CHECKING ARRAY CONTENT
-#for $i ( 1 .. $#users )
-#{
-#        $dactual_upload = $users[$i][$CONST_TUPLOAD];
-#        $dactual_download = $users[$i][$CONST_TDOWNLOAD];
-#
-#        #PRINT ON STDOUT
-#        printf "%s\t|\t%d\t\t|\t%d\t\t|\t%s\n", ($users[$i][$CONST_USER],$dactual_upload,$dactual_download,$users[$i][$CONST_LCONNECTION]);
-#}
-#END DEBUG#
-
 #LOAD LOG FILE INTO ARRAY
 open(LOG,$CONST_LOGFILE);
 my @loglist = <LOG>;
@@ -109,11 +98,7 @@ if ($#loglist != -1)
 	{
 		#LET'S GRAB THE LOG ENTRY
 		($ip, $tiret, $login, $date, $request, $status, $bytes) =  $logentry =~ m/^(\S+) (\S+) (\S+) \[([^\]\[]+)\] \"([^"]*)\" (\S+) (\S+)/; 
-		
-		#DEBUG STRING
-		#print "ip = $ip| tiret = $tiret| login = $login| date = $date| request = $request| status = $status| bytes = $bytes\n\n";
-		#print "login = $login| request = $request| bytes = $bytes\n";
-	
+			
 		#ADD OR MODIFY USERS
 		#IS THE USER IN THE SUMMARY FILE
 		my $gotuser = 0;
