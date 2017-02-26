@@ -1460,7 +1460,7 @@ AH_VERBATIM([NDEBUG], [/* Never ever ignore assertions */
 #endif])
 
 AC_CONFIG_FILES(Makefile src/Makefile pam/Makefile man/Makefile
-gui/Makefile contrib/Makefile m4/Makefile pure-ftpd.conf puredb/Makefile
+gui/Makefile m4/Makefile pure-ftpd.conf puredb/Makefile
 puredb/src/Makefile
 man/pure-ftpd.8 man/pure-ftpwho.8 man/pure-mrtginfo.8 man/pure-uploadscript.8
 man/pure-statsdecode.8 man/pure-quotacheck.8 man/pure-pw.8 man/pure-pwconvert.8
