@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl -w
 
 # - authentication module for pure-ftpd using vpasswd vpopmail password files.
 # - Saturday, 12 May 2002 - released

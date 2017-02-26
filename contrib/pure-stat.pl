@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl -w
 #--------------------------------------------------------------
 # PROJECT : pure-ftpd statistics
 # FILE : pure-stat.pl
@@ -14,10 +14,6 @@
 # parse it and generate stats
 # to avoid loading a huge log file, a summary file ($CONST_SUMFILE),
 # is generated
-#--------------------------------------------------------------
-# TO DO
-# - clean ugly code
-#--------------------------------------------------------------
 
 #CONSTANT DELCARATION
 my $CONST_USER=0;
