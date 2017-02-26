@@ -9,7 +9,6 @@ EXTRA_DIST = \
 	README.MySQL \
 	README.PGSQL \
 	README.Configuration-File \
-	README.Contrib \
 	README.Virtual-Users \
 	README.Authentication-Modules \
 	README.Windows \
@@ -25,7 +24,6 @@ EXTRA_DIST = \
 SUBDIRS = \
 	puredb \
 	src \
-	contrib \
 	man \
 	pam \
 	gui \
