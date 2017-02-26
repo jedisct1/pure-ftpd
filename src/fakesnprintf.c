@@ -14,8 +14,8 @@
  * - floating point frac restrictions ("%.2f") .
  * - combinations of everything ("%-8.5llo") .
  *
- * Nothing more. Return value is <size> if an overflow occured, or the
- * copied size if no overflow occured (mostly compatible with C99
+ * Nothing more. Return value is <size> if an overflow occurred, or the
+ * copied size if no overflow occurred (mostly compatible with C99
  * snprintf() behavior, except that it doesn't return any value larger
  * than <size>).
  *

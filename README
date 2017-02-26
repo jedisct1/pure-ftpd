@@ -206,7 +206,7 @@ that prefix. But you must also add an /etc directory (readable and writeable
 by the user pure-ftpd will run as) . You can change the anonymous FTP root
 directory through an environment variable named FTP_ANON_DIR.
 
---with-pam: use pluggable authentification modules. Don't use this option
+--with-pam: use pluggable authentication modules. Don't use this option
 if your login/passwd pairs are always refused (but the real fix would be to
 fix your PAM configuration). You need to create a /etc/pam.d/pure-ftpd file
 to properly use the PAM authentication. The 'pam' directory contains an
@@ -284,7 +284,7 @@ by default.
 over the iconv library and it requires a little more CPU time. See the -8
 and -9 switches.
 
---with-implicittls: build a FTPS server (TLS is implicitely enabled).
+--with-implicittls: build a FTPS server (TLS is implicitly enabled).
 The protocol is incompatible with FTP and listens to another port by default
 (port 990, ftps). Never enable this option unless you know what you're doing.
 
@@ -443,7 +443,7 @@ or
 
 /usr/local/sbin/pure-ftpd -S ftp.example.com,21 -c 50 &
 
-And only 50 simultanous connections will be allowed. To discover what
+And only 50 simultaneous connections will be allowed. To discover what
 options are available please jump to the 'OPTIONS' chapter below. If the
 server runs perfectly for you in standalone mode, you don't need to read the
 following chapter about super-servers. But read the options. '-m' and '-C'
@@ -618,8 +618,8 @@ file with the same name, the old file will neither get removed nor truncated.
 Upload will take place in a temporary file and once the upload is complete,
 the switch to the new version will be atomic. For instance, when a large PHP
 script is being uploaded, the web server will still serve the old version and
-immediatly switch to the new one as soon as the full file will have been
-transfered.
+immediately switch to the new one as soon as the full file will have been
+transferred.
 
 - '-1': log the PID of each session in syslog output.
 
@@ -654,7 +654,7 @@ symbolic links are shown as real files/directories.
 instance '-c 42' will limit access to simultaneous 42 clients. There is a
 50 client limit by default.
 
-- '-C <max connection per ip>': Limit the number of simultanous connections
+- '-C <max connection per ip>': Limit the number of simultaneous connections
 coming from the same IP address. This is yet another very effective way to
 prevent stupid denial of services and bandwidth starvation by a single user.
 It works only when the server is launched in standalone mode (if you use a
@@ -891,7 +891,7 @@ INTERNAL SERVER, BUT _DON'T_ GIVE FXP ACCESS TO ANONYMOUS INTERNET USERS.
 ****************************************************************************
 
         It's why FXP is disabled by default on Pure-FTPd unless you
-explicitely enable it with '-W' or '-w'.
+explicitly enable it with '-W' or '-w'.
 
 - '-x': In normal operation mode, authenticated users can read/write files
 beginning with a dot ('.') . Anonymous users can't, for security reasons
@@ -1288,7 +1288,7 @@ The FTP protocol doesn't allow name-based selection. So, if you want to host
 <N> different virtual FTP servers on the same host and keep the standard port,
 you need <N> different IP addresses. Yes, Sir. Or use HTTP.
 
-Assign the needed IP adresses to your network adapter (with "ifconfig eth0:x
+Assign the needed IP addresses to your network adapter (with "ifconfig eth0:x
 ..." or "ip addr add dev eth0 a.b.c.d").
 
 Now, create a /etc/pure-ftpd directory if it doesn't exist:
@@ -1434,7 +1434,7 @@ sample output of 'pure-ftpwho -v':
 +------+---------+-------+------+-------------------------------------------+
 | 9086 | j       | 00:04 |  DL  | linux-2.4.4.tar.bz2                       |
 |  ''  |    ''   |  22K/s|  27% | ->                              localhost |
-|  ''  |    ''   |       |      | Total size:    20859 Transfered:     5632 |
+|  ''  |    ''   |       |      | Total size:    20859 Transferred:     5632 |
 |  ''  |    ''   |       |      | <-                        localhost:21    |
 +------+---------+-------+------+-------------------------------------------+
 
@@ -1465,7 +1465,7 @@ For security purposes, the server never launches any external program. It's
 why there is a separate daemon, that reads new uploads pushed into a named
 pipe by the server. Uploads are processed synchronously and sequencially.
 It's why on loaded or untrusted servers, it might be a bad idea to use
-pure-uploadscript with lenghty or cpu-intensive scripts.
+pure-uploadscript with lengthy or cpu-intensive scripts.
 
 The easiest way to run pure-uploadscript is 'pure-uploadscript -r <script>':
 
@@ -1686,7 +1686,7 @@ To define alias/directory pairs, you must create a file called
 /etc/pureftpd-dir-aliases, whose format is:
 
 Alternating lines of alias and dir
-(this enables embeded whitespace in dir and alias without quoting rules)
+(this enables embedded whitespace in dir and alias without quoting rules)
 Optional blank lines
 Optional lines beginning with '#' as comments
 (no you can't put a '#' just anywhere)
@@ -1888,7 +1888,7 @@ And what if a customer uploads a script to your server and thinks he can
 safely delete it from its hard disk? If the remote file is corrupted, he
 will get really angry.
 It's why Pure-FTPd *refuses* to resume ASCII transfers. If a customer tells
-you that he isn't able to upload/download a partially transfered ASCII file,
+you that he isn't able to upload/download a partially transferred ASCII file,
 please tell them to remove the partial file and to retransfer it again. This
 is a safe bet.
 

@@ -66,10 +66,10 @@ client certificates mandatory. This is no longer a compile-time option.
 passwords. This is the preferred algorithm, but requires the presence
 of libsodium.
  - LDAP uid and gid values can over overridden in the LDAP configuration file.
- - Support for LDAP over TLS (LDAPUseTLS in the configuratoin file) was added.
+ - Support for LDAP over TLS (LDAPUseTLS in the configuration file) was added.
 
 * Version 1.0.36:
- - Support for external authentification handlers has been fixed.
+ - Support for external authentication handlers has been fixed.
 Reported by Rasmus Fauske.
  - Directory listings can now report file sizes up to 1 exabyte.
  - Pure-FTPd is now useable on Win32 again.
@@ -230,7 +230,7 @@ Contributed by Old Sparky.
  - Support for large files is now enabled by default, with no slowdown on
 Linux.
  - SITE UTIME and OPTS MLST have been implemented.
- - Huge performance improvement while transfering a lot of small files.
+ - Huge performance improvement while transferring a lot of small files.
  - Better handling of aborted transfers.
  - MySQL queries can now include multiple statements (MysQL 4.1 and later)
 and call MySQL 5 stored procedures. Thanks to Mike Goins.
@@ -292,8 +292,8 @@ used.
  - Upload is now atomic. A file is uploaded with a temporary name and it gets
 its final name only once the upload has been completed. If a file already
 exists with the same name, the content can be preserved until the new content
-has been fully transfered (using the new --notruncate run-time switch). Web
-servers will no more serve partially transfered files during uploads.
+has been fully transferred (using the new --notruncate run-time switch). Web
+servers will no more serve partially transferred files during uploads.
   The new handling of uploads also limits the races in virtual quota handling.
 
 * Version 1.0.16c:
@@ -333,7 +333,7 @@ handling of upload scripts, to the pure-pw command and to the
 automatic creation of home directories.
  - Accounts in a puredb database can now be quickly listed ("pure-pw
 list").
- - The anonymous FTP directory can now be overriden on the Windows
+ - The anonymous FTP directory can now be overridden on the Windows
 port (using a WIN32_ANON_DIR environment variable).
  - The default banner has been stripped down to look more
 professionnal (ie. boring).
@@ -616,7 +616,7 @@ pure-quotacheck) . Please read the "virtual quotas" section in README.
 <tomo@t-square.jp>
  - The memory footprint for uploads has been slightly reduced, especially
 when bandwidth throttling is enabled. Thanks to Daniel Tschan.
- - Virtual users (FTP-only local user list, independant of /etc/passwd) were
+ - Virtual users (FTP-only local user list, independent of /etc/passwd) were
 implemented. Every user can have different bandwidth, quota and ratio.
 
 * Version 0.99.1b
@@ -784,7 +784,7 @@ permissions problem introduced in 0.98.
  - Actually include the polish translation.
  - Spanish translation (Luis Llorente Campo). 
  - Renamed mrtginfo to pure-mrtginfo.
- - The default umask is now 133. By explicitely setting the mask to 022,
+ - The default umask is now 133. By explicitly setting the mask to 022,
 uploaded files can become executable.
  - Logging can be disabled (-f none) .
  - Upload and download bandwidth can now be throttled separately.
@@ -863,7 +863,7 @@ password to anonymous clients.
  - Stabilized the standalone code.
  - New '-E' option to disallow anon login even if ~ftp exists (Suggested by
 Daniel Elsaesser) .
- - New '-C' option to limit the number of simultanous connections from the
+ - New '-C' option to limit the number of simultaneous connections from the
 same client IP address.
 
 * Version 0.97pre5
@@ -911,7 +911,7 @@ client doesn't send the '-a' option (ls -la) .
  - Better support for broken NAT gateways.
 
 * Version 0.96pre1
- - Added '-P' flag (explicitely set an IP address in reply to a PASV
+ - Added '-P' flag (explicitly set an IP address in reply to a PASV
 command), '-A' flag (to chroot() everyone) and  '-H' flag (to avoid DNS
 resolution), '-U' flag (to limit the maximum depth of a recursive 'ls' and
 the maximum number of displayed files) and '-M' flag (allow anonymous users

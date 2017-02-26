@@ -398,7 +398,7 @@ CustomerProof                yes
 # complete, it will be atomically renamed. For example, when a large PHP
 # script is being uploaded, the web server will keep serving the old version and
 # later switch to the new one as soon as the full file will have been
-# transfered. This option is incompatible with virtual quotas.
+# transferred. This option is incompatible with virtual quotas.
 
 # NoTruncate                   yes
 

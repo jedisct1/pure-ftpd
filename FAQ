@@ -482,7 +482,7 @@ Also see the 'Global bandwidth limitation' section later in this document.
 
 * KERBEROS_V4 rejected as an authentication type.
 
--> It works and I can log in, but I recieve these strange error messages at
+-> It works and I can log in, but I receive these strange error messages at
 log in, even in a non-chrooted environment: 
 
 220 FTP server ready. 
@@ -805,7 +805,7 @@ kernels. Have a look at http://linux-ntfs.sf.net/ .
 
 * Slowdowns and lags.
 
--> Some users complains that transfering large files doesn't work. Transfers
+-> Some users complains that transferring large files doesn't work. Transfers
 are starting as expected, with a decent rate. But then, the speed dramatically
 decreases, there are some serious lags and they often must disconnect (or the
 client force them to do it, after a timeout) . The server is behind a firewall
@@ -833,7 +833,7 @@ sysctl -w net.ipv4.tcp_bic=0
 
 -> My client is behind a stateful firewall doing applicative filtering (like
 IPTables with ip_conntrack_ftp or ip_nat_ftp) . Connections to an TLS
-enabled server does't work. Authentication works, but I'm unable to download
+enabled server doesn't work. Authentication works, but I'm unable to download
 files nor list directories.
 
 First, try to force your client to use the passive mode. In active mode, the

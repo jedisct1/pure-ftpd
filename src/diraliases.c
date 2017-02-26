@@ -2,7 +2,7 @@
 
 0) alias file format.
  alternating lines of alias and dir
- (this enables embeded whitespace in dir and alias without quoting rules)
+ (this enables embedded whitespace in dir and alias without quoting rules)
  optional blank lines
  optional lines beginning with '#' as comments
  (no you can't put a '#' just anywhere)

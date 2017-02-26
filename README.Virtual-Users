@@ -213,7 +213,7 @@ Max sim sessions   : 0 (unlimited)
   "/./" at the end of a home directory means that this user will be chrooted.
 
 
-     ------------------------ COMMITING CHANGES ------------------------
+     ------------------------ COMMITTING CHANGES ------------------------
       
 
 IMPORTANT:
@@ -222,7 +222,7 @@ You can add, modify and delete users with the previous commands, or by
 editing /etc/pureftpd.passwd by hand. But the FTP server won't consider the
 changes you make to that file, until you commit them.
 
-Commiting changes really means that a new file is created from
+Committing changes really means that a new file is created from
 /etc/pureftpd.passwd (or whatever file name you choose) . That new file is a
 PureDB file. It contains exactly the same info than the other file. But in
 that file, accounts are sorted and indexed for faster access, even with
@@ -242,7 +242,7 @@ For instance:
   pure-pw mkdb /etc/accounts/myaccounts.pdb -f /etc/accounts/myaccounts.txt
 
 All modifications you made to the virtual users database will be committed
-atomatically: all new accounts will be activated at the same time and all
+automatically: all new accounts will be activated at the same time and all
 deleted users won't be able to log in as soon as you'll have hit the Return
 key.
 

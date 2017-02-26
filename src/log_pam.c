@@ -59,7 +59,7 @@ static const char *PAM_username;
 static const char *PAM_password;
 static int PAM_error;
 
-/* for compability with older pam stuff, before the stupid transposition */
+/* for compatibility with older pam stuff, before the stupid transposition */
 #ifndef PAM_CRED_ESTABLISH
 # define PAM_CRED_ESTABLISH  0x0002U
 #endif

@@ -187,11 +187,11 @@ static void text_output_line(const pid_t pid, const char * const account,
     if (verbose != 0) {
         if (current_size > 0) {
             if (total_size > 0) {
-                printf("|  ''  |    ''   |       |      | Total size:%9llu Transfered:%9llu |\n",
+                printf("|  ''  |    ''   |       |      | Total size:%9llu Transferred:%9llu |\n",
                        (unsigned long long) (total_size / 1024),
                        (unsigned long long) (current_size / 1024));
             } else {
-                printf("|  ''  |    ''   |       |      | Transfered: %-29llu |\n",
+                printf("|  ''  |    ''   |       |      | Transferred: %-29llu |\n",
                        (unsigned long long) (current_size / 1024));
             }
         }
