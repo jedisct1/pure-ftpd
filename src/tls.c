@@ -258,7 +258,7 @@ int tls_init_library(void)
 
     tls_cnx_handshook = 0;
     tls_data_cnx_handshook = 0;
-# if OPENSSL_VERSION_NUMBER < 0x10100000L
+# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
     SSL_library_init();
     SSL_load_error_strings();
     OpenSSL_add_all_algorithms();
