@@ -792,7 +792,7 @@ match(Char *name, Char *pat, Char *patend, int recur)
     int ok, negate_range;
     Char c, k;
 
-    if (recur == 0) {
+    if (recur-- == 0) {
         return GLOB_NOSPACE;
     }
     while (pat < patend) {
@@ -806,7 +806,7 @@ match(Char *name, Char *pat, Char *patend, int recur)
                 return 1;
             }
             do {
-                if (match(name, pat, patend, recur--)) {
+                if (match(name, pat, patend, recur)) {
                     return 1;
                 }
             } while (*name++ != EOS);
