@@ -2,8 +2,7 @@
 * Version 1.0.46:
  - The server can now be linked against OpenSSL 1.1.x with the strict API.
  - Unmaintained contributions have been removed.
- - Globbing: the number of times the match() function can be called has been
-limited to the configured recursion level.
+ - Globbing: the number of * in an expression has been limited to 3.
 
 * Version 1.0.45:
  - TLS v1.0 sessions are now refused.
