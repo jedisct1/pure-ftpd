@@ -114,6 +114,10 @@ joe:$7$C6..../....swVShTUX9kLJepm0vvj7dUXPqtULzQ9G3GT/GAO3bd3$GMHJRyUdSRwNROunwt
 Passwords are hashed with the most secure hash function your system supports.
 Hashes are tried in this order: argon2i, scrypt, bcrypt, SHA-512, MD5.
 
+SHA-512 and MD5 should not be used any more. bcrypt requires crypt(3)
+from the C library to support it, which is commonly the case on BSD
+systems, but is only present on some Linux distributions.
+
 Argon2i and scrypt are the recommended functions, and require pure-ftpd to be
 compiled in presence of libsodium.
 
