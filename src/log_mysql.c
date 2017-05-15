@@ -469,34 +469,24 @@ void pw_mysql_check(AuthResult * const result,
     }
     if (crypto_mysql != 0) {
         char scrambled_password[42]; /* 2 * 20 (sha1 hash size) + 2 */
+        SHA1_CTX        ctx;
+        unsigned char  h0[20], h1[20];
+        char          *p;
 
-# ifdef HAVE_MY_MAKE_SCRAMBLED_PASSWORD
-        my_make_scrambled_password(scrambled_password, password,
-                                   strlen(password));
-# elif defined(HAVE_MAKE_SCRAMBLED_PASSWORD)
-        make_scrambled_password(scrambled_password, password);
-# else
-        {
-            SHA1_CTX       ctx;
-            unsigned char  h0[20], h1[20];
-            char          *p;
-
-            SHA1Init(&ctx);
-            SHA1Update(&ctx, password, strlen(password));
-            SHA1Final(h0, &ctx);
-            SHA1Init(&ctx);
-            SHA1Update(&ctx, h0, sizeof h0);
-            pure_memzero(h0, sizeof h0);
-            SHA1Final(h1, &ctx);
+        SHA1Init(&ctx);
+        SHA1Update(&ctx, password, strlen(password));
+        SHA1Final(h0, &ctx);
+        SHA1Init(&ctx);
+        SHA1Update(&ctx, h0, sizeof h0);
+        pure_memzero(h0, sizeof h0);
+        SHA1Final(h1, &ctx);
             *scrambled_password = '*';
-            hexify(scrambled_password + 1U, h1,
-                   (sizeof scrambled_password) - 1U, sizeof h1);
-            *(p = scrambled_password) = '*';
-            while (*p++ != 0) {
-                *p = (char) toupper((unsigned char) *p);
-            }
+        hexify(scrambled_password + 1U, h1,
+               (sizeof scrambled_password) - 1U, sizeof h1);
+        *(p = scrambled_password) = '*';
+        while (*p++ != 0) {
+            *p = (char) toupper((unsigned char) *p);
         }
-# endif
         if (pure_strcmp(scrambled_password, spwd) == 0) {
             goto auth_ok;
         }
