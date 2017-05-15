@@ -258,9 +258,17 @@ int tls_init_library(void)
 
     tls_cnx_handshook = 0;
     tls_data_cnx_handshook = 0;
+# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
     SSL_library_init();
     SSL_load_error_strings();
     OpenSSL_add_all_algorithms();
+# else
+    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS |
+		     OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
+    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |
+			OPENSSL_INIT_ADD_ALL_DIGESTS |
+			OPENSSL_INIT_LOAD_CONFIG, NULL);
+# endif
     while (RAND_status() == 0) {
         rnd = zrand();
         RAND_seed(&rnd, (int) sizeof rnd);
@@ -347,7 +355,9 @@ void tls_free_library(void)
         SSL_CTX_free(tls_ctx);
         tls_ctx = NULL;
     }
+# if OPENSSL_API_COMPAT < 0x10100000L
     EVP_cleanup();
+# endif
 }
 
 int tls_init_new_session(void)

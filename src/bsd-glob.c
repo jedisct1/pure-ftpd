@@ -110,6 +110,9 @@ typedef unsigned short Char;
 #ifndef GLOB_LIMIT_MALLOC
 # define GLOB_LIMIT_MALLOC       65536
 #endif
+#ifndef GLOB_MAX_STARS
+# define GLOB_MAX_STARS          3
+#endif
 
 struct glob_lim {
     size_t  glim_malloc;
@@ -142,6 +145,19 @@ static int       globexp2(const Char *, const Char *, glob_t *,
                           struct glob_lim *, int);
 static int       match(Char *, Char *, Char *, int);
 
+static int check_stars(const char *pattern)
+{
+    size_t stars = 0U;
+    int    c;
+
+    while ((c = *pattern++) != 0) {
+	if (c == '*' && ++stars > GLOB_MAX_STARS) {
+	    return -1;
+	}
+    }
+    return 0;
+}
+
 static int
 glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
       glob_t *pglob, unsigned long maxfiles, int maxdepth)
@@ -151,6 +167,9 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
     Char *bufnext, *bufend, patbuf[PATH_MAX];
     struct glob_lim limit = { 0, 0, 0 };
 
+    if ((flags & GLOB_LIMIT) == GLOB_LIMIT && check_stars(pattern) == -1) {
+	return GLOB_NOSPACE;
+    }
     pglob->gl_maxdepth = maxdepth;
     pglob->gl_maxfiles = maxfiles;
     patnext = (unsigned char *) pattern;

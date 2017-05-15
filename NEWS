@@ -1,4 +1,12 @@
 
+* Version 1.0.46:
+ - The server can now be linked against OpenSSL 1.1.x with the strict API.
+ - Unmaintained contributions have been removed.
+ - File globbing could take up to `GLOB_TIMEOUT` seconds (17 seconds
+by default) when matching some patterns, no matter what the configured
+recursion level was. This has been fixed, and upgrading is highly
+recommended. This was reported by Russ Cox, thanks!
+
 * Version 1.0.45:
  - TLS v1.0 sessions are now refused by default.
  - Version 1.0.44 didn't properly parse the TLSCipherSuite directive.
