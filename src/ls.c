@@ -58,7 +58,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
         l -= rest;
     }
 #ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {
+    if (tls_fd != NULL) {
         if (secure_safe_write(tls_fd, outbuf, sizeof outbuf) !=
             (ssize_t) sizeof outbuf) {
             return;
@@ -72,7 +72,7 @@ static void wrstr(const int f, void * const tls_fd, const char *s)
         }
     }
 #ifdef WITH_TLS
-    if (data_protection_level == CPL_PRIVATE) {
+    if (tls_fd != NULL) {
         while (l > sizeof outbuf) {
             if (secure_safe_write(tls_fd, s, sizeof outbuf) !=
                 (ssize_t) sizeof outbuf) {
@@ -889,7 +889,7 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     } else {                           /* STAT command */
         c = clientfd;
 #ifdef WITH_TLS
-        if (data_protection_level == CPL_PRIVATE) {
+        if (tls_cnx != NULL) {
             secure_safe_write(tls_cnx, "213-STAT" CRLF,
                               sizeof "213-STAT" CRLF - 1U);
             tls_fd = tls_cnx;
