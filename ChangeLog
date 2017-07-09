@@ -1,4 +1,10 @@
 
+* Version 1.0.47:
+ - Unlike other directory listing commands, the STAT command should
+use TLS on the control channel even if TLS has been disabled on the data
+channel. It wasn't the case; this has been fixed. Thanks to Carlo
+Cannas.
+
 * Version 1.0.46:
  - The server can now be linked against OpenSSL 1.1.x with the strict API.
  - Unmaintained contributions have been removed.

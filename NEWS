@@ -1,4 +1,9 @@
 
+* Version 1.0.47:
+ - If TLS was only enabled on the control channel (-Y 1), the STAT command
+would send its output as other directory listing commands, breaking
+the TLS stream. This has been fixed. Spotted by Carlo Cannas, thanks! 
+
 * Version 1.0.46:
  - The server can now be linked against OpenSSL 1.1.x with the strict API.
  - Unmaintained contributions have been removed.
