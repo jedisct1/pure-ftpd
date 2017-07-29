@@ -475,6 +475,7 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
                 out_pnt++;
                 state = STATE_TEMPLATE_RCHAR;
             } else {
+                free(arg);
                 return ENTRYRESULT_INVALID_ENTRY;
             }
             continue;
