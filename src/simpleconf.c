@@ -602,6 +602,7 @@ append_to_command_line_from_file(const char *file_name,
                 }
                 if ((argv_tmp = realloc(*argv_p, (sizeof arg) *
                                         ((size_t) *argc_p + 1))) == NULL) {
+                    free(arg);
                     fclose(fp);
                     return -1;
                 }
