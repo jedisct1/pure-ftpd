@@ -436,7 +436,7 @@ static void updatepidfile(void)
     }
     buf_len = strlen(buf);
     if (safe_write(fd, buf, buf_len, -1) != (ssize_t) buf_len) {
-        ftruncate(fd, (off_t) 0);
+        (void) ftruncate(fd, (off_t) 0);
     }
     close(fd);
 }
