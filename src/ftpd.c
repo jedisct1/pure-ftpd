@@ -4921,22 +4921,6 @@ static void fill_atomic_prefix(void)
     }
 }
 
-#ifndef HAVE_RANDOM_DEV
-static void seed_old_rng(void)
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    const unsigned int seed = (unsigned int)
-        (((long) getpid() * 131072L) ^ tv->tv_sec ^ (tv_usec * 4096L));
-
-# if defined(HAVE_RANDOM)
-    srandom(seed);
-# else
-    srand(seed);
-# endif
-}
-#endif
-
 static void doit(void)
 {
     socklen_t socksize;
@@ -4950,9 +4934,6 @@ static void doit(void)
     fcntl(clientfd, F_SETOWN, getpid());
 #endif
     set_signals_client();
-#ifndef HAVE_RANDOM_DEV
-    seed_old_rng();
-#endif
     alt_arc4random_stir();
     (void) umask((mode_t) 0);
     socksize = (socklen_t) sizeof ctrlconn;
