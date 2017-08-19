@@ -1381,7 +1381,8 @@ void douser(const char *username)
             pw = &pw_;
         }
 #else
-        if ((pw = getpwnam("ftp")) == NULL ||
+        if (((pw = getpwnam("ftp")) == NULL &&
+             (pw = getpwnam("_ftp")) == NULL) ||
             pw->pw_uid == 0 || pw->pw_gid == 0 ||
             doinitsupgroups("ftp", (uid_t) -1, pw->pw_gid) != 0 ||
             setgid(pw->pw_gid) || setegid(pw->pw_gid)) {
