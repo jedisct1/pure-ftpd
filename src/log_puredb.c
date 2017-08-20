@@ -228,12 +228,12 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
         const char *crypted;
         int         ret = -1;
 
-#ifdef HAVE_LIBSODIUM
-# ifdef crypto_pwhash_STRPREFIX
+#ifdef crypto_pwhash_STRPREFIX
         if (crypto_pwhash_str_verify(line, pwd, strlen(pwd)) == 0) {
             /* pass */
         } else
-# endif
+#endif
+#ifdef crypto_pwhash_scryptsalsa208sha256_STRPREFIX
         if (crypto_pwhash_scryptsalsa208sha256_str_verify
             (line, pwd, strlen(pwd)) == 0) {
             /* pass */
