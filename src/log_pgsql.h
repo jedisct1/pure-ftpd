@@ -1,7 +1,7 @@
 #ifndef __LOG_PGSQL_H__
 #define __LOG_PGSQL_H__ 1
 
-#define PASSWD_SQL_ARGON2I "argon2i"
+#define PASSWD_SQL_ARGON2 "argon2"
 #define PASSWD_SQL_SCRYPT "scrypt"
 #define PASSWD_SQL_CRYPT "crypt"
 #define PASSWD_SQL_CLEARTEXT "cleartext"

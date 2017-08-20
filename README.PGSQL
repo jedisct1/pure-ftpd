@@ -82,14 +82,14 @@ You just have to have fields with the following info:
 
 - The user's login.
 
-- The user's password, hashed using argon2i, scrypt or crypt(3). SHA1 and MD5
+- The user's password, hashed using argon2, scrypt or crypt(3). SHA1 and MD5
 are also supported for legacy reasons, but shouldn't be used any more.
 Pure-FTPd also accepts the "any" value for the PGSQLCrypt field.
 With "any", all hash functions are sequentially tried.
 
 * RECOMMENDATION: Do not use SHA1, MD5, or, obviously, plaintext. Unless your
 system provides a decent crypt() function, use a PostgreSQL function to verify
-the hashed password or use argon2i/scrypt.
+the hashed password or use argon2/scrypt.
 
 - The system uid to map the user to. This can be a numeric id or a user
 name, looked up at run-time.
@@ -151,11 +151,11 @@ PGSQLDefaultGID 1000
 Using these directives overrides PGSQLGetUID and PGSQLGetGID.
 
 
-           ------------------------ ARGON2I ------------------------
+           ------------------------ ARGON2 ------------------------
 
 
-Password hashed with argon2i can be used, provided that pure-ftpd was linked to
-libsodium.
+Password hashed with argon2i and argon2id can be used, provided that pure-ftpd
+was linked to libsodium.
 
 They are expected to be provided as a string, as returned by the
 crypto_pwhash_str() function or by its bindings.

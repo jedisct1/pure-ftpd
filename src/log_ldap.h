@@ -36,7 +36,7 @@
 #define PASSWD_LDAP_SHA_PREFIX "{sha}"
 #define PASSWD_LDAP_SSHA_PREFIX "{ssha}"
 #define PASSWD_LDAP_SCRYPT_PREFIX "{scrypt}"
-#define PASSWD_LDAP_ARGON2I_PREFIX "{argon2i}"
+#define PASSWD_LDAP_ARGON2_PREFIX "{argon2}"
 #define LDAP_DEFAULT_SCHEME "ldap"
 #define LDAP_DEFAULT_SERVER "localhost"
 #define LDAP_DEFAULT_PORT 389

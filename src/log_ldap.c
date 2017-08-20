@@ -561,17 +561,17 @@ void pw_ldap_check(AuthResult * const result,
         free(result->backend_data);
         result->backend_data = NULL;
         spwd = pw->pw_passwd;
-# ifdef HAVE_LIBSODIUM
-#  ifdef crypto_pwhash_STRPREFIX
-        if (strncasecmp(spwd, PASSWD_LDAP_ARGON2I_PREFIX,
-                        sizeof PASSWD_LDAP_ARGON2I_PREFIX - 1U) == 0) {
-            spwd += (sizeof PASSWD_LDAP_ARGON2I_PREFIX - 1U);
+# ifdef crypto_pwhash_STRPREFIX
+        if (strncasecmp(spwd, PASSWD_LDAP_ARGON2_PREFIX,
+                        sizeof PASSWD_LDAP_ARGON2_PREFIX - 1U) == 0) {
+            spwd += (sizeof PASSWD_LDAP_ARGON2_PREFIX - 1U);
             if (crypto_pwhash_str_verify(spwd, password, strlen(password)) == 0) {
                 goto pwd_ok;
             }
             return;
         } else
-#  endif
+# endif
+# ifdef crypto_pwhash_scryptsalsa208sha256_STRPREFIX
         if (strncasecmp(spwd, PASSWD_LDAP_SCRYPT_PREFIX,
                         sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_SCRYPT_PREFIX - 1U);

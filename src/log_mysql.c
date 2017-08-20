@@ -331,7 +331,7 @@ void pw_mysql_check(AuthResult * const result,
     char *escaped_peer_ip = NULL;
     char *escaped_decimal_ip = NULL;
     int committed = 1;
-    int crypto_argon2i = 0, crypto_scrypt = 0, crypto_crypt = 0,
+    int crypto_argon2 = 0, crypto_scrypt = 0, crypto_crypt = 0,
         crypto_mysql = 0, crypto_md5 = 0, crypto_sha1 = 0, crypto_plain = 0;
     unsigned long decimal_ip_num = 0UL;
     char decimal_ip[42];
@@ -423,14 +423,14 @@ void pw_mysql_check(AuthResult * const result,
     }
     result->auth_ok--;                  /* -1 */
     if (strcasecmp(crypto, PASSWD_SQL_ANY) == 0) {
-        crypto_argon2i++;
+        crypto_argon2++;
         crypto_scrypt++;
         crypto_crypt++;
         crypto_mysql++;
         crypto_md5++;
         crypto_sha1++;
-    } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2I) == 0) {
-        crypto_argon2i++;
+    } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2) == 0) {
+        crypto_argon2++;
     } else if (strcasecmp(crypto, PASSWD_SQL_SCRYPT) == 0) {
         crypto_scrypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_CRYPT) == 0) {
@@ -444,14 +444,14 @@ void pw_mysql_check(AuthResult * const result,
     } else {                           /* default to plaintext */
         crypto_plain++;
     }
-#ifdef HAVE_LIBSODIUM
-# ifdef crypto_pwhash_STRPREFIX
-    if (crypto_argon2i != 0) {
+#ifdef crypto_pwhash_STRPREFIX
+    if (crypto_argon2 != 0) {
         if (crypto_pwhash_str_verify(spwd, password, strlen(password)) == 0) {
             goto auth_ok;
         }
     }
-# endif
+#endif
+#ifdef crypto_pwhash_scryptsalsa208sha256_STRPREFIX
     if (crypto_scrypt != 0) {
         if (crypto_pwhash_scryptsalsa208sha256_str_verify
             (spwd, password, strlen(password)) == 0) {
