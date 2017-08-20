@@ -230,20 +230,13 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
 
 #ifdef HAVE_LIBSODIUM
 # ifdef crypto_pwhash_STRPREFIX
-        if (strncmp(crypto_pwhash_STRPREFIX, line,
-                    (sizeof crypto_pwhash_STRPREFIX) - 1U) == 0) {
-            ret = crypto_pwhash_str_verify(line, pwd, strlen(pwd));
-            if (ret != 0) {
-                return -1;
-            }
+        if (crypto_pwhash_str_verify(line, pwd, strlen(pwd)) == 0) {
+            /* pass */
         } else
 # endif
-        if (line[0] == '$' && line[1] == '7' && line[2] == '$') {
-            ret = crypto_pwhash_scryptsalsa208sha256_str_verify
-                (line, pwd, strlen(pwd));
-            if (ret != 0) {
-                return -1;
-            }
+        if (crypto_pwhash_scryptsalsa208sha256_str_verify
+            (line, pwd, strlen(pwd)) == 0) {
+            /* pass */
         } else
 #endif
         {
@@ -321,7 +314,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     }
 #ifdef PER_USER_LIMITS
     if (*line != 0) {
-    result->per_user_max = (unsigned int) strtoull(line, NULL, 10);
+        result->per_user_max = (unsigned int) strtoull(line, NULL, 10);
     }
 #endif
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL) {   /* files quota */
