@@ -235,6 +235,8 @@ Umask                        133:022
 
 
 # Minimum UID for an authenticated user to log in.
+# For example, a value of 100 prevents all users whose user id is below
+# 100 from logging in. If you want "root" to be able to log in, use 0.
 
 MinUID                       100
 
