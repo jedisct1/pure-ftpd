@@ -299,7 +299,7 @@ void parser(void)
         }
 #endif
         n = (size_t) 0U;
-        while ((isalpha((unsigned char) cmd[n]) || cmd[n] == '@') &&
+        while ((isalnum((unsigned char) cmd[n]) || cmd[n] == '@') &&
                n < cmdsize) {
             cmd[n] = (char) tolower((unsigned char) cmd[n]);
             n++;
