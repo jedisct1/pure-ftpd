@@ -2848,7 +2848,9 @@ static void displayrate(const char *word, off_t size,
         }
         resolved_path[sizeof_resolved_path - 1U] = 0;
         if (realpath(name, resolved_path) == NULL) {
-            (void) unlink(name);
+            if (up != 0) {
+                (void) unlink(name);
+            }
             free(resolved_path);
             logfile(LOG_ERR, "realpath() failure : [%s] => [%s]",
                     name, strerror(errno));
