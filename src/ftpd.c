@@ -4432,7 +4432,7 @@ void dostor(char *name, const int append, const int autorename)
         if (ret == 0) {
             addreply_noformat(226, MSG_TRANSFER_SUCCESSFUL);
         } else {
-            addreply_noformat(226, MSG_ABORTED);
+            addreply_noformat(451, MSG_ABORTED);
         }
         displayrate(MSG_UPLOADED, ulhandler.total_uploaded, started,
                     name2 ? name2 : name, 1);
