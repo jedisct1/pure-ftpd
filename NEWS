@@ -7,6 +7,10 @@ the TLS stream. This has been fixed. Spotted by Carlo Cannas, thanks!
 anonymous sessions.
  - Compatibility with libsodium > 1.0.12 was added (including minimal
 mode).
+ - The prefix for Argon2-hashed passwords in LDAP has been changed to
+"{argon2}" (from "{argon2i}"). Ditto for MySQL and PostgreSQL: the
+authentication method is now called "argon2" instead of "argon2i", and
+includes both Argon2i and Argon2id.
 
 * Version 1.0.46:
  - The server can now be linked against OpenSSL 1.1.x with the strict API.
