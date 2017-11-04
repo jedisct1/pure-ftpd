@@ -557,7 +557,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 
 #ifndef MAX_DATA_SIZE
 # ifdef HAVE_LIBSODIUM
-#  define MAX_DATA_SIZE (40 * 1024 * 1024)
+#  define MAX_DATA_SIZE (70 * 1024 * 1024)
 # elif defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL)
 #  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need more */
 # else
