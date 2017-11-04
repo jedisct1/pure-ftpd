@@ -119,7 +119,9 @@ from the C library to support it, which is commonly the case on BSD
 systems, but is only present on some Linux distributions.
 
 Argon2 and scrypt are the recommended functions, and require pure-ftpd to be
-compiled in presence of libsodium.
+compiled in presence of libsodium. Note that a login attempt will require up
+to 64 Mb memory, and 100% of a CPU core. The number of simultaneously allowed
+sessions should be tuned accordingly to avoid resources starvation.
 
 
        ------------------------ CHANGING INFO ------------------------
