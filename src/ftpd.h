@@ -499,9 +499,9 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 #  define PATH_MAX MAXPATHLEN
 # else
 #  define PATH_MAX 65536U
-Warning: neither PATH_MAX nor MAXPATHLEN were found.
-Remove these lines if you really want to compile the server, but
-the server may be insecure if a wrong value is set here.
+#  error Warning: neither PATH_MAX nor MAXPATHLEN were found.
+#  error Remove these lines if you really want to compile the server, but
+#  error the server may be insecure if a wrong value is set here.
 # endif
 #endif
 #if (PATH_MAX) >= (INT_MAX)
