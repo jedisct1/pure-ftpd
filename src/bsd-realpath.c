@@ -143,10 +143,11 @@ static size_t strlcat(char *dst, const char * const src, const size_t siz)
 char *bsd_realpath(const char *path, char resolved[PATH_MAX])
 {
     struct stat sb;
-    char *p, *q, *s;
-    size_t left_len, resolved_len;
+    char *p, *q;
+    size_t left_len, resolved_len, next_token_len;
     unsigned symlinks;
-    int serrno, slen;
+    int serrno;
+    ssize_t slen;
     char left[PATH_MAX], next_token[PATH_MAX], symlink[PATH_MAX];
 
     serrno = errno;
@@ -181,16 +182,15 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
          * and its length.
          */
         p = strchr(left, '/');
-        s = p ? p : left + left_len;
-        if ((size_t) (s - left) >= sizeof next_token) {
-            errno = ENAMETOOLONG;
-            return NULL;
-        }
-        memcpy(next_token, left, s - left);
-        next_token[s - left] = '\0';
-        left_len -= s - left;
+        next_token_len = p ? p - left : left_len;
+        memcpy(next_token, left, next_token_len);
+        next_token[next_token_len] = '\0';
         if (p != NULL) {
-            memmove(left, s + 1, left_len + 1);
+            left_len -= next_token_len + 1;
+            memmove(left, p + 1, left_len + 1);
+        } else {
+            left[0] = '\0';
+            left_len = 0;
         }
         if (resolved[resolved_len - 1] != '/') {
             if (resolved_len + 1 >= PATH_MAX) {
@@ -232,17 +232,23 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
                 errno = ELOOP;
                 return NULL;
             }
-            slen = readlink(resolved, symlink, (sizeof symlink) - 1);
-            if (slen < 0) {
+            slen = readlink(resolved, symlink, sizeof symlink);
+            if (slen < 0 || slen >= sizeof symlink) {
+                if (slen < 0) {
+                    /* keep errno from readlink(2) call */
+                } else if (slen == 0) {
+                    errno = ENOENT;
+                } else {
+                    errno = ENAMETOOLONG;
+                }
                 return NULL;
             }
             symlink[slen] = '\0';
             if (symlink[0] == '/') {
                 resolved[1] = 0;
                 resolved_len = 1;
-            } else if (resolved_len > 1) {
+            } else {
                 /* Strip the last path component. */
-                resolved[resolved_len - 1] = '\0';
                 q = strrchr(resolved, '/') + 1;
                 *q = '\0';
                 resolved_len = q - resolved;
@@ -263,7 +269,7 @@ char *bsd_realpath(const char *path, char resolved[PATH_MAX])
                     symlink[slen + 1] = 0;
                 }
                 left_len = strlcat(symlink, left, sizeof symlink);
-                if (left_len >= sizeof left) {
+                if (left_len >= sizeof symlink) {
                     errno = ENAMETOOLONG;
                     return NULL;
                 }
