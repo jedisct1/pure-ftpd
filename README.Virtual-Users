@@ -67,11 +67,11 @@ To add a new user, use the following syntax:
                          [-t <download bandwidth>] [-T <upload bandwidth>]
                          [-n <max number of files>] [-N <max Mbytes>]
                          [-q <upload ratio>] [-Q <download ratio>]
-                         [-r <allow client host>[/<mask>][,<allow client host>[/<mask>]]...]
-                         [-R <deny client host>[/<mask>][,<deny client host>[/<mask>]]...]
-                         [-i <allow local host>[/<mask>][,<allow client host>[/<mask>]]...]
-                         [-I <deny local host>[/<mask>][,<deny local host>[/<mask>]]...]
+                         [-r <allow client ip>/<mask>] [-R <deny client ip>/<mask>]
+                         [-i <allow local ip>/<mask>] [-I <deny local ip>/<mask>]
                          [-y <max number of concurrent sessions>]
+                         [-C <max number of concurrent login attempts>]
+                         [-M <total memory (in MB) to reserve for password hashing>]
                          [-z <hhmm>-<hhmm>] [-m]
 
 Let's create "joe", whose home directory will be /home/ftpusers/joe . The

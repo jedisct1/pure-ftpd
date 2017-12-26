@@ -32,6 +32,46 @@
 static const char *random_device;
 #endif
 
+#ifdef crypto_pwhash_MEMLIMIT_MIN
+# define MIN_AUTH_MEMORY crypto_pwhash_MEMLIMIT_MIN
+#elif defined(crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN)
+# define MIN_AUTH_MEMORY crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN
+#else
+# define MIN_AUTH_MEMORY 8192ULL
+#endif
+
+#ifdef crypto_pwhash_OPSLIMIT_MIN
+# define MIN_AUTH_OPS crypto_pwhash_OPSLIMIT_MIN
+#elif defined(crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN)
+# define MIN_AUTH_OPS crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN
+#else
+# define MIN_AUTH_OPS 64ULL
+#endif
+
+#ifndef DEFAULT_TOTAL_AUTH_MEMORY
+# define DEFAULT_TOTAL_AUTH_MEMORY (64ULL * 1024ULL * 1024ULL)
+# if DEFAULT_TOTAL_AUTH_MEMORY < MIN_AUTH_MEMORY
+#  undef DEFAULT_TOTAL_AUTH_MEMORY
+#  define DEFAULT_TOTAL_AUTH_MEMORY MIN_AUTH_MEMORY
+# endif
+#endif
+
+#ifndef DEFAULT_MAX_CONCURRENT_LOGINS
+# define DEFAULT_MAX_CONCURRENT_LOGINS 8UL
+#endif
+
+#ifndef DEFAULT_AUTH_TIME_MS
+# define DEFAULT_AUTH_TIME_MS 1000
+#endif
+
+#ifndef MIN_AUTH_TIME_MS
+# define MIN_AUTH_TIME_MS 250
+#endif
+
+#ifndef AUTH_CORES
+# define AUTH_CORES 8
+#endif
+
 static void disable_echo(void)
 {
     if (!isatty(0)) {
@@ -180,6 +220,8 @@ static void help(void)
          "                [-r <allow client ip>/<mask>] [-R <deny client ip>/<mask>]\n"
          "                [-i <allow local ip>/<mask>] [-I <deny local ip>/<mask>]\n"
          "                [-y <max number of concurrent sessions>]\n"
+         "                [-C <max number of concurrent login attempts>]\n"
+         "                [-M <total memory (in MB) to reserve for password hashing>]\n"
          "                [-z <hhmm>-<hhmm>] [-m]\n"
          "\n"
          "pure-pw usermod <login> -f <passwd file> -u <uid> [-g <gid>]\n"
@@ -190,6 +232,8 @@ static void help(void)
          "                [-r <allow client ip>/<mask>] [-R <deny client ip>/<mask>]\n"
          "                [-i <allow local ip>/<mask>] [-I <deny local ip>/<mask>]\n"
          "                [-y <max number of concurrent sessions>]\n"
+         "                [-C <max number of concurrent login attempts>]\n"
+         "                [-M <total memory (in MB) to reserve for password hashing>]\n"
          "                [-z <hhmm>-<hhmm>] [-m]\n"
          "\n"
          "pure-pw userdel <login> [-f <passwd file>] [-m]\n"
@@ -222,24 +266,53 @@ static void no_mem(void)
     exit(EXIT_FAILURE);
 }
 
-static char *best_crypt(const char * const pwd)
+static char *best_crypt(const char * const pwd,
+                        const unsigned long max_concurrent_logins,
+                        const unsigned long long max_auth_memory)
 {
-#if defined(crypto_pwhash_OPSLIMIT_INTERACTIVE)
+#if defined(crypto_pwhash_STRBYTES) || defined(crypto_pwhash_scryptsalsa208sha256_STRBYTES)
+# ifndef crypto_pwhash_STRBYTES
+#  define crypto_pwhash_STRBYTES crypto_pwhash_scryptsalsa208sha256_STRBYTES
+#  define crypto_pwhash_str crypto_pwhash_scryptsalsa208sha256_str
+# endif
     static char hash[crypto_pwhash_STRBYTES];
+    struct timeval tv_start, tv_now;
+    struct timezone tz;
+    unsigned long long probe_ops = MIN_AUTH_OPS;
+    unsigned long long ops = 0ULL;
+    unsigned long long auth_memory =
+        max_auth_memory / (unsigned long long) max_concurrent_logins;
+    unsigned long long elapsed;
+    unsigned long long auth_time_ms = DEFAULT_AUTH_TIME_MS;
 
-    if (crypto_pwhash_str(hash, pwd, strlen(pwd),
-                          crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                          crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0) {
-        no_mem();
+    if (max_concurrent_logins > AUTH_CORES) {
+        auth_time_ms /= (unsigned long long) max_concurrent_logins / AUTH_CORES;
     }
-    return hash;
-#elif defined(crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE)
-    static char hash[crypto_pwhash_scryptsalsa208sha256_STRBYTES];
-
-    if (crypto_pwhash_scryptsalsa208sha256_str
-        (hash, pwd, strlen(pwd),
-            crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
-            crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) != 0) {
+    if (auth_time_ms < MIN_AUTH_TIME_MS) {
+        auth_time_ms = MIN_AUTH_TIME_MS;
+    }
+    if (auth_memory < MIN_AUTH_MEMORY) {
+        auth_memory = MIN_AUTH_MEMORY;
+    }
+    gettimeofday(&tv_start, &tz);
+    for (;;) {
+        if (crypto_pwhash_str(hash, pwd, strlen(pwd),
+                              probe_ops, auth_memory) != 0) {
+            no_mem();
+        }
+        ops += probe_ops;
+        probe_ops *= 2;
+        gettimeofday(&tv_now, &tz);
+        elapsed = (tv_now.tv_sec * 1000ULL + tv_now.tv_usec / 1000ULL) -
+            (tv_start.tv_sec * 1000ULL + tv_start.tv_usec / 1000ULL);
+        if (elapsed >= auth_time_ms) {
+            break;
+        }
+    }
+    if (ops < MIN_AUTH_OPS) {
+        ops = MIN_AUTH_OPS;
+    }
+    if (crypto_pwhash_str(hash, pwd, strlen(pwd), ops, auth_memory) != 0) {
         no_mem();
     }
     return hash;
@@ -253,7 +326,7 @@ static char *best_crypt(const char * const pwd)
         strcmp(crypted,
                "$2a$08$123456789012345678901uBdmsfIXjJcWQwz1wT/IZrWhimJ6xy6a")
         == 0) {
-        char salt[] = "$2a$08$0000000000000000000000";
+        char salt[] = "$2a$10$0000000000000000000000";
         int c = 28;
 
         do {
@@ -767,7 +840,9 @@ static int do_list(const char * const file)
 }
 
 static int do_useradd(const char * const file,
-                      const PWInfo * const pwinfo_)
+                      const PWInfo * const pwinfo_,
+                      const unsigned long max_concurrent_logins,
+                      const unsigned long long max_auth_memory)
 {
     char *file2;
     FILE *fp2;
@@ -803,7 +878,8 @@ static int do_useradd(const char * const file,
     {
         char *cleartext = pwinfo.pwd;
 
-        pwinfo.pwd = best_crypt(cleartext);
+        pwinfo.pwd = best_crypt(cleartext,
+                                max_concurrent_logins, max_auth_memory);
         if (*cleartext != 0) {
             pure_memzero(cleartext, strlen(cleartext));
         }
@@ -848,7 +924,9 @@ static int do_useradd(const char * const file,
 }
 
 static int do_usermod(const char * const file,
-                      const PWInfo *pwinfo)
+                      const PWInfo *pwinfo,
+                      const unsigned long max_concurrent_logins,
+                      const unsigned long long max_auth_memory)
 {
     char *file2;
     FILE *fp2;
@@ -872,7 +950,8 @@ static int do_usermod(const char * const file,
     if (pwinfo->pwd != NULL) {
         char *cleartext = pwinfo->pwd;
 
-        fetched_info.pwd = best_crypt(cleartext);
+        fetched_info.pwd = best_crypt(cleartext,
+                                      max_concurrent_logins, max_auth_memory);
         if (*cleartext != 0) {
             pure_memzero(cleartext, strlen(cleartext));
         }
@@ -1130,7 +1209,9 @@ static int do_show(const char * const file, const PWInfo * const pwinfo)
 }
 
 static int do_passwd(const char * const file,
-                     PWInfo * const pwinfo)
+                     PWInfo * const pwinfo,
+                     const unsigned long max_concurrent_logins,
+                     const unsigned long long max_auth_memory)
 {
     if (pwinfo->login == NULL || *(pwinfo->login) == 0) {
         fprintf(stderr, "Missing login\n");
@@ -1144,7 +1225,7 @@ static int do_passwd(const char * const file,
         fprintf(stderr, "Error with entering password - aborting\n");
         return PW_ERROR_ENTER_PASSWD_PW_ERROR;
     }
-    return do_usermod(file, pwinfo);
+    return do_usermod(file, pwinfo, max_concurrent_logins, max_auth_memory);
 }
 
 static int do_mkdb(const char *dbfile, const char * const file)
@@ -1251,6 +1332,8 @@ int main(int argc, char *argv[])
     int ret = 0;
     int with_chroot = 1;
     int with_mkdb = 0;
+    unsigned long max_concurrent_logins = DEFAULT_MAX_CONCURRENT_LOGINS;
+    unsigned long long max_auth_memory = DEFAULT_TOTAL_AUTH_MEMORY;
 
     if (argc < 2) {
         help();
@@ -1266,6 +1349,13 @@ int main(int argc, char *argv[])
 # ifdef LC_COLLATE
     (void) setlocale(LC_COLLATE, "");
 # endif
+#endif
+
+#ifdef HAVE_LIBSODIUM
+    if (sodium_init() < 0) {
+        fprintf(stderr, "Unable to initialize the sodium library\n");
+        exit(1);
+    }
 #endif
 
     pwinfo.pwd = NULL;
@@ -1305,7 +1395,7 @@ int main(int argc, char *argv[])
     filter_pw_line_sep(pwinfo.login);
     while ((fodder =
             getopt(argc, argv,
-                   "c:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
+                   "c:C:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
         switch(fodder) {
         case 'c' : {
             if ((pwinfo.gecos = strdup(optarg)) == NULL) {
@@ -1314,8 +1404,24 @@ int main(int argc, char *argv[])
             filter_pw_line_sep(pwinfo.gecos);
             break;
         }
+        case 'C':
+            max_concurrent_logins = (unsigned long) strtoul(optarg, NULL, 10);
+            if (max_concurrent_logins < 1UL) {
+                fprintf(stderr, "number of concurrent logins must be at least 1\n");
+                exit(EXIT_FAILURE);
+            }
+            break;
+        case 'M':
+            max_auth_memory = (unsigned long) strtoul(optarg, NULL, 10);
+            if (max_auth_memory < MIN_AUTH_MEMORY) {
+                fprintf(stderr, "memory reserved for password hashing is too low\n");
+                exit(EXIT_FAILURE);
+            }
+            max_auth_memory *= 1024ULL * 1024ULL;
+            break;
         case 'D' :
             with_chroot = 0;
+            /* FALLTHROUGH */
         case 'd' : {
             char *optarg_copy;
             size_t sizeof_home;
@@ -1525,12 +1631,12 @@ int main(int argc, char *argv[])
     (void) umask(0177);
     init_zrand();
     if (strcasecmp(action, "useradd") == 0) {
-        ret = do_useradd(file, &pwinfo);
+        ret = do_useradd(file, &pwinfo, max_concurrent_logins, max_auth_memory);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
         }
     } else if (strcasecmp(action, "usermod") == 0) {
-        ret = do_usermod(file, &pwinfo);
+        ret = do_usermod(file, &pwinfo, max_concurrent_logins, max_auth_memory);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
         }
@@ -1540,7 +1646,7 @@ int main(int argc, char *argv[])
             ret |= do_mkdb(dbfile, file);
         }
     } else if (strcasecmp(action, "passwd") == 0) {
-        ret = do_passwd(file, &pwinfo);
+        ret = do_passwd(file, &pwinfo, max_concurrent_logins, max_auth_memory);
         if (with_mkdb != 0) {
             ret |= do_mkdb(dbfile, file);
         }
