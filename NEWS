@@ -1,4 +1,10 @@
 
+* Version 1.0.48:
+ - Password hashing parameters are now chosen according to locally
+available resources. The pure-pw command gets to new switches: -C (as
+a hint regarding the number of simultaneous login attempts) and -M
+(total memory, in MB, to reserve for password hashing).
+
 * Version 1.0.47:
  - If TLS was only enabled on the control channel (-Y 1), the STAT command
 would send its output as other directory listing commands, breaking
