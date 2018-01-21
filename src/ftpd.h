@@ -364,7 +364,6 @@ void dofeat(void);
 void domlst(const char * const file);
 void dositetime(void);
 int ul_check_free_space(const char *name, const double min_space);
-void mappedtov4(struct sockaddr_storage *ss);
 void disablesignals(void);
 void getnames(void);
 void donlist(char *arg, const int on_ctrlconn, const int opt_l_,
