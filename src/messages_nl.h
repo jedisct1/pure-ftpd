@@ -227,3 +227,4 @@
 #define MSG_PROT_BEFORE_PBSZ "PROT must be preceded by a successful PBSZ command"
 #define MSG_WARN_LDAP_USERPASS_EMPTY "Geen userPassword attribuut aangetroffen. Controleer de toegangsrechten."
 #define MSG_LDAP_INVALID_AUTH_METHOD "Onjuiste LDAPAuthMethod in de configuratie. Moet 'bind' of 'password' zijn."
+#define MSG_INVALID_ARGUMENT "Invalid argument: \"%s\""
