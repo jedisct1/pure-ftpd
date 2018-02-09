@@ -9,7 +9,7 @@ recompiling anything, using "authentication modules".
 To enable it, you must ./configure with --with-extauth, or
 --with-everything. Linux binary packages have it enabled by default.
 
-Here's how they are working:
+Here's how they work:
 
 1) A client connects to the FTP server and issues a login/password pair.
 
