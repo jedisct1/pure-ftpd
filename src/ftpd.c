@@ -6192,8 +6192,11 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             exit(EXIT_SUCCESS);
         }
         default:
-            logfile(LOG_WARNING, MSG_ILLEGAL_OPTION);
+            die(421, LOG_ERR, MSG_ILLEGAL_OPTION);
         }
+    }
+    if (optind < argc) {
+        die(421, LOG_ERR, MSG_INVALID_ARGUMENT, argv[optind]);
     }
 #ifdef WITH_RFC2640
     if (charset_fs == NULL) {

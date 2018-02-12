@@ -227,3 +227,4 @@
 #define MSG_PROT_BEFORE_PBSZ "PROT ca marche qu'apres un PBSZ reussi"
 #define MSG_WARN_LDAP_USERPASS_EMPTY "LDAP n'a pas retourne d'attribut userPassword, ptet que les droits d'acces LDAP chient."
 #define MSG_LDAP_INVALID_AUTH_METHOD "LDAPAuthMethod dans le fichier de conf, ca doit etre 'bind' ou 'password'."
+#define MSG_INVALID_ARGUMENT "Invalid argument: \"%s\""
