@@ -114,6 +114,7 @@ External contributors and people who helped in any way, shape or form:
 * Michael Glad <glad at daimi.au.dk> - Submitted a patch to accept long .message files even on Irix.
 * Michele Pes - Reporting that --with-tls was documented in the README file, that the server required a change to compile with gcc2 and that --with-cork was still documented.
 * Mime Cuvalo - Reported the symlinks weren't handled consistently in MSLD.
+* Moisi Xhaferaj - Albanian translation.
 * Ned Holdbrook - reported that MLSD should display dot files.
 * Nicklas Uvelöv.
 * Nicolas (for all his questions)

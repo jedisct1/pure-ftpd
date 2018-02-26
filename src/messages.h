@@ -1,7 +1,11 @@
 #ifndef __MESSAGES_H__
 #define __MESSAGES_H__ 1
 
-#ifdef MESSAGES_DE
+#if defined(MESSAGES_SQ)
+# define MESSAGES_LOCALE "sq_AL"
+# include "messages_sq.h"
+
+#elif defined(MESSAGES_DE)
 # define MESSAGES_LOCALE "de_DE"
 # include "messages_de.h"
 

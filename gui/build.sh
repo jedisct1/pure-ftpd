@@ -105,6 +105,7 @@ $dialog \
 --radiolist 'Choose a language for server messages' \
 20 78 10 \
 'english' "This is the default" on \
+'albanian' "Contributed by Moisi Xhaferaj" off \
 'german' "Contributed by Mathias Gumz" off \
 'romanian' "Contributed by Claudiu Costin" off \
 'french' "Contributed by Ping" off \

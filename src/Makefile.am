@@ -103,6 +103,7 @@ libpureftpd_a_SOURCES = \
 	messages_pt_br.h \
 	messages_ro.h \
 	messages_sk.h \
+	messages_sq.h \
 	messages_sv.h \
 	messages_no.h \
 	messages_ru.h \

@@ -882,15 +882,17 @@ AC_ARG_WITH(everything,
   fi ])
 
 AC_ARG_WITH(language,
-[AS_HELP_STRING(--with-language=,< english | german | romanian | french |
+[AS_HELP_STRING(--with-language=,< english | albanian | german | romanian | french |
 french-funny | polish | spanish | danish | dutch | italian |
 brazilian-portuguese | slovak | korean | swedish | norwegian | russian |
 traditional-chinese | simplified-chinese | czech | turkish | hungarian |
 catalan>)],
 [ if test "x$withval" = "xenglish" ; then
     AC_DEFINE(MESSAGES_EN,,[english])
+  elif test "x$withval" = "xalbanian" ; then
+    AC_DEFINE(MESSAGES_SQ,,[albanian])
   elif test "x$withval" = "xgerman" ; then
-    AC_DEFINE(MESSAGES_DE,,[german])  
+    AC_DEFINE(MESSAGES_DE,,[german])
   elif test "x$withval" = "xromanian" ; then
     AC_DEFINE(MESSAGES_RO,,[romanian])
   elif test "x$withval" = "xfrench" ; then

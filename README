@@ -146,6 +146,7 @@ needs some extra memory. Better use it when the server is run in standalone
 mode. It can be way slower in inetd mode.
 
 --with-language=english
+--with-language=albanian
 --with-language=german
 --with-language=romanian
 --with-language=french
