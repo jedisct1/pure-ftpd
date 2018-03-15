@@ -9,7 +9,7 @@
 # instead of command-line options, please run the
 # following command :
 #
-# @prefix@/sbin/pure-ftpd @sysconfdir@/etc/pure-ftpd.conf
+# @prefix@/sbin/pure-ftpd @sysconfdir@/pure-ftpd.conf
 #
 # Online documentation:
 # https://www.pureftpd.org/project/pure-ftpd/doc
