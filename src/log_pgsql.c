@@ -504,7 +504,7 @@ void pw_pgsql_check(AuthResult * const result,
         crypto_crypt++;
         crypto_md5++;
         crypto_sha1++;
-    } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2)) {
+    } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2) == 0) {
         crypto_argon2++;
     } else if (strcasecmp(crypto, PASSWD_SQL_SCRYPT) == 0) {
         crypto_scrypt++;
