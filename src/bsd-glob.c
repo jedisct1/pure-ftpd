@@ -151,9 +151,9 @@ static int check_stars(const char *pattern)
     int    c;
 
     while ((c = *pattern++) != 0) {
-	if (c == '*' && ++stars > GLOB_MAX_STARS) {
-	    return -1;
-	}
+        if (c == '*' && ++stars > GLOB_MAX_STARS) {
+            return -1;
+        }
     }
     return 0;
 }
@@ -168,7 +168,7 @@ glob_(const char *pattern, int flags, int (*errfunc)(const char *, int),
     struct glob_lim limit = { 0, 0, 0 };
 
     if ((flags & GLOB_LIMIT) == GLOB_LIMIT && check_stars(pattern) == -1) {
-	return GLOB_NOSPACE;
+        return GLOB_NOSPACE;
     }
     pglob->gl_maxdepth = maxdepth;
     pglob->gl_maxfiles = maxfiles;
