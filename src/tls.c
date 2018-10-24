@@ -297,7 +297,7 @@ int tls_init_library(void)
     SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1);
 # endif
 # ifdef SSL_OP_NO_TLSv1_1
-    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_1);
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1_1);
 # endif
 # ifdef SSL_OP_NO_TLSv1_2
     SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_2);
