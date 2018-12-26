@@ -9,9 +9,6 @@ AC_CONFIG_LIBOBJ_DIR(src)
 
 AC_SUBST(VERSION)
 
-ISODATE=`date +%Y-%m-%d`
-AC_SUBST(ISODATE)
-
 dnl Checks for programs.
 LX_CFLAGS=${CFLAGS-NONE}
 AC_PROG_INSTALL
