@@ -300,7 +300,10 @@ int tls_init_library(void)
     SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1_1);
 # endif
 # ifdef SSL_OP_NO_TLSv1_2
-    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_2);
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1_2);
+# endif
+# ifdef SSL_OP_NO_TLSv1_3
+    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1_3);
 # endif
     if (tlsciphersuite != NULL) {
         if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
