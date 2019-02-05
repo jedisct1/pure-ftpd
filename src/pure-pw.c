@@ -1395,7 +1395,7 @@ int main(int argc, char *argv[])
     filter_pw_line_sep(pwinfo.login);
     while ((fodder =
             getopt(argc, argv,
-                   "c:C:d:D:f:F:g:hi:I:mn:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
+                   "c:C:d:D:f:F:g:hi:I:mM:n:N:q:Q:r:R:t:T:u:y:z:")) != -1) {
         switch(fodder) {
         case 'c' : {
             if ((pwinfo.gecos = strdup(optarg)) == NULL) {
