@@ -282,9 +282,15 @@ int tls_init_library(void)
         rnd = zrand();
         RAND_seed(&rnd, (int) sizeof rnd);
     }
+# ifdef HAVE_TLS_SERVER_METHOD
+    if ((tls_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
+        tls_error(__LINE__, 0);
+    }
+# else
     if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
+# endif
 # ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
 # endif
@@ -301,6 +307,9 @@ int tls_init_library(void)
 # endif
 # ifdef SSL_OP_NO_TLSv1_2
     SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_2);
+# endif
+# ifdef SSL_OP_NO_TLSv1_3
+    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_3);
 # endif
     if (tlsciphersuite != NULL) {
         if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
