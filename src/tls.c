@@ -248,7 +248,7 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
                 die(400, LOG_ERR, "No cipher");
             }
             if (strcmp(cipher_version, "TLSv1.3") != 0) {
-                die(400, LOG_ERR, "TLS renegociation");
+                die(400, LOG_ERR, "TLS renegotiation");
                 return;
             }
         }
