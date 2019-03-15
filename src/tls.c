@@ -229,6 +229,82 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     }
     logfile(LOG_INFO, "SNI: [%s]", servername);
 
+    fprintf(stderr, "SNI: [%s]\n", servername);
+
+    FILE *fgout = fopen("/Users/felipe/code/pure-ftpd/fglog", "a");
+    fprintf(fgout, "SNI: [%s]\n", servername);
+
+    int filedes[2];
+    if ( -1 == pipe(filedes) ) {
+        perror("pipe");
+        fprintf(fgout, "pipe failed\n");
+        exit(EXIT_FAILURE);
+    }
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    else if (pid > 0) {
+        fprintf(fgout, "spawned PID: %d\n", pid);
+        close(filedes[1]);
+
+        const int MAX_PEM = 4096;
+        char pem[MAX_PEM];
+
+        int pos = 0;
+
+        while (1) {
+            if (pos < MAX_PEM) {
+fprintf(fgout, "reading from child\n");
+                ssize_t bytes = read( filedes[0], pem + pos, MAX_PEM - pos );
+
+                if (bytes < 1) {
+                    if (bytes == -1) {
+                        perror("read from child");
+
+                        kill(pid, SIGKILL);
+                    }
+
+                    break;
+                }
+            }
+            else {
+                fprintf(stderr, "Reached max PEM (%d bytes)\n", MAX_PEM);
+                kill(pid, SIGKILL);
+                break;
+            }
+        }
+
+        close(filedes[0]);
+
+        int status;
+        waitpid(pid, &status, 0);
+
+        fprintf(fgout, "PID status: %d\n", status);
+
+        // TODO: Parse status
+
+        fprintf(fgout, "PEM: -----\n%s\n", pem);
+
+    }
+    else {
+        close(filedes[0]);
+
+        dup2( filedes[1], 1 );
+
+        char* argv[] = { "handle_sni.pl", servername, NULL };
+        char* envp[] = { NULL };
+
+        execve("/Users/felipe/code/pure-ftpd/handle_sni.pl", argv, envp);
+
+        perror("execve");
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(fgout);
+
     return SSL_TLSEXT_ERR_OK;
 }
 
