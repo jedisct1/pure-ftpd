@@ -251,14 +251,14 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         close(filedes[1]);
 
         const int MAX_PEM = 4096;
-        char pem[MAX_PEM];
+        char pem_path[MAX_PEM];
 
         int pos = 0;
 
         while (1) {
             if (pos < MAX_PEM) {
 fprintf(fgout, "reading from child\n");
-                ssize_t bytes = read( filedes[0], pem + pos, MAX_PEM - pos );
+                ssize_t bytes = read( filedes[0], pem_path + pos, MAX_PEM - pos );
 
                 if (bytes < 1) {
                     if (bytes == -1) {
@@ -286,8 +286,11 @@ fprintf(fgout, "reading from child\n");
 
         // TODO: Parse status
 
-        fprintf(fgout, "PEM: -----\n%s\n", pem);
+        fprintf(fgout, "path: -----\n%s\n", pem_path);
 
+        _init_tls_ctx(pem_path);
+
+        SSL_set_SSL_CTX(tls_cnx, tls_ctx);
     }
     else {
         close(filedes[0]);
@@ -350,36 +353,19 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 }
 # endif
 
-int tls_init_library(void)
-{
-    unsigned int rnd;
+void _init_tls_ctx(char *pem_path) {
+    SSL_CTX *my_ctx;
 
-    tls_cnx_handshook = 0;
-    tls_data_cnx_handshook = 0;
-# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
-    SSL_library_init();
-    SSL_load_error_strings();
-    OpenSSL_add_all_algorithms();
-# else
-    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS |
-                     OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
-    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |
-                        OPENSSL_INIT_ADD_ALL_DIGESTS |
-                        OPENSSL_INIT_LOAD_CONFIG, NULL);
-# endif
-    while (RAND_status() == 0) {
-        rnd = zrand();
-        RAND_seed(&rnd, (int) sizeof rnd);
-    }
 # ifdef HAVE_TLS_SERVER_METHOD
-    if ((tls_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
+    if ((my_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
 # else
-    if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
+    if ((my_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
         tls_error(__LINE__, 0);
     }
 # endif
+
 # ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
 # endif
@@ -406,17 +392,11 @@ int tls_init_library(void)
             _EXIT(EXIT_FAILURE);
         }
     }
-    if (SSL_CTX_use_certificate_chain_file(tls_ctx, cert_file) != 1) {
-        die(421, LOG_ERR,
-            MSG_FILE_DOESNT_EXIST ": [%s]", cert_file);
-    }
-    if (SSL_CTX_use_PrivateKey_file(tls_ctx, cert_file,
-                                    SSL_FILETYPE_PEM) != 1) {
-        tls_error(__LINE__, 0);
-    }
-    if (SSL_CTX_check_private_key(tls_ctx) != 1) {
-        tls_error(__LINE__, 0);
-    }
+
+    _assign_pem_to_ctx(pem_path, my_ctx);
+
+    tls_ctx = my_ctx;
+
     tls_init_cache();
 # ifdef SSL_CTRL_SET_ECDH_AUTO
     SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
@@ -437,7 +417,6 @@ int tls_init_library(void)
     SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #  endif
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
-    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
 # endif
     SSL_CTX_set_verify_depth(tls_ctx, 6);
     if (ssl_verify_client_cert) {
@@ -447,6 +426,48 @@ int tls_init_library(void)
             tls_error(__LINE__, 0);
         }
     }
+}
+
+void _assign_pem_to_ctx(char *path, SSL_CTX *my_ctx) {
+    if (SSL_CTX_use_certificate_chain_file(my_ctx, path) != 1) {
+        die(421, LOG_ERR,
+            MSG_FILE_DOESNT_EXIST ": [%s]", path);
+    }
+    if (SSL_CTX_use_PrivateKey_file(my_ctx, path,
+                                    SSL_FILETYPE_PEM) != 1) {
+        tls_error(__LINE__, 0);
+    }
+    if (SSL_CTX_check_private_key(my_ctx) != 1) {
+        tls_error(__LINE__, 0);
+    }
+}
+
+int tls_init_library(void)
+{
+    unsigned int rnd;
+
+    tls_cnx_handshook = 0;
+    tls_data_cnx_handshook = 0;
+# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
+    SSL_library_init();
+    SSL_load_error_strings();
+    OpenSSL_add_all_algorithms();
+# else
+    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS |
+                     OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
+    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |
+                        OPENSSL_INIT_ADD_ALL_DIGESTS |
+                        OPENSSL_INIT_LOAD_CONFIG, NULL);
+# endif
+    while (RAND_status() == 0) {
+        rnd = zrand();
+        RAND_seed(&rnd, (int) sizeof rnd);
+    }
+
+    _init_tls_ctx(cert_file);
+
+    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
+
     return 0;
 }
 
