@@ -219,6 +219,18 @@ static void tls_init_cache(void)
     SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
 }
 
+static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
+{
+    const char *servername;
+
+    if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
+        == NULL) {
+        logfile(LOG_INFO, "SNI: [%s]", servername);
+        return SSL_TLSEXT_ERR_NOACK;
+    }
+    return SSL_TLSEXT_ERR_OK;
+}
+
 # ifdef DISABLE_SSL_RENEGOTIATION
 static void ssl_info_cb(const SSL *cnx, int where, int ret)
 {
@@ -348,6 +360,7 @@ int tls_init_library(void)
     SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #  endif
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
 # endif
     SSL_CTX_set_verify_depth(tls_ctx, 6);
     if (ssl_verify_client_cert) {
