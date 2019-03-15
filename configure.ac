@@ -91,17 +91,18 @@ AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
 
-if test -d /usr/local/include; then
-  CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-fi
-
-if test -d /usr/kerberos/include; then
-  CPPFLAGS="$CPPFLAGS -I/usr/kerberos/include"
-fi
-
-if test -d /usr/local/lib; then
-  LDFLAGS="$LDFLAGS -L/usr/local/lib"
-fi
+for path in \
+  /usr/kerberos \
+  /usr/local /opt /usr/local/opt \
+  /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
+  /usr/openssl /opt/openssl /usr/local/opt/openssl; do
+  if test -d $path/include; then
+    CPPFLAGS="$CPPFLAGS -I${path}/include"
+  fi
+  if test -d $path/lib; then
+    LDFLAGS="$LDFLAGS -L${path}/lib"
+  fi
+done
 
 CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 
@@ -1297,7 +1298,7 @@ AC_ARG_WITH(mysql,
       ])
     ])
     AC_MSG_CHECKING(whether mysql clients can run)
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+    AC_LINK_IFELSE([AC_LANG_SOURCE([[
       #include <stdio.h>
       #include <mysql.h>    
       int main(void)
@@ -1331,7 +1332,7 @@ AC_ARG_WITH(pgsql,
     AC_CHECK_LIB(pq, PQconnectdb, ,
       [AC_MSG_ERROR(libpq is needed for PostgreSQL support)])        
     AC_MSG_CHECKING(whether postgresql clients can run)
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+    AC_LINK_IFELSE([AC_LANG_SOURCE([[
       #include <stdio.h>
       #include <libpq-fe.h>
       int main(void)
@@ -1358,7 +1359,7 @@ if test "x$with_tls" = "xyes" ; then
   fi
   AC_CHECK_LIB(crypto, DH_new)
   AC_CHECK_LIB(ssl, SSL_accept)
-  AC_CHECK_FUNCS(DH_get_2048_256)
+  AC_CHECK_FUNCS(DH_get_2048_256 TLS_server_method)
   AC_DEFINE(WITH_TLS,,[Enable TLS])
 fi
 
