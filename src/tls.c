@@ -225,9 +225,10 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 
     if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
         == NULL) {
-        logfile(LOG_INFO, "SNI: [%s]", servername);
         return SSL_TLSEXT_ERR_NOACK;
     }
+    logfile(LOG_INFO, "SNI: [%s]", servername);
+
     return SSL_TLSEXT_ERR_OK;
 }
 
