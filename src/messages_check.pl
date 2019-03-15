@@ -4,8 +4,6 @@
 # (C) 2001-2002 by Matthias Andree <matthias.andree@web.de>
 # COPYING: Conditions as per the GNU General Public License v2.0
 
-# $Id: messages_check.pl,v 1.2 2001/12/21 22:31:01 chrysalis Exp $
-
 use Carp qw(verbose);	# get backtraces
 use Parse::RecDescent;	# parser
 use strict;		# need to define everything

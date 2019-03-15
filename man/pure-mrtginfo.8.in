@@ -2,13 +2,13 @@
 .\" Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995-1999
 .\" Troll Tech AS, Waldemar Thranes gate 98B, N-0175 Oslo, Norway, fax +47
 .\" 22806380.
-.\" Pure-FTPd (C)opyleft 2001-2018 by the Pure-FTPd team.
+.\" Pure-FTPd (C)opyleft 2001-2019 Frank Denis.
 .\" 
 .\" Use, modification and distribution is allowed without limitation,
 .\" warranty, or liability of any kind.
 .\" 
 .\" 
-.TH "pure-mrtginfo" "8" "@VERSION@" "Pure-FTPd Team" "Pure-FTPd"
+.TH "pure-mrtginfo" "8" "@VERSION@" "Frank Denis" "Pure-FTPd"
 .SH "NAME"
 pure-mrtginfo \- provide an MRTG\-graphable user count for ftpd
 
@@ -58,8 +58,7 @@ Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995\-2002
 Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
 22806380.
 .PP 
-Pure\-FTPd (C)opyleft 2001\-2016 by Frank DENIS <j at pureftpd dot org> and
-the Pure\-FTPd team.
+Pure\-FTPd (C)opyleft 2001\-2019 by Frank DENIS <j at pureftpd dot org>.
 .PP 
 Use, modification and distribution is allowed without limitation,
 warranty, or liability of any kind.
