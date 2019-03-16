@@ -33,14 +33,18 @@
 #  define ONLY_ACCEPT_REUSED_SSL_SESSIONS 1
 # endif
 
-static void tls_error(const int line, int err)
+static void tls_error(const int line, int err, char *pem_path)
 {
     if (err == 0) {
         err = ERR_get_error();
     }
     if (err != 0) {
+        if (pem_path == NULL) {
+            pem_path = cert_file;
+        }
+
         logfile(LOG_ERR, "TLS [%s](%d): %s",
-                cert_file, line, ERR_error_string(err, NULL));
+                pem_path, line, ERR_error_string(err, NULL));
     }
     _EXIT(EXIT_FAILURE);
 }
@@ -294,11 +298,16 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 
             logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
 
+            SSL_CTX *new_ctx = _create_tls_ctx(pem_path);
+
             _free_tls_ctx();
 
-            tls_ctx = _create_tls_ctx(pem_path);
+            if (!SSL_set_SSL_CTX( tls_cnx, new_ctx )) {
+                tls_error(__LINE__, 0, pem_path);
+            }
 
-            SSL_set_SSL_CTX( tls_cnx, tls_ctx );
+            tls_ctx = new_ctx;
+            cert_file = pem_path;
         }
         else {
             close(filedes[0]);
@@ -371,10 +380,10 @@ void _assign_pem_path_to_ctx(char *path, SSL_CTX *my_ctx) {
     }
     if (SSL_CTX_use_PrivateKey_file(my_ctx, path,
                                     SSL_FILETYPE_PEM) != 1) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, path);
     }
     if (SSL_CTX_check_private_key(my_ctx) != 1) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, path);
     }
 }
 
@@ -383,11 +392,11 @@ SSL_CTX * _create_tls_ctx(char *pem_path) {
 
 # ifdef HAVE_TLS_SERVER_METHOD
     if ((my_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, pem_path);
     }
 # else
     if ((my_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, pem_path);
     }
 # endif
 
@@ -449,8 +458,8 @@ SSL_CTX * _create_tls_ctx(char *pem_path) {
     if (ssl_verify_client_cert) {
         SSL_CTX_set_verify(my_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                            SSL_VERIFY_PEER, NULL);
-        if (SSL_CTX_load_verify_locations(my_ctx, cert_file, NULL) != 1) {
-            tls_error(__LINE__, 0);
+        if (SSL_CTX_load_verify_locations(my_ctx, pem_path, NULL) != 1) {
+            tls_error(__LINE__, 0, pem_path);
         }
     }
 
@@ -508,10 +517,10 @@ int tls_init_new_session(void)
     int ret_;
 
     if (tls_ctx == NULL || (tls_cnx = SSL_new(tls_ctx)) == NULL) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
     if (SSL_set_fd(tls_cnx, clientfd) != 1) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
     SSL_set_accept_state(tls_cnx);
     for (;;) {
@@ -548,15 +557,15 @@ int tls_init_data_session(const int fd, const int passive)
     (void) passive;
     if (tls_ctx == NULL) {
         logfile(LOG_ERR, MSG_TLS_NO_CTX);
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
     if (tls_data_cnx != NULL) {
         tls_close_session(&tls_data_cnx);
     } else if ((tls_data_cnx = SSL_new(tls_ctx)) == NULL) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
     if (SSL_set_fd(tls_data_cnx, fd) != 1) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
     SSL_set_accept_state(tls_data_cnx);
     for (;;) {
@@ -574,7 +583,7 @@ int tls_init_data_session(const int fd, const int passive)
     }
 # if ONLY_ACCEPT_REUSED_SSL_SESSIONS
     if (broken_client_compat == 0 && SSL_session_reused(tls_data_cnx) == 0) {
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
     }
 # endif
     if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
@@ -619,7 +628,7 @@ retry:
         if (SSL_clear(*cnx) == 1) {
             break;
         }
-        tls_error(__LINE__, 0);
+        tls_error(__LINE__, 0, NULL);
       }
     }
     if (*cnx == tls_cnx) {
