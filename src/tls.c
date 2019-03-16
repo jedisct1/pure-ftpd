@@ -318,7 +318,8 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
                         cert_file = pem_path;
                     }
                     else {
-                        logfile(LOG_ERR, "SNI handler `%s` sent no output.\n");
+                        // No output is how the handler indicates
+                        // that no certificate matches the SNI string.
                     }
                 }
                 else {
