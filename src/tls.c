@@ -298,10 +298,6 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
             if (WIFEXITED(status)) {
                 int exit = WEXITSTATUS(status);
 
-                FILE *fgout = fopen("/Users/felipe/code/pure-ftpd/fglog", "a");
-                fprintf(fgout, "exit: [%d]\n", exit);
-                fclose(fgout);
-
                 if (exit == 0) {
                     if (strlen(pem_path) > 0) {
                         logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
