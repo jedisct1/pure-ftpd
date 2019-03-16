@@ -114,6 +114,7 @@ static struct option long_options[] = {
     { "logpid", 0, NULL, '1' },
 # ifdef WITH_TLS
     { "certfile", 1, NULL, '2' },
+    { "sni-handler", 1, NULL, 'n' },
 # endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },

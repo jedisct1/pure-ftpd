@@ -19,6 +19,7 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"Bind (<nospace>)",                          "--bind=$0"},
     {"BrokenClientsCompatibility? <bool>",        "--brokenclientscompatibility"},
     {"CertFile (<any*>)",                         "--certfile=$0"},
+    {"SNIHandler (<any*>)",                       "--sni-handler=$0"},
     {"ChrootEveryone? <bool>",                    "--chrooteveryone"},
     {"ClientCharset (<nospace>)",                 "--clientcharset=$0"},
     {"CreateHomeDir? <bool>",                     "--createhomedir"},

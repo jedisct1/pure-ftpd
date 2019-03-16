@@ -1,4 +1,5 @@
 #include <config.h>
+//#include <libgen.h>
 
 #ifdef WITH_TLS
 # ifndef IN_TLS_C
@@ -230,83 +231,92 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
     const char *servername;
 
-    // TODO: Make this a configurable option.
-    const char *sni_hook_path = "/Users/felipe/code/pure-ftpd/handle_sni.pl";
-
     if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
         == NULL) {
         return SSL_TLSEXT_ERR_NOACK;
     }
     logfile(LOG_INFO, "SNI: [%s]", servername);
 
-    // TODO: validate “servername”
+    if (sni_handler_path != NULL) {
 
-    int filedes[2];
-    if ( -1 == pipe(filedes) ) {
-        perror("pipe");
-        exit(EXIT_FAILURE);
-    }
+        // TODO: validate “servername”
 
-    pid_t pid = fork();
-    if (pid == -1) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid > 0) {
-        close(filedes[1]);
+        int filedes[2];
+        if ( -1 == pipe(filedes) ) {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
 
-        const int MAX_PATH = 1024;
-        char pem_path[MAX_PATH];
+        pid_t pid = fork();
+        if (pid == -1) {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        else if (pid > 0) {
+            close(filedes[1]);
 
-        int pos = 0;
+            const int MAX_PATH = 1024;
+            char pem_path[MAX_PATH];
 
-        while (1) {
-            if (pos < MAX_PATH) {
-                ssize_t bytes = read( filedes[0], pem_path + pos, MAX_PATH - pos );
+            int pos = 0;
 
-                if (bytes < 1) {
-                    if (bytes == -1) {
-                        perror("read from child");
+            while (1) {
+                if (pos < MAX_PATH) {
+                    ssize_t bytes = read( filedes[0], pem_path + pos, MAX_PATH - pos );
 
-                        kill(pid, SIGKILL);
+                    if (bytes < 1) {
+                        if (bytes == -1) {
+                            perror("read from child");
+
+                            kill(pid, SIGKILL);
+                        }
+
+                        break;
                     }
-
+                }
+                else {
+                    kill(pid, SIGKILL);
                     break;
                 }
             }
-            else {
-                kill(pid, SIGKILL);
-                break;
-            }
+
+            close(filedes[0]);
+
+            int status;
+            waitpid(pid, &status, 0);
+
+            // TODO: Parse status
+
+            FILE *fgout = fopen("/Users/felipe/code/pure-ftpd/fglog", "a");
+            fprintf(fgout, "SNI: [%s]\n", servername);
+            fprintf(fgout, "status: [%s]\n", status);
+            fclose(fgout);
+
+            logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
+
+            _free_tls_ctx();
+
+            tls_ctx = _create_tls_ctx(pem_path);
+
+            SSL_set_SSL_CTX( tls_cnx, tls_ctx );
         }
+        else {
+            close(filedes[0]);
 
-        close(filedes[0]);
+            dup2( filedes[1], 1 );
 
-        int status;
-        waitpid(pid, &status, 0);
+            //char *sni_handler_basepath = basename(sni_handler_path);
 
-        // TODO: Parse status
+            char *sni_handler_basepath = sni_handler_path;
 
-        logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
+            char* argv[] = { sni_handler_basepath, servername, NULL };
+            char* envp[] = { NULL };
 
-        _free_tls_ctx();
+            execve(sni_handler_path, argv, envp);
 
-        tls_ctx = _create_tls_ctx(pem_path);
-
-        SSL_set_SSL_CTX( tls_cnx, tls_ctx );
-    }
-    else {
-        close(filedes[0]);
-
-        dup2( filedes[1], 1 );
-
-        char* argv[] = { "handle_sni.pl", servername, NULL };
-        char* envp[] = { NULL };
-
-        execve(sni_hook_path, argv, envp);
-
-        perror("execve");
-        exit(EXIT_FAILURE);
+            perror("execve");
+            exit(EXIT_FAILURE);
+        }
     }
 
     return SSL_TLSEXT_ERR_OK;
