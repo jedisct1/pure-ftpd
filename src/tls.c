@@ -238,6 +238,8 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     }
     logfile(LOG_INFO, "SNI: [%s]", servername);
 
+    // TODO: validate “servername”
+
     int filedes[2];
     if ( -1 == pipe(filedes) ) {
         perror("pipe");
@@ -305,8 +307,6 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         perror("execve");
         exit(EXIT_FAILURE);
     }
-
-    fclose(fgout);
 
     return SSL_TLSEXT_ERR_OK;
 }
