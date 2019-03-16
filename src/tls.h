@@ -18,8 +18,8 @@ int tls_init_new_session(void);
 int tls_init_data_session(const int fd, const int passive);
 void tls_close_session(SSL **cnx);
 
-void _init_tls_ctx(char *pem_path);
-void _assign_pem_to_ctx(char *path, SSL_CTX *my_ctx);
+SSL_CTX * _create_tls_ctx(char *pem_path);
+void _assign_pem_path_to_ctx(char *path, SSL_CTX *my_ctx);
 
 # ifndef IN_TLS_C
 extern

@@ -44,7 +44,7 @@ static void tls_error(const int line, int err)
     _EXIT(EXIT_FAILURE);
 }
 
-static int tls_init_ecdh_curve(void)
+static int tls_init_ecdh_curve(SSL_CTX *my_ctx)
 {
 # ifndef SSL_OP_SINGLE_ECDH_USE
     errno = ENOTSUP;
@@ -65,15 +65,15 @@ static int tls_init_ecdh_curve(void)
         errno = ENOTSUP;
         return -1;
     }
-    SSL_CTX_set_options(tls_ctx, SSL_OP_SINGLE_ECDH_USE);
-    SSL_CTX_set_tmp_ecdh(tls_ctx, curve);
+    SSL_CTX_set_options(my_ctx, SSL_OP_SINGLE_ECDH_USE);
+    SSL_CTX_set_tmp_ecdh(my_ctx, curve);
     EC_KEY_free(curve);
 
     return 0;
 # endif
 }
 
-static int tls_init_dhparams_default(void)
+static int tls_init_dhparams_default(SSL_CTX *my_ctx)
 {
 # ifdef HAVE_DH_GET_2048_256
     DH *dh;
@@ -178,16 +178,16 @@ static const BN_ULONG dh2048_256_q[] = {
         die_mem();
     }
 # endif
-    SSL_CTX_set_tmp_dh(tls_ctx, dh);
+    SSL_CTX_set_tmp_dh(my_ctx, dh);
     DH_free(dh);
 # ifdef SSL_OP_SINGLE_DH_USE
-    SSL_CTX_set_options(tls_ctx, SSL_OP_SINGLE_DH_USE);
+    SSL_CTX_set_options(my_ctx, SSL_OP_SINGLE_DH_USE);
 # endif
 
     return 0;
 }
 
-static int tls_init_dhparams(void)
+static int tls_init_dhparams(SSL_CTX *my_ctx)
 {
     BIO *bio;
     DH  *dh;
@@ -201,22 +201,22 @@ static int tls_init_dhparams(void)
     if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL) {
         die(400, LOG_ERR, "Invalid DH parameters file " TLS_DHPARAMS_FILE);
     }
-    SSL_CTX_set_tmp_dh(tls_ctx, dh);
+    SSL_CTX_set_tmp_dh(my_ctx, dh);
     DH_free(dh);
     BIO_free(bio);
 
     return 0;
 }
 
-static void tls_init_cache(void)
+static void tls_init_cache(SSL_CTX *my_ctx)
 {
     static const char *tls_ctx_id = "pure-ftpd";
 
-    SSL_CTX_set_session_cache_mode(tls_ctx, SSL_SESS_CACHE_SERVER);
-    SSL_CTX_set_session_id_context(tls_ctx, (unsigned char *) tls_ctx_id,
+    SSL_CTX_set_session_cache_mode(my_ctx, SSL_SESS_CACHE_SERVER);
+    SSL_CTX_set_session_id_context(my_ctx, (unsigned char *) tls_ctx_id,
                                    (unsigned int) strlen(tls_ctx_id));
-    SSL_CTX_sess_set_cache_size(tls_ctx, 10);
-    SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
+    SSL_CTX_sess_set_cache_size(my_ctx, 10);
+    SSL_CTX_set_timeout(my_ctx, 60 * 60L);
 }
 
 static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
@@ -251,14 +251,14 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         close(filedes[1]);
 
         const int MAX_PEM = 4096;
-        char pem_path[MAX_PEM];
+        char pem[MAX_PEM];
 
         int pos = 0;
 
         while (1) {
             if (pos < MAX_PEM) {
 fprintf(fgout, "reading from child\n");
-                ssize_t bytes = read( filedes[0], pem_path + pos, MAX_PEM - pos );
+                ssize_t bytes = read( filedes[0], pem + pos, MAX_PEM - pos );
 
                 if (bytes < 1) {
                     if (bytes == -1) {
@@ -286,11 +286,8 @@ fprintf(fgout, "reading from child\n");
 
         // TODO: Parse status
 
-        fprintf(fgout, "path: -----\n%s\n", pem_path);
+        fprintf(fgout, "PEM: -----\n%s\n", pem);
 
-        _init_tls_ctx(pem_path);
-
-        SSL_set_SSL_CTX(tls_cnx, tls_ctx);
     }
     else {
         close(filedes[0]);
@@ -353,7 +350,21 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 }
 # endif
 
-void _init_tls_ctx(char *pem_path) {
+void _assign_pem_path_to_ctx(char *path, SSL_CTX *my_ctx) {
+    if (SSL_CTX_use_certificate_chain_file(my_ctx, path) != 1) {
+        die(421, LOG_ERR,
+            MSG_FILE_DOESNT_EXIST ": [%s]", path);
+    }
+    if (SSL_CTX_use_PrivateKey_file(my_ctx, path,
+                                    SSL_FILETYPE_PEM) != 1) {
+        tls_error(__LINE__, 0);
+    }
+    if (SSL_CTX_check_private_key(my_ctx) != 1) {
+        tls_error(__LINE__, 0);
+    }
+}
+
+SSL_CTX * _create_tls_ctx(char *pem_path) {
     SSL_CTX *my_ctx;
 
 # ifdef HAVE_TLS_SERVER_METHOD
@@ -367,79 +378,69 @@ void _init_tls_ctx(char *pem_path) {
 # endif
 
 # ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-    SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
+    SSL_CTX_set_options(my_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
 # endif
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+    SSL_CTX_set_options(my_ctx, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 # endif
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv2);
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_SSLv3);
+    SSL_CTX_set_options(my_ctx, SSL_OP_NO_SSLv2);
+    SSL_CTX_set_options(my_ctx, SSL_OP_NO_SSLv3);
 # ifdef SSL_OP_NO_TLSv1
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1);
+    SSL_CTX_set_options(my_ctx, SSL_OP_NO_TLSv1);
 # endif
 # ifdef SSL_OP_NO_TLSv1_1
-    SSL_CTX_set_options(tls_ctx, SSL_OP_NO_TLSv1_1);
+    SSL_CTX_set_options(my_ctx, SSL_OP_NO_TLSv1_1);
 # endif
 # ifdef SSL_OP_NO_TLSv1_2
-    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_2);
+    SSL_CTX_clear_options(my_ctx, SSL_OP_NO_TLSv1_2);
 # endif
 # ifdef SSL_OP_NO_TLSv1_3
-    SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_3);
+    SSL_CTX_clear_options(my_ctx, SSL_OP_NO_TLSv1_3);
 # endif
+
     if (tlsciphersuite != NULL) {
-        if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
+        if (SSL_CTX_set_cipher_list(my_ctx, tlsciphersuite) != 1) {
             logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
             _EXIT(EXIT_FAILURE);
         }
     }
 
-    _assign_pem_to_ctx(pem_path, my_ctx);
+    _assign_pem_path_to_ctx( pem_path, my_ctx );
 
-    tls_ctx = my_ctx;
+    tls_init_cache(my_ctx);
 
-    tls_init_cache();
 # ifdef SSL_CTRL_SET_ECDH_AUTO
-    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
+    SSL_CTX_ctrl(my_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
 # else
-    tls_init_ecdh_curve();
+    tls_init_ecdh_curve(my_ctx);
 # endif
 # ifdef SSL_CTRL_SET_DH_AUTO
-    if (tls_init_dhparams() != 0) {
-        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
+    if (tls_init_dhparams(my_ctx) != 0) {
+        SSL_CTX_ctrl(my_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
     }
 # else
-    if (tls_init_dhparams() != 0) {
-        tls_init_dhparams_default();
+    if (tls_init_dhparams(my_ctx) != 0) {
+        tls_init_dhparams_default(my_ctx);
     }
 # endif
+
 # ifdef DISABLE_SSL_RENEGOTIATION
 #  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
-    SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
+    SSL_CTX_set_options(my_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #  endif
-    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+    SSL_CTX_set_info_callback(my_ctx, ssl_info_cb);
+    SSL_CTX_set_tlsext_servername_callback(my_ctx, ssl_servername_cb);
 # endif
-    SSL_CTX_set_verify_depth(tls_ctx, 6);
+    SSL_CTX_set_verify_depth(my_ctx, 6);
     if (ssl_verify_client_cert) {
-        SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
+        SSL_CTX_set_verify(my_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                            SSL_VERIFY_PEER, NULL);
-        if (SSL_CTX_load_verify_locations(tls_ctx, cert_file, NULL) != 1) {
+        if (SSL_CTX_load_verify_locations(my_ctx, cert_file, NULL) != 1) {
             tls_error(__LINE__, 0);
         }
     }
-}
 
-void _assign_pem_to_ctx(char *path, SSL_CTX *my_ctx) {
-    if (SSL_CTX_use_certificate_chain_file(my_ctx, path) != 1) {
-        die(421, LOG_ERR,
-            MSG_FILE_DOESNT_EXIST ": [%s]", path);
-    }
-    if (SSL_CTX_use_PrivateKey_file(my_ctx, path,
-                                    SSL_FILETYPE_PEM) != 1) {
-        tls_error(__LINE__, 0);
-    }
-    if (SSL_CTX_check_private_key(my_ctx) != 1) {
-        tls_error(__LINE__, 0);
-    }
+    return my_ctx;
 }
 
 int tls_init_library(void)
@@ -464,9 +465,7 @@ int tls_init_library(void)
         RAND_seed(&rnd, (int) sizeof rnd);
     }
 
-    _init_tls_ctx(cert_file);
-
-    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
+    tls_ctx = _create_tls_ctx(cert_file);
 
     return 0;
 }
