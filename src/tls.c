@@ -1,5 +1,7 @@
 #include <config.h>
-//#include <libgen.h>
+#include <libgen.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #ifdef WITH_TLS
 # ifndef IN_TLS_C
@@ -264,6 +266,8 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 
             int pos = 0;
 
+            alarm(30);  // TODO: Does this need to be configurable?
+
             while (1) {
                 if (pos < MAX_PATH) {
                     ssize_t bytes = read( filedes[0], pem_path + pos, MAX_PATH - pos );
@@ -289,34 +293,50 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
             int status;
             waitpid(pid, &status, 0);
 
-            // TODO: Parse status
+            alarm(0);
 
-            FILE *fgout = fopen("/Users/felipe/code/pure-ftpd/fglog", "a");
-            fprintf(fgout, "SNI: [%s]\n", servername);
-            fprintf(fgout, "status: [%s]\n", status);
-            fclose(fgout);
+            if (WIFEXITED(status)) {
+                int exit = WEXITSTATUS(status);
 
-            logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
+                FILE *fgout = fopen("/Users/felipe/code/pure-ftpd/fglog", "a");
+                fprintf(fgout, "exit: [%d]\n", exit);
+                fclose(fgout);
 
-            SSL_CTX *new_ctx = _create_tls_ctx(pem_path);
+                if (exit == 0) {
+                    if (strlen(pem_path) > 0) {
+                        logfile(LOG_INFO, "SNI PEM path: [%s]", pem_path);
 
-            _free_tls_ctx();
+                        SSL_CTX *new_ctx = _create_tls_ctx(pem_path);
 
-            if (!SSL_set_SSL_CTX( tls_cnx, new_ctx )) {
-                tls_error(__LINE__, 0, pem_path);
+                        _free_tls_ctx();
+
+                        if (!SSL_set_SSL_CTX( tls_cnx, new_ctx )) {
+                            tls_error(__LINE__, 0, pem_path);
+                        }
+
+                        tls_ctx = new_ctx;
+                        cert_file = pem_path;
+                    }
+                    else {
+                        logfile(LOG_ERR, "SNI handler `%s` sent no output.\n");
+                    }
+                }
+                else {
+                    logfile(LOG_ERR, "SNI handler `%s` ended with exit code %d.\n", sni_handler_path, exit);
+                }
             }
+            else if (WIFSIGNALED(status)) {
+                int sig = WTERMSIG(status);
 
-            tls_ctx = new_ctx;
-            cert_file = pem_path;
+                logfile(LOG_ERR, "SNI handler `%s` was killed by signal %d.\n", sni_handler_path, sig);
+            }
         }
         else {
             close(filedes[0]);
 
             dup2( filedes[1], 1 );
 
-            //char *sni_handler_basepath = basename(sni_handler_path);
-
-            char *sni_handler_basepath = sni_handler_path;
+            char *sni_handler_basepath = basename(sni_handler_path);
 
             char* argv[] = { sni_handler_basepath, servername, NULL };
             char* envp[] = { NULL };

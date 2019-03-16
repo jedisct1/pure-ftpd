@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
-#print Dumper( ZERO => $0, ARGV => \@ARGV, ENV => \%ENV );
+use FindBin;
 
-print "/Users/felipe/code/pure-ftpd/sni.pem";
+print "$FindBin::Bin/sni.pem";

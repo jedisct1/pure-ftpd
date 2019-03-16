@@ -5805,7 +5805,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             }
             break;
         case 'n':
-            if ((sni_handler_path = strdug(optarg)) == NULL) {
+            if ((sni_handler_path = strdup(optarg)) == NULL) {
                 die_mem();
             }
             break;
