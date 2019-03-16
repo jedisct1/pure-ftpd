@@ -230,6 +230,7 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
     const char *servername;
 
+    // TODO: Make this a configurable option.
     const char *sni_hook_path = "/Users/felipe/code/pure-ftpd/handle_sni.pl";
 
     if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
