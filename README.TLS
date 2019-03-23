@@ -146,7 +146,7 @@ clients are accepted.
 clients are accepted. Clear data connections are also refused, so private
 data connections are enforced. This is an extreme setting.
 
-When TLS has been successfully negociated for a connection, you'll see
+When TLS has been successfully negotiated for a connection, you'll see
 something similar to this in log files :
 
 <<

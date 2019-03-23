@@ -1384,7 +1384,8 @@ void douser(const char *username)
         if (((pw = getpwnam("ftp")) == NULL &&
              (pw = getpwnam("_ftp")) == NULL) ||
             pw->pw_uid == 0 || pw->pw_gid == 0 ||
-            doinitsupgroups("ftp", (uid_t) -1, pw->pw_gid) != 0 ||
+            (doinitsupgroups("ftp", (uid_t) -1, pw->pw_gid) != 0 &&
+             doinitsupgroups("_ftp", (uid_t) -1, pw->pw_gid) != 0) ||
             setgid(pw->pw_gid) || setegid(pw->pw_gid)) {
             cantsec:
             die(421, LOG_ERR, MSG_UNABLE_SECURE_ANON);
@@ -5591,7 +5592,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             ) != -1) {
         switch (fodder) {
         case 's': {
-            if ((pw = getpwnam("ftp"))) {
+            if ((pw = getpwnam("ftp")) != NULL ||
+                (pw = getpwnam("_ftp")) != NULL) {
                 warez = pw->pw_uid;
             } else {
                 logfile(LOG_ERR, MSG_NO_FTP_ACCOUNT);

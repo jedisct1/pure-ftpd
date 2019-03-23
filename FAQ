@@ -838,7 +838,7 @@ files nor list directories.
 
 First, try to force your client to use the passive mode. In active mode, the
 server has to connect to the client (or the NAT gateway) on a dynamic port
-that is negociated on the connection socket. But when TLS is used, that
+that is negotiated on the connection socket. But when TLS is used, that
 connection socket is encrypted, therefore no man-in-the middle can see what
 ports will be used to transfer data, including the firewall. There are some
 proposals to work around this problem, but neither popular clients nor common
