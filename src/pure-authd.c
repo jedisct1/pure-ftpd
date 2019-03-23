@@ -5,8 +5,8 @@
 
 int main(void)
 {
-    puts("Please compile the server with --with-extauth\n"
-         "to use this feature. Thank you.");
+    puts("Please compile the server with --with-extauth to use this feature.\n"
+         "Thank you.");
 
     return 0;
 }
