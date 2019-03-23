@@ -1,0 +1,91 @@
+.TH "pure-certd" "8" "@VERSION@" "Frank Denis" "Pure-FTPd"
+.SH "NAME"
+.LP
+pure\-certd \- TLS certificate agent for Pure\-FTPd.
+.SH "SYNTAX"
+.LP
+pure\-certd [\fI\-p\fP <\fI/path/to/pidfile\fP>] [\fI\-u\fP uid] [\fI\-g\fP gid] [\fI\-B\fP] <\fI\-s\fP /path/to/socket> \fI\-r\fP /program/to/run
+
+.SH "DESCRIPTION"
+.LP
+pure\-certd is a daemon that forks an authentication program, waits for a certificate path as a reply, and returns it to an application server.
+.LP
+pure\-certd listens to a local Unix socket. A new connection to that socket should send pure\-authd the following structure:
+.IP
+sni_name:xxx
+end
+.LP
+These content is passed to the authentication program, as an environment variable:
+.IP
+CERTD_SNI_NAME
+.LP
+The authentication program should take appropriate actions to select a TLS certificate, and reply to the standard output with the following format:
+.IP
+action:strict
+cert_path:/path/to/cert.pem
+end
+.TP
+\fBaction:\fRxxx
+If action is "deny", a certificate for that name was not found and access is denied.
+If xxx is "default", the default certificate will be used.
+If xxx is "strict", the certificate whose path is indicated in "cert_path" will be used. If absent or invalid, access will be denied.
+If xxx is "fallback", the certificate whose path is indicated in "cert_path" will be used. If absent or invalid, the default certificate will be used instead.
+.TP
+\fBuid:\fRxxx
+The system uid to be assigned to that user. Must be > 0.
+.TP
+\fBgid:\fRxxx
+The primary system gid. Must be > 0.
+.TP
+\fBdir:\fRxxx
+The absolute path to the home directory. Can contain /./ for a chroot jail.
+.LP
+\fIOnly one authentication program is forked at a time. It must return quickly.\fR
+.SH "OPTIONS"
+.TP
+\fB\-u\fR <\fIuid\fP>
+Have the daemon run with that uid.
+.TP
+\fB\-g\fR <\fIgid\fP>
+Have the daemon run with that gid.
+.TP
+\fB\-B\fR
+Fork in background (daemonization).
+.TP
+\fB\-s\fR <\fI/path/to/socket\fP>
+Set the full path to the local Unix socket.
+.TP
+\fB\-r\fR <\fI/path/to/program\fP>
+Set the full path to the authentication program.
+.TP
+\fB\-h\fR
+Output help information and exit.
+.SH "EXAMPLES"
+.LP
+To run this program the standard way type:
+.LP
+pure\-certd \-s @LOCALSTATEDIR@/run/certd.sock \-r /usr/bin/my\-cert\-program &
+.LP
+pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/certd.sock &
+.TP
+/usr/bin/my\-cert\-program can be as simple as:
+#! /bin/sh
+
+echo 'action:strict'
+
+echo 'cert_path:/etc/ssl/private/pure-ftpd/cert.pen'
+
+echo 'end'
+.SH "AUTHORS"
+.LP
+Frank DENIS <j at pureftpd dot org>
+.SH "SEE ALSO"
+.BR "ftp(1)" ,
+.BR "pure-ftpd(8)"
+.BR "pure-ftpwho(8)"
+.BR "pure-mrtginfo(8)"
+.BR "pure-uploadscript(8)"
+.BR "pure-statsdecode(8)"
+.BR "pure-pw(8)"
+.BR "pure-quotacheck(8)"
+.BR "pure-authd(8)"

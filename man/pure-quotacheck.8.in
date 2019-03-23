@@ -61,6 +61,7 @@ pure\-quotacheck never scans the same inode/device pair twice.
 .BR "pure-pw(8)"
 .BR "pure-quotacheck(8)"
 .BR "pure-authd(8)"
+.BR "pure-certd(8)"
 
 .BR "RFC 959",
 .BR "RFC 2228",

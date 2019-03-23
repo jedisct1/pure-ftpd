@@ -2,6 +2,7 @@ noinst_LIBRARIES = libpureftpd.a
 
 sbin_PROGRAMS = \
 	pure-authd \
+	pure-certd \
 	pure-ftpd \
 	pure-ftpwho \
 	pure-mrtginfo \
@@ -127,6 +128,7 @@ libpureftpd_a_SOURCES = \
 	simpleconf.c \
 	syslognames.h \
 	tls.h \
+	tls_extcert.h \
 	tls.c \
 	upload-pipe.c \
 	upload-pipe.h \
@@ -246,6 +248,19 @@ pure_authd_SOURCES = \
 	mysnprintf.h \
 	pure-authd.c \
 	pure-authd_p.h \
+	safe_rw.c \
+	safe_rw.h
+
+pure_certd_SOURCES = \
+	bsd-getopt_long.c \
+	bsd-getopt_long.h \
+	fakesnprintf.h \
+	fakesnprintf.c \
+	ftpd.h \
+	mysnprintf.c \
+	mysnprintf.h \
+	pure-certd.c \
+	pure-certd_p.h \
 	safe_rw.c \
 	safe_rw.h
 

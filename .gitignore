@@ -29,6 +29,7 @@ puredb/src/example_write
 puredb/src/regression
 src/ptracetest
 src/pure-authd
+src/pure-certd
 src/pure-ftpd
 src/pure-ftpwho
 src/pure-mrtginfo

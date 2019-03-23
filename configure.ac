@@ -1462,7 +1462,7 @@ gui/Makefile m4/Makefile pure-ftpd.conf puredb/Makefile
 puredb/src/Makefile
 man/pure-ftpd.8 man/pure-ftpwho.8 man/pure-mrtginfo.8 man/pure-uploadscript.8
 man/pure-statsdecode.8 man/pure-quotacheck.8 man/pure-pw.8 man/pure-pwconvert.8
-man/pure-authd.8)
+man/pure-authd.8 man/pure-certd.8)
 
 AC_OUTPUT
 

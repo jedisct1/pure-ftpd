@@ -7,7 +7,8 @@ man_MANS = \
 	pure-quotacheck.8 \
 	pure-pw.8 \
 	pure-pwconvert.8 \
-	pure-authd.8
+	pure-authd.8 \
+	pure-certd.8
 
 CLEANFILES = \
 	pure-ftpd.8 \
@@ -18,4 +19,5 @@ CLEANFILES = \
 	pure-quotacheck.8 \
 	pure-pw.8 \
 	pure-pwconvert.8 \
-	pure-authd.8
+	pure-authd.8 \
+	pure-certd.8

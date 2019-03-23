@@ -460,6 +460,14 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # endif
 #endif
 
+#ifndef CERTD_PID_FILE
+# ifdef NON_ROOT_FTP
+#  define CERTD_PID_FILE CONFDIR "/pure-certd.pid"
+# else
+#  define CERTD_PID_FILE STATEDIR "/run/pure-certd.pid"
+# endif
+#endif
+
 #ifndef NON_ROOT_FTP
 # ifdef IMPLICIT_TLS
 #  define DEFAULT_FTP_PORT_S "990"
