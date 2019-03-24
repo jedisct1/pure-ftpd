@@ -26,6 +26,7 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"Daemonize? <bool>",                         "--daemonize"},
     {"DisplayDotFiles? <bool>",                   "--displaydotfiles"},
     {"DontResolve? <bool>",                       "--dontresolve"},
+    {"DontResolve (<any*>)",                      "--extcert=$0"},
     {"ForcePassiveIP (<nospace>)",                "--forcepassiveip=$0"},
     {"FortunesFile (<any*>)",                     "--fortunesfile=$0"},
     {"FileSystemCharset (<nospace>)",             "--fscharset=$0"},

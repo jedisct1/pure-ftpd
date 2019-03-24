@@ -168,11 +168,10 @@ GLOBAL0(signed char ssl_disabled);
 GLOBAL0(signed char ssl_verify_client_cert);
 GLOBAL(const char *cert_file, TLS_CERTIFICATE_FILE);
 GLOBAL(const char *key_file, TLS_CERTIFICATE_FILE);
+GLOBAL0(const char *extcert_socketpath);
 #endif
 
 GLOBAL0(char *atomic_prefix);
-
-#endif
 
 #ifdef WITH_RFC2640
 GLOBAL(signed char utf8, 0);    /* 0: ascii 1: utf-8 */
@@ -185,8 +184,8 @@ GLOBAL(iconv_t iconv_fd_utf82fs, (iconv_t) -1);
 #endif
 
 #ifndef WITH_TLS
-GLOBAL0(void * tls_cnx);
-GLOBAL0(void * tls_data_cnx);
+GLOBAL0(void *tls_cnx);
+GLOBAL0(void *tls_data_cnx);
 #endif
 
 #ifdef NON_ROOT_FTP
@@ -195,4 +194,6 @@ GLOBAL0(const char *home_directory);
 
 #ifndef MINIMAL
 GLOBAL0(unsigned long cwd_failures);
+#endif
+
 #endif

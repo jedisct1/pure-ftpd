@@ -104,7 +104,7 @@ static const char *GETOPT_OPTIONS =
     "y:"
 #endif
 #ifdef WITH_TLS
-    "2:Y:J:"
+    "2:3:Y:J:"
 #endif
     "zZ";
 
@@ -114,6 +114,7 @@ static struct option long_options[] = {
     { "logpid", 0, NULL, '1' },
 # ifdef WITH_TLS
     { "certfile", 1, NULL, '2' },
+    { "extcert", 1, NULL, '3' },
 # endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },
