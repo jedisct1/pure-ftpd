@@ -435,6 +435,10 @@ CustomerProof                yes
 # CertFile                     /etc/ssl/private/pure-ftpd.pem
 
 
+# Unix socket of the external certificate handler, for TLS
+
+# ExtCert                      /var/run/ftpd-certs.sock
+
 
 # Listen only to IPv4 addresses in standalone mode (ie. disable IPv6)
 # By default, both IPv4 and IPv6 are enabled.
