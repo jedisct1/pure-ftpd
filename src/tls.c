@@ -103,37 +103,30 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         }
     }
     if (tls_cnx != NULL) {
+        const long ctx_options = SSL_CTX_get_options(tls_ctx);
         SSL_set_SSL_CTX(tls_cnx, tls_ctx);
+# ifdef SSL_CTRL_CLEAR_OPTIONS
+        SSL_clear_options(tls_cnx,
+                          SSL_get_options(tls_cnx) & ~ctx_options);
+# endif
+        SSL_set_options(tls_cnx, ctx_options);
     }
     if (tls_data_cnx != NULL) {
+        const long ctx_options = SSL_CTX_get_options(tls_ctx);
         SSL_set_SSL_CTX(tls_data_cnx, tls_ctx);
+# ifdef SSL_CTRL_CLEAR_OPTIONS
+        SSL_clear_options(tls_data_cnx,
+                          SSL_get_options(tls_cnx) & ~ctx_options);
+# endif
+        SSL_set_options(tls_data_cnx, ctx_options);
     }
     return SSL_TLSEXT_ERR_OK;
 }
 
-# ifdef DISABLE_SSL_RENEGOTIATION
 static void ssl_info_cb(const SSL *cnx, int where, int ret)
 {
     (void) ret;
 
-#  if DISABLE_SSL_RENEGOTIATION == 1
-    if ((where & SSL_CB_HANDSHAKE_START) != 0) {
-        if ((cnx == tls_cnx && tls_cnx_handshook != 0) ||
-            (cnx == tls_data_cnx && tls_data_cnx_handshook != 0)) {
-            const SSL_CIPHER *cipher;
-            const char *cipher_version;
-            if ((cipher = SSL_get_current_cipher(cnx)) == NULL ||
-                (cipher_version = SSL_CIPHER_get_version(cipher)) == NULL) {
-                die(400, LOG_ERR, "No cipher");
-            }
-            if (strcmp(cipher_version, "TLSv1.3") != 0) {
-                die(400, LOG_ERR, "TLS renegotiation");
-                return;
-            }
-        }
-        return;
-    }
-#  endif
     if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
         if (cnx == tls_cnx) {
             tls_cnx_handshook = 1;
@@ -150,7 +143,6 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
 #  endif
     }
 }
-# endif
 
 static int tls_init_ecdh_curve(void)
 {
