@@ -160,9 +160,83 @@ TLS: Enabled TLSv1.3 with AES128-GCM, 256 secret bits cipher
 >>
 
 
-  ------------------------ CUSTOM CERTIFICATE HANDLERS ------------------------
+ ------------------------ CUSTOM CERTIFICATE HANDLERS ------------------------
 
+If multiple domains are used to access the server, each with their own
+certificate, Pure-FTPd supports the SNI (Server Name Indication) extension, as
+well as a flexible mechanism to map names to certificates.
 
+The pure-certd daemon needs to be started along with the FTP server.
+
+pure-certd listens to certificate requests, runs arbitrary commands written in
+any programming language, provides them the client SNI name, and returns what
+action has to be taken, and/or where the certificate to use is located.
+
+pure-certd command-line options follow:
+
+-B      --daemonize
+-g      --gid   <opt>
+-h      --help
+-p      --pidfile       <opt>
+-r      --run   <opt>
+-s      --socket        <opt>
+-u      --uid   <opt>
+
+The mandatory ones are --run and --socket. The former indicates what command
+to run in order to return actions and certificates, the later is a path to the
+local UNIX socket that will be created in order to communicate with the FTP
+server.
+
+Example usage:
+
+pure-certd --run /opt/pure-ftpd/bin/certificate-handler.sh \
+           --socket /var/run/ftpd-certs.sock
+
+The command can access the SNI name in an environment variable named
+CERTD_SNI_NAME. If this is a shell script, make sure that the file is
+executable.
+
+The command should print the following lines to the standard output:
+
+action:xxx
+cert_file:yyy (optional)
+key_file:zzz  (optional)
+end
+
+With xxx being one of:
+
+- deny: access is denied
+- default: the default certificate will be used
+- strict: the certificate whose path is indicated in "cert_path" will be used.
+If absent or invalid, access will be denied.
+- fallback: the certificate whose path is indicated in "cert_path" will be used.
+If absent or invalid, the default certificate will be used instead.
+
+yyy is the absolute path on the filesystem where the certificate is located.
+It can be a certificate+key bundle.
+
+zzz is optional and is the path to the certificate secret key, if it is not
+bundled into the PEM file.
+
+If the action is "deny" or "default", "cert_file" and "key_file" do not have
+to be provided.
+
+Here is a trivial example script logging the SNI name, and returning a fixed
+certificate path:
+
+#! /bin/sh
+
+echo 'action:strict'
+echo 'key_file:/etc/pure-ftpd/special.pem'
+echo 'done'
+
+Once pure-certd is running, the FTP server must be configured to use it.
+
+This is achieved by enabling the "ExtCert" feature in the configuration file:
+
+ExtCert                      /var/run/ftpd-certs.sock
+
+The path to the socket must match the one created by pure-certd.
 
 
       ------------------------ COMPATIBLE CLIENTS ------------------------
