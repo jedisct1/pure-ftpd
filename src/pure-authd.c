@@ -77,7 +77,7 @@ static int init(void)
 #ifndef NON_ROOT_FTP
     if (geteuid() != (uid_t) 0) {
         fprintf(stderr,
-        "Sorry, but you have to be r00t to run this program\n");
+        "Sorry, but you have to be root to run this program\n");
         return -1;
     }
 #endif
