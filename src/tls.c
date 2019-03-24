@@ -542,6 +542,7 @@ int tls_init_data_session(const int fd, const int passive)
 void tls_close_session(SSL ** const cnx)
 {
     unsigned int retries = 10U;
+    unsigned int max_shutdowns = 2;
 
     if (*cnx == NULL) {
         return;
@@ -549,9 +550,10 @@ void tls_close_session(SSL ** const cnx)
 retry:
     switch (SSL_shutdown(*cnx)) {
     case 0:
-        SSL_shutdown(*cnx);
-    case SSL_SENT_SHUTDOWN:
-    case SSL_RECEIVED_SHUTDOWN:
+        if (--max_shutdowns > 0) {
+            goto retry;
+        }
+    case 1:
         break;
     default: {
         switch (SSL_get_error(*cnx, -1)) {
