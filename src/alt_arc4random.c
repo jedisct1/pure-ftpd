@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#if !defined(__OpenBSD__) && !defined(__Bitrig__)
+#if !defined(__OpenBSD__)
 #define KEYSTREAM_ONLY
 #include "crypto.h"
 #include "ftpd.h"

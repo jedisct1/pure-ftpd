@@ -46,9 +46,9 @@ static void tls_error(const int line, int err)
 
 static int validate_sni_name(const char * const sni_name)
 {
-    static const *valid_chars =
+    static const char *valid_chars =
         "abcdefghijklmnopqrstuvwxyz.-0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const char   *pnt = sni_name;
+    const char        *pnt = sni_name;
 
     while (*pnt != 0) {
         if (strchr(valid_chars, *pnt) == NULL) {
