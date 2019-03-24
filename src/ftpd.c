@@ -3545,7 +3545,8 @@ void dofeat(void)
     " EPRT" CRLF " IDLE" CRLF " MDTM" CRLF " SIZE" CRLF " MFMT" CRLF \
         " REST STREAM" CRLF \
         " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
-        " MLSD"
+        " MLSD" CRLF \
+        " PRET"
 
 # ifdef WITH_TLS
 #  define FEAT_TLS CRLF " AUTH TLS" CRLF " PBSZ" CRLF " PROT"

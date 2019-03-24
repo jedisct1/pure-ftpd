@@ -520,6 +520,8 @@ void parser(void)
                     dopasv(1);
                 }
 #ifndef MINIMAL
+            } else if (!strcmp(cmd, "pret")) {
+                addreply_noformat(200, "Ready to proceed");
             } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
                 dopasv(2);
             } else if (!strcmp(cmd, "allo")) {
