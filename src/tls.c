@@ -44,15 +44,30 @@ static void tls_error(const int line, int err)
     _EXIT(EXIT_FAILURE);
 }
 
+static int validate_sni_name(const char * const sni_name)
+{
+    static const *valid_chars =
+        "abcdefghijklmnopqrstuvwxyz.-0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const char   *pnt = sni_name;
+
+    while (*pnt != 0) {
+        if (strchr(valid_chars, *pnt) == NULL) {
+            return -1;
+        }
+        pnt++;
+    }
+    return 0;
+}
+
 static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
     const char *servername;
 
-    if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
-        == NULL || *servername == 0) {
+    if ((sni_name = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
+        == NULL || *sni_name == 0 || validate_sni_name(sni_name) != 0) {
         return SSL_TLSEXT_ERR_NOACK;
     }
-    logfile(LOG_INFO, "SNI: [%s]", servername);
+    logfile(LOG_INFO, "SNI: [%s]", sni_name);
 
     return SSL_TLSEXT_ERR_OK;
 }
