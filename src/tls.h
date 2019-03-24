@@ -46,5 +46,7 @@ extern
 /* The minimal number of bits we accept for a cipher */
 # define MINIMAL_CIPHER_STRENGTH_BITS 128
 
+# define MAX_CERTIFICATE_DEPTH 6
+
 #endif
 #endif

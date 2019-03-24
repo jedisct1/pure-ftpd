@@ -44,8 +44,67 @@ static void tls_error(const int line, int err)
     _EXIT(EXIT_FAILURE);
 }
 
+static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
+{
+    const char *servername;
+
+    if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
+        == NULL || *servername == 0) {
+        return SSL_TLSEXT_ERR_NOACK;
+    }
+    logfile(LOG_INFO, "SNI: [%s]", servername);
+
+    return SSL_TLSEXT_ERR_OK;
+}
+
+# ifdef DISABLE_SSL_RENEGOTIATION
+static void ssl_info_cb(const SSL *cnx, int where, int ret)
+{
+    (void) ret;
+
+#  if DISABLE_SSL_RENEGOTIATION == 1
+    if ((where & SSL_CB_HANDSHAKE_START) != 0) {
+        if ((cnx == tls_cnx && tls_cnx_handshook != 0) ||
+            (cnx == tls_data_cnx && tls_data_cnx_handshook != 0)) {
+            const SSL_CIPHER *cipher;
+            const char *cipher_version;
+            if ((cipher = SSL_get_current_cipher(cnx)) == NULL ||
+                (cipher_version = SSL_CIPHER_get_version(cipher)) == NULL) {
+                die(400, LOG_ERR, "No cipher");
+            }
+            if (strcmp(cipher_version, "TLSv1.3") != 0) {
+                die(400, LOG_ERR, "TLS renegotiation");
+                return;
+            }
+        }
+        return;
+    }
+#  endif
+    if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
+        if (cnx == tls_cnx) {
+            tls_cnx_handshook = 1;
+        } else if (cnx == tls_data_cnx) {
+            tls_data_cnx_handshook = 1;
+        }
+#  ifndef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+#   if DISABLE_SSL_RENEGOTIATION == 0
+        cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
+        cnx->s3->flags |= SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION;
+#   else
+        cnx->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
+#   endif
+#  endif
+        return;
+    }
+}
+# endif
+
 static int tls_init_ecdh_curve(void)
 {
+#ifdef SSL_CTRL_SET_ECDH_AUTO
+    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
+    return 0;
+#else
 # ifndef SSL_OP_SINGLE_ECDH_USE
     errno = ENOTSUP;
     return -1;
@@ -71,9 +130,10 @@ static int tls_init_ecdh_curve(void)
 
     return 0;
 # endif
+#endif
 }
 
-static int tls_init_dhparams_default(void)
+static int tls_load_dhparams_default(void)
 {
 # ifdef HAVE_DH_GET_2048_256
     DH *dh;
@@ -187,7 +247,7 @@ static const BN_ULONG dh2048_256_q[] = {
     return 0;
 }
 
-static int tls_init_dhparams(void)
+static int tls_load_dhparams(void)
 {
     BIO *bio;
     DH  *dh;
@@ -208,6 +268,19 @@ static int tls_init_dhparams(void)
     return 0;
 }
 
+static void tls_init_dhparams(void)
+{
+# ifdef SSL_CTRL_SET_DH_AUTO
+    if (tls_load_dhparams() != 0) {
+        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
+    }
+# else
+    if (tls_load_dhparams() != 0) {
+        tls_load_dhparams_default();
+    }
+# endif
+}
+
 static void tls_init_cache(void)
 {
     static const char *tls_ctx_id = "pure-ftpd";
@@ -219,92 +292,9 @@ static void tls_init_cache(void)
     SSL_CTX_set_timeout(tls_ctx, 60 * 60L);
 }
 
-static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
+static void tls_init_options(void)
 {
-    const char *servername;
-
-    if ((servername = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
-        == NULL || *servername == 0) {
-        return SSL_TLSEXT_ERR_NOACK;
-    }
-    logfile(LOG_INFO, "SNI: [%s]", servername);
-
-    return SSL_TLSEXT_ERR_OK;
-}
-
-# ifdef DISABLE_SSL_RENEGOTIATION
-static void ssl_info_cb(const SSL *cnx, int where, int ret)
-{
-    (void) ret;
-
-#  if DISABLE_SSL_RENEGOTIATION == 1
-    if ((where & SSL_CB_HANDSHAKE_START) != 0) {
-        if ((cnx == tls_cnx && tls_cnx_handshook != 0) ||
-            (cnx == tls_data_cnx && tls_data_cnx_handshook != 0)) {
-            const SSL_CIPHER *cipher;
-            const char *cipher_version;
-            if ((cipher = SSL_get_current_cipher(cnx)) == NULL ||
-                (cipher_version = SSL_CIPHER_get_version(cipher)) == NULL) {
-                die(400, LOG_ERR, "No cipher");
-            }
-            if (strcmp(cipher_version, "TLSv1.3") != 0) {
-                die(400, LOG_ERR, "TLS renegotiation");
-                return;
-            }
-        }
-        return;
-    }
-#  endif
-    if ((where & SSL_CB_HANDSHAKE_DONE) != 0) {
-        if (cnx == tls_cnx) {
-            tls_cnx_handshook = 1;
-        } else if (cnx == tls_data_cnx) {
-            tls_data_cnx_handshook = 1;
-        }
-#  ifndef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-#   if DISABLE_SSL_RENEGOTIATION == 0
-        cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
-        cnx->s3->flags |= SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION;
-#   else
-        cnx->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
-#   endif
-#  endif
-        return;
-    }
-}
-# endif
-
-int tls_init_library(void)
-{
-    unsigned int rnd;
-
-    tls_cnx_handshook = 0;
-    tls_data_cnx_handshook = 0;
-# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
-    SSL_library_init();
-    SSL_load_error_strings();
-    OpenSSL_add_all_algorithms();
-# else
-    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS |
-                     OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
-    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |
-                        OPENSSL_INIT_ADD_ALL_DIGESTS |
-                        OPENSSL_INIT_LOAD_CONFIG, NULL);
-# endif
-    while (RAND_status() == 0) {
-        rnd = zrand();
-        RAND_seed(&rnd, (int) sizeof rnd);
-    }
-# ifdef HAVE_TLS_SERVER_METHOD
-    if ((tls_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
-        tls_error(__LINE__, 0);
-    }
-# else
-    if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
-        tls_error(__LINE__, 0);
-    }
-# endif
-# ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+    # ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
 # endif
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
@@ -330,6 +320,18 @@ int tls_init_library(void)
             _EXIT(EXIT_FAILURE);
         }
     }
+# ifdef DISABLE_SSL_RENEGOTIATION
+#  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
+    SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
+#  endif
+    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
+# endif
+    SSL_CTX_set_verify_depth(tls_ctx, MAX_CERTIFICATE_DEPTH);
+}
+
+static void tls_load_cert_file(const char *cert_file)
+{
     if (SSL_CTX_use_certificate_chain_file(tls_ctx, cert_file) != 1) {
         die(421, LOG_ERR,
             MSG_FILE_DOESNT_EXIST ": [%s]", cert_file);
@@ -341,36 +343,76 @@ int tls_init_library(void)
     if (SSL_CTX_check_private_key(tls_ctx) != 1) {
         tls_error(__LINE__, 0);
     }
+}
+
+static void tls_init_client_cert_verification(const char *cert_file)
+{
+    if (cert_file == NULL) {
+        tls_error(__LINE__, 0);
+    }
+    SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
+                       SSL_VERIFY_PEER, NULL);
+    if (SSL_CTX_load_verify_locations(tls_ctx, cert_file, NULL) != 1) {
+        tls_error(__LINE__, 0);
+    }
+}
+
+int tls_create_new_context()
+{
+    tls_cnx_handshook = 0;
+    tls_data_cnx_handshook = 0;
+
+# ifdef HAVE_TLS_SERVER_METHOD
+    if ((tls_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
+        tls_error(__LINE__, 0);
+    }
+# else
+    if ((tls_ctx = SSL_CTX_new(SSLv23_server_method())) == NULL) {
+        tls_error(__LINE__, 0);
+    }
+# endif
+    tls_init_options();
     tls_init_cache();
-# ifdef SSL_CTRL_SET_ECDH_AUTO
-    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
-# else
-    tls_init_ecdh_curve();
-# endif
-# ifdef SSL_CTRL_SET_DH_AUTO
-    if (tls_init_dhparams() != 0) {
-        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
-    }
-# else
-    if (tls_init_dhparams() != 0) {
-        tls_init_dhparams_default();
-    }
-# endif
-# ifdef DISABLE_SSL_RENEGOTIATION
-#  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
-    SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
-#  endif
-    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
-    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
-# endif
-    SSL_CTX_set_verify_depth(tls_ctx, 6);
+    tls_load_cert_file(cert_file);
     if (ssl_verify_client_cert) {
-        SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
-                           SSL_VERIFY_PEER, NULL);
-        if (SSL_CTX_load_verify_locations(tls_ctx, cert_file, NULL) != 1) {
-            tls_error(__LINE__, 0);
-        }
+        tls_init_client_cert_verification(cert_file);
     }
+    tls_init_ecdh_curve();
+    tls_init_dhparams();
+
+    return 0;
+}
+
+static void tls_init_rnd(void)
+{
+    unsigned int rnd;
+
+    while (RAND_status() == 0) {
+        rnd = zrand();
+        RAND_seed(&rnd, (int) sizeof rnd);
+    }
+}
+
+int tls_init_library(void)
+{
+    tls_cnx = NULL;
+    tls_data_cnx = NULL;
+    tls_ctx = NULL;
+
+# if (OPENSSL_VERSION_NUMBER < 0x10100000L) || !defined(OPENSSL_INIT_LOAD_SSL_STRINGS)
+    SSL_library_init();
+    SSL_load_error_strings();
+    OpenSSL_add_all_algorithms();
+# else
+    OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS |
+                     OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL);
+    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_CIPHERS |
+                        OPENSSL_INIT_ADD_ALL_DIGESTS |
+                        OPENSSL_INIT_LOAD_CONFIG, NULL);
+# endif
+    tls_init_rnd();
+    tls_create_new_context();
+
     return 0;
 }
 
