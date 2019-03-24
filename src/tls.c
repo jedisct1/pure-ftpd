@@ -13,18 +13,6 @@
 # include "alt_arc4random.h"
 # include "tls_extcert.h"
 
-# ifndef DISABLE_SSL_RENEGOTIATION
-#  ifndef SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-#   ifndef ACCEPT_SSL_RENEGOTIATION
-#    define DISABLE_SSL_RENEGOTIATION 1
-#   endif
-#  else
-#   ifdef ACCEPT_SSL_RENEGOTIATION
-#    define DISABLE_SSL_RENEGOTIATION 0
-#   endif
-#  endif
-# endif
-
 static void tls_error(const int line, int err)
 {
     if (err == 0) {
@@ -133,14 +121,6 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
         } else if (cnx == tls_data_cnx) {
             tls_data_cnx_handshook = 1;
         }
-#  ifndef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-#   if DISABLE_SSL_RENEGOTIATION == 0
-        cnx->s3->flags &= ~(SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS);
-        cnx->s3->flags |= SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION;
-#   else
-        cnx->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
-#   endif
-#  endif
     }
 }
 
@@ -367,16 +347,11 @@ static void tls_init_options(void)
             _EXIT(EXIT_FAILURE);
         }
     }
-# ifdef DISABLE_SSL_RENEGOTIATION
-#  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
-    SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
-#  endif
     SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
     if (passes == 0) {
         SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
         passes++;
     }
-# endif
     SSL_CTX_set_verify_depth(tls_ctx, MAX_CERTIFICATE_DEPTH);
 }
 
