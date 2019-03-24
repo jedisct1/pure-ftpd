@@ -1371,6 +1371,17 @@ AC_ARG_WITH(certfile,
     fi
   fi ])
 
+AC_ARG_WITH(keyfile,
+[AS_HELP_STRING(--with-keyfile=,certificate key file (default: /etc/ssl/private/pure-ftpd.pem))],
+[ if test "x$withval" != "x" ; then
+    keyfile="$withval"
+    AC_SUBST(keyfile)
+    CPPFLAGS="$CPPFLAGS -DTLS_KEY_FILE='\"$keyfile\"'"
+    if test ! -e "$keyfile"; then
+      AC_MSG_WARN(No certificate key is installed in $keyfile yet)
+    fi
+  fi ])
+
 AC_ARG_WITH(rfc2640,
 [AS_HELP_STRING(--with-rfc2640,Enable RFC 2640 (UTF-8 encoding for file names) support (needs iconv))],
 [ if test "x$withval" = "xyes" ; then

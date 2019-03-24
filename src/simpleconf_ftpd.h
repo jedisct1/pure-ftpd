@@ -18,6 +18,7 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"AutoRename? <bool>",                        "--autorename"},
     {"Bind (<nospace>)",                          "--bind=$0"},
     {"BrokenClientsCompatibility? <bool>",        "--brokenclientscompatibility"},
+    {"CertFileAndKey (<any>) (<any>)",            "--certfile=$0,$1"},
     {"CertFile (<any*>)",                         "--certfile=$0"},
     {"ChrootEveryone? <bool>",                    "--chrooteveryone"},
     {"ClientCharset (<nospace>)",                 "--clientcharset=$0"},

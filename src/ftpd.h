@@ -420,6 +420,9 @@ extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
 # ifndef TLS_CERTIFICATE_FILE
 #  define TLS_CERTIFICATE_FILE TLS_CONFDIR "/pure-ftpd.pem"
 # endif
+# ifndef TLS_KEY_FILE
+#  define TLS_KEY_FILE TLS_CERTIFICATE_FILE
+# endif
 # ifndef TLS_DHPARAMS_FILE
 #  define TLS_DHPARAMS_FILE TLS_CONFDIR "/pure-ftpd-dhparams.pem"
 # endif

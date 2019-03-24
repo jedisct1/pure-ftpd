@@ -431,8 +431,14 @@ CustomerProof                yes
 
 
 # Certificate file, for TLS
+# The certificate itself and the keys can be bundled into the same
+# file or split into two files.
+# CertFile is for a cert+key bundle, CertFileAndKey for separate files.
+# Use only one of these.
 
 # CertFile                     /etc/ssl/private/pure-ftpd.pem
+# CertFileAndKey               "/etc/pure-ftpd.pem" "/etc/pure-ftpd.key"
+
 
 
 # Unix socket of the external certificate handler, for TLS
