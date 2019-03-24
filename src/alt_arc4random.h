@@ -3,7 +3,7 @@
 #define __ALT_ARC4RANDOM_H__ 1
 
 #include <stdlib.h>
-#include "crypto.h"
+#include <stdint.h>
 
 #if defined(__OpenBSD__) || defined(__wasi__)
 
@@ -18,13 +18,13 @@
 
 #else
 
-void         alt_arc4random_stir(void);
-void         alt_arc4random_buf(void *, size_t);
-crypto_uint4 alt_arc4random(void);
-crypto_uint4 alt_arc4random_uniform(crypto_uint4);
+void     alt_arc4random_stir(void);
+void     alt_arc4random_buf(void *, size_t);
+uint32_t alt_arc4random(void);
+uint32_t alt_arc4random_uniform(uint32_t);
 
 #endif
 
-int          alt_arc4random_close(void);
+int      alt_arc4random_close(void);
 
 #endif

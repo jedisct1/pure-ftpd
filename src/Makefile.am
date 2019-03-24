@@ -27,7 +27,6 @@ libpureftpd_a_SOURCES = \
 	altlog.h \
 	alt_arc4random.c \
 	alt_arc4random.h \
-	alt_arc4random_p.h \
 	bonjour.h \
 	bonjour.c \
 	bsd-glob.c \

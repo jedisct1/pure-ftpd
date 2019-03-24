@@ -1,310 +1,230 @@
-/*
- * Copyright (c) 1996, David Mazieres <dm@uun.org>
- * Copyright (c) 2008, Damien Miller <djm@openbsd.org>
- * Copyright (c) 2013, Markus Friedl <markus@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-/*
- * OpenBSD and Bitrig can fetch random data through a sysctl call, but other
- * systems require reading a device.
- * This modified version of the arc4random*() functions keeps an open file
- * descriptor, so that we can still reseed the PRNG after a chroot() call.
- */
-
 #include <config.h>
 
-#if !defined(__OpenBSD__)
-#define KEYSTREAM_ONLY
+#if !defined(__OpenBSD__) && !defined(__wasi__) && !defined(__CloudABI__)
+
 #include "crypto.h"
 #include "ftpd.h"
 #include "safe_rw.h"
 #include "alt_arc4random.h"
-#include "alt_arc4random_p.h"
 #include "utils.h"
 
-#if SIZEOF_INT < 4
-# error Unsupported architecture
-#endif
+#define RNG_RESERVE_LEN 512
 
-#define KEYSZ   32
-#define IVSZ    8
-#define BLOCKSZ 64
-#define RSBUFSZ (16 * BLOCKSZ)
-static int rs_initialized;
-static pid_t rs_stir_pid;
-static chacha_ctx rs;           /* chacha context for random keystream */
-static unsigned char rs_buf[RSBUFSZ];   /* keystream blocks */
-static size_t rs_have;          /* valid bytes at end of rs_buf */
-static size_t rs_count;         /* bytes till reseed */
-static int random_data_source_fd = -1;
+#define CHACHA20_KEYBYTES 32
+#define CHACHA20_BLOCKBYTES 64
 
-/* Warning: thread safety intentionally disabled */
-#define _alt_arc4_LOCK()   do { } while(0)
-#define _alt_arc4_UNLOCK() do { } while(0)
+#define ROTL32(x, b) (uint32_t)(((x) << (b)) | ((x) >> (32 - (b))))
 
-#ifdef WITH_DMALLOC
-# include <dmalloc.h>
-#endif
+#define CHACHA20_QUARTERROUND(A, B, C, D) \
+    A += B;                               \
+    D = ROTL32(D ^ A, 16);                \
+    C += D;                               \
+    B = ROTL32(B ^ C, 12);                \
+    A += B;                               \
+    D = ROTL32(D ^ A, 8);                 \
+    C += D;                               \
+    B = ROTL32(B ^ C, 7)
 
-static void _rs_rekey(unsigned char *dat, size_t datlen);
-
-static void
-_rs_init(unsigned char *buf, size_t n)
+static void CHACHA20_ROUNDS(uint32_t st[16])
 {
-    if (n < KEYSZ + IVSZ) {
-        return;
+    int i;
+
+    for (i = 0; i < 20; i += 2) {
+        CHACHA20_QUARTERROUND(st[0], st[4], st[8], st[12]);
+        CHACHA20_QUARTERROUND(st[1], st[5], st[9], st[13]);
+        CHACHA20_QUARTERROUND(st[2], st[6], st[10], st[14]);
+        CHACHA20_QUARTERROUND(st[3], st[7], st[11], st[15]);
+        CHACHA20_QUARTERROUND(st[0], st[5], st[10], st[15]);
+        CHACHA20_QUARTERROUND(st[1], st[6], st[11], st[12]);
+        CHACHA20_QUARTERROUND(st[2], st[7], st[8], st[13]);
+        CHACHA20_QUARTERROUND(st[3], st[4], st[9], st[14]);
     }
-    chacha_keysetup(&rs, buf, KEYSZ * 8, 0);
-    chacha_ivsetup(&rs, buf + KEYSZ);
 }
 
-static int
-_rs_random_dev_open(void)
+static void chacha20_update(uint8_t out[CHACHA20_BLOCKBYTES], uint32_t st[16])
+{
+    uint32_t ks[16];
+    int i;
+
+    memcpy(ks, st, 4 * 16);
+    CHACHA20_ROUNDS(st);
+    for (i = 0; i < 16; i++) {
+        ks[i] += st[i];
+    }
+    memcpy(out, ks, CHACHA20_BLOCKBYTES);
+    st[12]++;
+}
+
+static void chacha20_init(uint32_t st[16], const uint8_t key[CHACHA20_KEYBYTES])
+{
+    static const uint32_t constants[4] = {
+        0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
+    };
+    memcpy(&st[0], constants, 4 * 4);
+    memcpy(&st[4], key, CHACHA20_KEYBYTES);
+    memset(&st[12], 0, 4 * 4);
+}
+
+static int chacha20_rng(uint8_t* out, size_t len, uint8_t key[CHACHA20_KEYBYTES])
+{
+    uint32_t st[16];
+    size_t off;
+
+    chacha20_init(st, key);
+    chacha20_update(&out[0], st);
+    memcpy(key, out, CHACHA20_KEYBYTES);
+    off = 0;
+    while (len >= CHACHA20_BLOCKBYTES) {
+        chacha20_update(&out[off], st);
+        len -= CHACHA20_BLOCKBYTES;
+        off += CHACHA20_BLOCKBYTES;
+    }
+    if (len > 0) {
+        uint8_t tmp[CHACHA20_BLOCKBYTES];
+        chacha20_update(tmp, st);
+        memcpy(&out[off], tmp, len);
+    }
+    return 0;
+}
+
+struct rng_state {
+    int     initialized;
+    int     fd;
+    size_t  off;
+    uint8_t key[CHACHA20_KEYBYTES];
+    uint8_t reserve[RNG_RESERVE_LEN];
+};
+
+static struct rng_state rng_state;
+
+static int random_dev_open(void)
 {
     struct stat        st;
     static const char *devices[] = {
-        "/dev/urandom", "/dev/random", NULL
+        "/dev/urandom",
+        "/dev/random", NULL
     };
-    const char **      device = devices;
+    const char       **device = devices;
     int                fd;
 
     do {
-        if (access(*device, F_OK | R_OK) == 0 &&
-            (fd = open(*device, O_RDONLY)) != -1) {
-            if (fstat(fd, &st) == 0 && S_ISCHR(st.st_mode)) {
+        fd = open(*device, O_RDONLY);
+        if (fd != -1) {
+            if (fstat(fd, &st) == 0 &&
+#ifdef __COMPCERT__
+                1
+#elif defined(S_ISNAM)
+                (S_ISNAM(st.st_mode) || S_ISCHR(st.st_mode))
+#else
+                S_ISCHR(st.st_mode)
+#endif
+               ) {
+#if defined(F_SETFD) && defined(FD_CLOEXEC)
+                (void) fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
                 return fd;
             }
             (void) close(fd);
+        } else if (errno == EINTR) {
+            continue;
         }
         device++;
     } while (*device != NULL);
 
+    errno = EIO;
     return -1;
 }
 
-static void
-_rs_stir(void)
+void alt_arc4random_stir(void)
 {
-    unsigned char rnd[KEYSZ + IVSZ];
-
-    if (!rs_initialized) {
-        random_data_source_fd = _rs_random_dev_open();
+    if (rng_state.initialized == 0) {
+        rng_state.fd = -1;
     }
-    if (random_data_source_fd != -1) {
-        safe_read(random_data_source_fd, rnd, sizeof rnd);
-    } else {
-#ifdef HAVE_RANDOM_DEV
-        _exit(1);
-#else
-        size_t i = (size_t) 0U;
-# ifdef HAVE_ARC4RANDOM
-        crypto_uint4 r;
-        do {
-            r = arc4random();
-            memcpy(&rnd[i], &r, (size_t) 4U);
-            i += (size_t) 4U;
-        } while (i < sizeof(rnd));
-# elif defined(HAVE_RANDOM)
-        unsigned short r;
-        do {
-            r = (unsigned short) random();
-            rnd[i++] = r & 0xFF;
-            rnd[i++] = (r << 8) & 0xFF;
-        } while (i < sizeof(rnd));
-# else
-        unsigned char r;
-        do {
-            r = (unsigned char) rand();
-            rnd[i++] = r;
-        } while (i < sizeof(rnd));
-# endif
-#endif
-    }
-    if (!rs_initialized) {
-        rs_initialized = 1;
-        _rs_init(rnd, sizeof rnd);
-    } else {
-        _rs_rekey(rnd, sizeof rnd);
-    }
-    pure_memzero(rnd, sizeof rnd);
-
-    /* invalidate rs_buf */
-    rs_have = 0;
-    pure_memzero(rs_buf, RSBUFSZ);
-
-    rs_count = 1600000;
-    rs_stir_pid = getpid();
-}
-
-static inline void
-_rs_stir_if_needed(size_t len)
-{
-    pid_t pid = getpid();
-
-    if (rs_count <= len || !rs_initialized) {
-        _rs_stir();
-    } else if (rs_stir_pid != pid) {
+    if (rng_state.fd == -1 &&
+        (rng_state.fd = random_dev_open()) == -1) {
         abort();
-    } else {
-        rs_count -= len;
     }
+    if (safe_read(rng_state.fd,
+                  rng_state.key, sizeof rng_state.key) <= (ssize_t) 0) {
+        abort();
+    }
+    rng_state.off = RNG_RESERVE_LEN;
+    rng_state.initialized = 1;
 }
 
-static void
-_rs_rekey(unsigned char *dat, size_t datlen)
+void alt_arc4random_buf(void* buffer, size_t len)
 {
-#ifndef KEYSTREAM_ONLY
-    pure_memzero(rs_buf, RSBUFSZ);
-#endif
-    /* fill rs_buf with the keystream */
-    chacha_encrypt_bytes(&rs, rs_buf, rs_buf, RSBUFSZ);
-    /* mix in optional user provided data */
-    if (dat != NULL) {
-        size_t i, m;
+    unsigned char *buffer_ = (unsigned char*)buffer;
+    size_t         off;
+    size_t         remaining;
+    size_t         partial;
+    int            ret;
 
-        if (datlen < KEYSZ + IVSZ) {
-            m = datlen;
-        } else {
-            m = KEYSZ + IVSZ;
-        }
-        for (i = 0; i < m; i++) {
-            rs_buf[i] ^= dat[i];
-        }
+    if (!rng_state.initialized) {
+        alt_arc4random_stir();
     }
-    /* immediately reinit for backtracking resistance */
-    _rs_init(rs_buf, KEYSZ + IVSZ);
-    pure_memzero(rs_buf, KEYSZ + IVSZ);
-    rs_have = RSBUFSZ - KEYSZ - IVSZ;
-}
-
-static void
-_rs_random_buf(void *_buf, size_t n)
-{
-    unsigned char *buf = (unsigned char *)_buf;
-    size_t m;
-
-    _rs_stir_if_needed(n);
-    while (n > 0) {
-        if (rs_have > 0) {
-            if (n < rs_have) {
-                m = n;
-            } else {
-                m = rs_have;
+    off = 0;
+    remaining = len;
+    while (remaining > 0) {
+        if (rng_state.off == RNG_RESERVE_LEN) {
+            while (remaining >= RNG_RESERVE_LEN) {
+                chacha20_rng(&buffer_[off], RNG_RESERVE_LEN, rng_state.key);
+                off += RNG_RESERVE_LEN;
+                remaining -= RNG_RESERVE_LEN;
             }
-            memcpy(buf, rs_buf + RSBUFSZ - rs_have, m);
-            pure_memzero(rs_buf + RSBUFSZ - rs_have, m);
-            buf += m;
-            n -= m;
-            rs_have -= m;
+            if (remaining == 0) {
+                break;
+            }
+            chacha20_rng(&rng_state.reserve[0], RNG_RESERVE_LEN, rng_state.key);
+            rng_state.off = 0;
         }
-        if (rs_have == 0) {
-            _rs_rekey(NULL, 0);
+        partial = RNG_RESERVE_LEN - rng_state.off;
+        if (remaining < partial) {
+            partial = remaining;
         }
+        memcpy(&buffer_[off], &rng_state.reserve[rng_state.off], partial);
+        memset(&rng_state.reserve[rng_state.off], 0, partial);
+        rng_state.off += partial;
+        remaining -= partial;
+        off += partial;
     }
 }
 
-static inline void
-_rs_random_u32(crypto_uint4 *val)
+uint32_t alt_arc4random(void)
 {
-    _rs_stir_if_needed(sizeof(*val));
-    if (rs_have < sizeof(*val)) {
-        _rs_rekey(NULL, 0);
-    }
-    memcpy(val, rs_buf + RSBUFSZ - rs_have, sizeof(*val));
-    pure_memzero(rs_buf + RSBUFSZ - rs_have, sizeof(*val));
-    rs_have -= sizeof(*val);
+    uint32_t v;
+
+    arc4random_buf(&v, sizeof v);
+
+    return v;
 }
 
-void
-alt_arc4random_stir(void)
+uint32_t alt_arc4random_uniform(const uint32_t upper_bound)
 {
-    _alt_arc4_LOCK();
-    _rs_stir();
-    _alt_arc4_UNLOCK();
-}
-
-int
-alt_arc4random_close(void)
-{
-    int ret = -1;
-
-    _alt_arc4_LOCK();
-    if (random_data_source_fd != -1 && close(random_data_source_fd) == 0) {
-        random_data_source_fd = -1;
-        ret = 0;
-    }
-    _alt_arc4_UNLOCK();
-
-    return ret;
-}
-
-crypto_uint4
-alt_arc4random(void)
-{
-    crypto_uint4 val;
-
-    _alt_arc4_LOCK();
-    _rs_random_u32(&val);
-    _alt_arc4_UNLOCK();
-    return val;
-}
-
-void
-alt_arc4random_buf(void *_buf, size_t n)
-{
-    _alt_arc4_LOCK();
-    _rs_random_buf(_buf, n);
-    _alt_arc4_UNLOCK();
-}
-
-/*
- * Calculate a uniformly distributed random number less than upper_bound
- * avoiding "modulo bias".
- *
- * Uniformity is achieved by generating new random numbers until the one
- * returned is outside the range [0, 2**32 % upper_bound).  This
- * guarantees the selected random number will be inside
- * [2**32 % upper_bound, 2**32) which maps back to [0, upper_bound)
- * after reduction modulo upper_bound.
- */
-crypto_uint4
-alt_arc4random_uniform(crypto_uint4 upper_bound)
-{
-    crypto_uint4 r, min;
+    uint32_t min;
+    uint32_t r;
 
     if (upper_bound < 2U) {
-        return 0U;
+        return 0;
     }
-
-    /* 2**32 % x == (2**32 - x) % x */
-    min = (crypto_uint4) (- upper_bound % upper_bound);
-
-    /*
-     * This could theoretically loop forever but each retry has
-     * p > 0.5 (worst case, usually far better) of selecting a
-     * number inside the range we need, so it should rarely need
-     * to re-roll.
-     */
-    for (;;) {
-        r = alt_arc4random();
-        if (r >= min) {
-            break;
-        }
-    }
+    min = (1U + ~upper_bound) % upper_bound; /* = 2**32 mod upper_bound */
+    do {
+        r = arc4random();
+    } while (r < min);
+    /* r is now clamped to a set whose size mod upper_bound == 0
+     * the worst case (2**31+1) requires 2 attempts on average */
 
     return r % upper_bound;
+}
+
+int alt_arc4random_close(void)
+{
+    rng_state.initialized = 0;
+    pure_memzero(rng_state.key, sizeof rng_state.key);
+    if (rng_state.fd != -1) {
+        return close(rng_state.fd);
+    }
+    return 0;
 }
 
 #else
