@@ -3,6 +3,7 @@
 #ifdef WITH_TLS
 
 #include "ftpd.h"
+#include "ftpwho-update.h"
 #include "globals.h"
 #include "tls_extcert.h"
 #include "tls_extcert_p.h"
