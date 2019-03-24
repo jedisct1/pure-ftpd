@@ -57,7 +57,7 @@ static void callback_reply_cert_file(const char *str, CertResult * const result)
     if (*str != '/') {
         return;
     }
-    if (access(str, 0400) != 0) {
+    if (access(str, R_OK) != 0) {
         return;
     }
     free((void *) (result->cert_file));
@@ -69,7 +69,7 @@ static void callback_reply_key_file(const char *str, CertResult * const result)
     if (*str != '/') {
         return;
     }
-    if (access(str, 0400) != 0) {
+    if (access(str, R_OK) != 0) {
         return;
     }
     free((void *) (result->key_file));
