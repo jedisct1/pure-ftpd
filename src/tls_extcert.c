@@ -62,6 +62,18 @@ static void callback_reply_cert_file(const char *str, CertResult * const result)
     result->cert_file = strdup(cert_file);
 }
 
+static void callback_reply_key_file(const char *str, CertResult * const result)
+{
+    if (*str != '/') {
+        return;
+    }
+    if (access(str, 0400) != 0) {
+        return;
+    }
+    free((void *) (result->key_file));
+    result->key_file = strdup(key_file);
+}
+
 static void callback_reply_end(const char *str, CertResult * const result)
 {
     (void) str;
@@ -110,6 +122,7 @@ void tls_extcert_get(CertResult * const result, const char *sni_name)
         goto bye;
     }
     result->cert_file = NULL;
+    result->key_file = NULL;
     result->action = CERT_ACTION_DENY;
     cert_finalized = 0;
     if ((readnb = safe_read(kindy, line, sizeof line - 1U)) <= (ssize_t) 0) {

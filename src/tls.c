@@ -345,15 +345,17 @@ static void tls_init_options(void)
     SSL_CTX_set_verify_depth(tls_ctx, MAX_CERTIFICATE_DEPTH);
 }
 
-static void tls_load_cert_file(const char *cert_file)
+static void tls_load_cert_file(const char * const cert_file,
+                               const char * const key_file)
 {
     if (SSL_CTX_use_certificate_chain_file(tls_ctx, cert_file) != 1) {
         die(421, LOG_ERR,
             MSG_FILE_DOESNT_EXIST ": [%s]", cert_file);
     }
-    if (SSL_CTX_use_PrivateKey_file(tls_ctx, cert_file,
+    if (SSL_CTX_use_PrivateKey_file(tls_ctx, key_file,
                                     SSL_FILETYPE_PEM) != 1) {
-        tls_error(__LINE__, 0);
+        die(421, LOG_ERR,
+            MSG_FILE_DOESNT_EXIST ": [%s]", key_file);
     }
     if (SSL_CTX_check_private_key(tls_ctx) != 1) {
         tls_error(__LINE__, 0);
@@ -388,7 +390,7 @@ int tls_create_new_context()
 # endif
     tls_init_options();
     tls_init_cache();
-    tls_load_cert_file(cert_file);
+    tls_load_cert_file(cert_file, key_file);
     if (ssl_verify_client_cert) {
         tls_init_client_cert_verification(cert_file);
     }

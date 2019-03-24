@@ -24,11 +24,13 @@ typedef struct ExtcertCallBack_ {
 
 static void callback_reply_action(const char *str, CertResult * const result);
 static void callback_reply_cert_file(const char *str, CertResult * const result);
+static void callback_reply_key_file(const char *str, CertResult * const result);
 static void callback_reply_end(const char *str, CertResult * const result);
 
 static ExtcertCallBack extcert_callbacks[] = {
     { EXTCERT_REPLY_ACTION, callback_reply_action },
     { EXTCERT_REPLY_CERT_FILE, callback_reply_cert_file },
+    { EXTCERT_REPLY_KEY_FILE, callback_reply_key_file },
     { EXTCERT_REPLY_END, callback_reply_end },
     { NULL, callback_reply_end }
 };

@@ -13,6 +13,7 @@ typedef enum CertAction {
 
 typedef struct CertResult {
     char       *cert_file;
+    char       *key_file;
     CertAction  action;
     int         cert_ok;
 } CertResult;
@@ -27,6 +28,7 @@ void tls_extcert_exit(void);
 
 #define EXTCERT_REPLY_ACTION "action"
 #define EXTCERT_REPLY_CERT_FILE "cert_file"
+#define EXTCERT_REPLY_KEY_FILE "key_file"
 #define EXTCERT_REPLY_END "end"
 
 #endif

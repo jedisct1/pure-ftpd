@@ -5803,6 +5803,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             if ((cert_file = strdup(optarg)) == NULL) {
                 die_mem();
             }
+            key_file = cert_file;
             break;
         case 'Y': {
             if ((enforce_tls_auth = atoi(optarg)) < 0 || enforce_tls_auth > 3) {

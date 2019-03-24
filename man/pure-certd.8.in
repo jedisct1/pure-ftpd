@@ -22,8 +22,15 @@ CERTD_SNI_NAME
 The authentication program should take appropriate actions to select a TLS certificate, and reply to the standard output with the following format:
 .IP
 action:strict
-cert_path:/path/to/cert.pem
+cert_file:/path/to/cert.pem
+key_file:/path/to/cert.pem
 end
+.TP
+\fBcert_file:\fRxxx
+Absolute path to the certificate in PEM format.
+.TP
+\fBkey_file:\fRxxx
+This is optional, as a certificate and its key can be concatenated in the same file.
 .TP
 \fBaction:\fRxxx
 If action is "deny", a certificate for that name was not found and access is denied.
@@ -73,7 +80,7 @@ pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/certd.sock &
 
 echo 'action:strict'
 
-echo 'cert_path:/etc/ssl/private/pure-ftpd/cert.pen'
+echo 'cert_file:/etc/ssl/private/pure-ftpd/cert.pem'
 
 echo 'end'
 .SH "AUTHORS"
