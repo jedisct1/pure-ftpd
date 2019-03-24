@@ -5801,12 +5801,27 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
 #endif
 #ifdef WITH_TLS
-        case '2':
+        case '2': {
+            char *struck;
+            char *key_file_;
+
+            if ((struck = strchr(optarg, ',')) != NULL) {
+                *struck = 0;
+                key_file_ = struck + 1;
+            } else {
+                key_file_ = optarg;
+            }
+            if (*optarg == 0 || *key_file_ == 0) {
+                die(421, LOG_ERR, MSG_CONF_ERR ": TLS");
+            }
             if ((cert_file = strdup(optarg)) == NULL) {
                 die_mem();
             }
-            key_file = cert_file;
+            if ((key_file = strdup(key_file_)) == NULL) {
+                die_mem();
+            }
             break;
+        }
         case '3':
             tls_extcert_parse(optarg);
             use_extcert++;
