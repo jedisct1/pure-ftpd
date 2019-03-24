@@ -5,6 +5,7 @@ available resources. The pure-pw command gets to new switches: -C (as
 a hint regarding the number of simultaneous login attempts) and -M
 (total memory, in MB, to reserve for password hashing).
  - New translation: Albanian, thanks to Moisi Xhaferaj.
+ - The PRET command has been added.
 
 * Version 1.0.47:
  - Unlike other directory listing commands, the STAT command should
