@@ -150,7 +150,7 @@ When TLS has been successfully negotiated for a connection, you'll see
 something similar to this in log files :
 
 <<
-TLS: Enabled TLSv1.2 with AES256-SHA, 256 secret bits cipher
+TLS: Enabled TLSv1.3 with AES128-GCM, 256 secret bits cipher
 >>
 
       ------------------------ COMPATIBLE CLIENTS ------------------------
@@ -160,11 +160,9 @@ the TLS encryption layer turned on :
 
 
 * Transmit (OSX)
-  URL: http://panic.com/transmit/
+  URL: https://panic.com/transmit/
 
   TLS works out of the box, both in implicit and explicit modes.
-  CCC support has some issues, but Transmit quickly recovers and keeps
-working.
 
 
 * CoreFTP Lite (Windows)
@@ -178,7 +176,7 @@ queueing, bandwidth control, etc.
 
 
 * SmartFTP (Windows)
-  URL: http://www.smartftp.com/
+  URL: https://www.smartftp.com/
 
   An excellent client with IPv6 support, port range limitation and other
 useful features (!= bloat) . And it's free for personal, educational and non-
@@ -190,31 +188,23 @@ selected and when the data connection mode (Tools->Settings->SSL) is set to
 set to "TLS".
 
 
-* IglooFTP Pro (Windows, Linux)
-  URL: http://www.iglooftp.com/
-
-  TLS is automatically detected and works when Preferences->Security->
-Encrypt is set to "Commands [if possible], Transfers [if possible]".
-
-
 * FlashFXP (Windows)
-  URL: http://www.flashfxp.com/
+  URL: https://www.flashfxp.com/
 
-  TLS works. In the "Quick connect" dialog box, pick the "SSL"
-tab and :
+  TLS works. In the "Quick connect" dialog box, pick the "SSL" tab and :
  - enable Auth TLS
  - disable Secure File Listing
  - disable Secure File Transfers
 
 
 * SDI FTP (Windows)
-  URL: http://www.sdisw.com/
+  URL: https://www.sdisw.com/
 
   TLS works. In the "Connection" tab, just pick "SSL Support: TLSv1".
 
 
 * LFTP (Unix, MacOS X)
-  URL: http://lftp.yar.ru/
+  URL: https://lftp.yar.ru/
 
   TLS is automatically detected and works out of the box.
 
@@ -226,18 +216,13 @@ tab and :
 and Robert Vasvari.
 
 
-* Glub Tech Secure FTP Client (at least Unix, MacOS X and Windows)
-  URL: http://secureftp.glub.com/
-
-  TLS is automatically detected and works out of the box.
-
-
 * Cyberduck (OSX)
-  http://cyberduck.ch/
+  https://cyberduck.ch/
 
   TLS works out of the box.
 
 
 * WinSCP (Windows)
+  https://winscp.net/eng/index.php
   WinSCP should be configured with "File protocol" set to "FTP" with
 "TLS Explicit encryption".
