@@ -61,7 +61,7 @@ static int validate_sni_name(const char * const sni_name)
 
 static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
-    const char *servername;
+    const char *sni_name;
 
     if ((sni_name = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
         == NULL || *sni_name == 0 || validate_sni_name(sni_name) != 0) {
