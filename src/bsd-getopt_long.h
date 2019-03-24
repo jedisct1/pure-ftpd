@@ -54,7 +54,7 @@
  */
 
 #ifndef __BSD_GETOPT_LONG_H__
-#define __BSD_GETOPT_LONG_H__
+#define __BSD_GETOPT_LONG_H__ 1
 
 #ifndef HAVE_GETOPT_LONG
 
