@@ -48,6 +48,8 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     CertResult  result;
     const char *sni_name;
 
+    (void) al;
+    (void) arg;
     if ((sni_name = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
         == NULL || *sni_name == 0 || validate_sni_name(sni_name) != 0) {
         return SSL_TLSEXT_ERR_NOACK;
@@ -158,6 +160,7 @@ static int tls_init_ecdh_curve(void)
 #endif
 }
 
+#ifndef SSL_CTRL_SET_DH_AUTO
 static int tls_load_dhparams_default(void)
 {
 # ifdef HAVE_DH_GET_2048_256
@@ -271,6 +274,7 @@ static const BN_ULONG dh2048_256_q[] = {
 
     return 0;
 }
+#endif
 
 static int tls_load_dhparams(void)
 {
