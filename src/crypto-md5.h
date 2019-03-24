@@ -26,9 +26,9 @@
 
 /* MD5 context. */
 typedef struct MD5_CTX {
-    crypto_uint4 state[4];        /* state (ABCD) */
-    crypto_uint4 count[2];        /* number of bits, modulo 2^64 (lsb first) */
-    unsigned char buffer[64];     /* input buffer */
+    uint32_t      state[4];        /* state (ABCD) */
+    uint32_t      count[2];        /* number of bits, modulo 2^64 (lsb first) */
+    unsigned char buffer[64];      /* input buffer */
 } MD5_CTX;
 
 void MD5Init(MD5_CTX * context);

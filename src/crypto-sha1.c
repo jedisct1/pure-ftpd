@@ -49,16 +49,15 @@
 #define R3(v,w,x,y,z,i) z+=(((w|x)&y)|(w&x))+blk(i)+0x8F1BBCDC+rol(v,5);w=rol(w,30);
 #define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);
 
-
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void SHA1Transform(crypto_uint4 state[5],
+static void SHA1Transform(uint32_t state[5],
                           const unsigned char buffer[64])
 {
-    crypto_uint4 a, b, c, d, e;
+    uint32_t a, b, c, d, e;
     typedef union {
         unsigned char c[64];
-        crypto_uint4  l[16];
+        uint32_t      l[16];
     } CHAR64LONG16;
     CHAR64LONG16 *block;
 #ifdef SHA1HANDSOFF
@@ -188,8 +187,9 @@ void SHA1Update(SHA1_CTX * context, const unsigned char *data,
     size_t j;
 
     j = context->count[0];
-    if ((context->count[0] += len << 3) < j)
+    if ((context->count[0] += len << 3) < j) {
         context->count[1] += (len >> 29) + 1;
+    }
     j = (j >> 3) & 63;
     if ((j + len) > 63) {
         memcpy(&context->buffer[j], data, (i = 64 - j));
@@ -198,8 +198,9 @@ void SHA1Update(SHA1_CTX * context, const unsigned char *data,
             SHA1Transform(context->state, &data[i]);
         }
         j = 0;
-    } else
+    } else {
         i = 0;
+    }
     memcpy(&context->buffer[j], &data[i], len - i);
 }
 
@@ -212,8 +213,9 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX * context)
     unsigned char finalcount[8];
 
     for (i = 0; i < 8; i++) {
-        finalcount[i] = (unsigned char) ((context->count[(i >= 4 ? 0 : 1)]
-                                          >> ((3 - (i & 3)) * 8)) & 255);       /* Endian independent */
+        finalcount[i] = (unsigned char)
+            ((context->count[(i >= 4 ? 0 : 1)]
+              >> ((3 - (i & 3)) * 8)) & 255); /* Endian independent */
     }
     SHA1Update(context, (const unsigned char *) "\200", 1);
     while ((context->count[0] & 504) != 448) {

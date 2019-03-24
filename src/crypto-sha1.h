@@ -8,9 +8,9 @@
 #define __SHA1_H__ 1
 
 typedef struct {
-    crypto_uint4    state[5];
-    crypto_uint4    count[2];
-    unsigned char   buffer[64];
+    uint32_t      state[5];
+    uint32_t      count[2];
+    unsigned char buffer[64];
 } SHA1_CTX;
 
 void SHA1Init(SHA1_CTX * context);

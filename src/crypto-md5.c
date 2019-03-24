@@ -56,14 +56,14 @@ documentation and/or software.
 #define S43 15
 #define S44 21
 
-static void MD5Transform(crypto_uint4[4], const unsigned char[64]);
+static void MD5Transform(uint32_t[4], const unsigned char[64]);
 
 #ifndef WORDS_BIGENDIAN
 # define Encode memcpy
 # define Decode memcpy
 #else
-static void Encode(unsigned char *, const crypto_uint4 *, size_t);
-static void Decode(crypto_uint4 *, const unsigned char *, size_t);
+static void Encode(unsigned char *, const uint32_t *, size_t);
+static void Decode(uint32_t *, const unsigned char *, size_t);
 #endif
 
 static unsigned char PADDING[64] = {
@@ -87,25 +87,25 @@ static unsigned char PADDING[64] = {
 Rotation is separate from addition to prevent recomputation.
  */
 #define FF(a, b, c, d, x, s, ac) { \
- (a) += F ((b), (c), (d)) + (x) + (crypto_uint4)(ac); \
- (a) = ROTATE_LEFT ((a), (s)); \
- (a) += (b); \
-  }
+    (a) += F ((b), (c), (d)) + (x) + (uint32_t)(ac); \
+    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) += (b); \
+}
 #define GG(a, b, c, d, x, s, ac) { \
- (a) += G ((b), (c), (d)) + (x) + (crypto_uint4)(ac); \
- (a) = ROTATE_LEFT ((a), (s)); \
- (a) += (b); \
-  }
+    (a) += G ((b), (c), (d)) + (x) + (uint32_t)(ac); \
+    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) += (b); \
+}
 #define HH(a, b, c, d, x, s, ac) { \
- (a) += H ((b), (c), (d)) + (x) + (crypto_uint4)(ac); \
- (a) = ROTATE_LEFT ((a), (s)); \
- (a) += (b); \
-  }
+    (a) += H ((b), (c), (d)) + (x) + (uint32_t)(ac); \
+    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) += (b); \
+}
 #define II(a, b, c, d, x, s, ac) { \
- (a) += I ((b), (c), (d)) + (x) + (crypto_uint4)(ac); \
- (a) = ROTATE_LEFT ((a), (s)); \
- (a) += (b); \
-  }
+    (a) += I ((b), (c), (d)) + (x) + (uint32_t)(ac); \
+    (a) = ROTATE_LEFT ((a), (s)); \
+    (a) += (b); \
+}
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
  */
@@ -133,10 +133,11 @@ void MD5Update(MD5_CTX * context, const unsigned char *input,
     index = (size_t) ((context->count[0] >> 3) & 0x3F);
 
     /* Update number of bits */
-    if ((context->count[0] += ((crypto_uint4) inputLen << 3))
-        < ((crypto_uint4) inputLen << 3))
+    if ((context->count[0] += ((uint32_t) inputLen << 3))
+        < ((uint32_t) inputLen << 3)) {
         context->count[1]++;
-    context->count[1] += ((crypto_uint4) inputLen >> 29);
+    }
+    context->count[1] += ((uint32_t) inputLen >> 29);
 
     partLen = 64 - index;
 
@@ -145,20 +146,21 @@ void MD5Update(MD5_CTX * context, const unsigned char *input,
     if (inputLen >= partLen) {
         memcpy
             ((void *) &context->buffer[index], (const void *) input,
-             partLen);
+                partLen);
         MD5Transform(context->state, context->buffer);
 
-        for (i = partLen; i + 63 < inputLen; i += 64)
+        for (i = partLen; i + 63 < inputLen; i += 64) {
             MD5Transform(context->state, &input[i]);
-
+        }
         index = 0;
-    } else
+    } else {
         i = 0;
+    }
 
     /* Buffer remaining input */
     memcpy
         ((void *) &context->buffer[index], (const void *) &input[i],
-         inputLen - i);
+            inputLen - i);
 }
 
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -193,10 +195,10 @@ void MD5Final(unsigned char digest[16], MD5_CTX * context)
 
 /* MD5 basic transformation. Transforms state based on block.
  */
-static void MD5Transform(crypto_uint4 state[4],
+static void MD5Transform(uint32_t state[4],
                          const unsigned char block[64])
 {
-    crypto_uint4 a = state[0], b = state[1], c = state[2], d =
+    uint32_t a = state[0], b = state[1], c = state[2], d =
         state[3], x[16];
 
     Decode(x, block, 64);
@@ -285,10 +287,10 @@ static void MD5Transform(crypto_uint4 state[4],
 
 #ifdef WORDS_BIGENDIAN
 
-/* Encodes input (crypto_uint4) into output (unsigned char). Assumes len is
+/* Encodes input (uint32_t) into output (unsigned char). Assumes len is
   a multiple of 4.
  */
-static void Encode(unsigned char *output, const crypto_uint4 * input,
+static void Encode(unsigned char *output, const uint32_t * input,
                    size_t len)
 {
     size_t i, j;
@@ -301,21 +303,20 @@ static void Encode(unsigned char *output, const crypto_uint4 * input,
     }
 }
 
-/* Decodes input (unsigned char) into output (crypto_uint4). Assumes len is
+/* Decodes input (unsigned char) into output (uint32_t). Assumes len is
   a multiple of 4.
  */
-static void Decode(crypto_uint4 * output, const unsigned char *input,
+static void Decode(uint32_t * output, const unsigned char *input,
                    size_t len)
 {
     size_t i, j;
 
-    for (i = 0, j = 0; j < len; i++, j += 4)
+    for (i = 0, j = 0; j < len; i++, j += 4) {
         output[i] =
-            ((crypto_uint4) input[j]) | (((crypto_uint4) input[j + 1]) <<
-                                         8) | (((crypto_uint4)
-                                                input[j +
-                                                      2]) << 16) |
-            (((crypto_uint4) input[j + 3]) << 24);
+        ((uint32_t) input[j]) | (((uint32_t) input[j + 1]) << 8) |
+        (((uint32_t) input[j + 2]) << 16) |
+        (((uint32_t) input[j + 3]) << 24);
+    }
 }
 
 #endif
