@@ -129,6 +129,8 @@ libpureftpd_a_SOURCES = \
 	syslognames.h \
 	tls.h \
 	tls_extcert.h \
+	tls_extcert_p.h \
+	tls_extcert.c \
 	tls.c \
 	upload-pipe.c \
 	upload-pipe.h \
