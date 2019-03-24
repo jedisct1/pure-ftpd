@@ -156,7 +156,6 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
         cnx->s3->flags |= SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS;
 #   endif
 #  endif
-        return;
     }
 }
 # endif
@@ -388,8 +387,8 @@ static void tls_init_options(void)
 #  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
     SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #  endif
+    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
     if (passes == 0) {
-        SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
         SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
         passes++;
     }
@@ -429,9 +428,6 @@ static void tls_init_client_cert_verification(const char *cert_file)
 static int tls_create_new_context(const char *cert_file,
                                   const char *key_file)
 {
-    tls_cnx_handshook = 0;
-    tls_data_cnx_handshook = 0;
-
 # ifdef HAVE_TLS_SERVER_METHOD
     if ((tls_ctx = SSL_CTX_new(TLS_server_method())) == NULL) {
         tls_error(__LINE__, 0);
@@ -482,6 +478,8 @@ int tls_init_library(void)
 # endif
     tls_init_rnd();
     tls_create_new_context(cert_file, key_file);
+    tls_cnx_handshook = 0;
+    tls_data_cnx_handshook = 0;
 
     return 0;
 }
