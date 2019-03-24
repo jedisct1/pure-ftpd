@@ -1,6 +1,6 @@
 #include <config.h>
 
-#if !defined(__OpenBSD__) && !defined(__wasi__) && !defined(__CloudABI__)
+#if !defined(__OpenBSD__) && !defined(__CloudABI__) && !defined(__wasi__)
 
 #include "crypto.h"
 #include "ftpd.h"
@@ -194,7 +194,7 @@ uint32_t alt_arc4random(void)
 {
     uint32_t v;
 
-    arc4random_buf(&v, sizeof v);
+    alt_arc4random_buf(&v, sizeof v);
 
     return v;
 }
@@ -209,7 +209,7 @@ uint32_t alt_arc4random_uniform(const uint32_t upper_bound)
     }
     min = (1U + ~upper_bound) % upper_bound; /* = 2**32 mod upper_bound */
     do {
-        r = arc4random();
+        r = alt_arc4random();
     } while (r < min);
     /* r is now clamped to a set whose size mod upper_bound == 0
      * the worst case (2**31+1) requires 2 attempts on average */

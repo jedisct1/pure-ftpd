@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#if defined(__OpenBSD__) || defined(__wasi__)
+#if defined(__OpenBSD__) || defined(__CloudABI__) || defined(__wasi__)
 
 #define alt_arc4random() arc4random()
 #ifdef HAVE_ARC4RANDOM_STIR
