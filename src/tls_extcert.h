@@ -19,6 +19,7 @@ typedef struct CertResult {
 } CertResult;
 
 void tls_extcert_parse(const char * const file);
+void tls_extcert_get(CertResult * const result, const char *sni_name);
 void tls_extcert_exit(void);
 
 #define EXTCERT_KEYWORD_SEP ":"

@@ -60,6 +60,9 @@ static int validate_sni_name(const char * const sni_name)
     return 0;
 }
 
+static int tls_create_new_context(const char *cert_file,
+                                  const char *key_file);
+
 static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
     CertResult  result;
@@ -86,6 +89,32 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     }
     if (result.action == CERT_ACTION_DEFAULT) {
         return SSL_TLSEXT_ERR_OK;
+    }
+    if (result.cert_file == NULL) {
+        if (result.action == CERT_ACTION_STRICT) {
+            die(400, LOG_ERR, "Missing certificate");
+        } else {
+            return SSL_TLSEXT_ERR_OK;
+        }
+    }
+    if (result.key_file == NULL) {
+        result.key_file = result.cert_file;
+    }
+    SSL_CTX_free(tls_ctx);
+    tls_ctx = NULL;
+    if (tls_create_new_context(result.cert_file, result.key_file) != 0) {
+        if (result.action != CERT_ACTION_FALLBACK) {
+            die(400, LOG_ERR, "Invalid certificate");
+        }
+        if (tls_create_new_context(cert_file, key_file) != 0) {
+            die(400, LOG_ERR, "SSL error");
+        }
+    }
+    if (tls_cnx != NULL) {
+        SSL_set_SSL_CTX(tls_cnx, tls_ctx);
+    }
+    if (tls_data_cnx != NULL) {
+        SSL_set_SSL_CTX(tls_data_cnx, tls_ctx);
     }
     return SSL_TLSEXT_ERR_OK;
 }
@@ -392,7 +421,8 @@ static void tls_init_client_cert_verification(const char *cert_file)
     }
 }
 
-int tls_create_new_context(const char *cert_file, const char *key_file)
+static int tls_create_new_context(const char *cert_file,
+                                  const char *key_file)
 {
     tls_cnx_handshook = 0;
     tls_data_cnx_handshook = 0;

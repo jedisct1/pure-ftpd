@@ -60,7 +60,7 @@ static void callback_reply_cert_file(const char *str, CertResult * const result)
         return;
     }
     free((void *) (result->cert_file));
-    result->cert_file = strdup(cert_file);
+    result->cert_file = strdup(str);
 }
 
 static void callback_reply_key_file(const char *str, CertResult * const result)
@@ -72,7 +72,7 @@ static void callback_reply_key_file(const char *str, CertResult * const result)
         return;
     }
     free((void *) (result->key_file));
-    result->key_file = strdup(key_file);
+    result->key_file = strdup(str);
 }
 
 static void callback_reply_end(const char *str, CertResult * const result)
