@@ -26,9 +26,9 @@ void tls_extcert_exit(void);
 #define EXTCERT_CLIENT_SNI_NAME "sni_name" EXTCERT_KEYWORD_SEP
 #define EXTCERT_CLIENT_END "end"
 
-#define EXTCERT_REPLY_ACTION "action"
-#define EXTCERT_REPLY_CERT_FILE "cert_file"
-#define EXTCERT_REPLY_KEY_FILE "key_file"
+#define EXTCERT_REPLY_ACTION "action" EXTCERT_KEYWORD_SEP
+#define EXTCERT_REPLY_CERT_FILE "cert_file" EXTCERT_KEYWORD_SEP
+#define EXTCERT_REPLY_KEY_FILE "key_file" EXTCERT_KEYWORD_SEP
 #define EXTCERT_REPLY_END "end"
 
 #endif

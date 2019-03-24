@@ -35,6 +35,7 @@
 #endif
 #ifdef WITH_TLS
 # include "tls.h"
+# include "tls_extcert.h"
 #endif
 #ifdef WITH_BONJOUR
 # include "bonjour.h"
@@ -5806,9 +5807,8 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             key_file = cert_file;
             break;
         case '3':
-            if ((extcert_socketpath = strdup(optarg)) == NULL) {
-                die_mem();
-            }
+            tls_extcert_parse(optarg);
+            use_extcert++;
             break;
         case 'Y': {
             if ((enforce_tls_auth = atoi(optarg)) < 0 || enforce_tls_auth > 3) {
@@ -6344,6 +6344,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     closelog();
 #ifdef WITH_TLS
     tls_free_library();
+    tls_extcert_exit();
 #endif
     alt_arc4random_close();
 

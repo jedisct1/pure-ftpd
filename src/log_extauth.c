@@ -38,6 +38,7 @@ void pw_extauth_parse(const char * const file)
 void pw_extauth_exit(void)
 {
     free(saddr);
+    saddr = NULL;
 }
 
 static void callback_reply_auth_ok(const char *str, AuthResult * const result)

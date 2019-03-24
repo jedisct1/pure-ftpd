@@ -15,7 +15,7 @@
 static struct sockaddr_un *saddr;
 static signed char cert_finalized;
 
-void extcert_parse(const char * const file)
+void tls_extcert_parse(const char * const file)
 {
     size_t file_len;
 
@@ -33,6 +33,7 @@ void extcert_parse(const char * const file)
 void tls_extcert_exit(void)
 {
     free(saddr);
+    saddr = NULL;
 }
 
 static void callback_reply_action(const char *str, CertResult * const result)
@@ -149,8 +150,10 @@ void tls_extcert_get(CertResult * const result, const char *sni_name)
     if (cert_finalized == 0 ||
        (result->cert_file == NULL &&
            result->action != CERT_ACTION_DENY &&
-           result->action != CERT_ACTION_STRICT)) {
+           result->action != CERT_ACTION_DEFAULT)) {
         result->cert_ok = -1;
+    } else {
+        result->cert_ok = 1;
     }
     bye:
     if (kindy != -1) {

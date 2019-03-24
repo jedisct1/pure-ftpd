@@ -11,6 +11,7 @@
 # include "globals.h"
 # include "messages.h"
 # include "alt_arc4random.h"
+# include "tls_extcert.h"
 
 # ifndef DISABLE_SSL_RENEGOTIATION
 #  ifndef SSL3_FLAGS_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
@@ -61,6 +62,7 @@ static int validate_sni_name(const char * const sni_name)
 
 static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
 {
+    CertResult  result;
     const char *sni_name;
 
     if ((sni_name = SSL_get_servername(cnx, TLSEXT_NAMETYPE_host_name))
@@ -68,7 +70,23 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         return SSL_TLSEXT_ERR_NOACK;
     }
     logfile(LOG_INFO, "SNI: [%s]", sni_name);
-
+    if (chrooted != 0 || loggedin != 0) {
+        return SSL_TLSEXT_ERR_NOACK;
+    }
+    if (use_extcert == 0) {
+        return SSL_TLSEXT_ERR_OK;
+    }
+    memset(&result, 0, sizeof result);
+    tls_extcert_get(&result, sni_name);
+    if (result.cert_ok != 1) {
+        die(400, LOG_ERR, "Cert handler not ready");
+    }
+    if (result.action == CERT_ACTION_DENY) {
+        die(400, LOG_INFO, MSG_LOGOUT);
+    }
+    if (result.action == CERT_ACTION_DEFAULT) {
+        return SSL_TLSEXT_ERR_OK;
+    }
     return SSL_TLSEXT_ERR_OK;
 }
 
@@ -374,7 +392,7 @@ static void tls_init_client_cert_verification(const char *cert_file)
     }
 }
 
-int tls_create_new_context()
+int tls_create_new_context(const char *cert_file, const char *key_file)
 {
     tls_cnx_handshook = 0;
     tls_data_cnx_handshook = 0;
@@ -428,7 +446,7 @@ int tls_init_library(void)
                         OPENSSL_INIT_LOAD_CONFIG, NULL);
 # endif
     tls_init_rnd();
-    tls_create_new_context();
+    tls_create_new_context(cert_file, key_file);
 
     return 0;
 }

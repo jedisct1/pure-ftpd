@@ -70,7 +70,7 @@ static CertdCallBack certd_callbacks[] = {
     { NULL, callback_client_end }
 };
 
-#define ENV_CERTD_SNI_NAME "AUTHD_SNI_NAME"
+#define ENV_CERTD_SNI_NAME "CERTD_SNI_NAME"
 
 #define CERTD_SCRIPT_TIMEOUT 60U
 
