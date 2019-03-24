@@ -356,7 +356,9 @@ static void tls_init_cache(void)
 
 static void tls_init_options(void)
 {
-    # ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+    static int passes;
+
+# ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     SSL_CTX_set_options(tls_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
 # endif
 # ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
@@ -386,8 +388,11 @@ static void tls_init_options(void)
 #  if DISABLE_SSL_RENEGOTIATION == 0 && defined(SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)
     SSL_CTX_set_options(tls_ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #  endif
-    SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
-    SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
+    if (passes == 0) {
+        SSL_CTX_set_info_callback(tls_ctx, ssl_info_cb);
+        SSL_CTX_set_tlsext_servername_callback(tls_ctx, ssl_servername_cb);
+        passes++;
+    }
 # endif
     SSL_CTX_set_verify_depth(tls_ctx, MAX_CERTIFICATE_DEPTH);
 }
