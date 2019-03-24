@@ -156,7 +156,7 @@ When TLS has been successfully negotiated for a connection, you'll see
 something similar to this in log files :
 
 <<
-TLS: Enabled TLSv1.3 with AES128-GCM, 256 secret bits cipher
+TLS: Enabled TLSv1/SSLv3 with ECDHE-ECDSA-AES128-GCM-SHA256, 128 secret bits cipher
 >>
 
 
