@@ -16,13 +16,27 @@ doc_DATA = \
 	pureftpd-pgsql.conf
 
 EXTRA_DIST = \
-	THANKS \
-	HISTORY \
 	CONTACT \
+	FAQ \
+	HISTORY \
 	Makefile.gui \
+	README.Authentication-Modules \
+	README.Configuration-File \
 	README.Donations \
+	README.LDAP \
+	README.MacOS-X \
+	README.MySQL \
+	README.PGSQL \
+	README.TLS \
+	README.Virtual-Users \
 	README.Windows \
-	pure-ftpd.png
+	THANKS \
+	pure-ftpd.conf \
+	pure-ftpd.png \
+	pureftpd-ldap.conf \
+	pureftpd-mysql.conf \
+	pureftpd-pgsql.conf \
+	pureftpd.schema
 
 SUBDIRS = \
 	puredb \
