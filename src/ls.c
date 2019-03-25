@@ -1087,7 +1087,6 @@ void domlsd(const char *base)
             break;
         }
     }
-    closedir(dir);
     wrstr(c, tls_fd, NULL);
     closedata();
     if (matches >= max_ls_files) {
