@@ -367,8 +367,9 @@ void dositetime(void);
 int ul_check_free_space(const char *name, const double min_space);
 void disablesignals(void);
 void getnames(void);
-void donlist(char *arg, const int on_ctrlconn, const int opt_l_,
-             const int opt_a_, const int split_args, const int prefix_path);
+void dolist(char *arg, const int on_ctrlconn, const int opt_l_,
+            const int opt_a_, const int split_args);
+void donlst(const char *base);
 void opendata(void);
 void closedata(void);
 void client_fflush(void);

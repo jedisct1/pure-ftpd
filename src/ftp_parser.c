@@ -652,7 +652,7 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-                    donlist(arg, 1, 1, 1, 1, 0);
+                    dolist(arg, 1, 1, 1, 1);
                 } else {
                     addreply_noformat(211, "https://www.pureftpd.org/");
                 }
@@ -665,7 +665,7 @@ void parser(void)
                 } else
 #endif
                 {
-                    donlist(arg, 0, 1, 0, 1, 0);
+                    dolist(arg, 0, 1, 0, 1);
                 }
             } else if (!strcmp(cmd, "nlst")) {
 #ifdef WITH_TLS
@@ -675,7 +675,7 @@ void parser(void)
                 } else
 #endif
                 {
-                    donlist(arg, 0, 0, 0, broken_client_compat, 1);
+                    donlst(arg);
                 }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "mfmt")) {

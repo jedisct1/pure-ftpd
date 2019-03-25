@@ -1225,6 +1225,7 @@ void domlsd(const char *base)
     DIR           *dir;
     struct dirent *de;
     size_t         line_off = (sizeof MLST_BEGIN - 1U);
+    unsigned int   matches = 0;
 
     if (*base != 0 && chdir(base) != 0) {
         addreply_noformat(550, MSG_STAT_FAILURE2);
@@ -1233,7 +1234,7 @@ void domlsd(const char *base)
     if ((dir = opendir(".")) == NULL) {
         addreply_noformat(550, MSG_STAT_FAILURE2);
         if (chdir(wd) != 0) {
-            _EXIT(EXIT_FAILURE);
+            die(421, LOG_ERR, "chdir: %s", strerror(errno));
         }
         return;
     }
@@ -1245,11 +1246,19 @@ void domlsd(const char *base)
         }
         addreply_noformat(0, line);
         line_off = 0;
+        matches++;
+        if (matches >= max_ls_files) {
+            break;
+        }
     }
     closedir(dir);
-    addreply_noformat(250, "End.");
+    if (matches >= max_ls_files) {
+        addreply(226, MSG_LS_TRUNCATED, matches);
+    } else {
+        addreply_noformat(250, "End.");
+    }
     if (chdir(wd) != 0) {
-        _EXIT(EXIT_FAILURE);
+        die(421, LOG_ERR, "chdir: %s", strerror(errno));
     }
 }
 

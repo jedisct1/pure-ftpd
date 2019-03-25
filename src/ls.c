@@ -722,13 +722,13 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
             c_buf = alloca_subdir;
 #endif
 #ifdef FANCY_LS_DIRECTORY_HEADERS
-                wrstr(f, tls_fd, "\r\n>----------------[");
-                wrstr(f, tls_fd, c_buf);
-                wrstr(f, tls_fd, "]----------------<\r\n\r\n");
+            wrstr(f, tls_fd, "\r\n>----------------[");
+            wrstr(f, tls_fd, c_buf);
+            wrstr(f, tls_fd, "]----------------<\r\n\r\n");
 #else
-                wrstr(f, tls_fd, "\r\n\r\n");
-                wrstr(f, tls_fd, c_buf);
-                wrstr(f, tls_fd, ":\r\n\r\n");
+            wrstr(f, tls_fd, "\r\n\r\n");
+            wrstr(f, tls_fd, c_buf);
+            wrstr(f, tls_fd, ":\r\n\r\n");
 #endif
 #ifdef WITH_RFC2640
             free(c_buf);
@@ -779,8 +779,8 @@ static char *unescape_and_return_next_file(char * const str) {
     return NULL;
 }
 
-void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
-             const int opt_a_, const int split_args, const int prefix_path)
+void dolist(char *arg, const int on_ctrl_conn, const int opt_l_,
+            const int opt_a_, const int split_args)
 {
     int c;
     void *tls_fd = NULL;
@@ -1002,6 +1002,89 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
     }
 end:
     if (chdir(wd)) {
+        die(421, LOG_ERR, "chdir: %s", strerror(errno));
+    }
+}
+
+void donlst(const char *base)
+{
+    char           line[PATH_MAX + 3U];
+    DIR           *dir;
+    void          *tls_fd = NULL;
+    struct dirent *de;
+    size_t         name_len;
+    unsigned int   matches = 0;
+    int            c;
+    int            base_has_trailing_slash = 0;
+
+    if (*base != 0 && chdir(base) != 0) {
+        if (*base++ == '-') {
+            while (!isspace((unsigned char) *base++));
+            while (isspace((unsigned char) *base++));
+            if (*base != 0 && chdir(base) != 0) {
+                addreply_noformat(550, MSG_STAT_FAILURE2);
+                return;
+            }
+        } else {
+            addreply_noformat(550, MSG_STAT_FAILURE2);
+            return;
+        }
+    }
+    if (*base !=0 && base[strlen(base) - 1U] == '/') {
+        base_has_trailing_slash = 1;
+    }
+    if ((dir = opendir(".")) == NULL) {
+        addreply_noformat(550, MSG_STAT_FAILURE2);
+        goto bye;
+    }
+    opendata();
+    if ((c = xferfd) == -1) {
+        goto bye;
+    }
+    doreply();
+    if (data_protection_level == CPL_PRIVATE) {
+        tls_init_data_session(xferfd, passive);
+        tls_fd = tls_data_cnx;
+    }
+    while ((de = readdir(dir)) != NULL) {
+        if (checkprintable(de->d_name) != 0) {
+            continue;
+        }
+        name_len = strlen(de->d_name);
+        if (name_len > sizeof line - 3U) {
+            continue;
+        }
+        memcpy(line, de->d_name, name_len);
+        line[name_len] = '\r';
+        line[name_len + 1] = '\n';
+        line[name_len + 2] = 0;
+        if (*base) {
+            wrstr(c, tls_fd, base);
+            if (base_has_trailing_slash == 0) {
+                wrstr(c, tls_fd, "/");
+            }
+        }
+        wrstr(c, tls_fd, line);
+        matches++;
+        if (matches >= max_ls_files) {
+            break;
+        }
+    }
+    closedir(dir);
+    if (matches >= max_ls_files) {
+        addreply(226, MSG_LS_TRUNCATED, matches);
+    } else {
+        addreply_noformat(250, "End.");
+    }
+    wrstr(c, tls_fd, NULL);
+    closedata();
+    if (matches >= max_ls_files) {
+        addreply(226, MSG_LS_TRUNCATED, matches);
+    } else {
+        addreply(226, MSG_LS_SUCCESS, matches);
+    }
+bye:
+    if (chdir(wd) != 0) {
         die(421, LOG_ERR, "chdir: %s", strerror(errno));
     }
 }
