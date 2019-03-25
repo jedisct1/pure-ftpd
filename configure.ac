@@ -1,21 +1,26 @@
 dnl AM_ACLOCAL_INCLUDE(m4)
 
 AC_PREREQ(2.65)
-AC_INIT([pure-ftpd],[1.0.48],[bugs at pureftpd dot org])
+AC_INIT([pure-ftpd],[1.0.48],
+  [https://github.com/jedisct1/pure-ftpd/issues],
+  [pure-ftpd],
+  [https://www.pureftpd.org])
 AC_CONFIG_SRCDIR(src/ftpd.c)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AM_MAINTAINER_MODE
+AM_DEP_TRACK
 AC_CONFIG_LIBOBJ_DIR(src)
 
 AC_SUBST(VERSION)
 
 dnl Checks for programs.
 LX_CFLAGS=${CFLAGS-NONE}
-AC_PROG_INSTALL
-AC_PROG_RANLIB
 AC_PROG_CC
-AM_PROG_CC_C_O
+AC_PROG_RANLIB
 AC_USE_SYSTEM_EXTENSIONS
+
 AC_SEARCH_LIBS([strerror],[cposix])
 
 AX_CHECK_COMPILE_FLAG([-fPIC], [
@@ -60,6 +65,9 @@ AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
 AX_CHECK_COMPILE_FLAG([-Winit-self], [CFLAGS="$CFLAGS -Winit-self"])
 AX_CHECK_COMPILE_FLAG([-Wwrite-strings], [CFLAGS="$CFLAGS -Wwrite-strings"])
 AX_CHECK_COMPILE_FLAG([-Wdiv-by-zero], [CFLAGS="$CFLAGS -Wdiv-by-zero"])
+
+AX_CHECK_COMPILE_FLAG([$CFLAGS -Wno-unused-command-line-argument],
+[CFLAGS="$CFLAGS -Wno-unused-command-line-argument"])
 
 AC_ARG_VAR([CWFLAGS], [define to compilation flags for generating extra warnings])
 AX_CHECK_COMPILE_FLAG([-Wall], [CWFLAGS="$CWFLAGS -Wall"])
@@ -1476,9 +1484,3 @@ man/pure-statsdecode.8 man/pure-quotacheck.8 man/pure-pw.8 man/pure-pwconvert.8
 man/pure-authd.8 man/pure-certd.8)
 
 AC_OUTPUT
-
-AC_MSG_NOTICE([+--------------------------------------------------------+])
-AC_MSG_NOTICE([| You can subscribe to the Pure-FTPd users mailing-list  |])
-AC_MSG_NOTICE([| to ask for help and to stay informed of new releases.  |])
-AC_MSG_NOTICE([| Go to http://www.pureftpd.org/ml/ now!                 |])
-AC_MSG_NOTICE([+--------------------------------------------------------+])

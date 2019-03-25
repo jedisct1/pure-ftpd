@@ -531,17 +531,17 @@ static int checkvalidaddr(const struct sockaddr_storage * const addr)
     return 1;
 #endif
     if (STORAGE_FAMILY(*addr) == AF_INET6) {
-        if (IN6_IS_ADDR_MULTICAST(&STORAGE_SIN_ADDR6_NF(*addr)) ||
-            IN6_IS_ADDR_UNSPECIFIED(&STORAGE_SIN_ADDR6_NF(*addr))) {
+        if (IN6_IS_ADDR_MULTICAST(&STORAGE_SIN_ADDR6_NF_CONST(*addr)) ||
+            IN6_IS_ADDR_UNSPECIFIED(&STORAGE_SIN_ADDR6_NF_CONST(*addr))) {
             return 0;
         }
         return 1;
     } else if (STORAGE_FAMILY(*addr) == AF_INET) {
-        if (ntohl(STORAGE_SIN_ADDR(*addr)) == INADDR_ANY ||
-            ntohl(STORAGE_SIN_ADDR(*addr)) == INADDR_NONE ||
-            ntohl(STORAGE_SIN_ADDR(*addr)) == INADDR_BROADCAST ||
-            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR(*addr))) ||
-            IN_BADCLASS(ntohl(STORAGE_SIN_ADDR(*addr)))) {
+        if (ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_ANY ||
+            ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_NONE ||
+            ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_BROADCAST ||
+            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR_CONST(*addr))) ||
+            IN_BADCLASS(ntohl(STORAGE_SIN_ADDR_CONST(*addr)))) {
             return 0;
         }
         return 1;
@@ -556,15 +556,15 @@ static void fourinsix(struct sockaddr_storage *v6)
     struct sockaddr_storage v4;
 
     if (v6ready == 0 || STORAGE_FAMILY(*v6) != AF_INET6 ||
-        IN6_IS_ADDR_V4MAPPED(&STORAGE_SIN_ADDR6_NF(*v6)) == 0) {
+        IN6_IS_ADDR_V4MAPPED(&STORAGE_SIN_ADDR6_NF_CONST(*v6)) == 0) {
         return;
     }
     memset(&v4, 0, sizeof v4);
     STORAGE_FAMILY(v4) = AF_INET;
     memcpy(&STORAGE_SIN_ADDR(v4),
-           (unsigned char *) &STORAGE_SIN_ADDR6(*v6) + 12,
+           (unsigned char *) &STORAGE_SIN_ADDR6_CONST(*v6) + 12,
            sizeof STORAGE_SIN_ADDR(v4));
-    STORAGE_PORT(v4) = STORAGE_PORT6(*v6);
+    STORAGE_PORT(v4) = STORAGE_PORT6_CONST(*v6);
     SET_STORAGE_LEN(v4, sizeof(struct sockaddr_in));
     *v6 = v4;
 }
@@ -578,7 +578,7 @@ static int addrcmp(const struct sockaddr_storage * const s1,
         if (STORAGE_FAMILY(*s2) != AF_INET6) {
             return 1;
         }
-        if (IN6_ARE_ADDR_EQUAL(&STORAGE_SIN_ADDR6_NF(*s1), &STORAGE_SIN_ADDR6_NF(*s2))) {
+        if (IN6_ARE_ADDR_EQUAL(&STORAGE_SIN_ADDR6_NF_CONST(*s1), &STORAGE_SIN_ADDR6_NF_CONST(*s2))) {
             return 0;
         } else {
             return 1;
@@ -587,7 +587,7 @@ static int addrcmp(const struct sockaddr_storage * const s1,
         if (STORAGE_FAMILY(*s2) != AF_INET) {
             return 1;
         }
-        if (STORAGE_SIN_ADDR(*s1) == STORAGE_SIN_ADDR(*s2)) {
+        if (STORAGE_SIN_ADDR_CONST(*s1) == STORAGE_SIN_ADDR_CONST(*s2)) {
             return 0;
         } else {
             return 1;
@@ -2223,14 +2223,14 @@ void dopasv(int psvtype)
     switch (psvtype) {
     case 0:
         if (STORAGE_FAMILY(force_passive_ip) == 0) {
-            a = ntohl(STORAGE_SIN_ADDR(dataconn));
+            a = ntohl(STORAGE_SIN_ADDR_CONST(dataconn));
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET6) {
             (void) close(datafd);
             datafd = -1;
             addreply_noformat(425, MSG_NO_EPSV);
             return;
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET) {
-            a = ntohl(STORAGE_SIN_ADDR(force_passive_ip));
+            a = ntohl(STORAGE_SIN_ADDR_CONST(force_passive_ip));
         } else {
             _EXIT(EXIT_FAILURE);
         }
@@ -4951,9 +4951,9 @@ static void doit(void)
         die(425, LOG_ERR, MSG_INVALID_IP);
     }
     if (STORAGE_FAMILY(ctrlconn) == AF_INET6) {
-        serverport = ntohs((in_port_t) STORAGE_PORT6(ctrlconn));
+        serverport = ntohs((in_port_t) STORAGE_PORT6_CONST(ctrlconn));
     } else {
-        serverport = ntohs((in_port_t) STORAGE_PORT(ctrlconn));
+        serverport = ntohs((in_port_t) STORAGE_PORT_CONST(ctrlconn));
     }
     if (trustedip != NULL && addrcmp(&ctrlconn, trustedip) != 0) {
        anon_only = 1;

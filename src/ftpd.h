@@ -630,10 +630,15 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #define WIN32_ANON_DIR "/ftp"
 
 #define STORAGE_PORT(X)  (*storage_port(&(X)))
+#define STORAGE_PORT_CONST(X)  (*storage_port_const(&(X)))
 #define STORAGE_PORT6(X) (*storage_port6(&(X)))
+#define STORAGE_PORT6_CONST(X) (*storage_port6_const(&(X)))
 #define STORAGE_SIN_ADDR(X) (storage_sin_addr(&(X))->s_addr)
+#define STORAGE_SIN_ADDR_CONST(X) (storage_sin_addr_const(&(X))->s_addr)
 #define STORAGE_SIN_ADDR6(X) (storage_sin_addr6(&(X))->s6_addr)
+#define STORAGE_SIN_ADDR6_CONST(X) (storage_sin_addr6_const(&(X))->s6_addr)
 #define STORAGE_SIN_ADDR6_NF(X) (*(storage_sin_addr6(&(X))))
+#define STORAGE_SIN_ADDR6_NF_CONST(X) (*(storage_sin_addr6_const(&(X))))
 
 #ifdef HAVE_SS_LEN
 # define STORAGE_LEN(X) ((X).ss_len)

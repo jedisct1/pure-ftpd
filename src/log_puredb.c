@@ -105,7 +105,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                 (unsigned long) ip3;
             ipcheck_ipdone:
             mask = ~((0x80000000 >> (netbits - 1U)) - 1U);
-            saip_raw = (const unsigned char *) &(STORAGE_SIN_ADDR(*sa));
+            saip_raw = (const unsigned char *) &(STORAGE_SIN_ADDR_CONST(*sa));
             saip =
                 ((unsigned long) saip_raw[0] << 24) |
                 ((unsigned long) saip_raw[1] << 16) |
