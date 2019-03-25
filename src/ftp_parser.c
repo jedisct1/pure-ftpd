@@ -521,9 +521,12 @@ void parser(void)
                 }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "pret")) {
+                struct stat st;
+
                 if (strncasecmp("RETR ", arg, sizeof "RETR " - 1U) == 0) {
                     arg += sizeof "RETR " - 1U;
-                    if (*arg == 0 || access(arg, R_OK) == -1) {
+                    if (*arg == 0 || access(arg, R_OK) != 0 ||
+                        stat(arg, &st) != 0 || S_ISREG(st.st_mode) == 0) {
                         addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
                         goto wayout;
                     }
