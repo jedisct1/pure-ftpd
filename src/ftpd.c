@@ -1187,49 +1187,6 @@ void domlst(const char * const file)
     addreply_noformat(250, "End.");
 }
 
-void domlsd(const char *base)
-{
-    char           line[PATH_MAX + 256U] = MLST_BEGIN;
-    DIR           *dir;
-    struct dirent *de;
-    size_t         line_off = (sizeof MLST_BEGIN - 1U);
-    unsigned int   matches = 0;
-
-    if (*base != 0 && chdir(base) != 0) {
-        addreply_noformat(550, MSG_STAT_FAILURE2);
-        return;
-    }
-    if ((dir = opendir(".")) == NULL) {
-        addreply_noformat(550, MSG_STAT_FAILURE2);
-        if (chdir(wd) != 0) {
-            die(421, LOG_ERR, "chdir: %s", strerror(errno));
-        }
-        return;
-    }
-    while ((de = readdir(dir)) != NULL) {
-        if (checkprintable(de->d_name) != 0 ||
-            modernformat(de->d_name, line + line_off,
-                         sizeof line - line_off, " ") < 0) {
-            continue;
-        }
-        addreply_noformat(0, line);
-        line_off = 0;
-        matches++;
-        if (matches >= max_ls_files) {
-            break;
-        }
-    }
-    closedir(dir);
-    if (matches >= max_ls_files) {
-        addreply(226, MSG_LS_TRUNCATED, matches);
-    } else {
-        addreply_noformat(250, "End.");
-    }
-    if (chdir(wd) != 0) {
-        die(421, LOG_ERR, "chdir: %s", strerror(errno));
-    }
-}
-
 void donoop(void)
 {
 #ifdef BORING_MODE
