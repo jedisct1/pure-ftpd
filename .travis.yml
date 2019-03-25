@@ -11,7 +11,7 @@ before_script:
  - sudo apt-get install libldap2-dev libmysqlclient-dev libpq-dev libssl-dev
  - ./.travis-libsodium.sh
  - ./autogen.sh
- - ./configure --disable-dependency-tracking --with-everything --with-ldap --with-mysql --with-pgsql --with-tls --with-rfc2640
+ - ./configure --disable-dependency-tracking --with-everything --with-ldap --with-mysql --with-pgsql --with-tls
 
 script:
  - make -j$(nproc) distcheck
