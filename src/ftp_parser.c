@@ -652,16 +652,12 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-                    modern_listings = 0;
-                    donlist(arg, 1, 1, 1, 1);
+                    donlist(arg, 1, 1, 1, 1, 0);
                 } else {
                     addreply_noformat(211, "https://www.pureftpd.org/");
                 }
 #endif
             } else if (!strcmp(cmd, "list")) {
-#ifndef MINIMAL
-                modern_listings = 0;
-#endif
 #ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
@@ -669,12 +665,9 @@ void parser(void)
                 } else
 #endif
                 {
-                    donlist(arg, 0, 1, 0, 1);
+                    donlist(arg, 0, 1, 0, 1, 0);
                 }
             } else if (!strcmp(cmd, "nlst")) {
-#ifndef MINIMAL
-                modern_listings = 0;
-#endif
 #ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
@@ -682,7 +675,7 @@ void parser(void)
                 } else
 #endif
                 {
-                    donlist(arg, 0, 0, 0, broken_client_compat);
+                    donlist(arg, 0, 0, 0, broken_client_compat, 1);
                 }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "mfmt")) {
@@ -698,7 +691,6 @@ void parser(void)
                     domlst(*arg != 0 ? arg : ".");
                 }
             } else if (!strcmp(cmd, "mlsd")) {
-                modern_listings = 1;
 # ifdef WITH_TLS
                 if (enforce_tls_auth == 3 &&
                     data_protection_level != CPL_PRIVATE) {
@@ -706,7 +698,7 @@ void parser(void)
                 } else
 # endif
                 {
-                    donlist(arg, 0, 1, 1, 0);
+                    domlsd(*arg != 0 ? arg : ".");
                 }
 #endif
             } else if (!strcmp(cmd, "abor")) {

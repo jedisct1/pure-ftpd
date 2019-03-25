@@ -241,31 +241,6 @@ static int listfile(const PureFileInfo * const fi, const char *name)
     char m[PATH_MAX + 1U];
     const char *format;
 
-#ifndef MINIMAL
-    if (modern_listings != 0) {
-        const char *n;
-        char *alloca_nameline;
-        const size_t sizeof_nameline = PATH_MAX + 256U;
-
-        if (fi == NULL) {
-            n = name;
-        } else {
-            n = FI_NAME(fi);
-        }
-        if ((alloca_nameline = ALLOCA(sizeof_nameline)) == NULL) {
-            return 0;
-        }
-        if ((rval = modernformat(n, alloca_nameline,
-                                 sizeof_nameline, "")) < 0) {
-            ALLOCA_FREE(alloca_nameline);
-            return 0;
-        }
-        addfile(alloca_nameline, suffix);
-        ALLOCA_FREE(alloca_nameline);
-
-        return rval;
-    }
-#endif
     if (fi == NULL) {
         if (lstat(name, &st) < 0) {
             return 0;
@@ -746,9 +721,6 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
 #else
             c_buf = alloca_subdir;
 #endif
-#ifndef MINIMAL
-            if (modern_listings == 0) {
-#endif
 #ifdef FANCY_LS_DIRECTORY_HEADERS
                 wrstr(f, tls_fd, "\r\n>----------------[");
                 wrstr(f, tls_fd, c_buf);
@@ -757,9 +729,6 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                 wrstr(f, tls_fd, "\r\n\r\n");
                 wrstr(f, tls_fd, c_buf);
                 wrstr(f, tls_fd, ":\r\n\r\n");
-#endif
-#ifndef MINIMAL
-            }
 #endif
 #ifdef WITH_RFC2640
             free(c_buf);
@@ -811,7 +780,7 @@ static char *unescape_and_return_next_file(char * const str) {
 }
 
 void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
-             const int opt_a_, const int split_args)
+             const int opt_a_, const int split_args, const int prefix_path)
 {
     int c;
     void *tls_fd = NULL;
@@ -915,11 +884,6 @@ void donlist(char *arg, const int on_ctrl_conn, const int opt_l_,
             } else if ((endarg = unescape_and_return_next_file(arg)) != NULL) {
                 justone = 0;
             }
-#ifdef DEBUG
-            if (debug != 0) {
-                addreply(226, "Glob: %s", arg);
-            }
-#endif
 
             /* Expand ~ here if needed */
 

@@ -116,10 +116,6 @@ GLOBAL0(signed char anon_noupload);
 GLOBAL0(signed char nochmod);
 GLOBAL0(signed char keepallfiles);
 
-#ifndef MINIMAL
-GLOBAL0(signed char modern_listings);
-#endif
-
 #ifndef NO_STANDALONE
 GLOBAL0(signed char daemonize);
 #endif

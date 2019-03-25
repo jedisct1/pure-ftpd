@@ -1211,11 +1211,45 @@ void domlst(const char * const file)
     char line[PATH_MAX + 256U] = MLST_BEGIN;
 
     if (modernformat(file, line + (sizeof MLST_BEGIN - 1U),
-                     sizeof line - (sizeof MLST_BEGIN - 1U), " ") >= 0) {
-        addreply_noformat(0, line);
-        addreply_noformat(250, "End.");
-    } else {
+                     sizeof line - (sizeof MLST_BEGIN - 1U), " ") < 0) {
         addreply_noformat(550, MSG_STAT_FAILURE2);
+        return;
+    }
+    addreply_noformat(0, line);
+    addreply_noformat(250, "End.");
+}
+
+void domlsd(const char *base)
+{
+    char           line[PATH_MAX + 256U] = MLST_BEGIN;
+    DIR           *dir;
+    struct dirent *de;
+    size_t         line_off = (sizeof MLST_BEGIN - 1U);
+
+    if (*base != 0 && chdir(base) != 0) {
+        addreply_noformat(550, MSG_STAT_FAILURE2);
+        return;
+    }
+    if ((dir = opendir(".")) == NULL) {
+        addreply_noformat(550, MSG_STAT_FAILURE2);
+        if (chdir(wd) != 0) {
+            _EXIT(EXIT_FAILURE);
+        }
+        return;
+    }
+    while ((de = readdir(dir)) != NULL) {
+        if (checkprintable(de->d_name) != 0 ||
+            modernformat(de->d_name, line + line_off,
+                         sizeof line - line_off, " ") < 0) {
+            continue;
+        }
+        addreply_noformat(0, line);
+        line_off = 0;
+    }
+    closedir(dir);
+    addreply_noformat(250, "End.");
+    if (chdir(wd) != 0) {
+        _EXIT(EXIT_FAILURE);
     }
 }
 
@@ -1391,6 +1425,11 @@ void douser(const char *username)
             cantsec:
             die(421, LOG_ERR, MSG_UNABLE_SECURE_ANON);
         }
+# ifdef ANON_DIR
+        if ((pw->pw_dir = strdup(ANON_DIR)) == NULL) {
+            die_mem();
+        }
+# endif
 #endif
 #ifdef WITH_VIRTUAL_HOSTS
         if (getnameinfo((struct sockaddr *) &ctrlconn, STORAGE_LEN(ctrlconn),
