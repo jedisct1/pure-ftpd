@@ -1,11 +1,27 @@
 
 * Version 1.0.48:
+ - SNI support has been added. A new service, pure-certd, can run
+external code written in any language in order to map SNI names to
+TLS certificates.
+ - TLS certificates and keys can now be in different files.
+ - `make install` does not overwrite existing configuration files any
+more.
+ - TLS 1.3 compatibility.
+ - TLS < 1.2 is disabled by default.
+ - Quirks for obsolete OpenSSL versions have been removed.
+ - Username `_ftp` can be used as an alternative to `ftp` everywhere.
  - Password hashing parameters are now chosen according to locally
 available resources. The pure-pw command gets to new switches: -C (as
 a hint regarding the number of simultaneous login attempts) and -M
 (total memory, in MB, to reserve for password hashing).
  - New translation: Albanian, thanks to Moisi Xhaferaj.
- - The PRET command has been added.
+ - The PRET command has been added. It can avoid opening useless data
+connections for nonexistent content.
+ - Dot-files are always displayed. We don't lie any more in some
+commands while not lying in other commands to respect the protocol.
+ - Support for RFC 2640 has been removed from the free version.
+ - The NLST command doesn't perform globbing any more.
+ - The MLSD now prepends the path to file names.
 
 * Version 1.0.47:
  - Unlike other directory listing commands, the STAT command should
