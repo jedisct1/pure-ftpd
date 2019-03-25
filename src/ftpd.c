@@ -3491,11 +3491,12 @@ void dormd(char *name)
 void dofeat(void)
 {
 # define FEAT  "Extensions supported:" CRLF \
+    " UTF8" CRLF \
     " EPRT" CRLF " IDLE" CRLF " MDTM" CRLF " SIZE" CRLF " MFMT" CRLF \
-        " REST STREAM" CRLF \
-        " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
-        " MLSD" CRLF \
-        " PRET"
+    " REST STREAM" CRLF \
+    " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
+    " MLSD" CRLF \
+    " PRET"
 
 # ifdef WITH_TLS
 #  define FEAT_TLS CRLF " AUTH TLS" CRLF " PBSZ" CRLF " PROT"
