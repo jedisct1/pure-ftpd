@@ -994,10 +994,12 @@ void donlst(const char *base)
         goto bye;
     }
     doreply();
+#ifdef WITH_TLS
     if (data_protection_level == CPL_PRIVATE) {
         tls_init_data_session(xferfd, passive);
         tls_fd = tls_data_cnx;
     }
+#endif
     while ((de = readdir(dir)) != NULL) {
         if (checkprintable(de->d_name) != 0) {
             continue;
