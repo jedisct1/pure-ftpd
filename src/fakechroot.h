@@ -39,7 +39,7 @@ FILE *fakefopen(const char *file, const char *mode);
 #   endif
 #   define fopen(A, B) fakefopen(A, B)
 
-int fakeaccess(const char *file, mode_t mode);
+int fakeaccess(const char *file, int mode);
 #   ifdef access
 #    undef access
 #   endif

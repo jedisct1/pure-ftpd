@@ -218,7 +218,7 @@ FILE *fakefopen(const char *file, const char *mode)
     return fopen(curdirtmp, mode);
 }
 
-int fakeaccess(const char *file, mode_t mode)
+int fakeaccess(const char *file, int mode)
 {
     char curdirtmp[PATH_MAX];
 
