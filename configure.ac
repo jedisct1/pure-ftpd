@@ -141,7 +141,6 @@ AC_CHECK_HEADERS(crypt.h)
 AC_CHECK_HEADERS(utime.h)
 AC_CHECK_HEADERS(openssl/ssl.h openssl/ec.h)
 AC_CHECK_HEADERS(CoreFoundation/CoreFoundation.h)
-AC_CHECK_HEADERS(iconv.h)
 AC_SYS_POSIX_TERMIOS
 
 if test "x$ac_cv_sys_posix_termios" = "xyes"; then
@@ -1389,21 +1388,6 @@ AC_ARG_WITH(keyfile,
       AC_MSG_WARN(No certificate key is installed in $keyfile yet)
     fi
   fi ])
-
-AC_ARG_WITH(rfc2640,
-[AS_HELP_STRING(--with-rfc2640,Enable RFC 2640 (UTF-8 encoding for file names) support (needs iconv))],
-[ if test "x$withval" = "xyes" ; then
-    with_rfc2640="yes"
-  fi ])
-
-if test "x$with_rfc2640" = "xyes" ; then
-  if test "x$ac_cv_header_iconv_h" != "xyes" ; then
-    AC_MSG_ERROR(iconv headers not found.)  
-  fi
-  AC_CHECK_LIB(iconv, iconv_open)
-  AC_CHECK_LIB(iconv, libiconv_open)
-  AC_DEFINE(WITH_RFC2640,,[Enable RFC2640 (UTF-8) support])
-fi
 
 AC_ARG_WITH(bonjour,
 [AS_HELP_STRING(--with-bonjour,Enable Bonjour support on MacOS X)],

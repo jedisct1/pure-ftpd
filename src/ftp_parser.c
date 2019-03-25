@@ -201,37 +201,6 @@ static char *revealextraspc(char * const s_)
 }
 #endif
 
-#ifdef WITH_RFC2640
-static char *charset_client2fs(const char * const string)
-{
-    char *output = NULL, *output_;
-    size_t inlen, outlen, outlen_;
-
-    inlen = strlen(string);
-    outlen_ = outlen = inlen * (size_t) 4U + (size_t) 1U;
-    if (outlen <= inlen ||
-        (output_ = output = calloc(outlen, (size_t) 1U)) == NULL) {
-        die_mem();
-    }
-    if (utf8 > 0 && strcasecmp(charset_fs, "utf-8") != 0) {
-        if (iconv(iconv_fd_utf82fs, (char **) &string,
-                  &inlen, &output_, &outlen_) == (size_t) -1) {
-            strncpy(output, string, outlen);
-        }
-    } else if (utf8 <= 0 && strcasecmp(charset_fs, charset_client) != 0) {
-        if (iconv(iconv_fd_client2fs, (char **) &string,
-                  &inlen, &output_, &outlen_) == (size_t) -1) {
-            strncpy(output, string, outlen);
-        }
-    } else {
-        strncpy(output, string, outlen);
-    }
-    output[outlen - 1] = 0;
-
-    return output;
-}
-#endif
-
 #ifndef MINIMAL
 static void parse_file_time_change(char *arg)
 {
@@ -257,9 +226,6 @@ void parser(void)
     char *arg;
 #ifndef MINIMAL
     char *sitearg;
-#endif
-#ifdef WITH_RFC2640
-    char *narg = NULL;
 #endif
     size_t n;
 
@@ -342,10 +308,7 @@ void parser(void)
                    cmd, strcmp(cmd, "pass") ? arg : "<*>");
 #endif
         }
-#ifdef WITH_RFC2640
-        narg = charset_client2fs(arg);
-        arg = narg;
-#endif
+
         /*
          * antiidle() is called with dummy commands, usually used by clients
          * who are wanting extra idle time. We give them some, but not too much.
@@ -378,9 +341,6 @@ void parser(void)
             addreply(221, MSG_GOODBYE,
                      (unsigned long long) ((uploaded + 1023ULL) / 1024ULL),
                      (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
-#ifdef WITH_RFC2640
-            free(narg);
-#endif
             return;
         } else if (!strcmp(cmd, "syst")) {
             antiidle();
@@ -548,17 +508,8 @@ void parser(void)
                 }
 #endif
             } else if (!strcmp(cmd, "pwd") || !strcmp(cmd, "xpwd")) {
-#ifdef WITH_RFC2640
-                char *nwd;
-#endif
                 antiidle();
-#ifdef WITH_RFC2640
-                nwd = charset_fs2client(wd);
-                addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, nwd);
-                free(nwd);
-#else
                 addreply(257, "\"%s\" " MSG_IS_YOUR_CURRENT_LOCATION, wd);
-#endif
                 goto wayout;
             } else if (!strcmp(cmd, "cdup") || !strcmp(cmd, "xcup")) {
                 docwd("..");
@@ -652,7 +603,7 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-                    dolist(arg, 1, 1, 1, 1);
+                    dolist(arg, 1, 1);
                 } else {
                     addreply_noformat(211, "https://www.pureftpd.org/");
                 }
@@ -665,7 +616,7 @@ void parser(void)
                 } else
 #endif
                 {
-                    dolist(arg, 0, 1, 0, 1);
+                    dolist(arg, 0, 0);
                 }
             } else if (!strcmp(cmd, "nlst")) {
 #ifdef WITH_TLS
@@ -857,10 +808,6 @@ void parser(void)
         }
         noopidle = (time_t) -1;
         wayout:
-#ifdef WITH_RFC2640
-        free(narg);
-        narg = NULL;
-#endif
 #ifdef THROTTLING
         if (throttling_delay != 0UL) {
             usleep2(throttling_delay);

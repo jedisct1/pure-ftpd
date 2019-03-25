@@ -91,7 +91,6 @@ $dialog \
 'with-diraliases' "Support directory aliases" on \
 'with-peruserlimits' "Support per-user concurrency limits" on \
 'with-tls' "Support SSL/TLS security layer (experimental)" off \
-'with-rfc2640' "Support for UTF-8 encoding for file names" off \
 'with-bonjour' "Support Bonjour on MacOS X" off \
 2> $tmp
 

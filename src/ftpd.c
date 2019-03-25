@@ -679,38 +679,6 @@ static unsigned int open_max(void)
 
 #endif
 
-#ifdef WITH_RFC2640
-char *charset_fs2client(const char *string)
-{
-    char *output = NULL, *output_;
-    size_t inlen, outlen, outlen_;
-
-    inlen = strlen(string);
-    outlen_ = outlen = inlen * (size_t) 4U + (size_t) 1U;
-    if (outlen <= inlen ||
-        (output_ = output = calloc(outlen, (size_t) 1U)) == NULL) {
-        die_mem();
-    }
-    if (utf8 > 0 && strcasecmp(charset_fs, "utf-8") != 0) {
-        if (iconv(iconv_fd_fs2utf8, (char **) &string, &inlen,
-                  &output_, &outlen_) == (size_t) -1) {
-            strncpy(output, string, strlen(string));
-        }
-    } else if (utf8 <= 0 && strcasecmp(charset_client, charset_fs) != 0) {
-        if (iconv(iconv_fd_fs2client,
-                  (char **) &string, &inlen,
-                  &output_, &outlen_) == (size_t) -1) {
-            strncpy(output, string, strlen(string));
-        }
-    } else {
-        strncpy(output, string, outlen);
-    }
-    output[outlen - 1U] = 0;
-
-    return output;
-}
-#endif
-
 static void addreply_newline(const char * const str, const size_t size)
 {
     struct reply *newline;
@@ -1771,9 +1739,6 @@ void dopass(char *password)
     int ngroups_max = 1; /* use a sane default */
 # endif
 #endif
-#ifdef WITH_RFC2640
-    char *nwd = NULL;
-#endif
 
     if (loggedin != 0) {
         if (guest != 0) {
@@ -2001,21 +1966,9 @@ void dopass(char *password)
         if (chdir(wd)) {
             _EXIT(EXIT_FAILURE);
         }
-#ifdef WITH_RFC2640
-        nwd = charset_fs2client(wd);
-        addreply(230, MSG_CURRENT_RESTRICTED_DIR_IS, nwd);
-        free(nwd);
-#else
         addreply(230, MSG_CURRENT_RESTRICTED_DIR_IS, wd);
-#endif
     } else {
-#ifdef WITH_RFC2640
-        nwd = charset_fs2client(wd);
-        addreply(230, MSG_CURRENT_DIR_IS, nwd);
-        free(nwd);
-#else
         addreply(230, MSG_CURRENT_DIR_IS, wd);
-#endif
     }
 
 #ifndef NON_ROOT_FTP
@@ -2065,9 +2018,6 @@ void docwd(const char *dir)
 {
     const char *where;
     char buffer[PATH_MAX + 256U];
-#ifdef WITH_RFC2640
-    char *nwd = NULL;
-#endif
 
     if (loggedin == 0) {
         goto kaboom;
@@ -2178,13 +2128,7 @@ void docwd(const char *dir)
             strcat(strcat(wd, "/"), dir); /* safe, see above */
         }
     }
-#ifdef WITH_RFC2640
-    nwd = charset_fs2client(wd);
-    addreply(250, MSG_CURRENT_DIR_IS, nwd);
-    free(nwd);
-#else
     addreply(250, MSG_CURRENT_DIR_IS, wd);
-#endif
 }
 
 unsigned int zrand(void)
@@ -3621,20 +3565,14 @@ void dofeat(void)
 #  define FEAT_ESTP CRLF " ESTP"
 # endif
 
-# ifdef WITH_RFC2640
-#  define FEAT_UTF8 CRLF " UTF8"
-# else
-#  define FEAT_UTF8 ""
-# endif
-
-    char feat[] = FEAT FEAT_DEBUG FEAT_TLS FEAT_UTF8 FEAT_TVFS FEAT_ESTA FEAT_PASV FEAT_ESTP;
+    char feat[] = FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV FEAT_ESTP;
 
     if (disallow_passive != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_UTF8 FEAT_TVFS FEAT_ESTA] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA] = 0;
     }
 # ifndef MINIMAL
     else if (STORAGE_FAMILY(force_passive_ip) != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_UTF8 FEAT_TVFS FEAT_ESTA FEAT_PASV] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV] = 0;
     }
 # endif
     addreply_noformat(0, feat);
@@ -4701,24 +4639,6 @@ void doopts(char *args)
         cmdopts++;
         (void) cmdopts;
     }
-# ifdef WITH_RFC2640
-    if (strncasecmp("utf8 ", args, 5) == 0 ||
-        strncasecmp("utf-8 ", args, 6) == 0) {
-        if (cmdopts == NULL || *cmdopts == 0) {
-            addreply_noformat(501, "OPTS UTF8: " MSG_MISSING_ARG);
-        } else if (strncasecmp(cmdopts, "on", sizeof "on" - 1U) == 0) {
-            utf8 = 1;
-            addreply_noformat(200, "OK, UTF-8 enabled");
-        } else if (strncasecmp(cmdopts, "off", sizeof "off" - 1U) == 0 &&
-                   strcasecmp(charset_client, "utf-8") != 0)  {
-            utf8 = 0;
-            addreply_noformat(200, "OK, UTF-8 disabled");
-        } else {
-            addreply_noformat(502, MSG_UNKNOWN_COMMAND);
-        }
-        return;
-    }
-# endif
     if (strncasecmp("mlst ", args, 5) == 0) {
         addreply_noformat(200, " MLST OPTS "
                           "type;size;sizd;modify;UNIX.mode;UNIX.uid;"
@@ -5662,21 +5582,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             no_ipv4 = 1;
             break;
         }
-#ifdef WITH_RFC2640
-        case '8': {
-            if (charset_fs == NULL && (charset_fs = strdup(optarg)) == NULL) {
-                die_mem();
-            }
-            break;
-        }
-        case '9': {
-            if (charset_client == NULL &&
-                (charset_client = strdup(optarg)) == NULL) {
-                die_mem();
-            }
-            break;
-        }
-#endif
         case '1': {
             log_pid = LOG_PID;
             break;
@@ -6270,43 +6175,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     if (optind < argc) {
         die(421, LOG_ERR, MSG_INVALID_ARGUMENT, argv[optind]);
     }
-#ifdef WITH_RFC2640
-    if (charset_fs == NULL) {
-        charset_fs = (char *) "utf-8";
-    }
-    if (charset_client == NULL) {
-        charset_client = (char *) "utf-8";
-    }
-    if (strcasecmp(charset_fs, charset_client) != 0) {
-        if ((iconv_fd_fs2client = iconv_open(charset_client, charset_fs))
-            == (iconv_t) -1) {
-            die(421, LOG_ERR,
-                MSG_CONF_ERR ": " MSG_ILLEGAL_CHARSET ": %s/%s",
-                charset_fs, charset_client);
-        }
-        if ((iconv_fd_client2fs = iconv_open(charset_fs, charset_client))
-            == (iconv_t) -1) {
-            die(421, LOG_ERR,
-                MSG_CONF_ERR ": " MSG_ILLEGAL_CHARSET ": %s/%s",
-                charset_client, charset_fs);
-        }
-    }
-   if (strcasecmp(charset_fs, "utf-8") != 0) {
-       if ((iconv_fd_fs2utf8 = iconv_open("utf-8", charset_fs))
-           == (iconv_t) -1) {
-            die(421, LOG_ERR,
-                MSG_CONF_ERR ": " MSG_ILLEGAL_CHARSET ": %s/utf-8",
-                charset_fs);
-       }
-       if ((iconv_fd_utf82fs = iconv_open(charset_fs, "utf-8"))
-           == (iconv_t) -1) {
-            die(421, LOG_ERR,
-                MSG_CONF_ERR ": " MSG_ILLEGAL_CHARSET ": utf-8/%s",
-                charset_fs);
-       }
-   }
-#endif
-
     if (first_authentications == NULL) {
         if ((first_authentications =
              malloc(sizeof *first_authentications)) == NULL) {
@@ -6387,20 +6255,6 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
     }
     first_authentications = last_authentications = NULL;
     free(trustedip);
-#ifdef WITH_RFC2640
-    if (iconv_fd_fs2client != (iconv_t) -1) {
-        iconv_close(iconv_fd_fs2client);
-    }
-    if (iconv_fd_fs2utf8 != (iconv_t) -1) {
-        iconv_close(iconv_fd_fs2utf8);
-    }
-    if (iconv_fd_client2fs != (iconv_t) -1) {
-        iconv_close(iconv_fd_client2fs);
-    }
-    if (iconv_fd_utf82fs != (iconv_t) -1) {
-        iconv_close(iconv_fd_utf82fs);
-    }
-#endif
 #ifndef NO_STANDALONE
     iptrack_free();
     unlink(pid_file);

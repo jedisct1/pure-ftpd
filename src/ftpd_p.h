@@ -61,9 +61,6 @@ struct reply {
 
 static const char *GETOPT_OPTIONS =
     "0146"
-#ifdef WITH_RFC2640
-    "8:9:"
-#endif
     "Aa:bc:"
 #ifndef NO_STANDALONE
     "BC:"
@@ -118,10 +115,6 @@ static struct option long_options[] = {
 # endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },
-# ifdef WITH_RFC2640
-    { "fscharset", 1, NULL, '8' },
-    { "clientcharset", 1, NULL, '9' },
-# endif
     { "chrooteveryone", 0, NULL, 'A' },
     { "trustedgid", 1, NULL, 'a' },
     { "brokenclientscompatibility", 0, NULL, 'b' },

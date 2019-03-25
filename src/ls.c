@@ -425,7 +425,6 @@ static void outputfiles(int f, void * const tls_fd)
     unsigned int n;
     struct filename *p;
     struct filename *q;
-    char *c_buf; /* buffer with charset of client */
 
     if (!head) {
         return;
@@ -494,14 +493,7 @@ static void outputfiles(int f, void * const tls_fd)
                 pad[1] = '\n';
                 pad[2] = 0;
             }
-#ifdef WITH_RFC2640
-            c_buf = charset_fs2client(q->line);
-            wrstr(f, tls_fd, c_buf);
-            free(c_buf);
-#else
-            (void) c_buf;
             wrstr(f, tls_fd, q->line);
-#endif
             wrstr(f, tls_fd, pad);
             q = q->right;
             free(tmp);
@@ -669,7 +661,6 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     char *names;
     PureFileInfo *s;
     PureFileInfo *r;
-    char *c_buf;
     int d;
 
     if (depth >= max_ls_depth || matches >= max_ls_files) {
@@ -716,23 +707,9 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
                                  name, FI_NAME(r)), sizeof_subdir)) {
                 goto nolist;
             }
-#ifdef WITH_RFC2640
-            c_buf = charset_fs2client(alloca_subdir);
-#else
-            c_buf = alloca_subdir;
-#endif
-#ifdef FANCY_LS_DIRECTORY_HEADERS
-            wrstr(f, tls_fd, "\r\n>----------------[");
-            wrstr(f, tls_fd, c_buf);
-            wrstr(f, tls_fd, "]----------------<\r\n\r\n");
-#else
             wrstr(f, tls_fd, "\r\n\r\n");
-            wrstr(f, tls_fd, c_buf);
+            wrstr(f, tls_fd, alloca_subdir);
             wrstr(f, tls_fd, ":\r\n\r\n");
-#endif
-#ifdef WITH_RFC2640
-            free(c_buf);
-#endif
             listdir(depth + 1U, f, tls_fd, alloca_subdir);
             nolist:
             ALLOCA_FREE(alloca_subdir);
@@ -779,23 +756,21 @@ static char *unescape_and_return_next_file(char * const str) {
     return NULL;
 }
 
-void dolist(char *arg, const int on_ctrl_conn, const int opt_l_,
-            const int opt_a_, const int split_args)
+void dolist(char *arg, const int on_ctrl_conn, const int opt_a_)
 {
     int c;
     void *tls_fd = NULL;
-    char *c_buf;
 
     matches = 0U;
 
     opt_C = opt_d = opt_F = opt_R = opt_r = opt_t = opt_S = 0;
-    opt_l = opt_l_;
+    opt_l = 1;
     if (force_ls_a != 0) {
         opt_a = 1;
     } else {
         opt_a = opt_a_;
     }
-    if (split_args != 0 && arg != NULL) {
+    if (arg != NULL) {
         while (isspace((unsigned char) *arg)) {
             arg++;
         }
@@ -879,9 +854,7 @@ void dolist(char *arg, const int on_ctrl_conn, const int opt_l_,
             int a;
             char *endarg;
 
-            if (split_args == 0) {
-                endarg = NULL;
-            } else if ((endarg = unescape_and_return_next_file(arg)) != NULL) {
+            if ((endarg = unescape_and_return_next_file(arg)) != NULL) {
                 justone = 0;
             }
 
@@ -925,23 +898,9 @@ void dolist(char *arg, const int on_ctrl_conn, const int opt_l_,
                     }
                     if (**path != 0) {
                         if (!justone) {
-#ifdef WITH_RFC2640
-                            c_buf = charset_fs2client(*path);
-#else
-                            c_buf = *path;
-#endif
-#ifdef FANCY_LS_DIRECTORY_HEADERS
-                            wrstr(c, tls_fd, "\r\n>-----------------[");
-                            wrstr(c, tls_fd, c_buf);
-                            wrstr(c, tls_fd, "]-----------------<\r\n\r\n");
-#else
                             wrstr(c, tls_fd, "\r\n\r\n");
-                            wrstr(c, tls_fd, c_buf);
+                            wrstr(c, tls_fd, *path);
                             wrstr(c, tls_fd, ":\r\n\r\n");
-#endif
-#ifdef WITH_RFC2640
-                            free(c_buf);
-#endif
                         }
                         if (!chdir(*path)) {
                             listdir(0U, c, tls_fd, *path);

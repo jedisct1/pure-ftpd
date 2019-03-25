@@ -105,9 +105,6 @@
 #ifdef HAVE_UTIME_H
 # include <utime.h>
 #endif
-#ifdef WITH_RFC2640
-# include <iconv.h>
-#endif
 
 #include "mysnprintf.h"
 
@@ -367,8 +364,7 @@ void dositetime(void);
 int ul_check_free_space(const char *name, const double min_space);
 void disablesignals(void);
 void getnames(void);
-void dolist(char *arg, const int on_ctrlconn, const int opt_l_,
-            const int opt_a_, const int split_args);
+void dolist(char *arg, const int on_ctrlconn, const int opt_a_);
 void donlst(const char *base);
 void opendata(void);
 void closedata(void);
@@ -399,9 +395,6 @@ unsigned int zrand(void);
 void simplify(char *subdir);
 int checkprintable(register const char *s);
 void delete_atomic_file(void);
-#ifdef WITH_RFC2640
-char *charset_fs2client(const char * const string);
-#endif
 void usleep2(const unsigned long microsec);
 int mysnprintf(char *str, size_t size, const char *format, ...);
 
