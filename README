@@ -1897,22 +1897,10 @@ is a safe bet.
    ------------------------ DOWNLOADING PURE-FTPD ------------------------
 
 
-Pure-FTPd home page is: http://www.pureftpd.org/ .
-
-Pure-FTPd mailing-list: http://www.pureftpd.org/ml/
-
-Mailing-list archive: http://archives.pureftpd.org/archives.cgi?100
+Pure-FTPd home page is: https://www.pureftpd.org/ .
 
 Git repository: https://github.com/jedisct1/pure-ftpd
-
-If you have question, suggestions or patches, feel free to post them to the
-mailing list. Newbies and silly ideas are welcome.
-
 
 Thank you, 
 
                        -Frank DENIS "Jedi/Sector One" <j at pureftpd dot org>
-                                 
-
-* Please also read the CONTACT file.
-
