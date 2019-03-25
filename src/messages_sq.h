@@ -228,3 +228,4 @@
 #define MSG_WARN_LDAP_USERPASS_EMPTY "LDAP u pergjigj pa atributin userPassword, kontrolloni te drejtat e aksesit LDAP."
 #define MSG_LDAP_INVALID_AUTH_METHOD "LDAPAuthMethod e pavlefshme nje file te konfigurimit. Duhet te jete 'bind' ose 'password'."
 #define MSG_INVALID_ARGUMENT "Argument i pavlefshem: \"%s\""
+#define MSG_READY_TO_PROCEED "Ready to proceed"

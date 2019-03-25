@@ -228,3 +228,4 @@
 #define MSG_WARN_LDAP_USERPASS_EMPTY "LDAP returned no userPassword attribute, check LDAP access rights."
 #define MSG_LDAP_INVALID_AUTH_METHOD "Invalid LDAPAuthMethod in the configuration file. Should be 'bind' or 'password'."
 #define MSG_INVALID_ARGUMENT "Neplatný argument: \"%s\""
+#define MSG_READY_TO_PROCEED "Ready to proceed"

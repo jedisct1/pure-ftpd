@@ -521,7 +521,14 @@ void parser(void)
                 }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "pret")) {
-                addreply_noformat(200, "Ready to proceed");
+                if (strncasecmp("RETR ", arg, sizeof "RETR " - 1U) == 0) {
+                    arg += sizeof "RETR " - 1U;
+                    if (*arg == 0 || access(arg, R_OK) == -1) {
+                        addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                        goto wayout;
+                    }
+                }
+                addreply_noformat(200, MSG_READY_TO_PROCEED);
             } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
                 dopasv(2);
             } else if (!strcmp(cmd, "allo")) {
