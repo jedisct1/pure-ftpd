@@ -168,6 +168,9 @@ void pw_extauth_check(AuthResult * const result,
     char peer_hbuf[NI_MAXHOST];
     char line[4096];
     size_t line_len;
+#ifndef WITH_TLS
+    const char *client_sni_name = "";
+#endif
 
     result->auth_ok = 0;
     if (getnameinfo((struct sockaddr *) sa, STORAGE_LEN(*sa),
@@ -203,8 +206,10 @@ void pw_extauth_check(AuthResult * const result,
                          EXTAUTH_CLIENT_SA_PORT "%s\n"
                          EXTAUTH_CLIENT_PEER_HOST "%s\n"
                          EXTAUTH_CLIENT_ENCRYPTED "%d\n"
+                         EXTAUTH_CLIENT_SNI_NAME "%s\n"
                          EXTAUTH_CLIENT_END "\n",
                          account, password, sa_hbuf, sa_port, peer_hbuf,
+                         client_sni_name == NULL ? "" : client_sni_name,
                          tls_cnx != NULL),
                 sizeof line)) {
         goto bye;

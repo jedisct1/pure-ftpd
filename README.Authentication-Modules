@@ -45,6 +45,7 @@ AUTHD_LOCAL_IP
 AUTHD_LOCAL_PORT
 AUTHD_REMOTE_IP
 AUTHD_ENCRYPTED
+AUTHD_CLIENT_SNI_NAME
 
 They are self-explanatory. Previous global environment variables aren't
 cleared when the script is called. The content of these variables is

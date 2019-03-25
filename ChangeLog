@@ -3,6 +3,8 @@
  - SNI support has been added. A new service, pure-certd, can run
 external code written in any language in order to map SNI names to
 TLS certificates.
+ - External authentication handlers get a new `AUTHD_CLIENT_SNI_NAME`
+environment variable set when the client uses SNI.
  - TLS certificates and keys can now be in different files.
  - `make install` does not overwrite existing configuration files any
 more.

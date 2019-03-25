@@ -179,6 +179,7 @@ GLOBAL0(signed char ssl_verify_client_cert);
 GLOBAL(const char *cert_file, TLS_CERTIFICATE_FILE);
 GLOBAL(const char *key_file, TLS_KEY_FILE);
 GLOBAL0(signed char use_extcert);
+GLOBAL0(const char *client_sni_name);
 #endif
 
 GLOBAL0(char *atomic_prefix);

@@ -263,6 +263,13 @@ static void callback_client_encrypted(const char *str)
     newenv_str(ENV_AUTHD_ENCRYPTED, str);
 }
 
+static void callback_client_sni_name(const char *str)
+{
+    if (*str != 0) {
+        newenv_str(ENV_AUTHD_CLIENT_SNI_NAME, str);
+    }
+}
+
 static void callback_client_end(const char *str)
 {
     (void) str;

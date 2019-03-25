@@ -6221,6 +6221,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #ifdef WITH_TLS
     tls_free_library();
     tls_extcert_exit();
+    free((void *) client_sni_name);
 #endif
     alt_arc4random_close();
 

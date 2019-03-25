@@ -31,6 +31,9 @@ static int validate_sni_name(const char * const sni_name)
         "abcdefghijklmnopqrstuvwxyz.-0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const char        *pnt = sni_name;
 
+    if (strlen(sni_name) > 255) {
+        return -1;
+    }
     while (*pnt != 0) {
         if (strchr(valid_chars, *pnt) == NULL) {
             return -1;
@@ -91,6 +94,9 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         if (tls_create_new_context(cert_file, key_file) != 0) {
             die(400, LOG_ERR, "SSL error");
         }
+    }
+    if ((client_sni_name = strdup(sni_name)) == NULL) {
+        die_mem();
     }
     if (tls_cnx != NULL) {
         const long ctx_options = SSL_CTX_get_options(tls_ctx);
