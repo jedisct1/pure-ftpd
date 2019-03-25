@@ -751,19 +751,17 @@ static char *unescape_and_return_next_file(char * const str) {
     return NULL;
 }
 
-void dolist(char *arg, const int on_ctrl_conn, const int opt_a_)
+void dolist(char *arg, const int on_ctrl_conn)
 {
     int c;
     void *tls_fd = NULL;
 
     matches = 0U;
 
-    opt_C = opt_d = opt_F = opt_R = opt_r = opt_t = opt_S = 0;
+    opt_a = opt_C = opt_d = opt_F = opt_R = opt_r = opt_t = opt_S = 0;
     opt_l = 1;
     if (force_ls_a != 0) {
         opt_a = 1;
-    } else {
-        opt_a = opt_a_;
     }
     if (arg != NULL) {
         while (isspace((unsigned char) *arg)) {

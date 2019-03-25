@@ -603,7 +603,7 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-                    dolist(arg, 1, 1);
+                    dolist(arg, 1);
                 } else {
                     addreply_noformat(211, "https://www.pureftpd.org/");
                 }
@@ -616,7 +616,7 @@ void parser(void)
                 } else
 #endif
                 {
-                    dolist(arg, 0, 0);
+                    dolist(arg, 0);
                 }
             } else if (!strcmp(cmd, "nlst")) {
 #ifdef WITH_TLS
