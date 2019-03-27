@@ -96,18 +96,20 @@ AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
 
-for path in \
-  /usr/kerberos \
-  /usr/local /opt /usr/local/opt \
-  /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
-  /usr/openssl /opt/openssl /usr/local/opt/openssl; do
-  if test -d $path/include; then
-    CPPFLAGS="$CPPFLAGS -I${path}/include"
-  fi
-  if test -d $path/lib; then
-    LDFLAGS="$LDFLAGS -L${path}/lib"
-  fi
-done
+if test "x$cross_compiling" != "xyes"; then
+  for path in \
+    /usr/kerberos \
+    /usr/local /opt /usr/local/opt \
+    /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
+    /usr/openssl /opt/openssl /usr/local/opt/openssl; do
+    if test -d $path/include; then
+      CPPFLAGS="$CPPFLAGS -I${path}/include"
+    fi
+    if test -d $path/lib; then
+      LDFLAGS="$LDFLAGS -L${path}/lib"
+    fi
+  done
+fi
 
 CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 
