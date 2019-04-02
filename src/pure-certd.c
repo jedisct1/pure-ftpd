@@ -354,6 +354,10 @@ int listencnx(void)
         perror("Unable to listen the local socket");
         goto bye;
     }
+    if (changeuidgid() < 0) {
+        perror("Identity change");
+        goto bye;
+    }
     do {
         if ((clientfd = accept(kindy, NULL, NULL)) == -1) {
             if (exit_certd != 0) {
@@ -429,11 +433,6 @@ int main(int argc, char *argv[])
         dodaemonize();
     }
     updatepidfile();
-    if (changeuidgid() < 0) {
-        perror("Identity change");
-        (void) unlink(certd_pid_file);
-        return -1;
-    }
 #ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
 #endif
