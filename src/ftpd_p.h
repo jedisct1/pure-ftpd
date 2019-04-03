@@ -60,7 +60,7 @@ struct reply {
 };
 
 static const char *GETOPT_OPTIONS =
-    "0146"
+    "01456"
     "Aa:bc:"
 #ifndef NO_STANDALONE
     "BC:"
@@ -114,6 +114,7 @@ static struct option long_options[] = {
     { "extcert", 1, NULL, '3' },
 # endif
     { "ipv4only", 0, NULL, '4' },
+    { "tcpproxy", 0,NULL, '5'},
     { "ipv6only", 0, NULL, '6' },
     { "chrooteveryone", 0, NULL, 'A' },
     { "trustedgid", 1, NULL, 'a' },

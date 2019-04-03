@@ -68,7 +68,8 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"UserBandwidth (<digits>) (<digits>)",       "--userbandwidth=$0:$1"},
     {"UserBandwidth (<digits>)",                  "--userbandwidth=$0"},
     {"UserRatio (<digits>) (<digits>)",           "--userratio=$0:$1"},
-    {"VerboseLog? <bool>",                        "--verboselog"}
+    {"VerboseLog? <bool>",                        "--verboselog"},
+    {"TcpProxy? <bool>",                          "--tcpproxy"},
 };
 
 #endif

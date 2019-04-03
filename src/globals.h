@@ -16,6 +16,10 @@ GLOBAL0(signed char anon_only); /* allows only anonymous connections */
 GLOBAL0(struct sockaddr_storage *trustedip); /* IP address accepting non-anonymous connections */
 GLOBAL0(volatile signed char logging);
 
+GLOBAL0(signed char accept_tcpproxy); /* accept haproxy tcpproxy protocol */
+GLOBAL0(struct sockaddr_storage haproxy_client);  /* ip address and port for client from tcpproxy */
+GLOBAL0(struct sockaddr_storage haproxy_server);  /* ip address and port for server from tcpproxy */
+
 #ifdef THROTTLING
 GLOBAL0(unsigned long throttling_delay);
 GLOBAL0(signed char throttling); /* 0=don't throttle 1=throttle anon 2=all */

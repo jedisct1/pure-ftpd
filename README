@@ -628,6 +628,8 @@ transferred.
 
 - '-4': only listen to IPv4 connections.
 
+- '-5': accept haproxy tcp protocol, see README.HAPROXY
+
 - '-6': don't listen to IPv4, only listen to IPv6.
 
 - '-a <gid>': authenticated users will be granted access to their home

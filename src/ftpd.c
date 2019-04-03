@@ -47,6 +47,121 @@
 # include <dmalloc.h>
 #endif
 
+int haproxy_parse(const char* str) {
+    // https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt
+
+    int  s, err = 0;
+    char *saved_str = strdup(str);
+    char *rest = saved_str;
+    char *token;
+    const char delim[2] = " ";
+
+    char client_ip[40], server_ip[40], client_port[6], server_port[6];
+
+    struct addrinfo hints_server, hints_client;
+    struct addrinfo *res_server, *res_client;
+
+    memset(&hints_server, 0, sizeof hints_server);
+    memset(&hints_client, 0, sizeof hints_client);
+    hints_server.ai_flags = AI_NUMERICHOST;
+    hints_client.ai_flags = AI_NUMERICHOST;
+
+    res_server = NULL;
+    res_client = NULL;
+
+    // token must be PROXY
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+     }
+    if (strcmp(token, "PROXY")) {
+        err = -1;
+        goto nope;
+    }
+   
+    // must be TCP4 or TCP6, do not accept UNKNOWN 
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+     }
+     if (strcmp(token, "TCP4") == 0) {
+        hints_server.ai_family = AF_INET;
+        hints_client.ai_family = AF_INET;
+    } else if (strcmp(token, "TCP6") == 0) {
+        hints_server.ai_family = AF_INET6;
+        hints_client.ai_family = AF_INET6;
+    } else {
+        err = -1;
+        goto nope;
+    }
+
+    // client ip address
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+    }
+    strncpy(client_ip, token, sizeof client_ip-(size_t) 1U);
+    
+    // server ip address
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+    }
+    strncpy(server_ip, token, sizeof server_ip-(size_t) 1U);
+
+    // client source port
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+    }
+    strncpy(client_port, token, sizeof client_port-(size_t) 1U);
+
+    // server dest port
+    token = strtok_r(rest, delim, &rest);
+    if (token == NULL) {
+        err = -1;
+        goto nope;
+    }
+    strncpy(server_port, token, sizeof server_port-(size_t) 1U);
+    
+    token = strtok_r(rest, delim, &rest);
+    if (token != NULL) {
+        err = -1;
+        goto nope;
+    }
+
+    s = getaddrinfo(client_ip, client_port, &hints_client, &res_client);
+    if (s) {
+        logfile(LOG_INFO, "converting client data failed");
+        err = -1;
+        goto nope;
+    }
+
+    s = getaddrinfo(server_ip, server_port, &hints_server, &res_server);
+    if (s) {
+        logfile(LOG_INFO, "converting server data failed");
+        err = -1;
+        goto nope;
+    }
+
+    memcpy(&haproxy_server, res_server->ai_addr, res_server->ai_addrlen);
+    memcpy(&haproxy_client, res_client->ai_addr, res_client->ai_addrlen);
+
+    nope:
+    if (err) {
+        logfile(LOG_INFO, "ERROR INTCP PROXY");
+    }
+    freeaddrinfo(res_client);
+    freeaddrinfo(res_server);
+    free(saved_str);
+    return err;
+}
+
 void disablesignals(void)
 {
     sigset_t sigs;
@@ -2113,6 +2228,7 @@ void dopasv(int psvtype)
     unsigned int p;
     int on;
     unsigned int firstporttried;
+    struct sockaddr_storage ctrlconn1;
 
     if (loggedin == 0) {
         addreply_noformat(530, MSG_NOT_LOGGED_IN);
@@ -2122,8 +2238,9 @@ void dopasv(int psvtype)
         (void) close(datafd);
         datafd = -1;
     }
-    fourinsix(&ctrlconn);
-    if (STORAGE_FAMILY(ctrlconn) == AF_INET6 && psvtype == 0) {
+    ctrlconn1 = (accept_tcpproxy) ? haproxy_server : ctrlconn;
+    fourinsix(&ctrlconn1);
+    if (STORAGE_FAMILY(ctrlconn1) == AF_INET6 && psvtype == 0) {
         addreply_noformat(425, MSG_CANT_PASV);
         return;
     }
@@ -2171,7 +2288,7 @@ void dopasv(int psvtype)
     }
     switch (psvtype) {
     case 0:
-        if (STORAGE_FAMILY(force_passive_ip) == 0) {
+        if ((STORAGE_FAMILY(force_passive_ip) == 0) && !accept_tcpproxy)  {
             a = ntohl(STORAGE_SIN_ADDR_CONST(dataconn));
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET6) {
             (void) close(datafd);
@@ -2180,6 +2297,13 @@ void dopasv(int psvtype)
             return;
         } else if (STORAGE_FAMILY(force_passive_ip) == AF_INET) {
             a = ntohl(STORAGE_SIN_ADDR_CONST(force_passive_ip));
+        } else if (accept_tcpproxy && STORAGE_FAMILY(haproxy_server) == AF_INET6) {
+            (void) close(datafd);
+            datafd = -1;
+            addreply_noformat(425, MSG_NO_EPSV);
+            return;
+        } else if (accept_tcpproxy && STORAGE_FAMILY(haproxy_server) == AF_INET) {
+            a = ntohl(STORAGE_SIN_ADDR_CONST(haproxy_server));
         } else {
             _EXIT(EXIT_FAILURE);
         }
@@ -5234,6 +5358,26 @@ static void accept_client(const int active_listen_fd) {
         clientfd = -1;
         return;
     }
+    if (accept_tcpproxy) {
+        memset (&haproxy_client, 0, sizeof (haproxy_client));
+        memset (&haproxy_server, 0, sizeof (haproxy_server));
+
+        logfile(LOG_INFO, "tcp proxy mode enabled");
+        if (sfgets() != 0) {
+            (void) close(clientfd);
+            clientfd = -1;
+            logfile(LOG_INFO, "unable to read tcp proxy protocol");
+            return;
+        }
+        if (haproxy_parse(cmd)) {
+            (void) close(clientfd);
+            clientfd = -1;
+            logfile(LOG_INFO, "unable to parse tcp proxy protocol");
+            return;
+         }
+         sa = haproxy_client;
+    }
+
     if (maxusers > 0U && nb_children >= maxusers) {
         char line[1024];
 
@@ -5534,6 +5678,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
         }
         case '4': {
             bypass_ipv6 = 1;
+            break;
+        }
+        case '5': {
+            accept_tcpproxy = 1;
             break;
         }
         case '6': {
