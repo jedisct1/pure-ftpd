@@ -1,7 +1,7 @@
 dnl AM_ACLOCAL_INCLUDE(m4)
 
 AC_PREREQ(2.65)
-AC_INIT([pure-ftpd],[1.0.48],
+AC_INIT([pure-ftpd],[1.0.49],
   [https://github.com/jedisct1/pure-ftpd/issues],
   [pure-ftpd],
   [https://www.pureftpd.org])

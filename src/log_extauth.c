@@ -205,8 +205,8 @@ void pw_extauth_check(AuthResult * const result,
                          EXTAUTH_CLIENT_SA_HOST "%s\n"
                          EXTAUTH_CLIENT_SA_PORT "%s\n"
                          EXTAUTH_CLIENT_PEER_HOST "%s\n"
-                         EXTAUTH_CLIENT_ENCRYPTED "%d\n"
                          EXTAUTH_CLIENT_SNI_NAME "%s\n"
+                         EXTAUTH_CLIENT_ENCRYPTED "%d\n"
                          EXTAUTH_CLIENT_END "\n",
                          account, password, sa_hbuf, sa_port, peer_hbuf,
                          client_sni_name == NULL ? "" : client_sni_name,

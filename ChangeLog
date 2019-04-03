@@ -1,4 +1,8 @@
 
+* Version 1.0.49:
+ - This version fixes a regression introduced in version 1.0.48 that broke
+the external authentication feature. Reported by Peter Hudec, thanks!
+
 * Version 1.0.48:
  - SNI support has been added. A new service, `pure-certd`, can run
 external code written in any language in order to map SNI names to TLS certificates.
