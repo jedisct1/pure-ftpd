@@ -16,8 +16,7 @@ cap_value_t cap_keep_startup[] = {
     CAP_NET_BIND_SERVICE,
     CAP_SYS_CHROOT,
     CAP_SYS_NICE,
-    CAP_DAC_READ_SEARCH,
-    CAP_DAC_OVERRIDE
+    CAP_DAC_READ_SEARCH
 };
 
 cap_value_t cap_keep_login[] = {
