@@ -8,7 +8,6 @@
 # include "log_mysql.h"
 # include "messages.h"
 # include "crypto.h"
-# include "crypto-sha1.h"
 # include "alt_arc4random.h"
 # include "utils.h"
 
@@ -332,7 +331,7 @@ void pw_mysql_check(AuthResult * const result,
     char *escaped_decimal_ip = NULL;
     int committed = 1;
     int crypto_argon2 = 0, crypto_scrypt = 0, crypto_crypt = 0,
-        crypto_mysql = 0, crypto_md5 = 0, crypto_sha1 = 0, crypto_plain = 0;
+        crypto_plain = 0;
     unsigned long decimal_ip_num = 0UL;
     char decimal_ip[42];
     char hbuf[NI_MAXHOST];
@@ -426,21 +425,12 @@ void pw_mysql_check(AuthResult * const result,
         crypto_argon2++;
         crypto_scrypt++;
         crypto_crypt++;
-        crypto_mysql++;
-        crypto_md5++;
-        crypto_sha1++;
     } else if (strcasecmp(crypto, PASSWD_SQL_ARGON2) == 0) {
         crypto_argon2++;
     } else if (strcasecmp(crypto, PASSWD_SQL_SCRYPT) == 0) {
         crypto_scrypt++;
     } else if (strcasecmp(crypto, PASSWD_SQL_CRYPT) == 0) {
         crypto_crypt++;
-    } else if (strcasecmp(crypto, PASSWD_SQL_MYSQL) == 0) {
-        crypto_mysql++;
-    } else if (strcasecmp(crypto, PASSWD_SQL_MD5) == 0) {
-        crypto_md5++;
-    } else if (strcasecmp(crypto, PASSWD_SQL_SHA1) == 0) {
-        crypto_sha1++;
     } else {                           /* default to plaintext */
         crypto_plain++;
     }
@@ -463,46 +453,6 @@ void pw_mysql_check(AuthResult * const result,
         const char *crypted;
 
         if ((crypted = (const char *) crypt(password, spwd)) != NULL &&
-            pure_strcmp(crypted, spwd) == 0) {
-            goto auth_ok;
-        }
-    }
-    if (crypto_mysql != 0) {
-        char scrambled_password[42]; /* 2 * 20 (sha1 hash size) + 2 */
-        SHA1_CTX        ctx;
-        unsigned char  h0[20], h1[20];
-        char          *p;
-
-        SHA1Init(&ctx);
-        SHA1Update(&ctx, password, strlen(password));
-        SHA1Final(h0, &ctx);
-        SHA1Init(&ctx);
-        SHA1Update(&ctx, h0, sizeof h0);
-        pure_memzero(h0, sizeof h0);
-        SHA1Final(h1, &ctx);
-            *scrambled_password = '*';
-        hexify(scrambled_password + 1U, h1,
-               (sizeof scrambled_password) - 1U, sizeof h1);
-        *(p = scrambled_password) = '*';
-        while (*p++ != 0) {
-            *p = (char) toupper((unsigned char) *p);
-        }
-        if (pure_strcmp(scrambled_password, spwd) == 0) {
-            goto auth_ok;
-        }
-    }
-    if (crypto_md5 != 0) {
-        const char *crypted;
-
-        if ((crypted = (const char *) crypto_hash_md5(password, 1)) != NULL &&
-            pure_strcmp(crypted, spwd) == 0) {
-            goto auth_ok;
-        }
-    }
-    if (crypto_sha1 != 0) {
-        const char *crypted;
-
-        if ((crypted = (const char *) crypto_hash_sha1(password, 1)) != NULL &&
             pure_strcmp(crypted, spwd) == 0) {
             goto auth_ok;
         }

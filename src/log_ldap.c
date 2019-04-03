@@ -582,30 +582,8 @@ void pw_ldap_check(AuthResult * const result,
             return;
         } else
 # endif
-        if (strncasecmp(spwd, PASSWD_LDAP_MD5_PREFIX,
-                        sizeof PASSWD_LDAP_MD5_PREFIX - 1U) == 0) {
-            spwd += (sizeof PASSWD_LDAP_MD5_PREFIX - 1U);
-            if (strlen(spwd) >= 32U) {
-                nocase++;
-            }
-            cpwd = crypto_hash_md5(password, nocase);
-        } else if (strncasecmp(spwd, PASSWD_LDAP_SHA_PREFIX,
-                               sizeof PASSWD_LDAP_SHA_PREFIX - 1U) == 0) {
-            spwd += (sizeof PASSWD_LDAP_SHA_PREFIX - 1U);
-            if (strlen(spwd) >= 40U) {
-                nocase++;
-            }
-            cpwd = crypto_hash_sha1(password, nocase);
-        } else if (strncasecmp(spwd, PASSWD_LDAP_SSHA_PREFIX,
-                               sizeof PASSWD_LDAP_SSHA_PREFIX - 1U) == 0) {
-            spwd += (sizeof PASSWD_LDAP_SSHA_PREFIX - 1U);
-            cpwd = crypto_hash_ssha1(password, spwd);
-        } else if (strncasecmp(spwd, PASSWD_LDAP_SMD5_PREFIX,
-                               sizeof PASSWD_LDAP_SMD5_PREFIX - 1U) == 0) {
-            spwd += (sizeof PASSWD_LDAP_SMD5_PREFIX - 1U);
-            cpwd = crypto_hash_smd5(password, spwd);
-        } else if (strncasecmp(spwd, PASSWD_LDAP_CRYPT_PREFIX,
-                               sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U) == 0) {
+        if (strncasecmp(spwd, PASSWD_LDAP_CRYPT_PREFIX,
+                        sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U) == 0) {
             spwd += (sizeof PASSWD_LDAP_CRYPT_PREFIX - 1U);
             cpwd = (const char *) crypt(password, spwd);
         } else if (*password != 0) {

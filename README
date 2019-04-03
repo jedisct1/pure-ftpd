@@ -1446,8 +1446,8 @@ sample output of 'pure-ftpwho -v':
 After an upload, any external program or shell script can be spawned with the
 name of the newly uploaded file as an argument. You can use that feature to
 automatically send a mail when a new file arrives. Or you can pass it to a
-moderation system, an anti-virus, a MD5 signature generator or whatever you
-decide can be done with a file.
+moderation system, an anti-virus, a digest generator or whatever you decide
+can be done with a file.
 
 To support this, the server has to be configured --with-uploadscript at
 compilation time. Upload scripts won't be spawned on unreadable directories.

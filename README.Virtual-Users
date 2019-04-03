@@ -53,8 +53,7 @@ Fields can be left empty (exceptions: account, password, uid, gid, home
 directory) .
 
 Passwords are compatible with the hashing function used in /etc/passwd or
-/etc/master.passwd . They are crypto hashed with blowfish, md5, multiple-des
-and simple des, in this order, according to what your system has support fort.
+/etc/master.passwd.
 
 
     ------------------------ CREATING A NEW USER ------------------------

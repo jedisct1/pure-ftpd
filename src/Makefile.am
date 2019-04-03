@@ -40,10 +40,6 @@ libpureftpd_a_SOURCES = \
 	caps.h \
 	crypto.c \
 	crypto.h \
-	crypto-md5.c \
-	crypto-md5.h \
-	crypto-sha1.c \
-	crypto-sha1.h \
 	daemons.c \
 	diraliases.h \
 	diraliases.c \
