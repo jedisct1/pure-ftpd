@@ -282,37 +282,12 @@ static const BN_ULONG dh2048_256_q[] = {
 }
 #endif
 
-static int tls_load_dhparams(void)
-{
-    BIO *bio;
-    DH  *dh;
-
-    if ((bio = BIO_new_file(TLS_DHPARAMS_FILE, "r")) == NULL) {
-        logfile(LOG_DEBUG,
-                "Couldn't load the DH parameters file " TLS_DHPARAMS_FILE);
-        errno = ENOENT;
-        return -1;
-    }
-    if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL) {
-        die(400, LOG_ERR, "Invalid DH parameters file " TLS_DHPARAMS_FILE);
-    }
-    SSL_CTX_set_tmp_dh(tls_ctx, dh);
-    DH_free(dh);
-    BIO_free(bio);
-
-    return 0;
-}
-
 static void tls_init_dhparams(void)
 {
 # ifdef SSL_CTRL_SET_DH_AUTO
-    if (tls_load_dhparams() != 0) {
-        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
-    }
+    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
 # else
-    if (tls_load_dhparams() != 0) {
-        tls_load_dhparams_default();
-    }
+    tls_load_dhparams_default();
 # endif
 }
 
