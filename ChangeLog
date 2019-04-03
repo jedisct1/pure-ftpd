@@ -2,6 +2,9 @@
 * Version 1.0.49:
  - This version fixes a regression introduced in version 1.0.48 that broke
 the external authentication feature. Reported by Peter Hudec, thanks!
+ - Sockets from `pure-authd` and `pure-extauth` are now always owned by
+`root` in order to cope with the absence of `CAP_DAC_OVERRIDE` on Linux.
+Suggested by Arkadiusz Miśkiewicz, thanks!
 
 * Version 1.0.48:
  - SNI support has been added. A new service, `pure-certd`, can run
