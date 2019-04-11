@@ -341,7 +341,7 @@ brutally useful yet, but it paves the way for forthcoming changes.
  - Don't issue a warning in ./configure when the certfile does exist.
 Reported by Michael Bowe.
  - Have LDAP FTPStatus work since the schema changed. Thanks to David Majorel.
- - Compatibility with newer OpenLDAP versions. Thanks to Johan Ström.
+ - Compatibility with newer OpenLDAP versions. Thanks to Johan StrÃ¶m.
  - Don't hang up during uploads if we get any other command than QUIT and
 ABORT.
  - SITE UTIME reads UTC time
@@ -457,9 +457,9 @@ accept_client() - reported by Agri <agri at desnol.ru>.
     The sample source code in README.Authentication-Modules was bogus
 because of a missing 'echo end' statement. Thanks to Peter Ahlert
 <petera at gmx.net> for reporting this.
-    New translation : hungarian. Contributed by Bánhalmi Csaba
+    New translation : hungarian. Contributed by BÃ¡nhalmi Csaba
 <banhalmi at enternet.hu>.
-    New translation : catalan. Contributed by Oriol Magrané
+    New translation : catalan. Contributed by Oriol MagranÃ©
 <omagrane at mediapro.es>.
     Max CPU time was bumped to 60 min.
     Disable hash_password() function call on MySQL 4.1.x and later.
@@ -789,7 +789,7 @@ xferfd global.
     Add exponential delay after a 'cd' failure. Suggested by Jim.
 
 * Version 1.0.11 :
-    New translation : Norwegian. Contributed by Kurt Inge Smådal /
+    New translation : Norwegian. Contributed by Kurt Inge SmÃ¥dal /
 EasyISP.org <kurt at easyisp.org> .
     Fix typo (RATIO->RATIOS) in log_extauth.c and ratios are now working
 with the extauth module :)
@@ -1127,7 +1127,7 @@ configure and fallback to mysql_escape_string() if necessary.
     Add PureDB to configuration file wrappers, thanks to Sergey Mihailov.
     Include sysconfig sample in RPMs.
     Support MySQL's password() hashing function. Contributed by Robin Ericsson.
-    Dutch translation updated (Johan Huisman <sietze.jan.huisman at 12move.nl>) .
+    Dutch translation updated (JohanÂ HuismanÂ <sietze.jan.huisman at 12move.nl>) .
     New keyword in mysql config : MySQLTransactions.
     Reject new uploads if user_quota_files/size > quota->files/size .
     dynamic.c rewritten in a simpler way.
