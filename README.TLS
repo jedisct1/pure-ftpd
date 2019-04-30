@@ -122,6 +122,20 @@ ciphers (-J/--tlsciphersuite) with -C:
 
 pure-ftpd --tlsciphersuite=-C:HIGH -Y2 ...
 
+If you also need certificate revocation list verification
+(in case where your server certificate and client sertificate is
+genereted by trusted CA which generates CRL's), prefix the
+list of ciphers (-J/--tlsciphersuite) with -R:
+
+pure-ftpd --tlsciphersuite=-R:-C:HIGH -Y2 ...
+
+With -R: option you also need to append revocation list to the end
+of pure-ftpd.pem file:
+
+-----BEGIN X509 CRL-----
+MII...[base64encoded revocation list]
+-----END X509 CRL-----
+
 If you want to do certificate-based client authentication, their
 public key must be included in the pure-ftpd.pem file.
 

@@ -176,6 +176,7 @@ GLOBAL0(int data_protection_level);
 GLOBAL(const char *tlsciphersuite, TLS_DEFAULT_CIPHER_SUITE);
 GLOBAL0(signed char ssl_disabled);
 GLOBAL0(signed char ssl_verify_client_cert);
+GLOBAL0(signed char ssl_verify_client_cert_revocation_list);
 GLOBAL(const char *cert_file, TLS_CERTIFICATE_FILE);
 GLOBAL(const char *key_file, TLS_KEY_FILE);
 GLOBAL0(signed char use_extcert);

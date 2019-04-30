@@ -362,6 +362,17 @@ static void tls_init_client_cert_verification(const char *cert_file)
     if (cert_file == NULL) {
         tls_error(__LINE__, 0);
     }
+
+    if (ssl_verify_client_cert_revocation_list) {
+        X509_VERIFY_PARAM *param = X509_VERIFY_PARAM_new();
+        if (param) {
+            if (X509_VERIFY_PARAM_set_flags( param, X509_V_FLAG_CRL_CHECK )) {
+                SSL_CTX_set1_param( tls_ctx, param );
+            }
+            X509_VERIFY_PARAM_free(param);
+        }
+    }
+
     SSL_CTX_set_verify(tls_ctx, SSL_VERIFY_FAIL_IF_NO_PEER_CERT |
                        SSL_VERIFY_PEER, NULL);
     if (SSL_CTX_load_verify_locations(tls_ctx, cert_file, NULL) != 1) {
