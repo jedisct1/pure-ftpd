@@ -1399,9 +1399,7 @@ void douser(const char *username)
                 hd = (char *) "/";
             }
             if (chdir(root_directory) || chroot(root_directory) || chdir(hd)) {
-                die(421, LOG_ERR, MSG_CANT_CHANGE_DIR " [%s]",
-                    root_directory, hd);
-                goto cantsec;
+                die(421, LOG_ERR, MSG_CANT_CHANGE_DIR " [%s]", root_directory, hd);
             }
             logfile(LOG_INFO, MSG_ANONYMOUS_LOGGED);
         }
@@ -3491,11 +3489,12 @@ void dormd(char *name)
 void dofeat(void)
 {
 # define FEAT  "Extensions supported:" CRLF \
+    " UTF8" CRLF \
     " EPRT" CRLF " IDLE" CRLF " MDTM" CRLF " SIZE" CRLF " MFMT" CRLF \
-        " REST STREAM" CRLF \
-        " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
-        " MLSD" CRLF \
-        " PRET"
+    " REST STREAM" CRLF \
+    " MLST type*;size*;sizd*;modify*;UNIX.mode*;UNIX.uid*;UNIX.gid*;unique*;" CRLF \
+    " MLSD" CRLF \
+    " PRET"
 
 # ifdef WITH_TLS
 #  define FEAT_TLS CRLF " AUTH TLS" CRLF " PBSZ" CRLF " PROT"
@@ -6220,6 +6219,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #ifdef WITH_TLS
     tls_free_library();
     tls_extcert_exit();
+    free((void *) client_sni_name);
 #endif
     alt_arc4random_close();
 

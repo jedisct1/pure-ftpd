@@ -16,7 +16,6 @@ doc_DATA = \
 	pureftpd-pgsql.conf
 
 EXTRA_DIST = \
-	CONTACT \
 	FAQ \
 	HISTORY \
 	Makefile.gui \

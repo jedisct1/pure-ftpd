@@ -31,10 +31,6 @@
 #define MAX_LDAP_UID_LENGTH 256U
 #define DEFAULT_SHELL "ftp"
 #define PASSWD_LDAP_CRYPT_PREFIX "{crypt}"
-#define PASSWD_LDAP_MD5_PREFIX "{md5}"
-#define PASSWD_LDAP_SMD5_PREFIX "{smd5}"
-#define PASSWD_LDAP_SHA_PREFIX "{sha}"
-#define PASSWD_LDAP_SSHA_PREFIX "{ssha}"
 #define PASSWD_LDAP_SCRYPT_PREFIX "{scrypt}"
 #define PASSWD_LDAP_ARGON2_PREFIX "{argon2}"
 #define LDAP_DEFAULT_SCHEME "ldap"

@@ -1,7 +1,7 @@
 dnl AM_ACLOCAL_INCLUDE(m4)
 
 AC_PREREQ(2.65)
-AC_INIT([pure-ftpd],[1.0.48],
+AC_INIT([pure-ftpd],[1.0.49],
   [https://github.com/jedisct1/pure-ftpd/issues],
   [pure-ftpd],
   [https://www.pureftpd.org])
@@ -96,18 +96,20 @@ AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
 AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
 
-for path in \
-  /usr/kerberos \
-  /usr/local /opt /usr/local/opt \
-  /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
-  /usr/openssl /opt/openssl /usr/local/opt/openssl; do
-  if test -d $path/include; then
-    CPPFLAGS="$CPPFLAGS -I${path}/include"
-  fi
-  if test -d $path/lib; then
-    LDFLAGS="$LDFLAGS -L${path}/lib"
-  fi
-done
+if test "x$cross_compiling" != "xyes"; then
+  for path in \
+    /usr/kerberos \
+    /usr/local /opt /usr/local/opt \
+    /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
+    /usr/openssl /opt/openssl /usr/local/opt/openssl; do
+    if test -d $path/include; then
+      CPPFLAGS="$CPPFLAGS -I${path}/include"
+    fi
+    if test -d $path/lib; then
+      LDFLAGS="$LDFLAGS -L${path}/lib"
+    fi
+  done
+fi
 
 CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 
@@ -1129,59 +1131,6 @@ AC_DEFINE(REALPATH_WORKS_WITH_UNREADABLE_DIRECTORIES,,
 AC_DEFINE(USE_BUILTIN_REALPATH)
 ],[AC_MSG_RESULT(no)
 AC_DEFINE(USE_BUILTIN_REALPATH)])
-
-AC_MSG_CHECKING(whether you already have a standard MD5 implementation)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdio.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <md5.h>
-
-int main(void)
-{
-    MD5_CTX ctx;
-    char b[33];
-    
-    MD5Init(&ctx);
-    MD5Update(&ctx, (const unsigned char *) "test", 4U);
-    MD5End(&ctx, b);
-    b[32] = 0;
-
-    return strcasecmp(b, "098f6bcd4621d373cade4e832627b4f6");
-}
-]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(USE_SYSTEM_CRYPT_MD5,,[Define if you already have standard
-MD5 functions])
-],[AC_MSG_RESULT(no)
-],[AC_MSG_RESULT(assuming no)])
-
-AC_MSG_CHECKING(whether you already have a standard SHA1 implementation)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sha1.h>
-
-int main(void)
-{
-    SHA1_CTX ctx;
-    char b[41];
-    
-    SHA1Init(&ctx);
-    SHA1Update(&ctx, (const unsigned char *) "test", 4U);
-    SHA1End(&ctx, b);
-    b[40] = 0;
-    
-    return strcasecmp(b, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3");
-}
-]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(USE_SYSTEM_CRYPT_SHA1,,[Define if you already have standard
-SHA1 functions])
-],[AC_MSG_RESULT(no)
-],[AC_MSG_RESULT(assuming no)])
 
 AC_MSG_CHECKING([whether we are inside a Virtuozzo virtual host])
 if test -d /proc/vz; then

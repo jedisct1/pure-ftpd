@@ -1,6 +1,6 @@
 
                               .:. PURE-FTPD .:.
-                      Documentation for version 1.0.46
+                      Documentation for version 1.0.48
 
 
            ------------------------ BLURB ------------------------
@@ -1446,8 +1446,8 @@ sample output of 'pure-ftpwho -v':
 After an upload, any external program or shell script can be spawned with the
 name of the newly uploaded file as an argument. You can use that feature to
 automatically send a mail when a new file arrives. Or you can pass it to a
-moderation system, an anti-virus, a MD5 signature generator or whatever you
-decide can be done with a file.
+moderation system, an anti-virus, a digest generator or whatever you decide
+can be done with a file.
 
 To support this, the server has to be configured --with-uploadscript at
 compilation time. Upload scripts won't be spawned on unreadable directories.
@@ -1897,22 +1897,10 @@ is a safe bet.
    ------------------------ DOWNLOADING PURE-FTPD ------------------------
 
 
-Pure-FTPd home page is: http://www.pureftpd.org/ .
-
-Pure-FTPd mailing-list: http://www.pureftpd.org/ml/
-
-Mailing-list archive: http://archives.pureftpd.org/archives.cgi?100
+Pure-FTPd home page is: https://www.pureftpd.org/ .
 
 Git repository: https://github.com/jedisct1/pure-ftpd
-
-If you have question, suggestions or patches, feel free to post them to the
-mailing list. Newbies and silly ideas are welcome.
-
 
 Thank you, 
 
                        -Frank DENIS "Jedi/Sector One" <j at pureftpd dot org>
-                                 
-
-* Please also read the CONTACT file.
-

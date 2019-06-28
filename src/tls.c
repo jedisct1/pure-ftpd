@@ -31,6 +31,9 @@ static int validate_sni_name(const char * const sni_name)
         "abcdefghijklmnopqrstuvwxyz.-0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const char        *pnt = sni_name;
 
+    if (strlen(sni_name) > 255) {
+        return -1;
+    }
     while (*pnt != 0) {
         if (strchr(valid_chars, *pnt) == NULL) {
             return -1;
@@ -91,6 +94,9 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         if (tls_create_new_context(cert_file, key_file) != 0) {
             die(400, LOG_ERR, "SSL error");
         }
+    }
+    if ((client_sni_name = strdup(sni_name)) == NULL) {
+        die_mem();
     }
     if (tls_cnx != NULL) {
         const long ctx_options = SSL_CTX_get_options(tls_ctx);
@@ -276,37 +282,12 @@ static const BN_ULONG dh2048_256_q[] = {
 }
 #endif
 
-static int tls_load_dhparams(void)
-{
-    BIO *bio;
-    DH  *dh;
-
-    if ((bio = BIO_new_file(TLS_DHPARAMS_FILE, "r")) == NULL) {
-        logfile(LOG_DEBUG,
-                "Couldn't load the DH parameters file " TLS_DHPARAMS_FILE);
-        errno = ENOENT;
-        return -1;
-    }
-    if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL) {
-        die(400, LOG_ERR, "Invalid DH parameters file " TLS_DHPARAMS_FILE);
-    }
-    SSL_CTX_set_tmp_dh(tls_ctx, dh);
-    DH_free(dh);
-    BIO_free(bio);
-
-    return 0;
-}
-
 static void tls_init_dhparams(void)
 {
 # ifdef SSL_CTRL_SET_DH_AUTO
-    if (tls_load_dhparams() != 0) {
-        SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
-    }
+    SSL_CTX_ctrl(tls_ctx, SSL_CTRL_SET_DH_AUTO, 1, NULL);
 # else
-    if (tls_load_dhparams() != 0) {
-        tls_load_dhparams_default();
-    }
+    tls_load_dhparams_default();
 # endif
 }
 

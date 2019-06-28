@@ -168,11 +168,7 @@ userPassword: {scrypt}$7$C6..../....YzvCLmJDYJpH76BxlZB9fCpCEj2AbGQHoLiG9I/VRO1$
 
 
 'userPassword' is the password hashed with the system 'crypt' function,
-MD5, SHA, SMD5, SSHA, SCRYPT or ARGON2.
-
-Do not use MD5, SHA, SMD5 or SSHA except if you really have to. Use {crypt}
-with the strongest algorithm supported by your implementation. Or better,
-use {scrypt} or {argon2}.
+SCRYPT or ARGON2.
 
 Please note that a login can only contains common characters: A...Z, a...z,
 0...9, -, ., _, space, :, @ and ' . For paranoia purposes, other characters

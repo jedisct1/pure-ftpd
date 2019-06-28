@@ -326,7 +326,8 @@ void parser(void)
         if (!strcmp(cmd, "user")) {
 #ifdef WITH_TLS
             if (enforce_tls_auth > 1 && tls_cnx == NULL) {
-                die(421, LOG_WARNING, MSG_TLS_NEEDED);
+                addreply(421, MSG_TLS_NEEDED);
+                goto wayout;
             }
 #endif
             douser(arg);

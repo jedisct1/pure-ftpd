@@ -263,6 +263,13 @@ static void callback_client_encrypted(const char *str)
     newenv_str(ENV_AUTHD_ENCRYPTED, str);
 }
 
+static void callback_client_sni_name(const char *str)
+{
+    if (*str != 0) {
+        newenv_str(ENV_AUTHD_CLIENT_SNI_NAME, str);
+    }
+}
+
 static void callback_client_end(const char *str)
 {
     (void) str;
@@ -379,6 +386,11 @@ int listencnx(void)
         perror("Unable to listen the local socket");
         goto bye;
     }
+    if (changeuidgid() < 0) {
+        perror("Identity change");
+        (void) unlink(authd_pid_file);
+        return -1;
+    }
     do {
         if ((clientfd = accept(kindy, NULL, NULL)) == -1) {
             if (exit_authd != 0) {
@@ -454,11 +466,6 @@ int main(int argc, char *argv[])
         dodaemonize();
     }
     updatepidfile();
-    if (changeuidgid() < 0) {
-        perror("Identity change");
-        (void) unlink(authd_pid_file);
-        return -1;
-    }
 #ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
 #endif
