@@ -90,7 +90,6 @@ libpureftpd_a_SOURCES = \
 	messages_en.h \
 	messages_es.h \
 	messages_fr.h \
-	messages_fr_funny.h \
 	messages_hu.h \
 	messages_it.h \
 	messages_kr.h \

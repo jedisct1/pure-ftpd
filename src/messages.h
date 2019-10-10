@@ -49,10 +49,6 @@
 # define MESSAGES_LOCALE "ko_KO"
 # include "messages_kr.h"
 
-#elif defined(MESSAGES_FR_FUNNY)
-# define MESSAGES_LOCALE "fr_FR"
-# include "messages_fr_funny.h"
-
 #elif defined(MESSAGES_SV)
 # define MESSAGES_LOCALE "sv_SE"
 # include "messages_sv.h"
