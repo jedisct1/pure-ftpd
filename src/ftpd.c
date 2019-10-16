@@ -2138,6 +2138,9 @@ void dopasv(int psvtype)
     }
     dataconn = ctrlconn;
     for (;;) {
+        if (STORAGE_FAMILY(force_passive_ip) == AF_INET) {
+            STORAGE_SIN_ADDR(dataconn) = STORAGE_SIN_ADDR(force_passive_ip);
+        }
         if (STORAGE_FAMILY(dataconn) == AF_INET6) {
             STORAGE_PORT6(dataconn) = htons(p);
         } else {
