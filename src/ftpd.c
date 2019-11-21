@@ -540,8 +540,7 @@ static int checkvalidaddr(const struct sockaddr_storage * const addr)
         if (ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_ANY ||
             ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_NONE ||
             ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_BROADCAST ||
-            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR_CONST(*addr))) ||
-            IN_BADCLASS(ntohl(STORAGE_SIN_ADDR_CONST(*addr)))) {
+            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR_CONST(*addr)))) {
             return 0;
         }
         return 1;
