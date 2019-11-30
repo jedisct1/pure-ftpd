@@ -910,7 +910,6 @@ Here are the FTP commands supported by this server.
 .B XPWD
 .B XRMD
 .B OPTS MLST
-.B OPTS UTF8
 .B SITE CHMOD
 .B SITE HELP
 .B SITE IDLE
