@@ -198,7 +198,7 @@
 #define MSG_ILLEGAL_TRUSTED_IP "Fous une IP valide et ca ira mieux"
 #define MSG_NO_ASCII_RESUME "D'abord tu degages le fichier, apres on discute"
 #define MSG_UNKNOWN_ALTLOG "Format d'historique de merde"
-#define MSG_ACCOUNT_DISABLED "Le comte [%s] s'est fait buter"
+#define MSG_ACCOUNT_DISABLED "Le compte [%s] s'est fait buter"
 #define MSG_SQL_WRONG_PARMS "Parametre SQL a la con"
 #define MSG_ILLEGAL_CONFIG_FILE_SQL "Fichier de configuration SQL foireux"
 #define MSG_SQL_MISSING_SERVER "Pas de serveur dans la configuration SQL"
