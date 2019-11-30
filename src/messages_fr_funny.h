@@ -17,7 +17,7 @@
 #define MSG_DEBUG_COMMAND "Commande"
 #define MSG_IS_YOUR_CURRENT_LOCATION "c'est la ou tu te trouves ducon"
 #define MSG_NOT_LOGGED_IN "Dans tes reves"
-#define MSG_AUTH_UNIMPLEMENTED "Je crypterai pas ta merde"
+#define MSG_AUTH_UNIMPLEMENTED "Je chiffrerai pas ta merde"
 #define MSG_NO_FILE_NAME "Et le nom du fichier, tu me le chies ?"
 #define MSG_NO_DIRECTORY_NAME "File un nom de repertoire, on verra apres"
 #define MSG_NO_RESTART_POINT "Super, essaye encore"
