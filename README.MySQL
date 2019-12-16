@@ -235,7 +235,7 @@ Transactions are only working with backends such as InnoDB.
 
 Mike Goins says:
 
-To get pure-ftp to use a MySQL 5 stored procedure, use statements like:
+To get pure-ftp to use a MySQL stored procedure, use statements like:
 
 MYSQLGetDir   CALL get_path_from_name("\L")
 instead of
