@@ -226,9 +226,8 @@ To enable transactions, add this line:
 
 MySQLTransactions On
 
-Don't enable transactions on tables that still are in ISAM or MyISAM
-formats. Transactions are only working with newer backends (Gemini, InnoDB,
-BerkeleyDB...) and in recent MySQL versions.
+Don't enable transactions on tables that still are in MyISAM format.
+Transactions are only working with backends such as InnoDB.
 
 
      ------------------------ STORED PROCEDURES ------------------------
