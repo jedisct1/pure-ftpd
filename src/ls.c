@@ -661,6 +661,8 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     char *names;
     PureFileInfo *s;
     PureFileInfo *r;
+    char *alloca_subdir;
+    size_t sizeof_subdir;
     int d;
 
     if (depth >= max_ls_depth || matches >= max_ls_files) {
@@ -690,14 +692,12 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
     }
     outputfiles(f, tls_fd);
     r = dir;
+    sizeof_subdir = PATH_MAX + 1U;
+    if ((alloca_subdir = ALLOCA(sizeof_subdir)) == NULL) {
+        goto toomany;
+    }
     while (opt_R && r != s) {
         if (r->name_offset != (size_t) -1 && !chdir(FI_NAME(r))) {
-            char *alloca_subdir;
-            const size_t sizeof_subdir = PATH_MAX + 1U;
-
-            if ((alloca_subdir = ALLOCA(sizeof_subdir)) == NULL) {
-                goto toomany;
-            }
             if (SNCHECK(snprintf(alloca_subdir, sizeof_subdir, "%s/%s",
                                  name, FI_NAME(r)), sizeof_subdir)) {
                 goto nolist;
@@ -706,8 +706,8 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
             wrstr(f, tls_fd, alloca_subdir);
             wrstr(f, tls_fd, ":\r\n\r\n");
             listdir(depth + 1U, f, tls_fd, alloca_subdir);
+
             nolist:
-            ALLOCA_FREE(alloca_subdir);
             if (matches >= max_ls_files) {
                 goto toomany;
             }
@@ -720,6 +720,7 @@ static void listdir(unsigned int depth, int f, void * const tls_fd,
         r++;
     }
     toomany:
+    ALLOCA_FREE(alloca_subdir);
     free(names);
     free(dir);
     names = NULL;
