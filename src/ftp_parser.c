@@ -493,8 +493,6 @@ void parser(void)
                     }
                 }
                 addreply_noformat(200, MSG_READY_TO_PROCEED);
-            } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
-                dopasv(2);
             } else if (!strcmp(cmd, "allo")) {
                 if (*arg == 0) {
                     addreply_noformat(501, MSG_STAT_FAILURE);

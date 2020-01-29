@@ -180,7 +180,7 @@ MaxLoad                      4
 
 
 
-# Force an IP address in PASV/EPSV/SPSV replies. - for NAT.
+# Force an IP address in PASV/EPSV replies. - for NAT.
 # Symbolic host names are also accepted for gateways with dynamic IP
 # addresses.
 

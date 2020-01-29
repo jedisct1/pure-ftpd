@@ -811,10 +811,10 @@ Use high ports (40000-50000 for instance), where no regular server should be
 listening.
 
 - '-P <ip address or host name>': Force the specified IP address in reply to
-a PASV/EPSV/SPSV command. If the server is behind a masquerading (NAT) box
-that doesn't properly handle stateful FTP masquerading, put the ip address
-of that box here. If you have a dynamic IP address, you can put the public
-host name of your gateway, that will be resolved every time a new client will
+a PASV/EPSV command. If the server is behind a masquerading (NAT) box that
+doesn't properly handle stateful FTP masquerading, put the ip address of
+that box here. If you have a dynamic IP address, you can put the public host
+name of your gateway, that will be resolved every time a new client will
 connect.
 
 - '-q <upload ratio>:<download ratio>': Enable ratios for anonymous users.
