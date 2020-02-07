@@ -246,7 +246,7 @@ void simplify(char *subdir)
         return;
     }
     a--;
-    if (*a == '/' || a == subdir) {
+    if (*a == '/') {
         a[1] = 0;
         return;
     }
