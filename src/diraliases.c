@@ -93,7 +93,6 @@ int init_aliases(void)
                 (tail->dir = strdup(dir)) == NULL) {
                 die_mem();
             }
-            tail->next = NULL;
         } else {
             DirAlias *curr;
 
@@ -105,6 +104,7 @@ int init_aliases(void)
             tail->next = curr;
             tail = curr;
         }
+        tail->next = NULL;
     }
     fclose(fp);
     aliases_up++;
