@@ -294,7 +294,8 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     }
     if (SNCHECK(snprintf(conninfo, sizeof_conninfo,
                          PGSQL_CONNECT_FMTSTRING,
-                         server, port, db, user, pw), sizeof_conninfo)) {
+                         escaped_server, escaped_port, escaped_db,
+                         escaped_user, escaped_pw), sizeof_conninfo)) {
         goto bye;
     }
     if ((*id_sql_server = PQconnectdb(conninfo)) == NULL ||
