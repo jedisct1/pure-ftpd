@@ -246,7 +246,7 @@ void simplify(char *subdir)
         return;
     }
     a--;
-    if (*a == '/' || a == subdir) {
+    if (*a == '/') {
         a[1] = 0;
         return;
     }
@@ -2101,7 +2101,6 @@ static void keepalive(const int fd, int keep)
 
 /* psvtype = 0: PASV */
 /* psvtype = 1: EPSV */
-/* psvtype = 2: SPSV */
 
 void dopasv(int psvtype)
 {
@@ -2191,9 +2190,6 @@ void dopasv(int psvtype)
         break;
     case 1:
         addreply(229, "Extended Passive mode OK (|||%u|)", p);
-        break;
-    case 2:
-        addreply(227, "%u", p);
         break;
     default:
         _EXIT(EXIT_FAILURE);
@@ -3510,7 +3506,7 @@ void dofeat(void)
 # else
 #  define FEAT_TVFS CRLF " TVFS"
 # endif
-# define FEAT_PASV CRLF " PASV" CRLF " EPSV" CRLF " SPSV"
+# define FEAT_PASV CRLF " PASV" CRLF " EPSV"
 
 # ifdef MINIMAL
 #  define FEAT_ESTA ""

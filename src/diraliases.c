@@ -1,41 +1,3 @@
-/*
-
-0) alias file format.
- alternating lines of alias and dir
- (this enables embedded whitespace in dir and alias without quoting rules)
- optional blank lines
- optional lines beginning with '#' as comments
- (no you can't put a '#' just anywhere)
-
-1) data structure for alias list nodes.
-typedef struct DirAlias_ {
-       char *alias;
-       char *dir;
-       struct DirAlias *next;
-} DirAlias;
-
-2) init routine
- A) open alias file
- B) while not EOF do
-      read line
-      parse line
-        dir must begin with "/"
-      allocate DirAlias and members
-      if tail is NULL then head and tail (global DirAlias_t pointers)
-       are set to member
-      else tail->next is set to member and then tail is set to member
-
-3) lookup routine
-  A) given potential alias return dir or NULL
-     (walk list starting with head looking for match)
-
-4) FTP CWD command mods
-  A) if chdir() fails try alias (use lookup routine)
-
-5) FTP SITE ALIAS command
-  A) list aliases
-
-*/
 
 #include <config.h>
 
@@ -51,8 +13,6 @@ typedef struct DirAlias_ {
 
 static DirAlias *head, *tail;
 static signed char aliases_up;
-
-/* returns: 0 on success, -1 on failure */
 
 int init_aliases(void)
 {
@@ -93,7 +53,6 @@ int init_aliases(void)
                 (tail->dir = strdup(dir)) == NULL) {
                 die_mem();
             }
-            tail->next = NULL;
         } else {
             DirAlias *curr;
 
@@ -105,6 +64,7 @@ int init_aliases(void)
             tail->next = curr;
             tail = curr;
         }
+        tail->next = NULL;
     }
     fclose(fp);
     aliases_up++;
