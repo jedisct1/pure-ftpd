@@ -389,7 +389,7 @@ int listencnx(void)
     if (changeuidgid() < 0) {
         perror("Identity change");
         (void) unlink(authd_pid_file);
-        return -1;
+        goto bye;
     }
     do {
         if ((clientfd = accept(kindy, NULL, NULL)) == -1) {
