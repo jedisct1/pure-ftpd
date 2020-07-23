@@ -45,6 +45,7 @@ GLOBAL0(signed char userchroot); /* 0=don't chroot() by default for regular
 GLOBAL0(signed char chrooted);   /* if we already chroot()ed */
 GLOBAL0(uid_t chroot_trustedgid);
 GLOBAL0(signed char broken_client_compat); /* don't enable workarounds by default */
+GLOBAL0(signed char disable_ascii);    /* disable support for ascii transfers */
 GLOBAL0(uid_t warez);                  /* don't guard against warez */
 GLOBAL0(signed char debug);            /* don't give debug output */
 GLOBAL0(signed char guest);            /* if non-zero, it's a guest user */

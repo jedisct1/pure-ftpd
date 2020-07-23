@@ -115,6 +115,7 @@ static struct option long_options[] = {
 # endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },
+    { "disableascii", 0, NULL, '7' },
     { "chrooteveryone", 0, NULL, 'A' },
     { "trustedgid", 1, NULL, 'a' },
     { "brokenclientscompatibility", 0, NULL, 'b' },

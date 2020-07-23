@@ -961,6 +961,7 @@ aliases are available. You can get this list at any time by typing
 -1  --logpid                <file>
 -4  --ipv4only
 -6  --ipv6only
+-7  --disableascii
 -8  --fscharset             <charset>
 -9  --clientcharset         <charset>
 -a  --trustedgid            <gid>
@@ -1041,6 +1042,7 @@ aliases are available. You can get this list at any time by typing
 -Z  --customerproof
 
 -B  --daemonize 
+-7  --disableascii
 -D  --displaydotfiles   
 -H  --dontresolve   
 

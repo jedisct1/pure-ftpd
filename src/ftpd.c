@@ -3106,7 +3106,7 @@ static int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
         return -1;
     }
 #ifndef WITHOUT_ASCII
-    if (dlhandler->ascii_mode > 0) {
+    if (disable_ascii == 0 && dlhandler->ascii_mode > 0) {
         unsigned char *asciibufpnt;
         size_t z = (size_t) 0U;
 
@@ -5612,6 +5612,10 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             break;
         }
 #endif
+        case '7': {
+            disable_ascii = 1;
+            break;
+        }
         case 'a': {
             const char *nptr;
             char *endptr;

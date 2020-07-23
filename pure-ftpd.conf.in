@@ -384,6 +384,12 @@ CustomerProof                yes
 
 
 
+# This option prevents users from initiating ASCII transfers
+
+# DisableAsciiTransfers        yes
+
+
+
 # Per-user concurrency limits. Will only work if the FTP server has
 # been compiled with --with-peruserlimits.
 # Format is: <max sessions per user>:<max anonymous sessions>

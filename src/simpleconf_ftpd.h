@@ -24,6 +24,7 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"CreateHomeDir? <bool>",                     "--createhomedir"},
     {"CustomerProof? <bool>",                     "--customerproof"},
     {"Daemonize? <bool>",                         "--daemonize"},
+    {"DisableAsciiTransfers? <bool>",             "--disableascii"},
     {"DisplayDotFiles? <bool>",                   "--displaydotfiles"},
     {"DontResolve? <bool>",                       "--dontresolve"},
     {"ExtCert (<any*>)",                          "--extcert=$0"},
