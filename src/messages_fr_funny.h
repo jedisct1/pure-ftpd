@@ -229,3 +229,5 @@
 #define MSG_LDAP_INVALID_AUTH_METHOD "LDAPAuthMethod dans le fichier de conf, ca doit etre 'bind' ou 'password'."
 #define MSG_INVALID_ARGUMENT "\"%s\" c'est n'importe nawak"
 #define MSG_READY_TO_PROCEED "OP"
+#define MSG_ASCII_MODE_UNSUPPORTED "Tu veux faire un transfert en ASCII ? T'es un malade toi"
+#define MSG_ASCII_MODE_WARNING "Attention : ton client est configure en ASCII. T'es serieux, la ? Tu vas te retrouver avec un fichier tout pete"

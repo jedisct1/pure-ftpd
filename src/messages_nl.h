@@ -229,3 +229,5 @@
 #define MSG_LDAP_INVALID_AUTH_METHOD "Onjuiste LDAPAuthMethod in de configuratie. Moet 'bind' of 'password' zijn."
 #define MSG_INVALID_ARGUMENT "Invalid argument: \"%s\""
 #define MSG_READY_TO_PROCEED "Ready to proceed"
+#define MSG_ASCII_MODE_UNSUPPORTED "Transfers in ASCII mode are not supported"
+#define MSG_ASCII_MODE_WARNING "Warning: client is in ASCII mode - Assuming data is plain text"

@@ -2975,6 +2975,14 @@ static int dlmap_init(DLHandler * const dlhandler, const int clientfd,
                       void * const tls_fd, const off_t restartat,
                       const int ascii_mode, const unsigned long bandwidth)
 {
+    if (ascii_mode > 0) {
+#ifdef WITHOUT_ASCII
+        addreply_noformat(450, MSG_ASCII_MODE_UNSUPPORTED);
+        return -1;
+#else
+        addreply_noformat(0, MSG_ASCII_MODE_WARNING);
+#endif
+    }
     if (dlhandler_init(dlhandler, clientfd, tls_clientfd, xferfd, name, f,
                        tls_fd, restartat, ascii_mode, bandwidth) != 0) {
         return -1;
@@ -3105,8 +3113,8 @@ static int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
         *downloaded = 0;
         return -1;
     }
-#ifndef WITHOUT_ASCII
     if (dlhandler->ascii_mode > 0) {
+#ifndef WITHOUT_ASCII
         unsigned char *asciibufpnt;
         size_t z = (size_t) 0U;
 
@@ -3759,6 +3767,14 @@ static int ul_init(ULHandler * const ulhandler, const int clientfd,
     struct pollfd *pfd;
 
     (void) name;
+    if (ascii_mode > 0) {
+#ifdef WITHOUT_ASCII
+        addreply_noformat(450, MSG_ASCII_MODE_UNSUPPORTED);
+        return -1;
+#else
+        addreply_noformat(0, MSG_ASCII_MODE_WARNING);
+#endif
+    }
     if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
         error(451, "fcntl(F_SETFL, O_NONBLOCK)");
         return -1;
