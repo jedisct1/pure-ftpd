@@ -281,7 +281,7 @@ If long options are enabled, you can also use --login instead of -l .
 Let's run the server with automatic creation of home directories and puredb
 authentication:
 
-/usr/local/sbin/pure-ftpd -j -lpuredb:/etc/pureftpd.pdb &
+/usr/local/sbin/pure-ftpd -j -l puredb:/etc/pureftpd.pdb &
 
 Try to 'ftp localhost' and log in as joe.
 
