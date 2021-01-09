@@ -3527,11 +3527,11 @@ void dofeat(void)
     char feat[] = FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV FEAT_ESTP;
 
     if (disallow_passive != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA - 1U] = 0;
     }
 # ifndef MINIMAL
     else if (STORAGE_FAMILY(force_passive_ip) != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV - 1U] = 0;
     }
 # endif
     addreply_noformat(0, feat);
