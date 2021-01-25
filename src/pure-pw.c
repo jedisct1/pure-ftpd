@@ -584,6 +584,11 @@ static FILE *create_newpasswd(const char * const file,
     char line[LINE_MAX];
 
     fp = fopen(file, "r");
+
+    if (access(file2, F_OK) == 0) {
+        remove(file2);
+    }
+
     if ((fd2 = open(file2, O_EXCL | O_NOFOLLOW |
                     O_CREAT | O_WRONLY, (mode_t) 0700)) == -1) {
         if (fp != NULL) {
