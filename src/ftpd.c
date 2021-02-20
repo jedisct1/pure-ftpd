@@ -3113,8 +3113,8 @@ static int dl_dowrite(DLHandler * const dlhandler, const unsigned char *buf_,
         *downloaded = 0;
         return -1;
     }
-    if (dlhandler->ascii_mode > 0) {
 #ifndef WITHOUT_ASCII
+    if (dlhandler->ascii_mode > 0) {
         unsigned char *asciibufpnt;
         size_t z = (size_t) 0U;
 
