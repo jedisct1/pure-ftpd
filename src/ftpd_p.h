@@ -113,31 +113,31 @@ static const char *GETOPT_OPTIONS =
 static struct option long_options[] = {
     { "notruncate", 0, NULL, '0' },
     { "logpid", 0, NULL, '1' },
-#ifdef WITH_TLS
+# ifdef WITH_TLS
     { "certfile", 1, NULL, '2' },
     { "extcert", 1, NULL, '3' },
-#endif
+# endif
     { "ipv4only", 0, NULL, '4' },
     { "ipv6only", 0, NULL, '6' },
     { "chrooteveryone", 0, NULL, 'A' },
     { "trustedgid", 1, NULL, 'a' },
     { "brokenclientscompatibility", 0, NULL, 'b' },
-#ifndef NO_STANDALONE
+# ifndef NO_STANDALONE
     { "daemonize", 0, NULL, 'B' },
     { "maxclientsperip", 1, NULL, 'C' },
-#endif
+# endif
     { "maxclientsnumber", 1, NULL, 'c' },
     { "verboselog", 0, NULL, 'd' },
     { "displaydotfiles", 0, NULL, 'D' },
     { "anonymousonly", 0, NULL, 'e' },
     { "noanonymous", 0, NULL, 'E' },
     { "syslogfacility", 1, NULL, 'f' },
-#ifdef COOKIE
+# ifdef COOKIE
     { "fortunesfile", 1, NULL, 'F' },
-#endif
-#ifndef NO_STANDALONE
+# endif
+# ifndef NO_STANDALONE
     { "pidfile", 1, NULL, 'g' },
-#endif
+# endif
     { "norename", 0, NULL, 'G' },
     { "help", 0, NULL, 'h' },
     { "dontresolve", 0, NULL, 'H' },
@@ -151,50 +151,50 @@ static struct option long_options[] = {
     { "anonymouscancreatedirs", 0, NULL, 'M' },
     { "maxload", 1, NULL, 'm' },
     { "natmode", 0, NULL, 'N' },
-#ifdef QUOTAS
+# ifdef QUOTAS
     { "quota", 1, NULL, 'n' },
-#endif
-#ifdef WITH_UPLOAD_SCRIPT
+# endif
+# ifdef WITH_UPLOAD_SCRIPT
     { "uploadscript", 0, NULL, 'o' },
-#endif
-#ifdef WITH_ALTLOG
+# endif
+# ifdef WITH_ALTLOG
     { "altlog", 1, NULL, 'O' },
-#endif
+# endif
     { "passiveportrange", 1, NULL, 'p' },
     { "forcepassiveip", 1, NULL, 'P' },
-#ifdef RATIOS
+# ifdef RATIOS
     { "anonymousratio", 1, NULL, 'q' },
     { "userratio", 1, NULL, 'Q' },
-#endif
+# endif
     { "autorename", 0, NULL, 'r' },
     { "nochmod", 0, NULL, 'R' },
     { "antiwarez", 0, NULL, 's' },
-#ifndef NO_STANDALONE
+# ifndef NO_STANDALONE
     { "bind", 1, NULL, 'S' },
-#endif
-#ifdef THROTTLING
+# endif
+# ifdef THROTTLING
     { "anonymousbandwidth", 1, NULL, 't' },
     { "userbandwidth", 1, NULL, 'T' },
-#endif
+# endif
     { "umask", 1, NULL, 'U' },
     { "minuid", 1, NULL, 'u' },
-#ifdef WITH_VIRTUAL_HOSTS
+# ifdef WITH_VIRTUAL_HOSTS
     { "trustedip", 1, NULL, 'V' },
-#endif
-#ifdef WITH_OSX_BONJOUR
+# endif
+# ifdef WITH_OSX_BONJOUR
     { "bonjour", 1, NULL, 'v' },
-#endif
+# endif
     { "allowuserfxp", 0, NULL, 'w' },
     { "allowanonymousfxp", 0, NULL, 'W' },
     { "prohibitdotfileswrite", 0, NULL, 'x' },
     { "prohibitdotfilesread", 0, NULL, 'X' },
-#ifdef PER_USER_LIMITS
+# ifdef PER_USER_LIMITS
     { "peruserlimits", 1, NULL, 'y' },
-#endif
-#ifdef WITH_TLS
+# endif
+# ifdef WITH_TLS
     { "tls", 1, NULL, 'Y' },
     { "tlsciphersuite", 1, NULL, 'J' },
-#endif
+# endif
     { "allowdotfiles", 0, NULL, 'z' },
     { "customerproof", 0, NULL, 'Z' },
     { NULL, 0, NULL, 0 }
