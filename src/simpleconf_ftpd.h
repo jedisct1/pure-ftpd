@@ -99,8 +99,8 @@ static const SimpleConfEntry simpleconf_options[] = {
 #endif
     {"SyslogFacility (<alnum>)",                  "--syslogfacility=$0"},
 #ifdef WITH_TLS
-    {"TLS (<digits>)",                            "--tls=$0"},
     {"TLSCipherSuite (<nospace>)",                "--tlsciphersuite=$0"},
+    {"TLS (<digits>)",                            "--tls=$0"},
 #endif
     {"TrustedGID (<digits>)",                     "--trustedgid=$0"},
 #ifdef WITH_VIRTUAL_HOSTS
