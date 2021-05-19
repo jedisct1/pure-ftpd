@@ -135,7 +135,7 @@ Check /etc/syslogd.conf. You should have a line like:
 
 just add ftp.none:
 
-*.*;ftp.none;mail.none.news.none -/var/log/messages
+*.*;ftp.none;mail.none;news.none -/var/log/messages
 
 And if you want FTP info go in a specific file, just add:
 
