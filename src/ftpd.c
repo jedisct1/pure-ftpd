@@ -462,7 +462,7 @@ static void clearargs(int argc, char **argv)
         if (first == NULL) {
             first = argv[i];
         }
-        if (next == NULL || argv[i] == next + 1) {
+        if (next == NULL) {
             next = argv[i] + strlen(argv[i]);
         }
     }
