@@ -395,16 +395,6 @@ static void sigchild(int sig)
 #  endif
         iptrack_delete_pid(pid);
     }
-# else
-    while ((pid = wait3(NULL, WNOHANG, NULL)) > (pid_t) 0) {
-        if (nb_children > 0U) {
-            nb_children--;
-        }
-#  ifdef FTPWHO
-        ftpwho_unlinksbfile(pid);
-#  endif
-        iptrack_delete_pid(pid);
-    }
 # endif
     errno = olderrno;
 }
