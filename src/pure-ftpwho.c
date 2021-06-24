@@ -53,7 +53,7 @@ void ftpwho_lock(void)
     }
 }
 
-static RETSIGTYPE sigfpe(int sig)
+static void sigfpe(int sig)
 {
     (void) sig;
     fprintf(stderr, "* Arithmetic exception *\n\n"
@@ -63,7 +63,7 @@ static RETSIGTYPE sigfpe(int sig)
     exit(EXIT_FAILURE);
 }
 
-static RETSIGTYPE sigsegv(int sig)
+static void sigsegv(int sig)
 {
     (void) sig;
     fprintf(stderr, "* This version of pure-ftpwho is not compatible *\n"

@@ -9,15 +9,9 @@
 #endif
 
 #include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-# include <stdarg.h>
-#else
-# if HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdarg.h>
 #include <sys/types.h>
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
@@ -42,16 +36,10 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef TIME_WITH_SYS_TIME
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
 #endif
+#include <time.h>
 #include <sys/stat.h>
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>

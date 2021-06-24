@@ -1,10 +1,8 @@
 dnl AM_ACLOCAL_INCLUDE(m4)
 
-AC_PREREQ(2.65)
-AC_INIT([pure-ftpd],[1.0.49],
-  [https://github.com/jedisct1/pure-ftpd/issues],
-  [pure-ftpd],
-  [https://www.pureftpd.org])
+AC_PREREQ([2.65])
+AC_INIT([pure-ftpd], [1.0.49],
+        [https://github.com/jedisct1/pure-ftpd], [pure-ftpd], [https://www.pureftpd.org])
 AC_CONFIG_SRCDIR(src/ftpd.c)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11.2 dist-bzip2 tar-ustar])
@@ -117,9 +115,8 @@ CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 dnl Checks for header files
 
 AC_SYS_LARGEFILE
-AC_HEADER_STDC
+
 AC_HEADER_STAT
-AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(unistd.h string.h strings.h sys/param.h ioctl.h sys/ioctl.h)
@@ -154,8 +151,6 @@ dnl Check for endianness
 AC_C_BIGENDIAN
 
 dnl Checks for types
-
-AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T

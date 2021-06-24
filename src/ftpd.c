@@ -371,7 +371,7 @@ void die_mem(void)
     die(421, LOG_ERR, MSG_OUT_OF_MEMORY);
 }
 
-static RETSIGTYPE sigalarm(int sig)
+static void sigalarm(int sig)
 {
     (void) sig;
     disablesignals();
@@ -379,7 +379,7 @@ static RETSIGTYPE sigalarm(int sig)
 }
 
 #ifndef NO_STANDALONE
-static RETSIGTYPE sigchild(int sig)
+static void sigchild(int sig)
 {
     const int olderrno = errno;
     pid_t pid;
@@ -410,7 +410,7 @@ static RETSIGTYPE sigchild(int sig)
 }
 #endif
 
-static RETSIGTYPE sigterm_client(int sig)
+static void sigterm_client(int sig)
 {
     (void) sig;
 
@@ -419,7 +419,7 @@ static RETSIGTYPE sigterm_client(int sig)
 }
 
 #ifndef NO_STANDALONE
-static RETSIGTYPE sigterm(int sig)
+static void sigterm(int sig)
 {
     const int olderrno = errno;
     (void) sig;

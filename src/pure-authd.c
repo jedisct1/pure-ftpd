@@ -416,7 +416,7 @@ int listencnx(void)
     return ret;
 }
 
-static RETSIGTYPE sigterm(int sig)
+static void sigterm(int sig)
 {
     (void) sig;
 
