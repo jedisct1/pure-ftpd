@@ -269,6 +269,7 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     char *conninfo = NULL;
     size_t sizeof_conninfo;
     char *escaped_server = NULL;
+    char *escaped_port = NULL;
     char *escaped_db = NULL;
     char *escaped_user = NULL;
     char *escaped_pw = NULL;
@@ -277,6 +278,7 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     *id_sql_server = NULL;
 
     if ((escaped_server = pw_pgsql_escape_conninfo(server)) == NULL ||
+        (escaped_port = pw_pgsql_escape_conninfo(port)) == NULL ||
         (escaped_db = pw_pgsql_escape_conninfo(db)) == NULL ||
         (escaped_user = pw_pgsql_escape_conninfo(user)) == NULL ||
         (escaped_pw = pw_pgsql_escape_conninfo(pw)) == NULL) {
@@ -312,6 +314,7 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     bye:
     free(conninfo);
     free(escaped_server);
+    free(escaped_port);
     free(escaped_db);
     free(escaped_user);
     free(escaped_pw);
