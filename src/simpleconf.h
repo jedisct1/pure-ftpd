@@ -31,4 +31,8 @@ int sc_build_command_line_from_file(const char *file_name,
 
 void sc_argv_free(int argc, char *argv[]);
 
+SimpleConfSpecialHandlerResult sc_include_handler(void **output_p,
+                                                  const char *arg,
+                                                  void *user_data);
+
 #endif
