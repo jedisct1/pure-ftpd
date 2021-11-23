@@ -4288,6 +4288,8 @@ void dostor(char *name, const int append, const int autorename)
         }
         ftpwho_unlock();
     }
+#else
+    (void) filesize;
 #endif
 
     /* Here starts the real upload code */
@@ -4325,13 +4327,18 @@ void dostor(char *name, const int append, const int autorename)
     {
         off_t atomic_file_size;
         off_t original_file_size;
-        int files_count;
 
+#ifdef QUOTAS
+        int files_count;
+#endif
+
+#ifdef QUOTAS
         if (overwrite == 0) {
             files_count = 1;
         } else {
             files_count = 0;
         }
+#endif
         if (autorename != 0 && restartat == (off_t) 0) {
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;

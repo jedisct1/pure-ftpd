@@ -360,7 +360,7 @@ static int listfile(const PureFileInfo * const fi, const char *name)
             if ((alloca_nameline = ALLOCA(sizeof_nameline)) == NULL) {
                 return 0;
             }
-            if (st.st_size < 10000000000U) {
+            if ((unsigned long long) st.st_size < 10000000000ULL) {
                 format = "%s %4u %s %s %10llu %s %2d %s %s";
             } else {
                 format = "%s %4u %s %s %18llu %s %2d %s %s";
