@@ -15,10 +15,12 @@ AC_SUBST(VERSION)
 
 dnl Checks for programs.
 LX_CFLAGS=${CFLAGS-NONE}
+AC_USE_SYSTEM_EXTENSIONS
+
 AM_PROG_AR
 AC_PROG_CC
 AC_PROG_RANLIB
-AC_USE_SYSTEM_EXTENSIONS
+AC_PROG_FGREP
 
 AC_SEARCH_LIBS([strerror],[cposix])
 
@@ -40,7 +42,7 @@ AS_IF([test "$enable_pie" != "no"],[
 AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
-AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
+AS_IF([echo `(uname -s) 2>/dev/null` | $FGREP "CYGWIN" > /dev/null], [
   AX_CHECK_LINK_FLAG([-Wl,--nxcompat], [LDFLAGS="$LDFLAGS -Wl,--nxcompat"])
 ], [
   AS_IF([test `(uname -s) 2>/dev/null` = "DragonFly"],
