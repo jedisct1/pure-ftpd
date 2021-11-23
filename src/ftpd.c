@@ -4247,8 +4247,7 @@ void dostor(char *name, const int append, const int autorename)
     if (quota_update(&quota, 0LL, 0LL, &overflow) == 0 &&
         (overflow > 0 || quota.files >= user_quota_files ||
          quota.size > user_quota_size ||
-         (max_filesize >= (off_t) 0 &&
-          (max_filesize = user_quota_size - quota.size) < (off_t) 0))) {
+         (max_filesize = user_quota_size - quota.size) < (off_t) 0)) {
         overflow = 1;
         (void) close(f);
         goto afterquota;
