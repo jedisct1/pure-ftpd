@@ -457,3 +457,11 @@ CustomerProof                yes
 # By default, both IPv4 and IPv6 are enabled.
 
 # IPV6Only                     yes
+
+
+
+# Append the content of another file, if the file exists.
+# If the file doesn't exist, the directive is ignored.
+# More files can be recursively included.
+
+# Include                      additional_configuration.conf

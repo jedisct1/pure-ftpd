@@ -24,6 +24,8 @@ compile-time are not parsed any more.
  - When virtual quotas were configured, files were removed after an
 upload if the size quota was exceeded, but not during the upload. This
 has been fixed.
+ - A configuration file can now include other files with the `Include`
+directive.
 
 * Version 1.0.49:
  - This version fixes a regression introduced in version 1.0.48 that broke

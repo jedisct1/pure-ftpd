@@ -5443,6 +5443,24 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
+#ifndef MINIMAL
+static SimpleConfSpecialHandlerResult sc_special_handler(void **output_p,
+                                                         const char *arg,
+                                                         void *user_data)
+{
+    struct stat st;
+    (void) user_data;
+
+    if (stat(arg, &st) != 0) {
+        return SC_SPECIAL_HANDLER_RESULT_NEXT;
+    }
+    if ((*output_p = strdup(arg)) == NULL) {
+        return SC_SPECIAL_HANDLER_RESULT_ERROR;
+    }
+    return SC_SPECIAL_HANDLER_RESULT_INCLUDE;
+}
+#endif
+
 int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 {
 #ifndef NO_GETOPT_LONG
@@ -5507,12 +5525,17 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #endif
 
 #ifndef MINIMAL
-    if (argc == 2 && *argv[1] != '-' &&
-        sc_build_command_line_from_file(argv[1], NULL, simpleconf_options,
-                                        (sizeof simpleconf_options) /
-                                        (sizeof simpleconf_options[0]),
-                                        argv[0], &argc, &argv) != 0) {
-        die(421, LOG_ERR, MSG_CONF_ERR);
+    {
+        static SimpleConfConfig config = { NULL, sc_special_handler };
+
+        if (argc == 2 && *argv[1] != '-' &&
+            sc_build_command_line_from_file(argv[1], &config,
+                                            simpleconf_options,
+                                            (sizeof simpleconf_options) /
+                                            (sizeof simpleconf_options[0]),
+                                            argv[0], &argc, &argv) != 0) {
+            die(421, LOG_ERR, MSG_CONF_ERR);
+        }
     }
 #endif
 
