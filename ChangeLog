@@ -1,4 +1,30 @@
 
+* Version 1.0.50:
+ - Support for MD5, SHA1 and MySQL PASSWORD() function were removed for
+password hashing. You should now use scrypt, argon2 or the system crypt(3)
+function.
+ - Soft fail if a USER command is received without TLS and the server is
+configured to enforce TLS. Previously, the session was immediately closed,
+but that was too brutal for some clients.
+ - Allow connections from the class E network range -- apparently
+required in some cases when using Linux containers.
+ - Large file listings used to require way more stack allocations than
+necessary, possibly reaching hard-coded limits and causing a forced
+session close. This has been fixed.
+ - The SPSV command has been removed.
+ - Under some circunstances, the server would not start when configured
+with directory aliases. This has been fixed.
+ - PostgreSQL: hard-coded global configuration strings were not escaped.
+This has been fixed.
+ - A warning is now printed when a transfer happens in ASCII mode, as
+this is rarely intentional.
+ - Compilation with --without-ascii is now possible again.
+ - Configuration options for features that have been disabled at
+compile-time are not parsed any more.
+ - When virtual quotas were configured, files were removed after an
+upload if the size quota was exceeded, but not during the upload. This
+has been fixed.
+
 * Version 1.0.49:
  - This version fixes a regression introduced in version 1.0.48 that broke
 the external authentication feature. Reported by Peter Hudec, thanks!
