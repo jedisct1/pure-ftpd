@@ -117,8 +117,7 @@ static const SimpleConfEntry simpleconf_options[] = {
 #ifdef RATIOS
     {"UserRatio (<digits>) (<digits>)",           "--userratio=$0:$1"},
 #endif
-    {"VerboseLog? <bool>",                        "--verboselog"},
-    {"!Include <any*>",                           "$*"}
+    {"VerboseLog? <bool>",                        "--verboselog"}
 };
 
 #endif

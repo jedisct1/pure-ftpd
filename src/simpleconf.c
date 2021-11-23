@@ -696,20 +696,3 @@ sc_build_command_line_from_file(const char *file_name,
 
     return 0;
 }
-
-SimpleConfSpecialHandlerResult
-sc_include_handler(void **output_p, const char *arg, void *user_data)
-{
-    FILE *fp;
-
-    if ((*output_p = strdup(arg)) == NULL) {
-        return SC_SPECIAL_HANDLER_RESULT_ERROR;
-    }
-    if ((fp = fopen(*output_p, "r")) == NULL) {
-        /* ignore when file is not there or in any other way inaccessible. */
-        free(*output_p);
-        return SC_SPECIAL_HANDLER_RESULT_NEXT;
-    }
-    fclose(fp);
-    return SC_SPECIAL_HANDLER_RESULT_INCLUDE;
-}
