@@ -1422,7 +1422,7 @@ Type 'pure-ftpwho -h' to check the format.
 mode, suitable for inline calls from CGI, SSI or PHP scripts.
 
 '-x': output well-formed XML data for post-processing. This is the most
-acurate mode. Time is in seconds and file sizes are in bytes (in other
+accurate mode. Time is in seconds and file sizes are in bytes (in other
 output formats, sizes are in kbytes for easier readability) .
 
 '-v': verbose output in text mode. Additional info includes the size of
@@ -1464,7 +1464,7 @@ THE REVERSE ORDER WON'T WORK.
 
 For security purposes, the server never launches any external program. It's
 why there is a separate daemon, that reads new uploads pushed into a named
-pipe by the server. Uploads are processed synchronously and sequencially.
+pipe by the server. Uploads are processed synchronously and sequentially.
 It's why on loaded or untrusted servers, it might be a bad idea to use
 pure-uploadscript with lengthy or cpu-intensive scripts.
 
@@ -1752,7 +1752,7 @@ Then the server has to be started with --fscharset=<charset>. Replace
 
 This is often enough to properly work with UTF-8 capable clients.
 
-But optionnally, you can specify the default charset for clients, with
+But optionally, you can specify the default charset for clients, with
 --clientcharset:
 
 /usr/local/sbin/pure-ftpd --fscharset=iso-8859-15 --clientcharset=big5

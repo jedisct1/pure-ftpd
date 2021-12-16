@@ -24,7 +24,7 @@ To run this program the standard way type:
 .LP
 pure\-statsdecode /var/log/pureftpd.log > /tmp/pureftpd.humanlog
 .LP
-Alternativly you can run it as:
+Alternatively you can run it as:
 .LP
 cat /var/log/pureftpd.log | pure\-statsdecode \- | gzip \-\-best > /tmp/pureftpd.humanlog.gz
 

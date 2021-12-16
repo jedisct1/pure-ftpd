@@ -817,7 +817,7 @@ Undoes
 lists even files/directories whose names begin with ".".
 .TP
 .B \-C
-lists files in as many colums as will fit on the screen. Undoes
+lists files in as many columns as will fit on the screen. Undoes
 .BR \-1 " and " \-l .
 .TP
 .B \-d

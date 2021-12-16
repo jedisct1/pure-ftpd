@@ -1065,7 +1065,7 @@ int main(void)
 AC_MSG_RESULT(yes)
 AC_DEFINE(SAFE_GETGROUPS_0,,[Define is getgroups(0, NULL) works on your system])
 ],[AC_MSG_RESULT(no)
-],[AC_MSG_RESULT(suppose that it doesnt)])
+],[AC_MSG_RESULT(suppose that it doesn't)])
 
 AC_MSG_CHECKING(whether realpath likes unreadable directories)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1198,7 +1198,7 @@ int main(void)
 ]])],[CONF_TCP_SO_RCVBUF=`cat conftestval`],[CONF_TCP_SO_RCVBUF=65536],[CONF_TCP_SO_RCVBUF=65536])
 AC_MSG_RESULT($CONF_TCP_SO_RCVBUF)
 
-AC_DEFINE_UNQUOTED(CONF_TCP_SO_RCVBUF, $CONF_TCP_SO_RCVBUF, [defaut TCP receive buffer])
+AC_DEFINE_UNQUOTED(CONF_TCP_SO_RCVBUF, $CONF_TCP_SO_RCVBUF, [default TCP receive buffer])
 
 
 AC_ARG_WITH(ldap,

@@ -64,7 +64,7 @@ $dialog \
 'without-humor' "Disable humor (enabled by default)" off \
 'without-ascii' "Don't support 7-bits (ASCII) transfers" off \
 'without-globbing' "Don't include the globbing code" off \
-'without-nonalnum' "Only allow minimal alpha-numeric characters" off \
+'without-nonalnum' "Only allow minimal alphanumeric characters" off \
 'without-unicode' "Disable utf8 non-latin characters" off \
 'without-sendfile' "Don't use zero-copy optimizations" off \
 'without-privsep' "Disable privilege separation" off \

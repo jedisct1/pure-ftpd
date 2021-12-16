@@ -547,7 +547,7 @@ void pw_pgsql_check(AuthResult * const result,
 
     auth_ok:
     /*
-     * do *NOT* accept root uid/gid - if the database is compromized, the FTP
+     * do *NOT* accept root uid/gid - if the database is compromised, the FTP
      * server could also be rooted.
      */
     result->uid = (uid_t) strtoul(uid, NULL, 10);

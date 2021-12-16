@@ -19,7 +19,7 @@ and system administrators had to always watch for patches and new releases
 to ensure a good nights sleep.
 
 Troll-FTPd was often considered for inclusion in secure distributions, but
-the project was't actively maintained. Release 1.25 is dated 03/1999 and has
+the project wasn't actively maintained. Release 1.25 is dated 03/1999 and has
 been made with help from Janos Farkas, cmj at localnet.com, August Fullford and
 Ximenes Zalteca. Troll-FTPd 1.26 was released two years after, just to fix
 minor bugs. Arnt said that there won't be any other release unless he ever
