@@ -2,7 +2,7 @@
 .\" Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995-1999
 .\" Troll Tech AS, Waldemar Thranes gate 98B, N-0175 Oslo, Norway, fax +47
 .\" 22806380.
-.\" Pure-FTPd (C)opyleft 2001-2021 Frank Denis.
+.\" Pure-FTPd (C)opyleft 2001-2022 Frank Denis.
 .\" 
 .\" Use, modification and distribution is allowed without limitation,
 .\" warranty, or liability of any kind.
@@ -58,7 +58,7 @@ Written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 1995\-2002
 Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
 22806380.
 .PP 
-Pure\-FTPd (C)opyleft 2001\-2021 by Frank DENIS <j at pureftpd dot org>.
+Pure\-FTPd (C)opyleft 2001\-2022 by Frank DENIS <j at pureftpd dot org>.
 .PP 
 Use, modification and distribution is allowed without limitation,
 warranty, or liability of any kind.
