@@ -326,7 +326,9 @@ static void tls_init_options(void)
 # ifdef SSL_OP_NO_TLSv1_3
     SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_3);
 # endif
+# ifdef SSL_CTX_set_num_tickets
     SSL_CTX_set_num_tickets(tls_ctx, 0);
+# endif
     if (tlsciphersuite != NULL) {
         if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
             logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);

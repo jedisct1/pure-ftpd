@@ -1309,7 +1309,7 @@ if test "x$with_tls" = "xyes" ; then
   fi
   AC_CHECK_LIB(crypto, DH_new)
   AC_CHECK_LIB(ssl, SSL_accept)
-  AC_CHECK_FUNCS(DH_get_2048_256 TLS_server_method)
+  AC_CHECK_FUNCS(DH_get_2048_256 TLS_server_method SSL_CTX_set_num_tickets)
   AC_DEFINE(WITH_TLS,,[Enable TLS])
 fi
 
