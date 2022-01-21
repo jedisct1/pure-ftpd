@@ -269,7 +269,6 @@ static int pw_pgsql_connect(PGconn ** const id_sql_server)
     char *conninfo = NULL;
     size_t sizeof_conninfo;
     char *escaped_server = NULL;
-    char *escaped_port = NULL;
     char *escaped_db = NULL;
     char *escaped_user = NULL;
     char *escaped_pw = NULL;
