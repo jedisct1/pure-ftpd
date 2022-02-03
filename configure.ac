@@ -101,7 +101,8 @@ if test "x$cross_compiling" != "xyes"; then
   for path in \
     /usr/kerberos \
     /usr/local /opt /usr/local/opt \
-    /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
+    /opt/homebrew/opt/openssl@3 /usr/local/opt/openssl@3 \
+    /opt/homebrew/opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
     /usr/openssl /opt/openssl /usr/local/opt/openssl; do
     if test -d $path/include; then
       CPPFLAGS="$CPPFLAGS -I${path}/include"
