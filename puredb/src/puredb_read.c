@@ -50,6 +50,9 @@ static int read_be_long(const PureDB * const db,
 
 #ifdef USE_MAPPED_IO
     if (db->map != NULL) {
+        if (db->size < 4 || offset > db->size - 4) {
+            return -1;
+        }
         mapoffset = db->map + offset;
     } else
 #endif
