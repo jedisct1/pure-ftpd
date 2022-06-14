@@ -1,5 +1,5 @@
 
-/* (C)opyleft 2001-2019 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2022 Frank DENIS <j at pureftpd dot org> */
 
 #include <config.h>
 
@@ -111,7 +111,7 @@ int puredb_open(PureDB * const db, const char *dbfile)
     if (fstat(db->fd, &st) < 0 || st.st_size > (off_t) 0xffffffff ||
         (db->size = (puredb_u32_t) st.st_size) <
         ((size_t) (256U + 1U) * sizeof(puredb_u32_t) +
-         sizeof PUREDB_VERSION - (size_t) 1U)) {
+            sizeof PUREDB_VERSION - (size_t) 1U)) {
         close(db->fd);
 
         return -2;
@@ -145,6 +145,7 @@ int puredb_open(PureDB * const db, const char *dbfile)
 
         return -3;
     }
+
     return 0;
 }
 

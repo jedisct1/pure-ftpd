@@ -1,29 +1,14 @@
 
-/* (C)opyleft 2001-2019 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2022 Frank DENIS <j at pureftpd dot org> */
 
 #ifndef __PUREDB_P_H__
 #define __PUREDB_P_H__ 1
 
 #include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-# include <stdarg.h>
-#else
-# if HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
-#if HAVE_STRING_H
-# if !STDC_HEADERS && HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-# include <string.h>
-#else
-# if HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdarg.h>
+#include <string.h>
 #include <limits.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H

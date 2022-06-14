@@ -1,8 +1,7 @@
 
-/* (C)opyleft 2001-2019 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2022 Frank DENIS <j at pureftpd dot org> */
 
 #include <config.h>
-
 #include "puredb_p.h"
 #include "puredb_write.h"
 
@@ -29,4 +28,3 @@ int main(void)
 
     return 0;
 }
-
