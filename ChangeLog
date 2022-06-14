@@ -1,4 +1,13 @@
 
+* Version 1.0.51:
+ - Compatibility with OpenSSL 1.1.0 was improved.
+ - PostgreSQL: the port number is not escaped any more in connection
+strings.
+ - TLS tickets are issued but not renewed - This fixes compatibility
+issues with some clients.
+ - PureDB: additional checks for corrupted databases have been added,
+and synchronization to disk uses F_FULLFSYNC on macOS X.
+
 * Version 1.0.50:
  - Support for MD5, SHA1 and MySQL PASSWORD() function were removed for
 password hashing. You should now use scrypt, argon2 or the system crypt(3)
