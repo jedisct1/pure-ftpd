@@ -80,7 +80,7 @@ GLOBAL(unsigned int max_ls_depth, DEFAULT_MAX_LS_DEPTH);
 GLOBAL0(char *fortunes_file);
 GLOBAL0(char host[NI_MAXHOST]);
 GLOBAL0(int replycode);
-GLOBAL(char deferred_quit, 0);
+GLOBAL0(signed char deferred_quit);
 GLOBAL0(signed char force_ls_a);
 GLOBAL0(struct sockaddr_storage peer);
 GLOBAL0(struct sockaddr_storage force_passive_ip);
