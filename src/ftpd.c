@@ -3175,15 +3175,17 @@ static int dlhandler_handle_commands(DLHandler * const dlhandler,
         buf[readnb] = 0;
         bufpnt = skip_telnet_controls(buf);
         if (strchr(bufpnt, '\n') != NULL) {
-            if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-                strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
-                addreply_noformat(500, MSG_UNKNOWN_COMMAND);
-                doreply();
-            } else {
+            if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) == 0) {
                 addreply_noformat(426, "ABORT");
                 doreply();
                 addreply_noformat(226, MSG_ABORTED);
                 return 1;
+            } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
+                deferred_quit = 1;
+                logfile(LOG_DEBUG, "Deferring QUIT until dl completes.");
+            } else {
+                addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+                doreply();
             }
         }
         if (required_sleep > 0.0) {
@@ -3901,14 +3903,16 @@ static int ulhandler_handle_commands(ULHandler * const ulhandler)
     buf[readnb] = 0;
     bufpnt = skip_telnet_controls(buf);
     if (strchr(buf, '\n') != NULL) {
-        if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-            strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
-            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
-            doreply();
-        } else {
+        if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) == 0) {
             addreply_noformat(426, MSG_ABORTED);
             doreply();
             return 1;
+        } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
+            deferred_quit = 1;
+            logfile(LOG_DEBUG, "Deferring QUIT until ul completes.");
+        } else {
+            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+            doreply();
         }
     }
     return 0;

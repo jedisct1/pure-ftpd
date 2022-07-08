@@ -247,6 +247,12 @@ void parser(void)
             }
 #endif
         }
+        if (deferred_quit != 0) {
+            addreply(221, MSG_GOODBYE,
+                     (unsigned long long) ((uploaded + 1023ULL) / 1024ULL),
+                     (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
+            return;
+        }
         doreply();
         alarm(idletime * 2);
         switch (sfgets()) {
