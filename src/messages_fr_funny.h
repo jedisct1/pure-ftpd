@@ -231,3 +231,4 @@
 #define MSG_READY_TO_PROCEED "OP"
 #define MSG_ASCII_MODE_UNSUPPORTED "Tu veux faire un transfert en ASCII ? T'es un malade toi"
 #define MSG_ASCII_MODE_WARNING "Attention : ton client est configure en ASCII. T'es serieux, la ? Tu vas te retrouver avec un fichier tout pete"
+#define MSG_DEFERRED_QUIT "Deferring QUIT until transfer completes"

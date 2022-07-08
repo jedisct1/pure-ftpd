@@ -3182,7 +3182,7 @@ static int dlhandler_handle_commands(DLHandler * const dlhandler,
                 return 1;
             } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
                 deferred_quit = 1;
-                logfile(LOG_DEBUG, "Deferring QUIT until dl completes.");
+                logfile(LOG_DEBUG, MSG_DEFERRED_QUIT);
             } else {
                 addreply_noformat(500, MSG_UNKNOWN_COMMAND);
                 doreply();
@@ -3909,7 +3909,7 @@ static int ulhandler_handle_commands(ULHandler * const ulhandler)
             return 1;
         } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
             deferred_quit = 1;
-            logfile(LOG_DEBUG, "Deferring QUIT until ul completes.");
+            logfile(LOG_DEBUG, MSG_DEFERRED_QUIT);
         } else {
             addreply_noformat(500, MSG_UNKNOWN_COMMAND);
             doreply();

@@ -230,3 +230,4 @@
 #define MSG_READY_TO_PROCEED "Bereit fortzufahren"
 #define MSG_ASCII_MODE_UNSUPPORTED "Übertragungen im ASCII-Modus werden nicht unterstützt."
 #define MSG_ASCII_MODE_WARNING "Warnung: Der Klient nutzt den ASCII-Modus. Es wird angenommen, dass es sich um einfache Text Dateien handelt."
+#define MSG_DEFERRED_QUIT "Deferring QUIT until transfer completes"
