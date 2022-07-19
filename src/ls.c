@@ -1039,6 +1039,7 @@ bye:
     }
 }
 
+#ifndef MINIMAL
 void domlsd(const char *base)
 {
     char           line[PATH_MAX + 1];
@@ -1103,3 +1104,4 @@ bye:
         die(421, LOG_ERR, "chdir: %s", strerror(errno));
     }
 }
+#endif
