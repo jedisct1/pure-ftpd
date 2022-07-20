@@ -313,7 +313,9 @@ ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
 #endif
 void parser(void);
 void stripctrl(char * const buf, size_t len);
+#ifndef MINIMAL
 void dobanner(const int type);
+#endif
 void douser(const char *name);
 void dopass(char *password);
 void docwd(const char *dir);
@@ -334,20 +336,26 @@ void doestp(void);
 void doallo(const off_t size);
 #endif
 void dopasv(int);
+#ifndef MINIMAL
 void doopts(char *args);
 void dochmod(char *name, mode_t mode);
 void doutime(char *name, const char * const wanted_time);
+#endif
 void error(int n, const char *msg);
 void domode(const char *arg);
 void dostru(const char *arg);
 void dotype(const char *arg);
+#ifndef MINIMAL
 void donoop(void);
+#endif
 void dornfr(char *name);
 void dornto(char *name);
+#ifndef MINIMAL
 void dostou(void);
 void dofeat(void);
 void domlst(const char * const file);
 void domlsd(const char * const base);
+#endif
 void dositetime(void);
 int ul_check_free_space(const char *name, const double min_space);
 void disablesignals(void);
@@ -374,8 +382,10 @@ void die(const int err, const int priority, const char * const format, ...)
 void die_mem(void) __attribute__ ((noreturn));
 void _EXIT(const int status) __attribute__ ((noreturn));
 void setprocessname(const char * const title);
+#ifndef MINIMAL
 int modernformat(const char *file, char *target, size_t target_size,
                  const char * const prefix);
+#endif
 int sfgets(void);
 const char *getgroup(const gid_t gid);
 const char *getname(const uid_t uid);
