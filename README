@@ -647,7 +647,7 @@ group. '-A' and '-a <gid>' are mutually exclusive.
 
 - '-b': Ignore parts of RFC standards in order to deal with some totally
 broken FTP clients, or broken firewalls/NAT boxes. Also, non-dangling
-symbolic links are shown as real files/directories. Also, EPSV is disabled.
+symbolic links are shown as real files/directories. EPSV is disabled.
 
 - '-B': Have the standalone server start in background (daemonization).
 
