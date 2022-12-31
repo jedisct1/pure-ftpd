@@ -1,5 +1,5 @@
 
-/* (C)opyleft 2001-2022 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2023 Frank DENIS <j at pureftpd dot org> */
 
 #ifndef __PUREDB_WRITE_H__
 #define __PUREDB_WRITE_H__ 1
