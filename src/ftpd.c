@@ -5487,7 +5487,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #elif defined(_SC_PAGE_SIZE)
     page_size = (size_t) sysconf(_SC_PAGE_SIZE);
 #else
-    page_size = (size_t) 4096U;
+    page_size = (size_t) 16384U;
 #endif
 
 #ifdef HAVE_SETLOCALE
