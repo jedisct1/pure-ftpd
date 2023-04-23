@@ -718,6 +718,9 @@ AC_MSG_CHECKING([if a hpuxish sendfile is available])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/socket.h>
 #include <stdio.h>
+#ifdef HAVE_SYS_SENDFILE_H
+# include <sys/sendfile.h>
+#endif
 ]], [[
 do {
  int fd = 0;
