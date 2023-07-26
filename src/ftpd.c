@@ -602,10 +602,6 @@ static int generic_aton(const char *src, struct sockaddr_storage *a)
 
 void logfile(const int crit, const char *format, ...)
 {
-#if defined(NON_ROOT_FTP)
-    (void) crit;
-    (void) format;
-#else
     const char *urgency;
     va_list va;
     char line[MAX_SYSLOG_LINE];
@@ -646,7 +642,6 @@ void logfile(const int crit, const char *format, ...)
 # ifdef SAVE_DESCRIPTORS
     closelog();
 # endif
-#endif
 }
 
 #ifndef NO_STANDALONE
