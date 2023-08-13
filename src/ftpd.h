@@ -203,8 +203,8 @@
  * They do the same thing, but with a different syntax.
  */
 
-#if defined(HAVE_STATVFS) || defined(HAVE_STATVFS64)
-# ifdef HAVE_STATVFS64
+#if (defined(HAVE_STATVFS64) && defined(HAVE_STRUCT_STATVFS64)) || (defined(HAVE_STATVFS) && defined(HAVE_STRUCT_STATVFS))
+# if defined(HAVE_STATVFS64) && defined(HAVE_STRUCT_STATVFS64)
 #  define STATFS_STRUCT struct statvfs64
 #  define STATFS(PATH, STR) statvfs64(PATH, STR)
 #  define FSTATFS(FD, STR) fstatvfs64(FD, STR)
@@ -219,7 +219,7 @@
 # define STATFS_BLOCKS(X) ((X).f_blocks)
 # define STATFS_BSIZE(X) ((X).f_bsize)
 # define STATFS_FRSIZE(X) ((X).f_frsize)
-#elif defined(HAVE_STATFS)
+# elif defined(HAVE_STATFS) && defined(HAVE_STRUCT_STATFS)
 # define STATFS_STRUCT struct statfs
 # define STATFS(PATH, STR) statfs(PATH, STR)
 # define FSTATFS(FD, STR) fstatfs(FD, STR)
