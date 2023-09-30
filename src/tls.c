@@ -153,6 +153,7 @@ static SSL_TICKET_RETURN session_ticket_cb(SSL *tls_ctx,
 }
 #endif
 
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
 static int tls_init_ecdh_curve(void)
 {
 #ifdef SSL_CTRL_SET_ECDH_AUTO
@@ -186,6 +187,7 @@ static int tls_init_ecdh_curve(void)
 # endif
 #endif
 }
+#endif /* (OPENSSL_VERSION_NUMBER < 0x10100000L) */
 
 #ifndef SSL_CTRL_SET_DH_AUTO
 static int tls_load_dhparams_default(void)
@@ -414,7 +416,9 @@ static int tls_create_new_context(const char *cert_file,
     if (ssl_verify_client_cert) {
         tls_init_client_cert_verification(cert_file);
     }
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     tls_init_ecdh_curve();
+#endif
     tls_init_dhparams();
 
     return 0;
