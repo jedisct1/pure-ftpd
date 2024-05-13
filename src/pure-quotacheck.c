@@ -239,7 +239,7 @@ static int writequota(const char * const quota_file)
         (void) fchmod(fd, st.st_mode | 0700);
     }
     close(fd);
-    if ((fd = open(quota_file, O_RDWR | O_CREAT | O_NOFOLLOW,
+    if ((fd = open(quota_file, O_RDWR | O_CREAT,
                    (mode_t) 0600)) == -1) {
         return -1;
     }
