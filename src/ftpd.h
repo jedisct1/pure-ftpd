@@ -168,6 +168,9 @@
 
 #ifdef HAVE_CRYPT_H
 # include <crypt.h>
+# ifdef XCRYPT_VERSION_NUM
+#  define HAVE_YESCRYPT 1
+# endif
 #endif
 
 #ifdef USE_SHADOW
@@ -558,8 +561,10 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #ifndef MAX_DATA_SIZE
 # ifdef HAVE_LIBSODIUM
 #  define MAX_DATA_SIZE (70 * 1024 * 1024)
+# elif defined(HAVE_YESCRYPT)
+#  define MAX_DATA_SIZE (32 * 1024 * 1024)       /* Max memory usage - yescrypt needs 32M */
 # elif defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL)
-#  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need more */
+#  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need 16M */
 # else
 #  define MAX_DATA_SIZE (8 * 1024 * 1024)       /* Max memory usage */
 # endif
