@@ -51,7 +51,7 @@ int quota_update(Quota *quota,
     }
     *overflow = 0;
     *quota = old_quota;
-    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW,
+    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT,
                    (mode_t) 0600)) == -1) {
         return -1;
     }
