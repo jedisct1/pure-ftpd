@@ -17,7 +17,7 @@ command:
 
 As an alternative to command-line switches, Pure-FTPd can use a
 configuration file. The set of supported features is the same no
-matter what way of configuring the server is beind used.
+matter what way of configuring the server is being used.
 
 A sample configuration file named pure-ftpd.conf should have been installed
 in /etc/, /usr/local/etc/ or another standard location derived from

@@ -73,7 +73,7 @@ To run this program the standard way type:
 .LP
 pure\-certd \-s @LOCALSTATEDIR@/run/certd.sock \-r /usr/bin/my\-cert\-program &
 .LP
-pure\-ftpd \-lextauth:@LOCALSTATEDIR@/run/certd.sock &
+pure\-ftpd \-lextcert:@LOCALSTATEDIR@/run/certd.sock &
 .TP
 /usr/bin/my\-cert\-program can be as simple as:
 #! /bin/sh

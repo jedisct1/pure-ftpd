@@ -169,6 +169,15 @@ void pw_pam_check(AuthResult * const result,
 # ifdef PAM_RUSER
     (void) pam_set_item(pamh, PAM_RUSER, user);
 # endif
+# ifdef PAM_RHOST
+    {
+        char buf[1025];
+        if (gethostname(buf, sizeof buf - 1U) == 0) {
+            buf[sizeof buf - 1U] = 0;
+            (void) pam_set_item(pamh, PAM_RHOST, buf);
+        }
+    }
+# endif
     /*
      * PAM doesn't make any distinction between "user not found" and
      * "bad password". So we assume user not found to fallback to other

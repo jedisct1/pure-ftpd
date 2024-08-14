@@ -1,4 +1,41 @@
 
+* Version 1.0.51:
+ - Compatibility with OpenSSL 1.1.0 was improved.
+ - PostgreSQL: the port number is not escaped any more in connection
+strings.
+ - TLS tickets are issued but not renewed - This fixes compatibility
+issues with some clients.
+ - PureDB: additional checks for corrupted databases have been added,
+and synchronization to disk uses F_FULLFSYNC on macOS X.
+
+* Version 1.0.50:
+ - Support for MD5, SHA1 and MySQL PASSWORD() function were removed for
+password hashing. You should now use scrypt, argon2 or the system crypt(3)
+function.
+ - Soft fail if a USER command is received without TLS and the server is
+configured to enforce TLS. Previously, the session was immediately closed,
+but that was too brutal for some clients.
+ - Allow connections from the class E network range -- apparently
+required in some cases when using Linux containers.
+ - Large file listings used to require way more stack allocations than
+necessary, possibly reaching hard-coded limits and causing a forced
+session close. This has been fixed.
+ - The SPSV command has been removed.
+ - Under some circumstances, the server would not start when configured
+with directory aliases. This has been fixed.
+ - PostgreSQL: hard-coded global configuration strings were not escaped.
+This has been fixed.
+ - A warning is now printed when a transfer happens in ASCII mode, as
+this is rarely intentional.
+ - Compilation with --without-ascii is now possible again.
+ - Configuration options for features that have been disabled at
+compile-time are not parsed any more.
+ - When virtual quotas were configured, files were removed after an
+upload if the size quota was exceeded, but not during the upload. This
+has been fixed.
+ - A configuration file can now include other files with the `Include`
+directive.
+
 * Version 1.0.49:
  - This version fixes a regression introduced in version 1.0.48 that broke
 the external authentication feature. Reported by Peter Hudec, thanks!
@@ -153,7 +190,7 @@ Reported by Hiramoto Koujo, thanks!
 * Version 1.0.33:
  - Sync built-in glob(3) code with OpenBSD-current, and remove code we
 don't use instead of ifdef'ing it.
- - Repair checkproc() on Linux when support for capabitilies is
+ - Repair checkproc() on Linux when support for capabilities is
 compiled in. Reported by Eric Gouyer.
  - Don't read /dev/*random every time we need a value. Just use
 arc4random() everywhere and seed it before we possibly chroot().
@@ -210,7 +247,7 @@ name.
  - When an upload gets renamed (--autorename), send the new name to the
 uploadscript instead of the original one.
  - The ALLO command now checks for the actual disk space in addition to the
-virtal quota.
+virtual quota.
  - Work around OSX broken poll()
  - After an atomic resumed upload, don't append the previous file size to the 
 quota.
@@ -302,7 +339,7 @@ Contributed by Wilco Baan Hofman.
 Zhao.
  - Almost a complete rewrite of the upload, download and TLS code for more
 reliability
- - Seemlessly handle ABOR without any SIGURG
+ - Seamlessly handle ABOR without any SIGURG
  - Try to immediately handle any kind of disconnection
  - Use poll() rather than select() as much as possible
  - Distinguish aborted (even the hard way) and completed download and upload
@@ -536,7 +573,7 @@ script. Patch by Brad Smith <brad at openbsd.org>.
     PAM was broken in 1.0.16b due to PAM_SUCCESS not being copied to the right
 slot. It has been fixed.
     Automake has been updated to 1.7.8.
-    configure.ac has been cleaned up a bit regarding the conditionnal inclusion
+    configure.ac has been cleaned up a bit regarding the conditional inclusion
 of stdlib.h/unistd.h .
     RPMs are now built with largefile support, privsep and sysquotas by
 default.
@@ -828,7 +865,7 @@ recursivity (makes Solaris happy) and faster processing.
     Accept '..' in file names in fakexlate() .
     Use addreply_noformat() whenever possible (speedup).
     New switch : -Z (--customerproof) . Right now, it adds | 0600 or | 0700
-to chmod commands to avoid users locking their own files. Additionnaly, we
+to chmod commands to avoid users locking their own files. Additionally, we
 now try a traditional chmod() call if fchmod() fails. There's a race here,
 but no security trouble to fear. Reported by Mark Reidel <mr at domainfactory.de>
     Spec file fixes, contributed by Jose Pedro Oliveira <jpo at di.uminho.pt>
@@ -864,7 +901,7 @@ packets to the local unix socket, but we were only reading a single packet
 then. Now, we also group everything to a single packet before sending the
 data.
     Merge Ben Gertzfield's extended LDAP schema.
-    AtheOS is unfortuntely gone from the list of supported OS because it
+    AtheOS is unfortunately gone from the list of supported OS because it
 lacks mmap().
     Invalid SQL queries are now logged in order to help debugging.
 
@@ -1183,7 +1220,7 @@ is called with AI_PASSIVE.
 what's needed to parse/allocate/free related structures. All modules have the
 same hooks, grouped in a new structure : Authentication .
     Semantic change for AuthResult.auth_ok : 0 means a soft error (user not
-found, or server temporarely down), -1 means hard error (bad password), 1
+found, or server temporarily down), -1 means hard error (bad password), 1
 means ok. To be secure, we fall back to the next authentication method only
 on soft errors. Also, AuthResult objects are now passed by address to
 authentication handlers.
@@ -1206,7 +1243,7 @@ readable dates in "stats" logfiles.
     Add peer info to authentication (pw_*_check()) functions.
     When MySQL or LDAP are enabled, add additional groups of the system uid.
     Made LDAP attributes more configurable (macroized strings in log_ldap.h) .
-    New digraph for SQL substitions : \R (remote IP) .
+    New digraph for SQL substitutions : \R (remote IP) .
     New fields for the LDAP configuration file parser : LDAPDefaultUID and
 LDAPDefaultGID.
     Updated the LDAP documentation.
@@ -1388,7 +1425,7 @@ Brandon Covert).
     Merge the virtual host login code with the regular login code (suggested
 by Chris Mentjox <chris at widexs.nl>.
     ftp_parser.c/sfgets() rewritten to optimize read() calls.
-    Use the same policy to forbit dot-files for cd and for other commands,
+    Use the same policy to forbid dot-files for cd and for other commands,
 for consistency and to ease migration from other servers.
     Don't unlink() partially uploaded files unless user is anonymous.
     Add fillenv() and newenv_*() in pure-uploadscript.c

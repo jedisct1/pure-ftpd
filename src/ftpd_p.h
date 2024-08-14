@@ -76,7 +76,7 @@ static const char *GETOPT_OPTIONS =
 #ifdef QUOTAS
     "n:"
 #endif
-#if defined(WITH_UPLOAD_SCRIPT)
+#ifdef WITH_UPLOAD_SCRIPT
     "o"
 #endif
 #ifdef WITH_ALTLOG
@@ -93,7 +93,11 @@ static const char *GETOPT_OPTIONS =
 #ifdef THROTTLING
     "t:T:"
 #endif
-    "u:U:V:wWxX"
+    "u:U:"
+#ifdef WITH_VIRTUAL_HOSTS
+    "V:"
+#endif
+    "wWxX"
 #ifdef WITH_OSX_BONJOUR
     "v:"
 #endif
@@ -150,7 +154,7 @@ static struct option long_options[] = {
 # ifdef QUOTAS
     { "quota", 1, NULL, 'n' },
 # endif
-# if defined(WITH_UPLOAD_SCRIPT)
+# ifdef WITH_UPLOAD_SCRIPT
     { "uploadscript", 0, NULL, 'o' },
 # endif
 # ifdef WITH_ALTLOG
@@ -168,14 +172,18 @@ static struct option long_options[] = {
 # ifndef NO_STANDALONE
     { "bind", 1, NULL, 'S' },
 # endif
+# ifdef THROTTLING
     { "anonymousbandwidth", 1, NULL, 't' },
     { "userbandwidth", 1, NULL, 'T' },
+# endif
     { "umask", 1, NULL, 'U' },
     { "minuid", 1, NULL, 'u' },
+# ifdef WITH_VIRTUAL_HOSTS
     { "trustedip", 1, NULL, 'V' },
-#ifdef WITH_OSX_BONJOUR
+# endif
+# ifdef WITH_OSX_BONJOUR
     { "bonjour", 1, NULL, 'v' },
-#endif
+# endif
     { "allowuserfxp", 0, NULL, 'w' },
     { "allowanonymousfxp", 0, NULL, 'W' },
     { "prohibitdotfileswrite", 0, NULL, 'x' },

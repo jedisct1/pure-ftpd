@@ -240,7 +240,7 @@ be called /etc/pureftpd.pdb (as always, choose whatever name you like):
                                 pure-pw mkdb
                         
 this reads /etc/pureftpd.passwd and creates /etc/pureftpd.pdb by default, but
-to read another file, add the pdb file, optionnaly followed by -f <passwd file>
+to read another file, add the pdb file, optionally followed by -f <passwd file>
 
 For instance:
 
@@ -304,7 +304,7 @@ Copying system accounts to FTP accounts makes sense, because that way, users
 can use different passwords for FTP and for Telnet access.
 
 
-  ------------------------ ENVIRONNEMENT VARIABLES ------------------------
+   ------------------------ ENVIRONMENT VARIABLES ------------------------
   
   
 If defined, a PURE_PASSWDFILE environment variable can set the default path

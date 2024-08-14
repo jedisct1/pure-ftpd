@@ -1,6 +1,6 @@
 .\"
 .\" Troll-FTPd is Copyright 1995-2000 Trolltech AS, and Copyright 2001-2002 Arnt Gulbrandsen.
-.\" Pure-FTPd is (C)opyleft 2001-2019 by Frank DENIS <j at pureftpd dot org> and the Pure-FTPd team.
+.\" Pure-FTPd is (C)opyleft 2001-2024 by Frank DENIS <j at pureftpd dot org> and the Pure-FTPd team.
 .\"
 .\" Use, modification and distribution is allowed without limitation, warranty, or liability of any kind.
 .\"
@@ -429,7 +429,7 @@ is, conveniently, the same as that of
 .TP
 .B \-P ip address or host name
 Force the specified IP address in reply to a
-.B PASV/EPSV/SPSV
+.B PASV/EPSV
 command. If the server is behind a masquerading (NAT) box that doesn't
 properly handle stateful FTP masquerading, put the ip address of that box
 here. If you have a dynamic IP address, you can use a symbolic host name
@@ -817,7 +817,7 @@ Undoes
 lists even files/directories whose names begin with ".".
 .TP
 .B \-C
-lists files in as many colums as will fit on the screen. Undoes
+lists files in as many columns as will fit on the screen. Undoes
 .BR \-1 " and " \-l .
 .TP
 .B \-d
@@ -895,7 +895,6 @@ Here are the FTP commands supported by this server.
 .B RNFR
 .B RNTO
 .B SIZE
-.B SPSV
 .B STAT
 .B STOR
 .B STOU
@@ -910,7 +909,6 @@ Here are the FTP commands supported by this server.
 .B XPWD
 .B XRMD
 .B OPTS MLST
-.B OPTS UTF8
 .B SITE CHMOD
 .B SITE HELP
 .B SITE IDLE
@@ -931,7 +929,7 @@ Troll\-FTPd was written by Arnt Gulbrandsen <agulbra@troll.no> and copyright 199
 Troll Tech AS, Waldemar Thranes gate 98B, N\-0175 Oslo, Norway, fax +47
 22806380.
 .PP
-Pure\-FTPd is (C)opyleft 2001\-2019 by Frank DENIS <j at pureftpd dot org>.
+Pure\-FTPd is (C)opyleft 2001\-2022 by Frank DENIS <j at pureftpd dot org>.
 .PP
 This software is covered by the BSD license.
 .PP
@@ -1008,7 +1006,7 @@ Contributors:
  Torgnt Wernersson,
  Banhalmi Csaba,
  Volodin D,
- Oriol Magrané,
+ Oriol Magran,
  Jui-Nan Lin,
  Patrick Gosling,
  Marc Balmer,

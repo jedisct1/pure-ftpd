@@ -1,13 +1,11 @@
 dnl AM_ACLOCAL_INCLUDE(m4)
 
-AC_PREREQ(2.65)
-AC_INIT([pure-ftpd],[1.0.49],
-  [https://github.com/jedisct1/pure-ftpd/issues],
-  [pure-ftpd],
-  [https://www.pureftpd.org])
+AC_PREREQ([2.65])
+AC_INIT([pure-ftpd], [1.0.51],
+        [https://github.com/jedisct1/pure-ftpd], [pure-ftpd], [https://www.pureftpd.org])
 AC_CONFIG_SRCDIR(src/ftpd.c)
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
+AM_INIT_AUTOMAKE([1.11.2 dist-bzip2 tar-ustar])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AM_MAINTAINER_MODE
 AM_DEP_TRACK
@@ -17,9 +15,12 @@ AC_SUBST(VERSION)
 
 dnl Checks for programs.
 LX_CFLAGS=${CFLAGS-NONE}
+AC_USE_SYSTEM_EXTENSIONS
+
+AM_PROG_AR
 AC_PROG_CC
 AC_PROG_RANLIB
-AC_USE_SYSTEM_EXTENSIONS
+AC_PROG_FGREP
 
 AC_SEARCH_LIBS([strerror],[cposix])
 
@@ -41,7 +42,7 @@ AS_IF([test "$enable_pie" != "no"],[
 AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing], [CFLAGS="$CFLAGS -fno-strict-aliasing"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-overflow], [CFLAGS="$CFLAGS -fno-strict-overflow"])
-AS_IF([echo `(uname -s) 2>/dev/null` | $GREP "CYGWIN" > /dev/null], [
+AS_IF([echo `(uname -s) 2>/dev/null` | $FGREP "CYGWIN" > /dev/null], [
   AX_CHECK_LINK_FLAG([-Wl,--nxcompat], [LDFLAGS="$LDFLAGS -Wl,--nxcompat"])
 ], [
   AS_IF([test `(uname -s) 2>/dev/null` = "DragonFly"],
@@ -100,7 +101,8 @@ if test "x$cross_compiling" != "xyes"; then
   for path in \
     /usr/kerberos \
     /usr/local /opt /usr/local/opt \
-    /usr/openssl@1.1 /opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
+    /opt/homebrew/opt/openssl@3 /usr/local/opt/openssl@3 \
+    /opt/homebrew/opt/openssl@1.1 /usr/local/opt/openssl@1.1 \
     /usr/openssl /opt/openssl /usr/local/opt/openssl; do
     if test -d $path/include; then
       CPPFLAGS="$CPPFLAGS -I${path}/include"
@@ -116,9 +118,8 @@ CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
 dnl Checks for header files
 
 AC_SYS_LARGEFILE
-AC_HEADER_STDC
+
 AC_HEADER_STAT
-AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(unistd.h string.h strings.h sys/param.h ioctl.h sys/ioctl.h)
@@ -153,8 +154,6 @@ dnl Check for endianness
 AC_C_BIGENDIAN
 
 dnl Checks for types
-
-AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
@@ -719,6 +718,9 @@ AC_MSG_CHECKING([if a hpuxish sendfile is available])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/socket.h>
 #include <stdio.h>
+#ifdef HAVE_SYS_SENDFILE_H
+# include <sys/sendfile.h>
+#endif
 ]], [[
 do {
  int fd = 0;
@@ -961,7 +963,6 @@ AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_FUNC_GETLOADAVG(src)
 AC_FUNC_GETGROUPS
-AC_FUNC_WAIT3
 AC_FUNC_UTIME_NULL
 AC_FUNC_STRTOD
 AC_FUNC_SELECT_ARGTYPES
@@ -1068,7 +1069,7 @@ int main(void)
 AC_MSG_RESULT(yes)
 AC_DEFINE(SAFE_GETGROUPS_0,,[Define is getgroups(0, NULL) works on your system])
 ],[AC_MSG_RESULT(no)
-],[AC_MSG_RESULT(suppose that it doesnt)])
+],[AC_MSG_RESULT(suppose that it doesn't)])
 
 AC_MSG_CHECKING(whether realpath likes unreadable directories)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -1201,7 +1202,7 @@ int main(void)
 ]])],[CONF_TCP_SO_RCVBUF=`cat conftestval`],[CONF_TCP_SO_RCVBUF=65536],[CONF_TCP_SO_RCVBUF=65536])
 AC_MSG_RESULT($CONF_TCP_SO_RCVBUF)
 
-AC_DEFINE_UNQUOTED(CONF_TCP_SO_RCVBUF, $CONF_TCP_SO_RCVBUF, [defaut TCP receive buffer])
+AC_DEFINE_UNQUOTED(CONF_TCP_SO_RCVBUF, $CONF_TCP_SO_RCVBUF, [default TCP receive buffer])
 
 
 AC_ARG_WITH(ldap,
@@ -1312,7 +1313,7 @@ if test "x$with_tls" = "xyes" ; then
   fi
   AC_CHECK_LIB(crypto, DH_new)
   AC_CHECK_LIB(ssl, SSL_accept)
-  AC_CHECK_FUNCS(DH_get_2048_256 TLS_server_method)
+  AC_CHECK_FUNCS(DH_get_2048_256 TLS_server_method SSL_CTX_set_num_tickets)
   AC_DEFINE(WITH_TLS,,[Enable TLS])
 fi
 

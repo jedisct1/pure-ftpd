@@ -158,7 +158,6 @@ void alt_arc4random_buf(void* buffer, size_t len)
     size_t         off;
     size_t         remaining;
     size_t         partial;
-    int            ret;
 
     if (!rng_state.initialized) {
         alt_arc4random_stir();

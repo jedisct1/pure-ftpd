@@ -9,15 +9,9 @@
 #endif
 
 #include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-# include <stdarg.h>
-#else
-# if HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdarg.h>
 #include <sys/types.h>
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
@@ -42,16 +36,10 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef TIME_WITH_SYS_TIME
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
 #endif
+#include <time.h>
 #include <sys/stat.h>
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
@@ -180,6 +168,9 @@
 
 #ifdef HAVE_CRYPT_H
 # include <crypt.h>
+# ifdef XCRYPT_VERSION_NUM
+#  define HAVE_YESCRYPT 1
+# endif
 #endif
 
 #ifdef USE_SHADOW
@@ -325,7 +316,9 @@ ssize_t secure_safe_write(void * const tls_fd, const void *buf_, size_t count);
 #endif
 void parser(void);
 void stripctrl(char * const buf, size_t len);
+#ifndef MINIMAL
 void dobanner(const int type);
+#endif
 void douser(const char *name);
 void dopass(char *password);
 void docwd(const char *dir);
@@ -346,20 +339,26 @@ void doestp(void);
 void doallo(const off_t size);
 #endif
 void dopasv(int);
+#ifndef MINIMAL
 void doopts(char *args);
 void dochmod(char *name, mode_t mode);
 void doutime(char *name, const char * const wanted_time);
+#endif
 void error(int n, const char *msg);
 void domode(const char *arg);
 void dostru(const char *arg);
 void dotype(const char *arg);
+#ifndef MINIMAL
 void donoop(void);
+#endif
 void dornfr(char *name);
 void dornto(char *name);
+#ifndef MINIMAL
 void dostou(void);
 void dofeat(void);
 void domlst(const char * const file);
 void domlsd(const char * const base);
+#endif
 void dositetime(void);
 int ul_check_free_space(const char *name, const double min_space);
 void disablesignals(void);
@@ -386,8 +385,10 @@ void die(const int err, const int priority, const char * const format, ...)
 void die_mem(void) __attribute__ ((noreturn));
 void _EXIT(const int status) __attribute__ ((noreturn));
 void setprocessname(const char * const title);
+#ifndef MINIMAL
 int modernformat(const char *file, char *target, size_t target_size,
                  const char * const prefix);
+#endif
 int sfgets(void);
 const char *getgroup(const gid_t gid);
 const char *getname(const uid_t uid);
@@ -560,8 +561,10 @@ Your platform has a very large PATH_MAX, we should not trust it.
 #ifndef MAX_DATA_SIZE
 # ifdef HAVE_LIBSODIUM
 #  define MAX_DATA_SIZE (70 * 1024 * 1024)
+# elif defined(HAVE_YESCRYPT)
+#  define MAX_DATA_SIZE (32 * 1024 * 1024)       /* Max memory usage - yescrypt needs 32M */
 # elif defined(WITH_LDAP) || defined(WITH_MYSQL) || defined(WITH_PGSQL)
-#  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need more */
+#  define MAX_DATA_SIZE (16 * 1024 * 1024)       /* Max memory usage - SQL/LDAP need 16M */
 # else
 #  define MAX_DATA_SIZE (8 * 1024 * 1024)       /* Max memory usage */
 # endif
@@ -592,7 +595,7 @@ Your platform has a very large PATH_MAX, we should not trust it.
 # define DL_DLMAP_SIZE (128 * 1024UL)
 #endif
 #if DL_DEFAULT_CHUNK_SIZE > DL_MAX_CHUNK_SIZE || DL_MIN_CHUNK_SIZE > DL_MAX_CHUNK_SIZE
-# error DL_MAX_CHUNK_SIZE shouldnt be <= DL_MIN_CHUNK_SIZE or <= DL_DEFAULT_CHUNK_SIZE
+# error DL_MAX_CHUNK_SIZE should not be <= DL_MIN_CHUNK_SIZE or <= DL_DEFAULT_CHUNK_SIZE
 #endif
 #if DL_DLMAP_SIZE < DL_MAX_CHUNK_SIZE
 # error DL_DLMAP_SIZE should be >= DL_MAX_CHUNK_SIZE

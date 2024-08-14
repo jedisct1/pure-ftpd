@@ -132,6 +132,28 @@ static void ssl_info_cb(const SSL *cnx, int where, int ret)
     }
 }
 
+#ifdef SSL_TICKET_SUCCESS_RENEW
+static SSL_TICKET_RETURN session_ticket_cb(SSL *tls_ctx,
+                                           SSL_SESSION *session,
+                                           const unsigned char *keyname,
+                                           size_t keyname_len,
+                                           SSL_TICKET_STATUS status,
+                                           void *arg)
+{
+    (void) tls_ctx;
+    (void) session;
+    (void) keyname;
+    (void) keyname_len;
+    (void) arg;
+
+    if (status == SSL_TICKET_SUCCESS || status == SSL_TICKET_SUCCESS_RENEW) {
+        return SSL_TICKET_RETURN_USE;
+    }
+    return SSL_TICKET_RETURN_IGNORE;
+}
+#endif
+
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
 static int tls_init_ecdh_curve(void)
 {
 #ifdef SSL_CTRL_SET_ECDH_AUTO
@@ -165,6 +187,7 @@ static int tls_init_ecdh_curve(void)
 # endif
 #endif
 }
+#endif /* (OPENSSL_VERSION_NUMBER < 0x10100000L) */
 
 #ifndef SSL_CTRL_SET_DH_AUTO
 static int tls_load_dhparams_default(void)
@@ -326,6 +349,9 @@ static void tls_init_options(void)
 # ifdef SSL_OP_NO_TLSv1_3
     SSL_CTX_clear_options(tls_ctx, SSL_OP_NO_TLSv1_3);
 # endif
+# ifdef SSL_CTX_set_num_tickets
+    SSL_CTX_set_num_tickets(tls_ctx, 1);
+# endif
     if (tlsciphersuite != NULL) {
         if (SSL_CTX_set_cipher_list(tls_ctx, tlsciphersuite) != 1) {
             logfile(LOG_ERR, MSG_TLS_CIPHER_FAILED, tlsciphersuite);
@@ -338,6 +364,9 @@ static void tls_init_options(void)
         passes++;
     }
     SSL_CTX_set_verify_depth(tls_ctx, MAX_CERTIFICATE_DEPTH);
+#ifdef SSL_TICKET_SUCCESS_RENEW
+    SSL_CTX_set_session_ticket_cb(tls_ctx, NULL, session_ticket_cb, NULL);
+#endif
 }
 
 static void tls_load_cert_file(const char * const cert_file,
@@ -398,7 +427,9 @@ static int tls_create_new_context(const char *cert_file,
     if (ssl_verify_client_cert) {
         tls_init_client_cert_verification(cert_file);
     }
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     tls_init_ecdh_curve();
+#endif
     tls_init_dhparams();
 
     return 0;

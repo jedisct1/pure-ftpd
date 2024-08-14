@@ -1,15 +1,9 @@
 #include <config.h>
 
 #include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-# include <stdarg.h>
-#else
-# ifdef HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdarg.h>
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #endif

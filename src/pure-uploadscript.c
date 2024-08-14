@@ -404,13 +404,6 @@ static int run(const char * const who, const char * const file,
     } else if (pid != (pid_t) -1) {
 #ifdef HAVE_WAITPID
         (void) waitpid(pid, NULL, 0);
-#else
-        {
-            pid_t foundpid;
-
-            while ((foundpid = wait3(NULL, 0, NULL)) != (pid_t) -1 &&
-                   foundpid != pid);
-        }
 #endif
     }
 

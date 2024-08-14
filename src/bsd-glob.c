@@ -723,10 +723,12 @@ nospace:
         for (i = pglob->gl_offs; i < (ssize_t)(newn - 2); i++) {
             if (pglob->gl_pathv && pglob->gl_pathv[i]) {
                 free(pglob->gl_pathv[i]);
+                pglob->gl_pathv[i] = NULL;
             }
             if ((pglob->gl_flags & GLOB_KEEPSTAT) != 0 &&
                 pglob->gl_pathv && pglob->gl_pathv[i]) {
                 free(pglob->gl_statv[i]);
+                pglob->gl_statv[i] = NULL;
             }
         }
         free(pglob->gl_pathv);

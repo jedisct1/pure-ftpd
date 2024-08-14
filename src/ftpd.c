@@ -246,7 +246,7 @@ void simplify(char *subdir)
         return;
     }
     a--;
-    if (*a == '/' || a == subdir) {
+    if (*a == '/') {
         a[1] = 0;
         return;
     }
@@ -371,7 +371,7 @@ void die_mem(void)
     die(421, LOG_ERR, MSG_OUT_OF_MEMORY);
 }
 
-static RETSIGTYPE sigalarm(int sig)
+static void sigalarm(int sig)
 {
     (void) sig;
     disablesignals();
@@ -379,7 +379,7 @@ static RETSIGTYPE sigalarm(int sig)
 }
 
 #ifndef NO_STANDALONE
-static RETSIGTYPE sigchild(int sig)
+static void sigchild(int sig)
 {
     const int olderrno = errno;
     pid_t pid;
@@ -395,22 +395,12 @@ static RETSIGTYPE sigchild(int sig)
 #  endif
         iptrack_delete_pid(pid);
     }
-# else
-    while ((pid = wait3(NULL, WNOHANG, NULL)) > (pid_t) 0) {
-        if (nb_children > 0U) {
-            nb_children--;
-        }
-#  ifdef FTPWHO
-        ftpwho_unlinksbfile(pid);
-#  endif
-        iptrack_delete_pid(pid);
-    }
 # endif
     errno = olderrno;
 }
 #endif
 
-static RETSIGTYPE sigterm_client(int sig)
+static void sigterm_client(int sig)
 {
     (void) sig;
 
@@ -419,7 +409,7 @@ static RETSIGTYPE sigterm_client(int sig)
 }
 
 #ifndef NO_STANDALONE
-static RETSIGTYPE sigterm(int sig)
+static void sigterm(int sig)
 {
     const int olderrno = errno;
     (void) sig;
@@ -462,7 +452,7 @@ static void clearargs(int argc, char **argv)
         if (first == NULL) {
             first = argv[i];
         }
-        if (next == NULL || argv[i] == next + 1) {
+        if (next == NULL) {
             next = argv[i] + strlen(argv[i]);
         }
     }
@@ -540,8 +530,7 @@ static int checkvalidaddr(const struct sockaddr_storage * const addr)
         if (ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_ANY ||
             ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_NONE ||
             ntohl(STORAGE_SIN_ADDR_CONST(*addr)) == INADDR_BROADCAST ||
-            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR_CONST(*addr))) ||
-            IN_BADCLASS(ntohl(STORAGE_SIN_ADDR_CONST(*addr)))) {
+            IN_MULTICAST(ntohl(STORAGE_SIN_ADDR_CONST(*addr)))) {
             return 0;
         }
         return 1;
@@ -2102,7 +2091,6 @@ static void keepalive(const int fd, int keep)
 
 /* psvtype = 0: PASV */
 /* psvtype = 1: EPSV */
-/* psvtype = 2: SPSV */
 
 void dopasv(int psvtype)
 {
@@ -2192,9 +2180,6 @@ void dopasv(int psvtype)
         break;
     case 1:
         addreply(229, "Extended Passive mode OK (|||%u|)", p);
-        break;
-    case 2:
-        addreply(227, "%u", p);
         break;
     default:
         _EXIT(EXIT_FAILURE);
@@ -2980,6 +2965,14 @@ static int dlmap_init(DLHandler * const dlhandler, const int clientfd,
                       void * const tls_fd, const off_t restartat,
                       const int ascii_mode, const unsigned long bandwidth)
 {
+    if (ascii_mode > 0) {
+#ifdef WITHOUT_ASCII
+        addreply_noformat(450, MSG_ASCII_MODE_UNSUPPORTED);
+        return -1;
+#else
+        addreply_noformat(0, MSG_ASCII_MODE_WARNING);
+#endif
+    }
     if (dlhandler_init(dlhandler, clientfd, tls_clientfd, xferfd, name, f,
                        tls_fd, restartat, ascii_mode, bandwidth) != 0) {
         return -1;
@@ -3182,15 +3175,17 @@ static int dlhandler_handle_commands(DLHandler * const dlhandler,
         buf[readnb] = 0;
         bufpnt = skip_telnet_controls(buf);
         if (strchr(bufpnt, '\n') != NULL) {
-            if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-                strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
-                addreply_noformat(500, MSG_UNKNOWN_COMMAND);
-                doreply();
-            } else {
+            if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) == 0) {
                 addreply_noformat(426, "ABORT");
                 doreply();
                 addreply_noformat(226, MSG_ABORTED);
                 return 1;
+            } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
+                deferred_quit = 1;
+                logfile(LOG_DEBUG, MSG_DEFERRED_QUIT);
+            } else {
+                addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+                doreply();
             }
         }
         if (required_sleep > 0.0) {
@@ -3511,7 +3506,7 @@ void dofeat(void)
 # else
 #  define FEAT_TVFS CRLF " TVFS"
 # endif
-# define FEAT_PASV CRLF " PASV" CRLF " EPSV" CRLF " SPSV"
+# define FEAT_PASV CRLF " PASV" CRLF " EPSV"
 
 # ifdef MINIMAL
 #  define FEAT_ESTA ""
@@ -3524,11 +3519,11 @@ void dofeat(void)
     char feat[] = FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV FEAT_ESTP;
 
     if (disallow_passive != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA - 1U] = 0;
     }
 # ifndef MINIMAL
     else if (STORAGE_FAMILY(force_passive_ip) != 0) {
-        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV] = 0;
+        feat[sizeof FEAT FEAT_DEBUG FEAT_TLS FEAT_TVFS FEAT_ESTA FEAT_PASV - 1U] = 0;
     }
 # endif
     addreply_noformat(0, feat);
@@ -3764,6 +3759,14 @@ static int ul_init(ULHandler * const ulhandler, const int clientfd,
     struct pollfd *pfd;
 
     (void) name;
+    if (ascii_mode > 0) {
+#ifdef WITHOUT_ASCII
+        addreply_noformat(450, MSG_ASCII_MODE_UNSUPPORTED);
+        return -1;
+#else
+        addreply_noformat(0, MSG_ASCII_MODE_WARNING);
+#endif
+    }
     if (fcntl(xferfd, F_SETFL, fcntl(xferfd, F_GETFL) | O_NONBLOCK) == -1) {
         error(451, "fcntl(F_SETFL, O_NONBLOCK)");
         return -1;
@@ -3900,14 +3903,16 @@ static int ulhandler_handle_commands(ULHandler * const ulhandler)
     buf[readnb] = 0;
     bufpnt = skip_telnet_controls(buf);
     if (strchr(buf, '\n') != NULL) {
-        if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) != 0 &&
-            strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) != 0) {
-            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
-            doreply();
-        } else {
+        if (strncasecmp(bufpnt, "ABOR", sizeof "ABOR" - 1U) == 0) {
             addreply_noformat(426, MSG_ABORTED);
             doreply();
             return 1;
+        } else if (strncasecmp(bufpnt, "QUIT", sizeof "QUIT" - 1U) == 0) {
+            deferred_quit = 1;
+            logfile(LOG_DEBUG, MSG_DEFERRED_QUIT);
+        } else {
+            addreply_noformat(500, MSG_UNKNOWN_COMMAND);
+            doreply();
         }
     }
     return 0;
@@ -4246,8 +4251,7 @@ void dostor(char *name, const int append, const int autorename)
     if (quota_update(&quota, 0LL, 0LL, &overflow) == 0 &&
         (overflow > 0 || quota.files >= user_quota_files ||
          quota.size > user_quota_size ||
-         (max_filesize >= (off_t) 0 &&
-          (max_filesize = user_quota_size - quota.size) < (off_t) 0))) {
+         (max_filesize = user_quota_size - quota.size) < (off_t) 0)) {
         overflow = 1;
         (void) close(f);
         goto afterquota;
@@ -4288,6 +4292,8 @@ void dostor(char *name, const int append, const int autorename)
         }
         ftpwho_unlock();
     }
+#else
+    (void) filesize;
 #endif
 
     /* Here starts the real upload code */
@@ -4325,13 +4331,18 @@ void dostor(char *name, const int append, const int autorename)
     {
         off_t atomic_file_size;
         off_t original_file_size;
-        int files_count;
 
+#ifdef QUOTAS
+        int files_count;
+#endif
+
+#ifdef QUOTAS
         if (overwrite == 0) {
             files_count = 1;
         } else {
             files_count = 0;
         }
+#endif
         if (autorename != 0 && restartat == (off_t) 0) {
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;
@@ -5436,6 +5447,24 @@ static struct passwd *fakegetpwnam(const char * const name)
 }
 #endif
 
+#ifndef MINIMAL
+static SimpleConfSpecialHandlerResult sc_special_handler(void **output_p,
+                                                         const char *arg,
+                                                         void *user_data)
+{
+    struct stat st;
+    (void) user_data;
+
+    if (stat(arg, &st) != 0) {
+        return SC_SPECIAL_HANDLER_RESULT_NEXT;
+    }
+    if ((*output_p = strdup(arg)) == NULL) {
+        return SC_SPECIAL_HANDLER_RESULT_ERROR;
+    }
+    return SC_SPECIAL_HANDLER_RESULT_INCLUDE;
+}
+#endif
+
 int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 {
 #ifndef NO_GETOPT_LONG
@@ -5458,7 +5487,7 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #elif defined(_SC_PAGE_SIZE)
     page_size = (size_t) sysconf(_SC_PAGE_SIZE);
 #else
-    page_size = (size_t) 4096U;
+    page_size = (size_t) 16384U;
 #endif
 
 #ifdef HAVE_SETLOCALE
@@ -5500,12 +5529,17 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 #endif
 
 #ifndef MINIMAL
-    if (argc == 2 && *argv[1] != '-' &&
-        sc_build_command_line_from_file(argv[1], NULL, simpleconf_options,
-                                        (sizeof simpleconf_options) /
-                                        (sizeof simpleconf_options[0]),
-                                        argv[0], &argc, &argv) != 0) {
-        die(421, LOG_ERR, MSG_CONF_ERR);
+    {
+        static SimpleConfConfig config = { NULL, sc_special_handler };
+
+        if (argc == 2 && *argv[1] != '-' &&
+            sc_build_command_line_from_file(argv[1], &config,
+                                            simpleconf_options,
+                                            (sizeof simpleconf_options) /
+                                            (sizeof simpleconf_options[0]),
+                                            argv[0], &argc, &argv) != 0) {
+            die(421, LOG_ERR, MSG_CONF_ERR);
+        }
     }
 #endif
 

@@ -276,8 +276,6 @@ static void process(const int clientfd)
         }
 #ifdef HAVE_WAITPID
         (void) waitpid(pid, NULL, 0);
-#else
-        while (wait3(NULL, 0, NULL) != pid);
 #endif
         close(pfds[0]);
         return;
@@ -383,7 +381,7 @@ int listencnx(void)
     return ret;
 }
 
-static RETSIGTYPE sigterm(int sig)
+static void sigterm(int sig)
 {
     (void) sig;
 

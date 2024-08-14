@@ -73,6 +73,8 @@ static const char *name(void)
     if (gethostname(buf, sizeof buf - 1U) != 0) {
         return "?";
     }
+    buf[sizeof buf - 1U] = 0;
+
     return buf;
 }
 

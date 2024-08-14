@@ -63,34 +63,38 @@ $dialog \
 'without-iplogging' "Never log remote IP addresses (confidentiality)" off \
 'without-humor' "Disable humor (enabled by default)" off \
 'without-ascii' "Don't support 7-bits (ASCII) transfers" off \
-'without-nonalnum' "Only allow minimal alpha-numeric characters" off \
-'without-unicode' "Disable utf8 non-latin characters" off \
 'without-globbing' "Don't include the globbing code" off \
+'without-nonalnum' "Only allow minimal alphanumeric characters" off \
+'without-unicode' "Disable utf8 non-latin characters" off \
 'without-sendfile' "Don't use zero-copy optimizations" off \
 'without-privsep' "Disable privilege separation" off \
+'with-boring' "Display only boring messages" off \
 'with-brokenrealpath' "If your C library has a broken realpath()" off \
 'with-probe-random-dev' "To check for /dev/*random at run-time" off \
 'with-minimal' "Build only a minimal server for embedded systems" off \
 'with-paranoidmsg' "Use paranoid, but not admin-friendly messages" off \
 'with-sysquotas' "Use system (not virtual) quotas" off \
-'with-ldap' "Users database is an LDAP directory" off \
-'with-mysql' "Users database is a MySQL database" off \
 'with-altlog' "Support alternative log format (Apache-like)" on \
-'with-pam' 'Enable PAM authentication' off \
 'with-puredb' 'Support virtual (FTP-only) users' on \
 'with-extauth' 'Support external authentication modules' on \
+'with-ldap' "Users database is an LDAP directory" off \
+'with-mysql' "Users database is a MySQL database" off \
+'with-pgsql' "Users database is a PostgreSQL database" off \
+'with-pam' 'Enable PAM authentication' off \
 'with-cookie' "Support 'fortune' cookies" on \
 'with-throttling' "Support bandwidth throttling" on \
-'with-ftpwho' "Support the pure-ftpwho command" on \
 'with-ratios' "Support upload/download ratios" on \
 'with-quotas' "Support .ftpquota files" on \
+'with-ftpwho' "Support the pure-ftpwho command" on \
 'with-welcomemsg' "welcome.msg files backward compatibility" off \
 'with-uploadscript' "Allow running scripts after upload (experimental)" on \
 'with-virtualhosts' "Allow a distinct content for each IP address" on \
 'with-virtualchroot' "Follow symlinks outside a chroot jail" off \
 'with-diraliases' "Support directory aliases" on \
+'with-nonroot' "DO NOT USE unless you know what you are doing" off \
 'with-peruserlimits' "Support per-user concurrency limits" on \
-'with-tls' "Support SSL/TLS security layer (experimental)" off \
+'with-implicittls' "Implicit TLS (port 990) - DO NOT USE unless you know what you are doing" off \
+'with-tls' "Support SSL/TLS security layer" off \
 'with-bonjour' "Support Bonjour on MacOS X" off \
 2> $tmp
 

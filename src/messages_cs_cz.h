@@ -229,3 +229,6 @@
 #define MSG_LDAP_INVALID_AUTH_METHOD "Invalid LDAPAuthMethod in the configuration file. Should be 'bind' or 'password'."
 #define MSG_INVALID_ARGUMENT "Neplatný argument: \"%s\""
 #define MSG_READY_TO_PROCEED "Ready to proceed"
+#define MSG_ASCII_MODE_UNSUPPORTED "Transfers in ASCII mode are not supported"
+#define MSG_ASCII_MODE_WARNING "Warning: client is in ASCII mode - Assuming data is plain text"
+#define MSG_DEFERRED_QUIT "Deferring QUIT until transfer completes"

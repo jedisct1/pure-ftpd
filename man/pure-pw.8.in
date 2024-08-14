@@ -42,7 +42,7 @@ not /etc/passwd. It's a different file, only for FTP.
 It means that you can easily create FTP\-only accounts without messing your
 system accounts.
 .br 
-Additionnaly, virtual users files can store individual quotas, ratios,
+Additionally, virtual users files can store individual quotas, ratios,
 bandwidth, etc. System accounts can't do this.
 .br 
 Thousands of virtual users can share the same system user, as long as they

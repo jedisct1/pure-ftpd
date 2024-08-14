@@ -321,6 +321,9 @@ static char *best_crypt(const char * const pwd,
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
     const char *crypted;
 
+    (void) max_concurrent_logins;
+    (void) max_auth_memory;
+
     if ((crypted = (const char *)      /* bcrypt */
          crypt("test", "$2a$08$1234567890123456789012")) != NULL &&
         strcmp(crypted,

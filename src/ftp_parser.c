@@ -29,7 +29,7 @@ static void antiidle(void)
 
 /*
  * Introduce a random delay, to mitigate guessing existing user names by
- * mesuring delay. It's especially true when LDAP is used.
+ * measuring delay. It's especially true when LDAP is used.
  * No need to call usleep2() because we are root at this point.
  */
 
@@ -247,6 +247,12 @@ void parser(void)
             }
 #endif
         }
+        if (deferred_quit != 0) {
+            addreply(221, MSG_GOODBYE,
+                     (unsigned long long) ((uploaded + 1023ULL) / 1024ULL),
+                     (unsigned long long) ((downloaded + 1023ULL) / 1024ULL));
+            return;
+        }
         doreply();
         alarm(idletime * 2);
         switch (sfgets()) {
@@ -326,7 +332,8 @@ void parser(void)
         if (!strcmp(cmd, "user")) {
 #ifdef WITH_TLS
             if (enforce_tls_auth > 1 && tls_cnx == NULL) {
-                die(421, LOG_WARNING, MSG_TLS_NEEDED);
+                addreply(421, MSG_TLS_NEEDED);
+                goto wayout;
             }
 #endif
             douser(arg);
@@ -492,8 +499,6 @@ void parser(void)
                     }
                 }
                 addreply_noformat(200, MSG_READY_TO_PROCEED);
-            } else if (disallow_passive == 0 && !strcmp(cmd, "spsv")) {
-                dopasv(2);
             } else if (!strcmp(cmd, "allo")) {
                 if (*arg == 0) {
                     addreply_noformat(501, MSG_STAT_FAILURE);

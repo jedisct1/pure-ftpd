@@ -11,6 +11,7 @@ Makefile
 Makefile.in
 Vagrantfile
 aclocal.m4
+ar-lib
 autom4te.cache
 clang_output_*
 compile
