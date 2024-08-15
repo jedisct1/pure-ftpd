@@ -13,6 +13,31 @@
 # include "alt_arc4random.h"
 # include "tls_extcert.h"
 
+static int has_crl(const char* cert_file) {
+    FILE* file = fopen(cert_file, "r");
+    if (!file) {
+        return 0;
+    }
+
+    X509* cert = PEM_read_X509(file, NULL, NULL, NULL);
+    if (!cert) {
+        fclose(file);
+        return 0;
+    }
+
+    X509_CRL* crl = PEM_read_X509_CRL(file, NULL, NULL, NULL);
+    fclose(file);
+
+    X509_free(cert);
+
+    if (!crl) {
+        return 0;
+    }
+
+    X509_CRL_free(crl);
+    return 1;
+}
+
 static void tls_error(const int line, int err)
 {
     if (err == 0) {
@@ -392,7 +417,7 @@ static void tls_init_client_cert_verification(const char *cert_file)
         tls_error(__LINE__, 0);
     }
 
-    if (ssl_verify_client_cert_revocation_list) {
+    if (has_crl(cert_file)) {
         X509_VERIFY_PARAM *param = X509_VERIFY_PARAM_new();
         if (param) {
             if (X509_VERIFY_PARAM_set_flags( param, X509_V_FLAG_CRL_CHECK )) {
