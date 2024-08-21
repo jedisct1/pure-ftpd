@@ -84,7 +84,7 @@
 #define MSG_GLOB_NO_MATCH "Aucune concordance de %s dans %s"
 #define MSG_CHMOD_FAILED "Ne peut changer les permissions vers %s"
 #define MSG_CHMOD_SUCCESS "Permissions changees pour %s"
-#define MSG_CHMOD_TOTAL_FAILURE "Desole, je ne peut changer aucune permission"
+#define MSG_CHMOD_TOTAL_FAILURE "Desole, je ne peux changer aucune permission"
 #define MSG_ANON_CANT_DELETE "Les utilisateurs anonymes ne sont pas autorises a supprimer des fichiers"
 #define MSG_ANON_CANT_OVERWRITE "Les utilisateurs anonymes ne sont pas autorises a ecraser/remplacer des fichiers"
 #define MSG_DELE_FAILED "Impossible de detruire %s"
@@ -100,7 +100,7 @@
 #define MSG_STAT_FAILURE2 "Impossible de verifier l'existence du fichier"
 #define MSG_REST_TOO_LARGE_FOR_FILE "Recuperation a l'offset %lld est trop grand pour le fichier de taille %lld."
 #define MSG_REST_RESET "Recuperation du fichier a 0"
-#define MSG_NOT_REGULAR_FILE "Je ne peut traiter que les fichiers reguliers"
+#define MSG_NOT_REGULAR_FILE "Je ne peux traiter que les fichiers reguliers"
 #define MSG_NOT_MODERATED \
     "Ce fichier a ete uploade par un utilisateur anonyme. Il n'a\n" \
     "pas encore ete modere par les administrateurs pour le download."
@@ -215,7 +215,7 @@
 #define MSG_ALIASES_LIST "Les raccourcis suivants sont utilisables :"
 #define MSG_PERUSER_MAX "Je ne peux pas accepter plus de %lu connexions du meme utilisateur"
 #define MSG_IPV6_OK "Les connections en IPv6 sont les bienvenues sur ce serveur."
-#define MSG_TLS_INFO "TLS: Protocole %s activé (%s), chiffrage en %d bits secrets"
+#define MSG_TLS_INFO "TLS: Protocole %s activÃ© (%s), chiffrage en %d bits secrets"
 #define MSG_TLS_WEAK "TLS: Chiffrement trop faible"
 #define MSG_TLS_NEEDED "Desole, les sessions en clair ne sont pas acceptees sur ce serveur.\n" \
     "Veuillez vous reconnecter en utilisant les mechanismes de securite TLS."
