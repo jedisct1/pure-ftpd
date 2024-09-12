@@ -263,7 +263,7 @@ void parser(void)
             die(421, LOG_INFO, MSG_TIMEOUT_PARSER);
 #endif
         case -2:
-            return;
+            die(425, LOG_INFO, MSG_LOGOUT);
         }
 #ifdef DEBUG
         if (debug != 0) {
