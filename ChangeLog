@@ -1,3 +1,15 @@
+* Version 1.0.52:
+ - The QUIT command is now accepted during a transfer. Contributed by
+Andrew Topp, thanks!
+ - The server can be built with --with-minimal again. Thanks to
+@foxtrotttango
+ - Fixed an out of bounds read in the MLSD command. Thanks to
+@whali3n51
+ - Larger mmap()ed pages are used on aarch64.
+ - Improved compatibility with HPUX, thanks to Sam James.
+ - Improved OpenSSL API compatibility, thanks to Maverick Chiou.
+ - Improved compatibility with OpenWall Linux, thanks to @jcj83429
+ - Improved compatibility with Netfilter, thanks to Matěj Vrba
 
 * Version 1.0.51:
  - Compatibility with OpenSSL 1.1.0 was improved.
