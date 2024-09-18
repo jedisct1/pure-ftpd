@@ -2,7 +2,7 @@ dnl AM_ACLOCAL_INCLUDE(m4)
 
 AC_PREREQ([2.65])
 AC_INIT([pure-ftpd], [1.0.51],
-        [https://github.com/jedisct1/pure-ftpd], [pure-ftpd], [https://www.pureftpd.org])
+        [https://github.com/jedisct1/pure-ftpd], [pure-ftpd],[https://www.pureftpd.org])
 AC_CONFIG_SRCDIR(src/ftpd.c)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11.2 dist-bzip2 tar-ustar])
@@ -277,7 +277,6 @@ AC_CHECK_TYPE(sig_atomic_t, , [AC_DEFINE(sig_atomic_t, signed char, [sig_atomic_
 
 dnl Compiler characteristics
 
-AC_PROG_GCC_TRADITIONAL
 AC_C_CONST
 AC_C_INLINE
 
