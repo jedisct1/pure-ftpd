@@ -351,7 +351,7 @@ static void process(const int clientfd)
     _exit(EXIT_SUCCESS);
 }
 
-int listencnx(void)
+static int listencnx(void)
 {
     struct sockaddr_un *saddr;
     int clientfd;
