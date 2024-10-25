@@ -972,8 +972,8 @@ void donlst(const char *base)
 
     if (*base != 0 && chdir(base) != 0) {
         if (*base++ == '-') {
-            while (!isspace((unsigned char) *base++));
-            while (isspace((unsigned char) *base++));
+            while (*base != 0 && !isspace((unsigned char) *base++));
+            while (*base != 0 && isspace((unsigned char) *base++));
             if (*base != 0 && chdir(base) != 0) {
                 addreply_noformat(550, MSG_STAT_FAILURE2);
                 return;
