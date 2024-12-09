@@ -125,9 +125,17 @@ illegal_config:
         if ((ldap_uri = malloc(sizeof_ldap_uri)) == NULL) {
             die_mem();
         }
-        snprintf(ldap_uri, sizeof_ldap_uri, "%s%s%s%s%s%d",
-                 ldap_scheme, URI_SCHEME_SEPARATOR, URI_AUTHORITY_LEADER,
-                 ldap_host, URI_PORT_LEADER, port);
+
+        /* The "ldapi://" scheme uri cannot contain a port number*/
+        if (pure_strcmp(ldap_scheme, "ldapi") == 0) {
+                snprintf(ldap_uri, sizeof_ldap_uri, "%s%s%s%s",
+                         ldap_scheme, URI_SCHEME_SEPARATOR, URI_AUTHORITY_LEADER,
+                         ldap_host);
+        } else {
+                snprintf(ldap_uri, sizeof_ldap_uri, "%s%s%s%s%s%d",
+                         ldap_scheme, URI_SCHEME_SEPARATOR, URI_AUTHORITY_LEADER,
+                         ldap_host, URI_PORT_LEADER, port);
+	}
     }
 
     /* Default to auth method bind, but for backward compatibility, if a binddn
