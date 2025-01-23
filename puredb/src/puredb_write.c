@@ -1,5 +1,5 @@
 
-/* (C)opyleft 2001-2024 Frank DENIS <j at pureftpd dot org> */
+/* (C)opyleft 2001-2025 Frank DENIS <j at pureftpd dot org> */
 
 #include <config.h>
 
