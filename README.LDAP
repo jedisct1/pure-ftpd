@@ -68,7 +68,7 @@ details anyway:
 
 - LDAPScheme is the scheme (aka protocol) to connect with to the LDAP server.
 It defaults to 'ldap'. To connect to a server listening on TLS port, set it
-to 'ldaps' (and change the port below).  To connect to a server listening on 
+to 'ldaps' (and change the port below).  To connect to a server listening on
 a Unix domain socket, set it to 'ldapi'
 
 - LDAPServer is the LDAP server name (hey!) . It defaults to 'localhost'.
