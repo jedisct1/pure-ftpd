@@ -210,7 +210,7 @@ AntiWarez                    yes
 
 # IP address/port to listen to (default=all IP addresses, port 21).
 
-# Bind                         127.0.0.1,21
+# Bind                         "127.0.0.1,21"
 
 
 
