@@ -26,6 +26,9 @@ typedef enum State_ {
     STATE_MATCH_DIGITS,
     STATE_MATCH_XDIGITS,
     STATE_MATCH_NOSPACE,
+    STATE_MATCH_NOSPACE_WITHINQUOTES,
+    STATE_MATCH_NOSPACE_AFTERQUOTES,
+    STATE_MATCH_NOSPACE_WITHOUTQUOTES,
     STATE_MATCH_ANY,
     STATE_MATCH_ANY_WITHINQUOTES,
     STATE_MATCH_ANY_AFTERQUOTES,
@@ -307,6 +310,47 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             }
             continue;
         case STATE_MATCH_NOSPACE:
+            if (c == '"') {
+                if (match_start == line_pnt) {
+                    match_start++;
+                } else if (match_start != NULL) {
+                    return ENTRYRESULT_INVALID_ENTRY;
+                }
+                line_pnt++;
+                state = STATE_MATCH_NOSPACE_WITHINQUOTES;
+            } else if (isgraph(c)) {
+                expect_char = 0;
+                line_pnt++;
+                state = STATE_MATCH_NOSPACE_WITHOUTQUOTES;
+            } else {
+                state = STATE_RCHAR;
+            }
+            continue;
+        case STATE_MATCH_NOSPACE_WITHINQUOTES:
+            if (c == '"') {
+                state = STATE_MATCH_NOSPACE_AFTERQUOTES;
+            } else if (isgraph(c)) {
+                expect_char = 0;
+                line_pnt++;
+            } else {
+                return err_syntax(err_p, line_pnt, line);
+            }
+            continue;
+        case STATE_MATCH_NOSPACE_AFTERQUOTES:
+            if (d == ')') {
+                if (match_start == NULL ||
+                    matches_len >= (sizeof matches) / (sizeof matches[0]) ||
+                    add_to_matches(matches, &matches_len, match_start,
+                                   line_pnt) != 0) {
+                    return err_mismatch(err_p, line, line);
+                }
+                match_start = NULL;
+                line_pnt++;
+                in_pnt++;
+            }
+            state = STATE_RCHAR;
+            continue;
+        case STATE_MATCH_NOSPACE_WITHOUTQUOTES:
             if (isgraph(c)) {
                 expect_char = 0;
                 line_pnt++;
@@ -355,16 +399,16 @@ try_entry(const SimpleConfEntry *const entry, const char *line,
             }
             state = STATE_RCHAR;
             continue;
-        case STATE_MATCH_ANY_UNQUOTED:
-            if (isprint(c)) {
+        case STATE_MATCH_ANY_WITHOUTQUOTES:
+            if (isgraph(c)) {
                 expect_char = 0;
                 line_pnt++;
             } else {
                 state = STATE_RCHAR;
             }
             continue;
-        case STATE_MATCH_ANY_WITHOUTQUOTES:
-            if (isgraph(c)) {
+        case STATE_MATCH_ANY_UNQUOTED:
+            if (isprint(c)) {
                 expect_char = 0;
                 line_pnt++;
             } else {
