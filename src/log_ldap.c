@@ -555,7 +555,7 @@ void pw_ldap_check(AuthResult * const result,
         int ok = 0;
 
         /* Verify password by binding to LDAP */
-        if (password != NULL && *password != 0 &&
+        if (password != NULL && *password != 0 && *dn != 0 &&
             (ld = pw_ldap_connect(dn, password)) != NULL) {
             ldap_unbind(ld);
             ok = 1;
