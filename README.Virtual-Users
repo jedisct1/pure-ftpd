@@ -170,7 +170,7 @@ Deleting Joe would be:
 
                              pure-pw userdel joe
                              
-The content of his home directory is kept. Delete it by hand if you want.
+The contents of his home directory are kept. Delete it by hand if you want.
 
 
     ------------------------ CHANGING PASSWORDS ------------------------

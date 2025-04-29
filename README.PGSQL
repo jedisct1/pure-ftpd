@@ -131,10 +131,10 @@ For each query:
 
 You can mix all of these to store info in various tables. For instance, with
 \I, you can have a different table for every domain, so that joe@domain1
-won't be the same account than joe@domain2 . And with \R, you can restrict
+won't be the same account as joe@domain2 . And with \R, you can restrict
 one account to one specific address.
 
-Please note that a login can only contains common characters: A...Z, a...z,
+Please note that a login can only contain common characters: A...Z, a...z,
 0...9, -, ., _, space, :, @ and ' . For security purposes, other characters
 are forbidden.
 

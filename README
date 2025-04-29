@@ -39,7 +39,7 @@ easily write new custom handlers in any language.
 
 In its current form, Pure-FTPd uses some OS-specific system calls. And although
 some portability work has been done in order to ease its port to other
-operating systems, only Linux FreeBSD, NetBSD, OpenBSD, ISOS, MirBSD, BSDi,
+operating systems, only Linux, FreeBSD, NetBSD, OpenBSD, ISOS, MirBSD, BSDi,
 DragonflyBSD, Darwin, Solaris, Tru64, Irix, AIX and HPUX are known to work,
 other operating systems may need some tweaks. With Linux, any modern
 distribution should be ok.
@@ -67,7 +67,7 @@ If you don't have Cdialog or if you prefer the conventional way, here it is:
 ./configure
 make install-strip
 
-Et voila! The software is now installed in /usr/local/sbin/pure-ftpd
+Et voilà! The software is now installed in /usr/local/sbin/pure-ftpd
 
 * Step 3:
 
@@ -86,7 +86,7 @@ to /etc/rc.d/rc.local or /etc/rc.d/boot.local . Don't forget the '&' sign.
 
 Note:
 
-To deinstall Pure-FTPd (no, do you really want to do this?), use:
+To uninstall Pure-FTPd (no, do you really want to do this?), use:
 ./configure
 make uninstall
 
@@ -110,7 +110,7 @@ xferlog formats are implemented.
 CLF (common log format) is the basic format produced by Apache, WebFS, Roxen
 and most web servers. These log files only record file transfers and they can
 feed web statistic software (Analog, Webalizer, etc.) to analyze the load of
-your FTP server. The Stats format is a special output format, designed for log
+your FTP server. The Stats format is a special output format designed for log
 file analysis software. The W3C format is a standard format parsed by most
 commercial log analyzers (all analyzers with support for IIS should deal with
 it) . Xferlog is the traditional format created by wu-ftpd. Check the -O
@@ -1154,7 +1154,7 @@ Yop is good for you.
 Goddit? Fortunes are delimited by a '%' sign on a single line. But a
 fortune itself can be multi-line (see the fourth example) .
 
-For security paranoia, the text file has to be readable by everybody (chmod
+For security reasons, the text file has to be readable by everybody (chmod
 644 the file if necessary), or the server will ignore it.
 
 Of course, the fortune file can contain a single message.
@@ -1169,7 +1169,7 @@ rules. Let's take an /etc/passwd entry:
 mimi:x:501:100:Mimi:/home/mimi:/bin/zsh
 
 Without any special rule, mimi will be able to log in and to retrieve any
-public-readable file in the filesystem. Now, let's change a bit of its home
+public-readable file in the filesystem. Now, let's change a bit of her home
 directory:
 
 mimi:x:501:100:Mimi:/home/mimi/./:/bin/zsh
@@ -1184,7 +1184,7 @@ users. Another trick is to add something after "/./":
 mimi:x:501:100:Mimi:/home/mimi/./public_html:/bin/zsh
 
 When Mimi will log in, two things will happen:
-- chroot("/home/mimi") so that Mimi can't see anything but her home directory.
+- chroot("/home/mimi") so that Mimi can't see anything except her home directory.
 - chdir("public_html") so the session will start in the public_html
 directory. "cd .." is still allowed, though.
 That "url-style" handling is especially handy for FTP-only users (ie.
@@ -1198,11 +1198,10 @@ access dot files.
          ------------------------ RATIOS ------------------------
 
 
-If you want to force people to upload new files before being able to
-download other files, ratios are for you. It's a very good way to get lotsa
-fresh stuff on a public FTP server and a must for warez traders. I don't
-like that kind of business, but well... Pure-FTPd has to be designed to
-please everybody.
+If you want to require people to upload new files before being able to
+download other files, ratios are for you. It's a very good way to get lots of
+fresh content on a public FTP server and a must for file traders. Pure-FTPd
+has to be designed to please everybody.
 
 To enable ratios, just use the '-q' option, followed by the upload:download
 ratio:

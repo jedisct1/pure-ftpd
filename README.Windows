@@ -30,7 +30,7 @@ A noticeable difference, though, is that users can't be stored in
 So better chroot everyone.
 
 Users must be in a puredb database. PURE-PW.EXE can be used to create
-virtual users. It you use it in the default configuration, you have to
+virtual users. If you use it in the default configuration, you have to
 create C:\CYGWIN\etc and C:\etc .
 
 Ray Jachrist says that Pure-FTPd can run as a service using Firedaemon:

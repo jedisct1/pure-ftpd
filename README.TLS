@@ -6,8 +6,8 @@ Pure-FTPd supports encryption of the control and data channels using
 TLS security mechanisms.
 
 When this extra security layer is enabled, login and passwords are no more
-sent as cleartext. Neither are other commands sent by your client nor replies
-made by the server.
+sent as cleartext. Neither other commands sent by your client nor replies
+made by the server are sent in cleartext.
 
 
          ------------------------ COMPILATION ------------------------
