@@ -32,6 +32,8 @@ int upload_pipe_open(void)
         st.st_uid != (uid_t) 0
 # endif
         ) {
+        (void) close(upload_pipe_lock);
+        upload_pipe_lock = -1;
         return -1;
     }
     if (lstat(UPLOAD_PIPE_LOCK, &st) < 0 ||
@@ -44,6 +46,7 @@ int upload_pipe_open(void)
         ) {
         unlink(UPLOAD_PIPE_LOCK);
         (void) close(upload_pipe_lock);
+        upload_pipe_lock = -1;
         goto anew;
     }
     anew2:

@@ -218,7 +218,8 @@ static LDAP *pw_ldap_connect(const char *dn, const char *password)
     if (use_tls > 0 && ldap_start_tls_s(ld, NULL, NULL) != LDAP_SUCCESS) {
         return NULL;
     }
-    if (ldap_bind_s(ld, dn, password, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
+    if (dn == NULL || ldap_bind_s(ld, dn, password, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
+        ldap_unbind(ld);
         return NULL;
     }
 
@@ -242,7 +243,13 @@ static LDAPMessage *pw_ldap_uid_search(LDAP * const ld,
     if (uid_size > MAX_LDAP_UID_LENGTH) {
         return NULL;
     }
-    filter_size = strlen(ldap_filter) + uid_size + (size_t) 1U;
+    {
+        const size_t ldap_filter_len = strlen(ldap_filter);
+        if (ldap_filter_len > SIZE_MAX - uid_size - 1U) {
+            return NULL;  /* Would overflow */
+        }
+        filter_size = ldap_filter_len + uid_size + (size_t) 1U;
+    }
     if ((alloca_filter = ALLOCA(filter_size)) == NULL) {
         return NULL;
     }
