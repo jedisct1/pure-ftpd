@@ -475,6 +475,9 @@ static void clearargs(int argc, char **argv)
         while (env_nb > 0U) {
             env_nb--;
             new_environ[env_nb] = strdup(environ[env_nb]);
+            if (new_environ[env_nb] == NULL) {
+                abort();
+            }
         }
         environ = new_environ;
     }
@@ -5523,6 +5526,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
 
         if ((a = getenv("BANNER")) != NULL && *a != 0) {
             fortunes_file = strdup(a);
+            if (fortunes_file == NULL) {
+                die_mem();
+            }
         }
     }
 # endif
@@ -5804,6 +5810,9 @@ int pureftpd_start(int argc, char *argv[], const char *home_directory_)
             free(fortunes_file);
 # endif
             fortunes_file = strdup(optarg);
+            if (fortunes_file == NULL) {
+                die_mem();
+            }
             break;
         }
 #endif

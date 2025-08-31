@@ -58,9 +58,15 @@ static void callback_reply_gid(const char *str, AuthResult * const result)
 
 static void callback_reply_dir(const char *str, AuthResult * const result)
 {
+    char *new_dir;
+
     if (*str == '/') {
+        new_dir = strdup(str);
+        if (new_dir == NULL) {
+            return;
+        }
         free((void *) (result->dir));
-        result->dir = strdup(str);
+        result->dir = new_dir;
     }
 }
 
