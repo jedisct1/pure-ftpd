@@ -61,6 +61,9 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     if (chrooted != 0 || loggedin != 0) {
         return SSL_TLSEXT_ERR_NOACK;
     }
+    if ((client_sni_name = strdup(sni_name)) == NULL) {
+        die_mem();
+    }
     if (use_extcert == 0) {
         return SSL_TLSEXT_ERR_OK;
     }
@@ -94,9 +97,6 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
         if (tls_create_new_context(cert_file, key_file) != 0) {
             die(400, LOG_ERR, "SSL error");
         }
-    }
-    if ((client_sni_name = strdup(sni_name)) == NULL) {
-        die_mem();
     }
     if (tls_cnx != NULL) {
         const long ctx_options = SSL_CTX_get_options(tls_ctx);
