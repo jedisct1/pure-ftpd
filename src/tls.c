@@ -61,8 +61,10 @@ static int ssl_servername_cb(SSL *cnx, int *al, void *arg)
     if (chrooted != 0 || loggedin != 0) {
         return SSL_TLSEXT_ERR_NOACK;
     }
-    if ((client_sni_name = strdup(sni_name)) == NULL) {
-        die_mem();
+    if (client_sni_name == NULL) {
+        if ((client_sni_name = strdup(sni_name)) == NULL) {
+            die_mem();
+        }
     }
     if (use_extcert == 0) {
         return SSL_TLSEXT_ERR_OK;
