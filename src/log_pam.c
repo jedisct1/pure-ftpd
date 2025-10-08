@@ -151,6 +151,8 @@ void pw_pam_check(AuthResult * const result,
                   const struct sockaddr_storage * const peer)
 {
     pam_handle_t *pamh;
+    const char *newusername;
+    int retval;
     int pam_error;
     struct passwd pw, *pw_;
     char *dir = NULL;
@@ -187,6 +189,12 @@ void pw_pam_check(AuthResult * const result,
     PAM_BAIL;
     pam_error = pam_acct_mgmt(pamh, 0);
     PAM_BAIL;
+    /* A PAM module might have changed the username (alias) */
+    retval = pam_get_item(pamh, PAM_RUSER, (const void **)&newusername);
+    if (retval == PAM_SUCCESS && newusername != NULL)
+    {
+        user = newusername;
+    }
     /* If this point is reached, the user has been authenticated. */
     if ((pw_ = getpwnam(user)) == NULL) {
         goto bye;
