@@ -281,10 +281,6 @@ by default.
 
 --with-bonjour: enable Bonjour support on MacOS X (see the -v switch).
 
---with-rfc2640: enable support for charset conversion. It adds a dependency
-over the iconv library and it requires a little more CPU time. See the -8
-and -9 switches.
-
 --with-implicittls: build a FTPS server (TLS is implicitly enabled).
 The protocol is incompatible with FTP and listens to another port by default
 (port 990, ftps). Never enable this option unless you know what you're doing.
@@ -961,8 +957,6 @@ aliases are available. You can get this list at any time by typing
 -1  --logpid                <file>
 -4  --ipv4only
 -6  --ipv6only
--8  --fscharset             <charset>
--9  --clientcharset         <charset>
 -a  --trustedgid            <gid>
 -A  --chrooteveryone    
 -b  --brokenclientscompatibility    
