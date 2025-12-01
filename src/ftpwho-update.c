@@ -126,8 +126,8 @@ int ftpwho_initwho(void)
                 return -1;
             }
         }
+        close(fd);
     }
-    close(fd);
     scoreboardfile_size = sizeof SCOREBOARD_PATH - 1U + 1U +
         sizeof SCOREBOARD_PREFIX - 1U + 8U + 1U;
     if ((scoreboardfile = malloc(scoreboardfile_size)) == NULL) {
