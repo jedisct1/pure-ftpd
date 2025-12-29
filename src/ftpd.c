@@ -2436,6 +2436,7 @@ void opendata(void)
     } else {
         struct sockaddr_storage peer2;
         unsigned long tries = 1UL + idletime / 2UL;
+        struct timeval tv;
 
         peer2 = peer;
         if (STORAGE_FAMILY(peer) == AF_INET6) {
@@ -2443,6 +2444,9 @@ void opendata(void)
         } else {
             STORAGE_PORT(peer2) = htons(peerdataport);
         }
+        tv.tv_sec = 30;
+        tv.tv_usec = 0;
+        setsockopt(datafd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof tv);
         again:
         if (connect(datafd, (struct sockaddr *) &peer2,
                     STORAGE_LEN(peer2)) != 0) {
