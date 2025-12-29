@@ -953,14 +953,17 @@ void doeprt(char *p)
     if (*p == delim) {
         p++;
     } else {
-        addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
-        return;
+        goto nope;
     }
     if (family == 2 && v6ready) {
         do_ipv6_port(p, delim);
         return;
     }
     if (family != 1) {
+        if (datafd != -1) {
+            (void) close(datafd);
+            datafd = -1;
+        }
         if (v6ready) {
             addreply_noformat(522, MSG_ONLY_IPV4V6);
         } else {
@@ -978,8 +981,7 @@ void doeprt(char *p)
              sscanf(p, "%u.%u.%u.%u", &a1, &a2, &a3, &a4) != 4) ||
             a1 > 255U || a2 > 255U || a3 > 255U || a4 > 255U ||
             (a1 | a2 | a3 | a4) == 0U) {
-            addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
-            return;
+            goto nope;
         }
         while (*p && strchr("0123456789.,", *p)) {
             p++;
@@ -991,8 +993,7 @@ void doeprt(char *p)
             }
         }
         if (*p != delim || port > 65535U || port <= 0U) {
-            addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
-            return;
+            goto nope;
         } else {
             struct sockaddr_storage a;
 
@@ -1003,8 +1004,15 @@ void doeprt(char *p)
                       ((uint32_t) a2 << 16) | (a3 << 8) | a4);
             SET_STORAGE_LEN(a, sizeof(struct sockaddr_in));
             doport2(a, port);
+            return;
         }
     }
+    nope:
+    if (datafd != -1) {
+        (void) close(datafd);
+        datafd = -1;
+    }
+    addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
 }
 
 void stripctrl(char * const buf, size_t len)
@@ -2202,6 +2210,10 @@ void doport(const char *arg)
         a1 > 255 || a2 > 255 || a3 > 255 || a4 > 255 ||
         p1 > 255 || p2 > 255 || (a1|a2|a3|a4) == 0 ||
         (p1 | p2) == 0) {
+        if (datafd != -1) {
+            (void) close(datafd);
+            datafd = -1;
+        }
         addreply_noformat(501, MSG_SYNTAX_ERROR_IP);
         return;
     }
