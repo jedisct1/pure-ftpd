@@ -855,12 +855,14 @@ static void do_ipv6_port(char *p, char delim)
 {
     char *deb;
     struct sockaddr_storage a;
+    unsigned int port;
 
     deb = p;
     while (*p && strchr("0123456789abcdefABCDEF:", *p) != NULL) {
         p++;
     }
-    if (*p != delim || atoi(p + 1) == 0) {
+    port = (unsigned int) atoi(p + 1);
+    if (*p != delim || port <= 0U || port > 65535U) {
         nope:
         (void) close(datafd);
         datafd = -1;
@@ -871,7 +873,7 @@ static void do_ipv6_port(char *p, char delim)
     if (generic_aton(deb, &a) != 0) {
         goto nope;
     }
-    doport2(a, (unsigned int) atoi(p));
+    doport2(a, port);
 }
 
 #ifndef MINIMAL
