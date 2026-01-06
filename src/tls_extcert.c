@@ -54,26 +54,32 @@ static void callback_reply_action(const char *str, CertResult * const result)
 
 static void callback_reply_cert_file(const char *str, CertResult * const result)
 {
+    char *new_file;
+
     if (*str != '/') {
         return;
     }
-    if (access(str, R_OK) != 0) {
+    new_file = strdup(str);
+    if (new_file == NULL) {
         return;
     }
     free((void *) (result->cert_file));
-    result->cert_file = strdup(str);
+    result->cert_file = new_file;
 }
 
 static void callback_reply_key_file(const char *str, CertResult * const result)
 {
+    char *new_file;
+
     if (*str != '/') {
         return;
     }
-    if (access(str, R_OK) != 0) {
+    new_file = strdup(str);
+    if (new_file == NULL) {
         return;
     }
     free((void *) (result->key_file));
-    result->key_file = strdup(str);
+    result->key_file = new_file;
 }
 
 static void callback_reply_end(const char *str, CertResult * const result)
