@@ -120,6 +120,9 @@ option later in this documentation for additional info.
 implementation. If altlog and/or pure-uploadscript doesn't seem to work
 properly on your system, try to recompile with this switch.
 
+--with-systemd: Enables systemd integration on Linux (default=detect).
+See installation notes for systemd below for further info.
+
 --with-tls: enable TLS support. Read README.TLS for more about this feature.
 
 --with-certfile=<file>: the file with the TLS certificate (see README.TLS). The
@@ -553,6 +556,25 @@ tcpserver -DHRl0 0 21 /usr/local/bin/pure-ftpd &
 You can add that line to your system local startup scripts
 (usually /etc/rc.d/boot.local or /etc/rc.d/rc.local) . If it doesn't work,
 replace 'tcpserver' with its full path (eg. '/usr/local/bin/tcpserver') .
+
+
+  ------------------------ SYSTEMD INSTALLATION ------------------------
+
+
+On Linux the server can be integrated with systemd. The provided unit file
+must be copied to the systemd system unit dir manually (/lib/systemd/system/)
+and enabled with 'systemctl enable pure-ftpd.service'.
+The service will run under its own user account (pure-ftpd) with appropriate
+capabilities set in the unit file. The user has to be created manually.
+Capablities are required, unless to unit file is modified to run the server
+under root account (by removing the capabilites and user/group). Privilege
+separation is recommended.
+The server will start by default with configuration file /etc/pure-ftpd.conf
+This can be overridden by setting command line start options in
+/etc/systemd/pure-ftpd.conf as an environment variable named CONF=
+(CONF=/etc/alternate.conf or CONF="-4 -A -j ...").
+The daemonize option will be ignored when the server is started by systemd.
+Do NOT change Type=simple or NotifAccess= in the unit file.
 
 
           ------------------------ OPTIONS ------------------------

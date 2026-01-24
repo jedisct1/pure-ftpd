@@ -122,6 +122,7 @@ libpureftpd_a_SOURCES = \
 	simpleconf_ftpd.h \
 	simpleconf.c \
 	syslognames.h \
+	systemd.h \
 	tls.h \
 	tls_extcert.h \
 	tls_extcert_p.h \

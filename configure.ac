@@ -124,7 +124,7 @@ AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(unistd.h string.h strings.h sys/param.h ioctl.h sys/ioctl.h)
 AC_CHECK_HEADERS(sys/vfs.h sys/statvfs.h sys/sendfile.h sys/uio.h)
-AC_CHECK_HEADERS(sys/time.h sys/resource.h sys/capability.h)
+AC_CHECK_HEADERS(sys/time.h sys/resource.h sys/capability.h systemd/sd-daemon.h)
 AC_CHECK_HEADERS(shadow.h getopt.h stddef.h stdint.h)
 AC_CHECK_HEADERS(netinet/in_systm.h netinet/in.h sys/pstat.h sys/file.h)
 AC_CHECK_HEADERS(sys/mount.h, [], [],
@@ -408,6 +408,21 @@ AC_ARG_WITH(privsep,
 [ if test "x$withval" = "xno" ; then
     without_privsep=yes
   fi ])
+
+AC_ARG_WITH(systemd,
+[AS_HELP_STRING(--with-systemd,Use Linux systemd (default=detect))],
+[ if test "x$withval" = "xno" ; then
+    no_systemd=1
+  fi ])
+
+if test -z "$no_systemd" ; then
+  AC_CHECK_LIB(systemd, sd_notify, , )
+  if test "x$ac_cv_lib_systemd_sd_notify" = "xyes"; then
+    if test "x$ac_cv_header_systemd_sd_daemon_h" = "xyes"; then
+      AC_DEFINE(USE_SYSTEMD,,[use systemd])
+    fi
+  fi
+fi
 
 AC_ARG_WITH(boring,
 [AS_HELP_STRING(--with-boring,Display only boring messages)],
