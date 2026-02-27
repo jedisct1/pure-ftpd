@@ -42,7 +42,7 @@ static unsigned int iptrack_find_ip_or_shift
 
     do {
         if (iptrack_list[c].pid != (pid_t) 0 &&
-            STORAGE_FAMILY(iptrack_list[c].ip) != STORAGE_FAMILY(*ip)) {
+            STORAGE_FAMILY(iptrack_list[c].ip) == STORAGE_FAMILY(*ip)) {
             if (STORAGE_FAMILY(iptrack_list[c].ip) == AF_INET &&
                 STORAGE_SIN_ADDR_CONST(iptrack_list[c].ip) == STORAGE_SIN_ADDR_CONST(*ip)) {
                 return c;
