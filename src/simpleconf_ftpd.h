@@ -41,6 +41,9 @@ static const SimpleConfEntry simpleconf_options[] = {
 #endif
     {"DisplayDotFiles? <bool>",                   "--displaydotfiles"},
     {"DontResolve? <bool>",                       "--dontresolve"},
+#ifdef WITH_EXTAUTH
+    {"ExtAuth (<any*>)",                          "--login=extauth:$0"},
+#endif
 #ifdef WITH_TLS
     {"ExtCert (<any*>)",                          "--extcert=$0"},
 #endif
@@ -52,9 +55,6 @@ static const SimpleConfEntry simpleconf_options[] = {
     {"IPV6Only? <bool>",                          "--ipv6only"},
     {"KeepAllFiles? <bool>",                      "--keepallfiles"},
     {"LimitRecursion (<digits>) (<digits>)",      "--limitrecursion=$0:$1"},
-#ifdef WITH_EXTAUTH
-    {"ExtAuth (<any*>)",                          "--login=extauth:$0"},
-#endif
 #ifdef WITH_LDAP
     {"LDAPConfigFile (<any*>)",                   "--login=ldap:$0"},
 #endif
