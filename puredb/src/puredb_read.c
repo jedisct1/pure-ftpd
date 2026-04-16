@@ -303,6 +303,10 @@ void *puredb_read(PureDB * const db, const off_t offset, const size_t len)
 {
     void *buf;
 
+    if (offset < (off_t) 0 || (size_t) offset > db->size ||
+        len > db->size - (size_t) offset) {
+        return NULL;
+    }
     if ((buf = malloc(len + (size_t) 1U)) == NULL) {
         return NULL;
     }
