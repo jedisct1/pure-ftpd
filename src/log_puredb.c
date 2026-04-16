@@ -98,7 +98,8 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             if (ip0 > 255U || ip1 > 255U || ip2 > 255U || ip3 > 255U) {
                 goto ipcheck_nomatch;
             }
-            if (STORAGE_FAMILY(*sa) != AF_INET || netbits == 0U) {
+            if (STORAGE_FAMILY(*sa) != AF_INET || netbits == 0U ||
+                netbits > 32U) {
                 return -1;
             }
             ip =
