@@ -106,6 +106,10 @@ void tls_extcert_get(CertResult * const result, const char *sni_name)
     size_t line_len;
 
     result->cert_ok = 0;
+    if (saddr == NULL) {
+        result->cert_ok = -1;
+        return;
+    }
 
     tryagain:
     if ((kindy = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
