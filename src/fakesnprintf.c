@@ -94,6 +94,10 @@ int fakesnprintf_vsnprintf(char * const str_, const size_t size_,
     char *str;
     size_t size;
     size_t maxlen;
+
+    if (size_ == 0U) {
+        return 0;
+    }
     size_t padlen;
     unsigned char longs;
     unsigned char zero;
