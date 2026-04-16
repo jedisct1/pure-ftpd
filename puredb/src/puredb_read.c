@@ -80,6 +80,9 @@ static int read_memcmp(const PureDB * const db, const puredb_u32_t offset,
 
 #ifdef USE_MAPPED_IO
     if (db->map != NULL) {
+        if (offset > db->size || len > db->size - offset) {
+            return -2;
+        }
         return memcmp(db->map + offset, str, (size_t) len) != 0;
     }
 #endif
