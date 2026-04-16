@@ -95,6 +95,9 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
         if (sscanf(pattern, "%u.%u.%u.%u/%u",    /* IPv4 */
                    &ip0, &ip1, &ip2, &ip3, &netbits) == 5) {
             ipcheck:
+            if (ip0 > 255U || ip1 > 255U || ip2 > 255U || ip3 > 255U) {
+                goto ipcheck_nomatch;
+            }
             if (STORAGE_FAMILY(*sa) != AF_INET || netbits == 0U) {
                 return -1;
             }
