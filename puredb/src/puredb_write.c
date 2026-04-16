@@ -6,6 +6,8 @@
 #include "puredb_p.h"
 #include "puredb_write.h"
 
+#define PUREDB_U32_STORAGE_MAX ((puredb_u32_t) 0xffffffffU)
+
 #ifndef HAVE_STRDUP
 static char *strdup(const char *str)
 {
