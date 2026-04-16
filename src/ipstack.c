@@ -171,7 +171,7 @@ inet_pton(int af, const char *src, void *dst)
 
     /* inet_aton would be better, but Solaris 7 e. g. doesn't have it */
     ina = inet_addr(src);
-    if (ina == 0UL) {
+    if (ina == INADDR_NONE) {
         return 0;
     }
     memcpy(dst, &ina, sizeof ina);
