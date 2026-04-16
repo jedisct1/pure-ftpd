@@ -409,7 +409,7 @@ int fakereadlink(const char *file, char *buf, size_t bufsiz)
     if (fakexlate(curdirtmp, sizeof curdirtmp, file) != 0) {
         return -1;
     }
-    return readlink(file, buf, bufsiz);
+    return readlink(curdirtmp, buf, bufsiz);
 }
 
 int fakerename(const char *oldpath, const char *newpath)
