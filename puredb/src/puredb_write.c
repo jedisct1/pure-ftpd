@@ -84,10 +84,19 @@ int puredbw_add(PureDBW * const dbw,
     const puredb_u32_t hash;
     const puredb_u32_t hash_hi;
     Hash0 *hash0;
+    const size_t max_u32 = (size_t) 0xffffffffU;
+    size_t record_size;
     Hash1 *hash1;
 
-    if (key_len > (size_t) 0xffffffffUL ||
-        content_len > (size_t) 0xffffffffUL) {
+    if (key_len > max_u32 || content_len > max_u32 ||
+        content_len > max_u32 - (sizeof(puredb_u32_t) + sizeof(puredb_u32_t)) ||
+        key_len > max_u32 - (sizeof(puredb_u32_t) + sizeof(puredb_u32_t)) -
+        content_len) {
+        return -1;
+    }
+    record_size = sizeof(puredb_u32_t) + sizeof(puredb_u32_t) +
+        key_len + content_len;
+    if ((size_t) dbw->data_offset_counter > max_u32 - record_size) {
         return -1;
     }
     hash = puredbw_hash(key, key_len);
