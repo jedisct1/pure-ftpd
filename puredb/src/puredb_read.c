@@ -261,6 +261,10 @@ int puredb_find(PureDB * const db, const char * const tofind,
             if (key_size != (puredb_u32_t) tofind_len) {
                 goto trynext;
             }
+            if (data > db->size - sizeof(puredb_u32_t) ||
+                tofind_len > (size_t) (db->size - data - sizeof(puredb_u32_t))) {
+                return -2;
+            }
             if (read_memcmp(db, data + sizeof(puredb_u32_t),
                             (const unsigned char *) tofind, tofind_len) != 0) {
                 goto trynext;
@@ -270,6 +274,9 @@ int puredb_find(PureDB * const db, const char * const tofind,
                 return -3;
             }
             data += sizeof(puredb_u32_t);
+            if (data_size > db->size - data) {
+                return -2;
+            }
             *retpos = (off_t) data;
             *retlen = (size_t) data_size;
 
