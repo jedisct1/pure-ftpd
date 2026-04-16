@@ -218,10 +218,16 @@ uint32_t alt_arc4random_uniform(const uint32_t upper_bound)
 
 int alt_arc4random_close(void)
 {
+    int ret;
+
     rng_state.initialized = 0;
     pure_memzero(rng_state.key, sizeof rng_state.key);
     if (rng_state.fd != -1) {
-        return close(rng_state.fd);
+        ret = close(rng_state.fd);
+        if (ret == 0) {
+            rng_state.fd = -1;
+        }
+        return ret;
     }
     return 0;
 }
