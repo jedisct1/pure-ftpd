@@ -81,11 +81,18 @@ int puredbw_add(PureDBW * const dbw,
                 const char * const key, const size_t key_len,
                 const char * const content, const size_t content_len)
 {
-    const puredb_u32_t hash = puredbw_hash(key, key_len);
-    const puredb_u32_t hash_hi = hash & 0xff;
-    Hash0 * const hash0 = &dbw->hash_table0[hash_hi];
+    const puredb_u32_t hash;
+    const puredb_u32_t hash_hi;
+    Hash0 *hash0;
     Hash1 *hash1;
 
+    if (key_len > (size_t) 0xffffffffUL ||
+        content_len > (size_t) 0xffffffffUL) {
+        return -1;
+    }
+    hash = puredbw_hash(key, key_len);
+    hash_hi = hash & 0xff;
+    hash0 = &dbw->hash_table0[hash_hi];
     if (hash0->hash1_list == NULL) {
         hash0->hash1_list_size = sizeof(Hash1);
         if ((hash0->hash1_list = malloc(hash0->hash1_list_size)) == NULL) {
