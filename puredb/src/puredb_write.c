@@ -83,8 +83,8 @@ int puredbw_add(PureDBW * const dbw,
                 const char * const key, const size_t key_len,
                 const char * const content, const size_t content_len)
 {
-    const puredb_u32_t hash;
-    const puredb_u32_t hash_hi;
+    puredb_u32_t hash;
+    puredb_u32_t hash_hi;
     Hash0 *hash0;
     const size_t max_u32 = (size_t) 0xffffffffU;
     size_t record_size;
