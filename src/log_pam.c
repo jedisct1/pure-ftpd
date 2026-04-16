@@ -158,6 +158,7 @@ void pw_pam_check(AuthResult * const result,
     (void) sa;
     (void) peer;
     result->auth_ok = 0;
+    PAM_error = 0;
     PAM_password = pass;
     PAM_username = user;
     pam_error = pam_start(FTPD_PAM_SERVICE_NAME, user,
