@@ -76,6 +76,9 @@ int quota_update(Quota *quota,
     } while (left > (ssize_t) 0 && readnb != (ssize_t) 0);
     *bufpnt = 0;
     if ((bufpnt = strchr(buf, ' ')) == NULL) {
+        if (buf[0] != 0) {
+            goto bye;
+        }
         goto skipparse;
     }
     *bufpnt = 0;
