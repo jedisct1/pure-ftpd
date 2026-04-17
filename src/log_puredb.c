@@ -198,8 +198,10 @@ static int time_restrictions_check(const char * const restrictions)
     if (*restrictions == 0) {
         return 0;
     }
-    if (sscanf(restrictions, "%u-%u", &time_begin, &time_end) != 2 ||
-        (now_t = time(NULL)) == (time_t) -1 ||
+    if (sscanf(restrictions, "%u-%u", &time_begin, &time_end) != 2) {
+        return -1;
+    }
+    if ((now_t = time(NULL)) == (time_t) -1 ||
         (tm = localtime(&now_t)) == NULL) {
         return 0;
     }
