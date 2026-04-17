@@ -82,12 +82,10 @@ static int traverse(const char * const s)
         if (errno != EACCES) {
             return -1;
         }
-        if (fstat(fd, &st) != 0 || !S_ISDIR(st.st_mode) || st.st_uid != uid) {
-            close(fd);
+        if (stat(s, &st) != 0 || !S_ISDIR(st.st_mode) || st.st_uid != uid) {
             return -1;
         }
-        (void) fchmod(fd, st.st_mode | 0500);
-        close(fd);
+        (void) chmod(s, st.st_mode | 0500);
         if ((fd = open(s, O_RDONLY | O_DIRECTORY | O_NONBLOCK)) == -1) {
             return -1;
         }
