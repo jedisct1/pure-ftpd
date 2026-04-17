@@ -6,6 +6,11 @@
 # include <dmalloc.h>
 #endif
 
+static int has_forbidden_pwconvert_char(const char *s)
+{
+    return s == NULL || strpbrk(s, ":\r\n") != NULL;
+}
+
 int main(void)
 {
     struct passwd *pwd;
@@ -29,7 +34,9 @@ int main(void)
 
     setpwent();
     while ((pwd = getpwent()) != NULL) {
-        if (pwd->pw_name == NULL) {
+        if (has_forbidden_pwconvert_char(pwd->pw_name) ||
+            has_forbidden_pwconvert_char(pwd->pw_gecos) ||
+            has_forbidden_pwconvert_char(pwd->pw_dir)) {
             continue;
         }
         if (pwd->pw_uid <= (uid_t) 0 ||
@@ -62,6 +69,9 @@ int main(void)
 #endif
         if (pw == NULL || *pw != '$') {
             pw = "*";
+        }
+        if (has_forbidden_pwconvert_char(pw)) {
+            continue;
         }
         {
             char *coma;
