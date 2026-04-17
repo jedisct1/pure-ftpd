@@ -223,6 +223,7 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
 {
     char *allow_local_ip, *deny_local_ip;
     char *allow_remote_ip, *deny_remote_ip;
+    char *endptr;
     const char *time_restrictions;
 
     if ((line = my_strtok2(line, *PW_LINE_SEP)) == NULL || *line == 0) {   /* pwd */
@@ -254,11 +255,17 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL || *line == 0) {   /* uid */
         return -1;
     }
-    result->uid = (uid_t) strtoul(line, NULL, 10);
+    result->uid = (uid_t) strtoul(line, &endptr, 10);
+    if (line == endptr || *endptr != 0 || result->uid <= (uid_t) 0) {
+        return -1;
+    }
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL || *line == 0) {   /* gid */
         return -1;
     }
-    result->gid = (gid_t) strtoul(line, NULL, 10);
+    result->gid = (gid_t) strtoul(line, &endptr, 10);
+    if (line == endptr || *endptr != 0 || result->gid <= (gid_t) 0) {
+        return -1;
+    }
 #ifndef ACCEPT_ROOT_VIRTUAL_USERS
     if (result->uid <= (uid_t) 0 || result->gid <= (gid_t) 0) {
         return -1;
