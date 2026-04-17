@@ -95,6 +95,9 @@ void iptrack_add(const struct sockaddr_storage * const ip,
 {
     unsigned int c = 0U;
 
+    if (maxusers == 0U) {
+        return;
+    }
     if (iptrack_list == NULL) {
         unsigned int ci = 0U;
 
