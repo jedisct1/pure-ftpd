@@ -156,6 +156,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
         pattern = comapoint + 1;
     } while (*pattern != 0);
 
+ipcheck_nomatch:
     return 0;
 }
 
