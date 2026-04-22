@@ -71,6 +71,32 @@ static char *my_strtok2(char *str, const char delim)
 
 /* Check whether an IP address matches a pattern. 1 = match 0 = nomatch */
 
+static int ipv6_cidr_match(const unsigned char *addr,
+                           const unsigned char *pattern_addr,
+                           unsigned int prefix_len)
+{
+    unsigned int full_bytes;
+    unsigned int remainder;
+    unsigned char last_mask;
+
+    if (prefix_len > 128U) {
+        return 0;
+    }
+    full_bytes = prefix_len / 8U;
+    remainder = prefix_len % 8U;
+    if (full_bytes > 0U && memcmp(addr, pattern_addr, full_bytes) != 0) {
+        return 0;
+    }
+    if (remainder != 0U) {
+        last_mask = (unsigned char) (0xffU << (8U - remainder));
+        if ((addr[full_bytes] & last_mask) !=
+            (pattern_addr[full_bytes] & last_mask)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 static int access_ip_match(const struct sockaddr_storage * const sa,
                            char * pattern)
 {
@@ -81,24 +107,26 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
     unsigned long saip;
     const unsigned char *saip_raw;
     char *comapoint;
+    int sa_family;
 
     if (*pattern == 0) {
         return 1;
     }
-    if (STORAGE_FAMILY(*sa) != AF_INET) {
-        return 0;                      /* TODO: IPv6 */
+    sa_family = STORAGE_FAMILY(*sa);
+    if (sa_family != AF_INET && sa_family != AF_INET6) {
+        return 0;
     }
     do {
         if ((comapoint = strchr(pattern, ',')) != NULL) {
             *comapoint = 0;
         }
-        if (sscanf(pattern, "%u.%u.%u.%u/%u",    /* IPv4 */
+        if (sscanf(pattern, "%u.%u.%u.%u/%u",
                    &ip0, &ip1, &ip2, &ip3, &netbits) == 5) {
             ipcheck:
             if (ip0 > 255U || ip1 > 255U || ip2 > 255U || ip3 > 255U) {
                 goto ipcheck_nomatch;
             }
-            if (STORAGE_FAMILY(*sa) != AF_INET || netbits == 0U ||
+            if (sa_family != AF_INET || netbits == 0U ||
                 netbits > 32U) {
                 return -1;
             }
@@ -123,17 +151,60 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             netbits = 32U;
             goto ipcheck;
         } else {
+            struct in6_addr pat6;
+            char addr_buf[256];
+            char *slash;
+            unsigned int prefix6;
             struct addrinfo hints, *res;
             int on;
 
+            strncpy(addr_buf, pattern, sizeof addr_buf);
+            addr_buf[sizeof addr_buf - 1] = 0;
+            slash = strchr(addr_buf, '/');
+            prefix6 = 128U;
+            if (slash != NULL) {
+                char *endptr;
+                unsigned long val;
+
+                *slash = 0;
+                val = strtoul(slash + 1, &endptr, 10);
+                if (endptr == slash + 1 || *endptr != 0 ||
+                    val == 0U || val > 128U) {
+                    return -1;
+                }
+                prefix6 = (unsigned int) val;
+            }
+            if (inet_pton(AF_INET6, addr_buf, &pat6) == 1) {
+                if (sa_family != AF_INET6) {
+                    goto ipcheck_nomatch;
+                }
+                if (ipv6_cidr_match(STORAGE_SIN_ADDR6_CONST(*sa),
+                                    (const unsigned char *) &pat6,
+                                    prefix6) != 0) {
+                    return 1;
+                }
+                goto ipcheck_nomatch;
+            }
+            if (slash != NULL) {
+                goto ipcheck_nomatch;
+            }
             memset(&hints, 0, sizeof hints);
-            hints.ai_family = AF_INET;
+            hints.ai_family = sa_family;
             hints.ai_addr = NULL;
-            if ((on = getaddrinfo(pattern, NULL, &hints, &res)) != 0) {
+            if ((on = getaddrinfo(addr_buf, NULL, &hints, &res)) != 0) {
                 logfile(LOG_WARNING, "puredb: [%s] => [%d]", pattern, on);
-            } else if (res->ai_family != AF_INET) {
+            } else if (res->ai_family == AF_INET6 && sa_family == AF_INET6) {
+                const struct sockaddr_in6 *sin6 =
+                    (const struct sockaddr_in6 *) (void *) res->ai_addr;
+
+                if (ipv6_cidr_match(STORAGE_SIN_ADDR6_CONST(*sa),
+                                    (const unsigned char *) &sin6->sin6_addr,
+                                    128U) != 0) {
+                    freeaddrinfo(res);
+                    return 1;
+                }
                 freeaddrinfo(res);
-            } else {
+            } else if (res->ai_family == AF_INET && sa_family == AF_INET) {
                 const unsigned char * const ip_raw =
                     (const unsigned char *) &
                     (((const struct sockaddr_in *) (void *)
@@ -147,6 +218,8 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                 netbits = 32U;
                 freeaddrinfo(res);
                 goto ipcheck_ipdone;
+            } else {
+                freeaddrinfo(res);
             }
         }
         ipcheck_nomatch:
