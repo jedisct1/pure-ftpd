@@ -149,6 +149,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                 goto ipcheck_ipdone;
             }
         }
+        ipcheck_nomatch:
         if (comapoint == NULL) {
             break;
         }
