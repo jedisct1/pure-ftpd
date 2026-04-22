@@ -683,6 +683,8 @@ Your platform has a very large PATH_MAX, we should not trust it.
 # else
 #  define strtoull(X, Y, Z) strtoul(X, Y, Z)
 # endif
+#elif !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
+extern unsigned long long strtoull(const char *, char **, int);
 #endif
 
 #ifndef ULONG_LONG_MAX
