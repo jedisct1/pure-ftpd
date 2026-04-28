@@ -268,9 +268,19 @@ static LDAPMessage *pw_ldap_uid_search(LDAP * const ld,
     if (rc != LDAP_SUCCESS) {
         return NULL;
     }
-    if (ldap_count_entries(ld, res) != 1) {
-        ldap_msgfree(res);
-        return NULL;
+    {
+        int entries = ldap_count_entries(ld, res);
+
+        if (entries != 1) {
+            if (entries > 1) {
+                logfile(LOG_WARNING,
+                        "ldap: search for [%s] returned %d entries; "
+                        "refusing ambiguous result",
+                        uid, entries);
+            }
+            ldap_msgfree(res);
+            return NULL;
+        }
     }
 
     return res;

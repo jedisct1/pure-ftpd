@@ -169,9 +169,12 @@ inet_pton(int af, const char *src, void *dst)
         return -1;
     }
 
-    /* inet_aton would be better, but Solaris 7 e. g. doesn't have it */
+    /* inet_aton would be better, but Solaris 7 e. g. doesn't have it.
+       inet_addr() returns INADDR_NONE both for malformed input and for
+       the valid broadcast address 255.255.255.255, so accept that one
+       literal explicitly. */
     ina = inet_addr(src);
-    if (ina == INADDR_NONE) {
+    if (ina == INADDR_NONE && strcmp(src, "255.255.255.255") != 0) {
         return 0;
     }
     memcpy(dst, &ina, sizeof ina);

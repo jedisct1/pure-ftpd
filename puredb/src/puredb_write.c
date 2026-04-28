@@ -101,6 +101,28 @@ int puredbw_add(PureDBW * const dbw,
     if ((size_t) dbw->data_offset_counter > max_u32 - record_size) {
         return -1;
     }
+    {
+        /* Stored offset is offset_data + offset_first_data; the latter still
+           grows by 8 here and by up to 4 per empty bucket in writekeys(). */
+        const size_t header_bump =
+            sizeof(puredb_u32_t) + sizeof(puredb_u32_t);
+        const size_t writekeys_bump_max =
+            (sizeof dbw->hash_table0 / sizeof dbw->hash_table0[0]) *
+            sizeof(puredb_u32_t);
+        size_t projected_data;
+        size_t projected_first;
+
+        if ((size_t) dbw->offset_first_data >
+            max_u32 - header_bump - writekeys_bump_max) {
+            return -1;
+        }
+        projected_first = (size_t) dbw->offset_first_data +
+            header_bump + writekeys_bump_max;
+        projected_data = (size_t) dbw->data_offset_counter + record_size;
+        if (projected_data > max_u32 - projected_first) {
+            return -1;
+        }
+    }
     hash = puredbw_hash(key, key_len);
     hash_hi = hash & 0xff;
     hash0 = &dbw->hash_table0[hash_hi];

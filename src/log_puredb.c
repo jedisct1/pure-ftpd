@@ -69,7 +69,12 @@ static char *my_strtok2(char *str, const char delim)
     goto scan;
 }
 
-/* Check whether an IP address matches a pattern. 1 = match 0 = nomatch */
+/*
+ * Check whether an IP address matches a comma-separated pattern list.
+ * Returns 1 on match, 0 on no match, -1 on malformed same-family CIDR.
+ * Patterns whose family does not match the connection are skipped so an
+ * IPv4-only rule never matches an IPv6 peer, or the reverse.
+ */
 
 static int ipv6_cidr_match(const unsigned char *addr,
                            const unsigned char *pattern_addr,
@@ -126,8 +131,12 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             if (ip0 > 255U || ip1 > 255U || ip2 > 255U || ip3 > 255U) {
                 goto ipcheck_nomatch;
             }
-            if (sa_family != AF_INET || netbits == 0U ||
-                netbits > 32U) {
+            if (sa_family != AF_INET) {
+                goto ipcheck_nomatch;
+            }
+            if (netbits == 0U || netbits > 32U) {
+                logfile(LOG_WARNING,
+                        "puredb: invalid IPv4 CIDR pattern [%s]", pattern);
                 return -1;
             }
             ip =
@@ -155,6 +164,7 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
             char addr_buf[256];
             char *slash;
             unsigned int prefix6;
+            int prefix6_valid = 1;
             struct addrinfo hints, *res;
             int on;
 
@@ -170,13 +180,19 @@ static int access_ip_match(const struct sockaddr_storage * const sa,
                 val = strtoul(slash + 1, &endptr, 10);
                 if (endptr == slash + 1 || *endptr != 0 ||
                     val == 0U || val > 128U) {
-                    return -1;
+                    prefix6_valid = 0;
+                } else {
+                    prefix6 = (unsigned int) val;
                 }
-                prefix6 = (unsigned int) val;
             }
             if (inet_pton(AF_INET6, addr_buf, &pat6) == 1) {
                 if (sa_family != AF_INET6) {
                     goto ipcheck_nomatch;
+                }
+                if (prefix6_valid == 0) {
+                    logfile(LOG_WARNING,
+                            "puredb: invalid IPv6 CIDR pattern [%s]", pattern);
+                    return -1;
                 }
                 if (ipv6_cidr_match(STORAGE_SIN_ADDR6_CONST(*sa),
                                     (const unsigned char *) &pat6,
@@ -251,13 +267,18 @@ static int access_ip_check(const struct sockaddr_storage * const sa,
         return 0;
     }
     if (*deny == 0) {
-        if (access_ip_match(sa, allow) != 0) {
+        if (access_ip_match(sa, allow) == 1) {
             return 0;
         }
         return -1;
     }
-    if (access_ip_match(sa, allow) != 0 && access_ip_match(sa, deny) == 0) {
-        return 0;
+    {
+        const int allow_match = access_ip_match(sa, allow);
+        const int deny_match = access_ip_match(sa, deny);
+
+        if (allow_match == 1 && deny_match == 0) {
+            return 0;
+        }
     }
     return -1;
 }
@@ -332,14 +353,14 @@ static int pw_puredb_parseline(char *line, const char * const pwd,
         return -1;
     }
     result->uid = (uid_t) strtoul(line, &endptr, 10);
-    if (line == endptr || *endptr != 0 || result->uid <= (uid_t) 0) {
+    if (line == endptr || *endptr != 0) {
         return -1;
     }
     if ((line = my_strtok2(NULL, *PW_LINE_SEP)) == NULL || *line == 0) {   /* gid */
         return -1;
     }
     result->gid = (gid_t) strtoul(line, &endptr, 10);
-    if (line == endptr || *endptr != 0 || result->gid <= (gid_t) 0) {
+    if (line == endptr || *endptr != 0) {
         return -1;
     }
 #ifndef ACCEPT_ROOT_VIRTUAL_USERS
