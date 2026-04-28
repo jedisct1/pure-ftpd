@@ -183,7 +183,9 @@ void pw_ldap_exit(void)
     free((void *) base);
     base = NULL;
     free((void *) ldap_filter);
+    ldap_filter = NULL;
     free((void *) ldap_homedirectory);
+    ldap_homedirectory = NULL;
     free((void *) default_uid_s);
     default_uid_s = NULL;
     free((void *) default_gid_s);
@@ -212,13 +214,15 @@ static LDAP *pw_ldap_connect(const char *dn, const char *password)
 # ifdef LDAP_OPT_PROTOCOL_VERSION
     if (ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &version) !=
         LDAP_SUCCESS) {
+        ldap_unbind(ld);
         return NULL;
     }
 # endif
     if (use_tls > 0 && ldap_start_tls_s(ld, NULL, NULL) != LDAP_SUCCESS) {
+        ldap_unbind(ld);
         return NULL;
     }
-    if (dn == NULL || ldap_bind_s(ld, dn, password, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
+    if (ldap_bind_s(ld, dn, password, LDAP_AUTH_SIMPLE) != LDAP_SUCCESS) {
         ldap_unbind(ld);
         return NULL;
     }
@@ -264,19 +268,26 @@ static LDAPMessage *pw_ldap_uid_search(LDAP * const ld,
     if (rc != LDAP_SUCCESS) {
         return NULL;
     }
+    if (ldap_count_entries(ld, res) != 1) {
+        ldap_msgfree(res);
+        return NULL;
+    }
 
     return res;
 }
 
 static char *pw_ldap_getvalue(LDAP * const ld,
-                              LDAPMessage * const res,
+                              LDAPMessage * const entry,
                               const char * const attribute)
 {
     char **vals;
     char *ret;
 
-    if ((vals = ldap_get_values(ld, res, attribute)) == NULL ||
-        vals[0] == NULL) {
+    if ((vals = ldap_get_values(ld, entry, attribute)) == NULL) {
+        return NULL;
+    }
+    if (vals[0] == NULL) {
+        ldap_value_free(vals);
         return NULL;
     }
     ret = strdup(vals[0]);
@@ -320,6 +331,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     static struct passwd pwret;
     LDAP *ld;
     LDAPMessage *res;
+    LDAPMessage *entry;
     char *attrs[] = {                  /* OpenLDAP forgot a 'const' ... */
         LDAP_HOMEDIRECTORY,
         LDAP_UIDNUMBER, LDAP_FTPUID, LDAP_GIDNUMBER, LDAP_FTPGID,
@@ -367,9 +379,12 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if ((res = pw_ldap_uid_search(ld, name, attrs)) == NULL) {
         goto error;
     }
+    if ((entry = ldap_first_entry(ld, res)) == NULL) {
+        goto error;
+    }
     pw_ldap_getpwnam_freefields(&pwret);
     pwret.pw_name = (char *) name;
-    pw_enabled = pw_ldap_getvalue(ld, res, LDAP_FTPSTATUS);
+    pw_enabled = pw_ldap_getvalue(ld, entry, LDAP_FTPSTATUS);
     if (pw_enabled != NULL && strcasecmp(pw_enabled, "enabled") != 0 &&
         strcasecmp(pw_enabled, "TRUE") != 0) {
         goto error;
@@ -377,7 +392,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     free((void *) pw_enabled);
     pw_enabled = NULL;
 # ifdef QUOTAS
-    if ((quota_files = pw_ldap_getvalue(ld, res, LDAP_QUOTAFILES)) != NULL) {
+    if ((quota_files = pw_ldap_getvalue(ld, entry, LDAP_QUOTAFILES)) != NULL) {
         const unsigned long long q = strtoull(quota_files, NULL, 10);
 
         if (q > 0ULL) {
@@ -385,7 +400,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->quota_files_changed = 1;
         }
     }
-    if ((quota_mbytes = pw_ldap_getvalue(ld, res, LDAP_QUOTAMBYTES))
+    if ((quota_mbytes = pw_ldap_getvalue(ld, entry, LDAP_QUOTAMBYTES))
         != NULL) {
         const unsigned long long q = strtoull(quota_mbytes, NULL, 10);
 
@@ -396,7 +411,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     }
 # endif
 # ifdef RATIOS
-    if ((ratio_dl = pw_ldap_getvalue(ld, res, LDAP_DOWNLOADRATIO)) != NULL) {
+    if ((ratio_dl = pw_ldap_getvalue(ld, entry, LDAP_DOWNLOADRATIO)) != NULL) {
         const unsigned int q = strtoul(ratio_dl, NULL, 10);
 
         if (q > 0U) {
@@ -404,7 +419,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->ratio_dl_changed = 1;
         }
     }
-    if ((ratio_ul = pw_ldap_getvalue(ld, res, LDAP_UPLOADRATIO)) != NULL) {
+    if ((ratio_ul = pw_ldap_getvalue(ld, entry, LDAP_UPLOADRATIO)) != NULL) {
         const unsigned int q = strtoul(ratio_ul, NULL, 10);
 
         if (q > 0U) {
@@ -414,7 +429,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     }
 # endif
 # ifdef THROTTLING
-    if ((bandwidth_dl = pw_ldap_getvalue(ld, res, LDAP_DOWNLOADBANDWIDTH))
+    if ((bandwidth_dl = pw_ldap_getvalue(ld, entry, LDAP_DOWNLOADBANDWIDTH))
         != NULL) {
         const unsigned long q = (unsigned long) strtoul(bandwidth_dl, NULL, 10);
 
@@ -423,7 +438,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
             result->throttling_dl_changed = 1;
         }
     }
-    if ((bandwidth_ul = pw_ldap_getvalue(ld, res, LDAP_UPLOADBANDWIDTH))
+    if ((bandwidth_ul = pw_ldap_getvalue(ld, entry, LDAP_UPLOADBANDWIDTH))
         != NULL) {
         const unsigned long q = (unsigned long) strtoul(bandwidth_ul, NULL, 10);
 
@@ -436,7 +451,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
 
     if (use_ldap_bind_method == 0) {
         if ((pw_passwd_ldap =
-             pw_ldap_getvalue(ld, res, LDAP_USERPASSWORD)) == NULL) {
+             pw_ldap_getvalue(ld, entry, LDAP_USERPASSWORD)) == NULL) {
 
             /* The LDAP userPassword is empty, this happens when binding to
              LDAP without sufficient privileges. */
@@ -457,12 +472,12 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if (force_default_uid != 0 && default_uid > (uid_t) 0) {
         pwret.pw_uid = default_uid;
     } else {
-        if ((pw_uid_s = pw_ldap_getvalue(ld, res, LDAP_FTPUID)) == NULL ||
+        if ((pw_uid_s = pw_ldap_getvalue(ld, entry, LDAP_FTPUID)) == NULL ||
             *pw_uid_s == 0 ||
             (pwret.pw_uid = (uid_t) strtoul(pw_uid_s, NULL, 10)) <= (uid_t) 0) {
             free((void *) pw_uid_s);
             pw_uid_s = NULL;
-            if ((pw_uid_s = pw_ldap_getvalue(ld, res, LDAP_UIDNUMBER)) == NULL ||
+            if ((pw_uid_s = pw_ldap_getvalue(ld, entry, LDAP_UIDNUMBER)) == NULL ||
                 *pw_uid_s == 0 ||
                 (pwret.pw_uid = (uid_t) strtoul(pw_uid_s, NULL, 10)) <= (uid_t) 0) {
                 pwret.pw_uid = default_uid;
@@ -475,12 +490,12 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     if (force_default_gid != 0 && default_gid > (gid_t) 0) {
         pwret.pw_gid = default_gid;
     } else {
-        if ((pw_gid_s = pw_ldap_getvalue(ld, res, LDAP_FTPGID)) == NULL ||
+        if ((pw_gid_s = pw_ldap_getvalue(ld, entry, LDAP_FTPGID)) == NULL ||
             *pw_gid_s == 0 ||
             (pwret.pw_gid = (gid_t) strtoul(pw_gid_s, NULL, 10)) <= (gid_t) 0) {
             free((void *) pw_gid_s);
             pw_gid_s = NULL;
-            if ((pw_gid_s = pw_ldap_getvalue(ld, res, LDAP_GIDNUMBER)) == NULL ||
+            if ((pw_gid_s = pw_ldap_getvalue(ld, entry, LDAP_GIDNUMBER)) == NULL ||
                 *pw_gid_s == 0 ||
                 (pwret.pw_gid = (gid_t) strtoul(pw_gid_s, NULL, 10)) <= (gid_t) 0) {
                 pwret.pw_gid = default_gid;
@@ -490,7 +505,7 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
     free((void *) pw_gid_s);
     pw_gid_s = NULL;
     if ((pwret.pw_dir =
-         pw_ldap_getvalue(ld, res, ldap_homedirectory)) == NULL ||
+         pw_ldap_getvalue(ld, entry, ldap_homedirectory)) == NULL ||
         *pwret.pw_dir == 0) {
         if (ldap_default_home_directory == NULL ||
             *ldap_default_home_directory == 0) {
@@ -501,10 +516,10 @@ static struct passwd *pw_ldap_getpwnam(const char *name,
         }
     }
     if ((pwret.pw_shell =
-         pw_ldap_getvalue(ld, res, LDAP_LOGINSHELL)) == NULL) {
+         pw_ldap_getvalue(ld, entry, LDAP_LOGINSHELL)) == NULL) {
         pwret.pw_shell = strdup(DEFAULT_SHELL);
     }
-    result->backend_data = ldap_get_dn(ld, res);
+    result->backend_data = ldap_get_dn(ld, entry);
 
     ldap_msgfree(res);
     ldap_unbind(ld);
