@@ -1,3 +1,22 @@
+* Version 1.0.54:
+ - Multiple hardening fixes across PureDB, the IP access checker, PAM, LDAP,
+quota handling, and pure-pwconvert.
+ - IP access rules now support IPv6 patterns. Hostname rules are resolved
+using the client's address family, so AAAA records can match IPv6 clients;
+previously this path was IPv4-only.
+ - Malformed CIDR widths in PureDB allow/deny lists now fail closed and a
+warning is logged identifying the offending pattern.
+ - LDAP searches that return more than one entry are now rejected as
+ambiguous and a warning is logged identifying the offending uid.
+ - Malformed quota files no longer reset usage to zero; the failure
+surfaces during quota checks instead.
+ - PureDB virtual users with a non-numeric or partially numeric uid or
+gid field are now rejected. Records with uid or gid 0 continue to require
+ACCEPT_ROOT_VIRTUAL_USERS at build time, as documented.
+ - Anonymous LDAP binds work again after a regression introduced in 1.0.53.
+ - Pure-pwconvert skips entries whose fields contain ':' or newline
+characters rather than emitting corrupted records.
+
 * Version 1.0.53:
  - Added support for IP limits in inetd mode.
  - Added support for "ldapi://" URI scheme for LDAP. Contributed by
