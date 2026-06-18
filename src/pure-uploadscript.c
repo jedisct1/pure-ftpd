@@ -352,7 +352,8 @@ static void newenv_str(const char * const var, const char * const str)
 }
 #endif
 
-static void fillenv(const char * const who, const struct stat * const st)
+static void fillenv(const char * const who, const struct stat * const st,
+                 const char * const file)
 {
 #ifdef HAVE_PUTENV
     struct passwd *pwd;
@@ -360,6 +361,9 @@ static void fillenv(const char * const who, const struct stat * const st)
 
     pwd = getpwuid(st->st_uid);
     grp = getgrgid(st->st_gid);
+    if (file != NULL) {
+        newenv_str("UPLOAD_FILE", file);
+    }
     newenv_ull("UPLOAD_SIZE", (unsigned long long) st->st_size);
     newenv_uo("UPLOAD_PERMS", (unsigned int) (st->st_mode & 07777));
     newenv_ull("UPLOAD_UID", (unsigned long long) st->st_uid);
@@ -381,8 +385,10 @@ static void fillenv(const char * const who, const struct stat * const st)
 static int run(const char * const who, const char * const file,
                const int upload_pipe_fd)
 {
-    struct stat st;
+    struct stat st, st2;
     pid_t pid;
+    int fd = -1;
+    char fdpath[64];
 
     if (script == NULL || *script == 0 ||
         file == NULL || *file == 0 ||
@@ -390,6 +396,19 @@ static int run(const char * const who, const char * const file,
         !S_ISREG(st.st_mode)) {
         return -1;
     }
+    /* Open the verified regular file with O_NOFOLLOW and pass a
+     * /dev/fd path to the script so the same pathname cannot be
+     * swapped for a symlink between check and use. */
+    if ((fd = open(file, O_RDONLY | O_NOFOLLOW)) < 0 ||
+        fstat(fd, &st2) < 0 ||
+        st.st_ino != st2.st_ino || st.st_dev != st2.st_dev) {
+        if (fd >= 0) {
+            close(fd);
+        }
+        return -1;
+    }
+    (void) fcntl(fd, F_SETFD, 0); /* keep open across exec */
+    SNCHECK(snprintf(fdpath, sizeof fdpath, "/dev/fd/%d", fd), sizeof fdpath);
     pid = fork();
     if (pid == (pid_t) 0) {
         /* Yes, there's already the cloexec flag on this fd,
@@ -398,13 +417,16 @@ static int run(const char * const who, const char * const file,
         if (close(upload_pipe_fd) < 0 || closedesc_all(1) < 0) {
             _exit(EXIT_FAILURE);
         }
-        fillenv(who, &st);
-        execl(script, script, file, (char *) NULL);
+        fillenv(who, &st, file);
+        execl(script, script, fdpath, (char *) NULL);
         _exit(EXIT_FAILURE);
     } else if (pid != (pid_t) -1) {
 #ifdef HAVE_WAITPID
         (void) waitpid(pid, NULL, 0);
 #endif
+    }
+    if (fd >= 0) {
+        close(fd);
     }
 
     return 0;
