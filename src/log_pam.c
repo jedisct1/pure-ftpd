@@ -173,7 +173,10 @@ void pw_pam_check(AuthResult * const result,
 # ifdef PAM_RHOST
     {
         char buf[1025];
-        if (gethostname(buf, sizeof buf - 1U) == 0) {
+        if (peer != NULL &&
+            getnameinfo((struct sockaddr *) peer, STORAGE_LEN(*peer),
+                        buf, sizeof buf - 1U, NULL, (size_t) 0U,
+                        NI_NUMERICHOST) == 0) {
             buf[sizeof buf - 1U] = 0;
             (void) pam_set_item(pamh, PAM_RHOST, buf);
         }
