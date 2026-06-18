@@ -370,6 +370,10 @@ void parser(void)
                 addreply_noformat(534, "CCC not allowed at this point");
                 goto wayout;
             }
+            if (enforce_tls_auth >= 2) {
+                addreply_noformat(534, "CCC not allowed under strict TLS");
+                goto wayout;
+            }
             addreply_noformat(200, "Control connection unencrypted");
             doreply();
             tls_close_session(&tls_cnx);
