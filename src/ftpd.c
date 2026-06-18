@@ -774,7 +774,7 @@ void doreply(void)
  * with a dot are only allowed to root and to users
  * chroot()ed in their home directories -Jedi. */
 
-static int checknamesanity(const char *name, int dot_ok)
+int checknamesanity(const char *name, int dot_ok)
 {
     const char *namepnt;
 

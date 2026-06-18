@@ -492,7 +492,8 @@ void parser(void)
 
                 if (strncasecmp("RETR ", arg, sizeof "RETR " - 1U) == 0) {
                     arg += sizeof "RETR " - 1U;
-                    if (*arg == 0 || access(arg, R_OK) != 0 ||
+                    if (*arg == 0 || checknamesanity(arg, dot_read_ok) != 0 ||
+                        access(arg, R_OK) != 0 ||
                         stat(arg, &st) != 0 || S_ISREG(st.st_mode) == 0) {
                         addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
                         goto wayout;
@@ -608,53 +609,75 @@ void parser(void)
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "stat")) {
                 if (*arg != 0) {
-                    dolist(arg, 1);
+                    if (checknamesanity(arg, dot_read_ok) != 0) {
+                        addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                    } else {
+                        dolist(arg, 1);
+                    }
                 } else {
                     addreply_noformat(211, "https://www.pureftpd.org/");
                 }
 #endif
             } else if (!strcmp(cmd, "list")) {
+                if (checknamesanity(arg, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
 #ifdef WITH_TLS
-                if (enforce_tls_auth == 3 &&
-                    data_protection_level != CPL_PRIVATE) {
-                    addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                } else
+                    if (enforce_tls_auth == 3 &&
+                        data_protection_level != CPL_PRIVATE) {
+                        addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
+                    } else
 #endif
-                {
-                    dolist(arg, 0);
+                    {
+                        dolist(arg, 0);
+                    }
                 }
             } else if (!strcmp(cmd, "nlst")) {
+                if (checknamesanity(arg, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
 #ifdef WITH_TLS
-                if (enforce_tls_auth == 3 &&
-                    data_protection_level != CPL_PRIVATE) {
-                    addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                } else
+                    if (enforce_tls_auth == 3 &&
+                        data_protection_level != CPL_PRIVATE) {
+                        addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
+                    } else
 #endif
-                {
-                    donlst(arg);
+                    {
+                        donlst(arg);
+                    }
                 }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "mfmt")) {
                 parse_file_time_change(arg);
             } else if (!strcmp(cmd, "mlst")) {
+                const char *mpath = *arg != 0 ? arg : ".";
+                if (checknamesanity(mpath, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
 # ifdef WITH_TLS
-                if (enforce_tls_auth == 3 &&
-                    data_protection_level != CPL_PRIVATE) {
-                    addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                } else
+                    if (enforce_tls_auth == 3 &&
+                        data_protection_level != CPL_PRIVATE) {
+                        addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
+                    } else
 # endif
-                {
-                    domlst(*arg != 0 ? arg : ".");
+                    {
+                        domlst(mpath);
+                    }
                 }
             } else if (!strcmp(cmd, "mlsd")) {
+                const char *mpath = *arg != 0 ? arg : ".";
+                if (checknamesanity(mpath, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
 # ifdef WITH_TLS
-                if (enforce_tls_auth == 3 &&
-                    data_protection_level != CPL_PRIVATE) {
-                    addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
-                } else
+                    if (enforce_tls_auth == 3 &&
+                        data_protection_level != CPL_PRIVATE) {
+                        addreply_noformat(521, MSG_PROT_PRIVATE_NEEDED);
+                    } else
 # endif
-                {
-                    domlsd(*arg != 0 ? arg : ".");
+                    {
+                        domlsd(mpath);
+                    }
                 }
 #endif
             } else if (!strcmp(cmd, "abor")) {
@@ -786,9 +809,17 @@ void parser(void)
                 }
 #endif
             } else if (!strcmp(cmd, "mdtm")) {
-                domdtm(arg);
+                if (checknamesanity(arg, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
+                    domdtm(arg);
+                }
             } else if (!strcmp(cmd, "size")) {
-                dosize(arg);
+                if (checknamesanity(arg, dot_read_ok) != 0) {
+                    addreply_noformat(550, MSG_FILE_DOESNT_EXIST);
+                } else {
+                    dosize(arg);
+                }
 #ifndef MINIMAL
             } else if (!strcmp(cmd, "chmod")) {
                 sitearg = arg;

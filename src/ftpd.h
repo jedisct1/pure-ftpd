@@ -399,6 +399,8 @@ void simplify(char *subdir);
 int checkprintable(register const char *s);
 void delete_atomic_file(void);
 void usleep2(const unsigned long microsec);
+
+int checknamesanity(const char *name, int dot_ok);
 int mysnprintf(char *str, size_t size, const char *format, ...);
 
 extern int opt_a, opt_C, opt_d, opt_F, opt_l, opt_R;
