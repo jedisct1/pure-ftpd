@@ -550,6 +550,34 @@ int tls_init_data_session(const int fd, const int passive)
         }
         break;
     }
+    if (passive != 0) {
+        const SSL_SESSION *ctrl_session;
+        const SSL_SESSION *data_session;
+        unsigned char ctrl_key[SSL_MAX_MASTER_KEY_LENGTH];
+        unsigned char data_key[SSL_MAX_MASTER_KEY_LENGTH];
+        size_t ctrl_key_len;
+        size_t data_key_len;
+
+        if (tls_cnx == NULL ||
+            (ctrl_session = SSL_get_session(tls_cnx)) == NULL ||
+            (data_session = SSL_get_session(tls_data_cnx)) == NULL ||
+            SSL_session_reused(tls_data_cnx) == 0) {
+            logfile(LOG_WARNING, "Data TLS session is not resuming the control session");
+            _EXIT(EXIT_FAILURE);
+        }
+        ctrl_key_len = SSL_SESSION_get_master_key(ctrl_session,
+                                                  ctrl_key,
+                                                  sizeof ctrl_key);
+        data_key_len = SSL_SESSION_get_master_key(data_session,
+                                                  data_key,
+                                                  sizeof data_key);
+        if (ctrl_key_len == 0U ||
+            ctrl_key_len != data_key_len ||
+            memcmp(ctrl_key, data_key, ctrl_key_len) != 0) {
+            logfile(LOG_WARNING, "Data TLS session does not match the control session");
+            _EXIT(EXIT_FAILURE);
+        }
+    }
     if ((cipher = SSL_get_current_cipher(tls_data_cnx)) != NULL) {
         int strength_bits = SSL_CIPHER_get_bits(cipher, NULL);
 
