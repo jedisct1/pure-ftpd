@@ -315,6 +315,16 @@ void parser(void)
 #endif
         }
 
+        /* RFC 959 4.1.3: RNTO applies to the "immediately preceding" RNFR.
+         * renamefrom was only cleared in dornto(), so it outlived both
+         * intervening commands and rejected RNFRs. A successful RNFR sets it
+         * again below.
+         */
+        if (renamefrom != NULL && strcmp(cmd, "rnto") != 0) {
+            free(renamefrom);
+            renamefrom = NULL;
+        }
+
         /*
          * antiidle() is called with dummy commands, usually used by clients
          * who are wanting extra idle time. We give them some, but not too much.
