@@ -2106,6 +2106,17 @@ void dopasv(int psvtype)
         addreply_noformat(530, MSG_NOT_LOGGED_IN);
         return;
     }
+    /* RFC 2428 section 4: "Upon receipt of an EPSV ALL command, the server MUST
+     * reject all data connection setup commands other than EPSV (i.e., EPRT,
+     * PORT, PASV, et al.)."  doport2() already enforces this for PORT and EPRT;
+     * PASV reached this function without any such check.
+     * psvtype 0 is PASV and 1 is EPSV, so the guard must not cover EPSV -- that
+     * is the one command EPSV ALL is meant to leave working.
+     */
+    if (epsv_all != 0 && psvtype == 0) {
+        addreply_noformat(501, MSG_ACTIVE_DISABLED);
+        return;
+    }
     if (datafd != -1) {                /* for buggy clients */
         (void) close(datafd);
         datafd = -1;
