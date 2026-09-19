@@ -69,66 +69,62 @@ static int PAM_error;
  * echo off means password.
  */
 
-#define GET_MEM \
-    size += sizeof(struct pam_response); \
-    if ((reply = realloc(reply, size)) == NULL) { \
-        PAM_error = 1; \
-        return PAM_CONV_ERR; \
-    }
-
 static int PAM_conv(int num_msg,
                     const struct pam_message **msg,
                     struct pam_response **resp, void *appdata_ptr)
 {
     int count = 0;
-    unsigned int replies = 0U;
     struct pam_response *reply = NULL;
-    size_t size = (size_t) 0U;
 
     (void) appdata_ptr;
     *resp = NULL;
+    if (num_msg <= 0 ||
+        (reply = calloc((size_t) num_msg, sizeof *reply)) == NULL) {
+        PAM_error = 1;
+        return PAM_CONV_ERR;
+    }
     for (count = 0; count < num_msg; count++) {
         switch (msg[count]->msg_style) {
         case PAM_PROMPT_ECHO_ON:
-            GET_MEM;
-            memset(&reply[replies], 0, sizeof reply[replies]);
-            if ((reply[replies].resp = strdup(PAM_username)) == NULL) {
+            if ((reply[count].resp = strdup(PAM_username)) == NULL) {
 #ifdef PAM_BUF_ERR
-                reply[replies].resp_retcode = PAM_BUF_ERR;
+                reply[count].resp_retcode = PAM_BUF_ERR;
 #endif
-                PAM_error = 1;
-                return PAM_CONV_ERR;
+                goto error;
             }
-            reply[replies++].resp_retcode = PAM_SUCCESS;
+            reply[count].resp_retcode = PAM_SUCCESS;
             /* PAM frees resp */
             break;
         case PAM_PROMPT_ECHO_OFF:
-            GET_MEM;
-            memset(&reply[replies], 0, sizeof reply[replies]);
-            if ((reply[replies].resp = strdup(PAM_password)) == NULL) {
+            if ((reply[count].resp = strdup(PAM_password)) == NULL) {
 #ifdef PAM_BUF_ERR
-                reply[replies].resp_retcode = PAM_BUF_ERR;
+                reply[count].resp_retcode = PAM_BUF_ERR;
 #endif
-                PAM_error = 1;
-                return PAM_CONV_ERR;
+                goto error;
             }
-            reply[replies++].resp_retcode = PAM_SUCCESS;
+            reply[count].resp_retcode = PAM_SUCCESS;
             /* PAM frees resp */
             break;
+        case PAM_ERROR_MSG:
         case PAM_TEXT_INFO:
             /* ignore it... */
             break;
-        case PAM_ERROR_MSG:
         default:
             /* Must be an error of some sort... */
-            free(reply);
-            PAM_error = 1;
-            return PAM_CONV_ERR;
+            goto error;
         }
     }
     *resp = reply;
 
     return PAM_SUCCESS;
+
+    error:
+    while (count > 0) {
+        free(reply[--count].resp);
+    }
+    free(reply);
+    PAM_error = 1;
+    return PAM_CONV_ERR;
 }
 
 /* Solaris throws warning about incompatible pointer types, it does not
