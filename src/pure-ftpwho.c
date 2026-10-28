@@ -207,7 +207,8 @@ static void text_output_footer(void)
 }
 
 static char *xml_escaped(const char *const s_) {
-    static char buf[PATH_MAX + 32U];
+    static char buf[(sizeof(FTPWhoEntry) + NI_MAXHOST + NI_MAXSERV) *
+                    (sizeof "&quot;" - 1U)];
     const unsigned char *s = (const unsigned char *) s_;
     char *bufpnt = buf;
     size_t left = sizeof buf - (size_t) 1U;
