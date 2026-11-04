@@ -23,6 +23,51 @@ int hasquota(void)
     return 0;
 }
 
+static int quota_lock_fd = -1;
+
+static int quota_open(void)
+{
+    struct flock lock;
+    int fd;
+
+    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW,
+                   (mode_t) 0600)) == -1) {
+        return -1;
+    }
+    lock.l_whence = SEEK_SET;
+    lock.l_start = (off_t) 0;
+    lock.l_len = (off_t) 0;
+    lock.l_pid = getpid();
+    lock.l_type = F_WRLCK;
+    while (fcntl(fd, F_SETLKW, &lock) < 0) {
+        if (errno != EINTR) {
+            close(fd);
+            return -1;
+        }
+    }
+    return fd;
+}
+
+int quota_lock(void)
+{
+    if (hasquota() != 0 || chrooted == 0 ||
+        (quota_lock_fd = quota_open()) == -1) {
+        return -1;
+    }
+    return 0;
+}
+
+void quota_unlock(void)
+{
+    const int olderrno = errno;
+
+    if (quota_lock_fd != -1) {
+        close(quota_lock_fd);
+        quota_lock_fd = -1;
+    }
+    errno = olderrno;
+}
+
 int quota_update(Quota *quota,
                  const long long files_add,
                  const long long size_add,
@@ -31,7 +76,6 @@ int quota_update(Quota *quota,
     int fd;
     Quota old_quota = { 0ULL, 0ULL };
     Quota dummy_quota;
-    struct flock lock;
     ssize_t readnb;
     int err = -1;
     char buf[84];
@@ -51,19 +95,13 @@ int quota_update(Quota *quota,
     }
     *overflow = 0;
     *quota = old_quota;
-    if ((fd = open("/" QUOTA_FILE, O_RDWR | O_CREAT | O_NOFOLLOW,
-                   (mode_t) 0600)) == -1) {
-        return -1;
-    }
-    lock.l_whence = SEEK_SET;
-    lock.l_start = (off_t) 0;
-    lock.l_len = (off_t) 0;
-    lock.l_pid = getpid();
-    lock.l_type = F_WRLCK;
-    while (fcntl(fd, F_SETLKW, &lock) < 0) {
-        if (errno != EINTR) {
-            goto byenounlock;
+    if (quota_lock_fd != -1) {
+        fd = quota_lock_fd;
+        if (lseek(fd, (off_t) 0, SEEK_SET) == (off_t) -1) {
+            return -1;
         }
+    } else if ((fd = quota_open()) == -1) {
+        return -1;
     }
     do {
         while ((readnb = read(fd, bufpnt, left)) < (ssize_t) 0 &&
@@ -128,11 +166,9 @@ int quota_update(Quota *quota,
     err = 0;
 
     bye:
-    lock.l_type = F_UNLCK;
-    while (fcntl(fd, F_SETLK, &lock) < 0 && errno == EINTR);
-    byenounlock:
-    close(fd);
-
+    if (fd != quota_lock_fd) {
+        close(fd);
+    }
     return err;
 }
 

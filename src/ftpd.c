@@ -2669,6 +2669,7 @@ void dodele(char *name)
                     sizeof qtfile)) {
             goto denied;
         }
+        (void) quota_lock();
         if (lstat(name, &st) != 0) {
             goto denied;
         }
@@ -2711,6 +2712,7 @@ void dodele(char *name)
                 displayquota(&quota);
             }
         }
+        quota_unlock();
     }
 #else
     if (unlink(name) < 0) {
@@ -2725,6 +2727,9 @@ void dodele(char *name)
     return;
 
     denied:
+#ifdef QUOTAS
+    quota_unlock();
+#endif
     addreply(550, MSG_DELE_FAILED ": %s", name, strerror(errno));
 }
 
@@ -3483,6 +3488,9 @@ void dormd(char *name)
         addreply_noformat(553, MSG_SANITY_DIRECTORY_FAILURE);
         return;
     }
+#ifdef QUOTAS
+    (void) quota_lock();
+#endif
     if ((rmdir(name)) < 0) {
         error(550, MSG_RMD_FAILURE);
     } else {
@@ -3493,6 +3501,9 @@ void dormd(char *name)
 #endif
         addreply_noformat(250, MSG_RMD_SUCCESS);
     }
+#ifdef QUOTAS
+    quota_unlock();
+#endif
 }
 
 #ifndef MINIMAL
@@ -4193,11 +4204,18 @@ void dostor(char *name, const int append, const int autorename)
             addreply(553, MSG_SANITY_FILE_FAILURE, name);
             goto end;
         }
-        if (restartat > (off_t) 0 &&
-            rename(name, atomic_file) != 0 && errno != ENOENT) {
-            error(553, MSG_RENAME_FAILURE);
-            atomic_file = NULL;
-            goto end;
+        if (restartat > (off_t) 0) {
+#ifdef QUOTAS
+            (void) quota_lock();
+#endif
+            if (rename(name, atomic_file) != 0 && errno != ENOENT) {
+                error(553, MSG_RENAME_FAILURE);
+                atomic_file = NULL;
+                goto end;
+            }
+#ifdef QUOTAS
+            quota_unlock();
+#endif
         }
     }
     if (atomic_file != NULL) {
@@ -4249,6 +4267,22 @@ void dostor(char *name, const int append, const int autorename)
         goto end;
     }
     if (restartat < st.st_size) {
+#ifdef QUOTAS
+        struct stat st_name;
+
+        /*
+         * If another session deleted or replaced the file since we opened
+         * it, its quota is already released, so give up.
+         * Read its size again too, in case another upload truncated it.
+         */
+        if (quota_lock() == 0 && atomic_file == NULL &&
+            (fstat(f, &st) != 0 || stat(name, &st_name) != 0 ||
+             st_name.st_dev != st.st_dev || st_name.st_ino != st.st_ino)) {
+            (void) close(f);
+            addreply_noformat(451, MSG_OPEN_FAILURE2);
+            goto end;
+        }
+#endif
         if (ftruncate(f, restartat) < 0) {
             (void) close(f);
             error(451, "ftruncate");
@@ -4271,6 +4305,7 @@ void dostor(char *name, const int append, const int autorename)
         (void) close(f);
         goto afterquota;
     }
+    quota_unlock();
 #endif
     opendata();
     if (xferfd == -1) {
@@ -4350,6 +4385,7 @@ void dostor(char *name, const int append, const int autorename)
 
 #ifdef QUOTAS
         int files_count;
+        struct stat st_old;
 #endif
 
 #ifdef QUOTAS
@@ -4358,6 +4394,7 @@ void dostor(char *name, const int append, const int autorename)
         } else {
             files_count = 0;
         }
+        (void) quota_lock();
 #endif
         if (autorename != 0 && restartat == (off_t) 0) {
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
@@ -4376,6 +4413,12 @@ void dostor(char *name, const int append, const int autorename)
             if ((atomic_file_size = get_file_size(atomic_file)) < (off_t) 0) {
                 goto afterquota;
             }
+#ifdef QUOTAS
+            /* Replacing a file doesn't add one */
+            if (stat(name, &st_old) == 0 && S_ISREG(st_old.st_mode)) {
+                files_count--;
+            }
+#endif
             if ((original_file_size = get_file_size(name)) < (off_t) 0 ||
                 restartat > original_file_size) {
                 original_file_size = restartat;
@@ -4398,6 +4441,9 @@ void dostor(char *name, const int append, const int autorename)
         }
     }
     afterquota:
+#ifdef QUOTAS
+    quota_unlock();
+#endif
     if (overflow > 0) {
         addreply(552, MSG_QUOTA_EXCEEDED, name);
     } else {
@@ -4410,6 +4456,9 @@ void dostor(char *name, const int append, const int autorename)
                     name2 ? name2 : name, 1);
     }
     end:
+#ifdef QUOTAS
+    quota_unlock();
+#endif
     restartat = (off_t) 0;
     if (atomic_file != NULL) {
         unlink(atomic_file);
@@ -4571,6 +4620,7 @@ void dornto(char *name)
     if (hasquota() == 0) {
         struct stat st_source, st_target;
 
+        (void) quota_lock();
         if (stat(renamefrom, &st_source) != 0) {
             addreply_noformat(550, MSG_RENAME_FAILURE);
             goto bye;
@@ -4609,6 +4659,9 @@ void dornto(char *name)
                 renamefrom, name);
     }
     bye:
+#ifdef QUOTAS
+    quota_unlock();
+#endif
     (void) free(renamefrom);
     renamefrom = NULL;
 }

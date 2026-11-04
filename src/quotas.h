@@ -14,6 +14,10 @@ int quota_update(Quota *quota,
                  const long long files_add, const long long size_add,
                  int *overflow);
 
+int quota_lock(void);
+
+void quota_unlock(void);
+
 void displayquota(Quota * const quota_);
 
 int hasquota(void);
