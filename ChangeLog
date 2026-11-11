@@ -16,6 +16,10 @@ ACCEPT_ROOT_VIRTUAL_USERS at build time, as documented.
  - Anonymous LDAP binds work again after a regression introduced in 1.0.53.
  - Pure-pwconvert skips entries whose fields contain ':' or newline
 characters rather than emitting corrupted records.
+ - Quota files are now locked (when possible) file checks to mitigate
+races. This improves quota mismatches when a file gets concurrent
+writes (for example after a disconnect). A related case was reported by
+Hebin Lv (Beijing University of Post and Telecommunication).
 
 * Version 1.0.53:
  - Added support for IP limits in inetd mode.
